@@ -1,0 +1,668 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>ToggleButtonGroup</title>
+<script type="text/javascript">
+function showHideInherited(type) {
+var tableNew = null;
+var tableInherited = null;
+var lable = null;
+if (type == "membersPublic") {
+tableNew = document.getElementById("tablePublicMembers");
+tableInherited = document.getElementById("tablePublicMembersInherited");
+lable = document.getElementById("labelShowHideInheritedPublicMembers");
+}
+else if (type == "membersInternal") {
+tableNew = document.getElementById("tableInternalMembers");
+tableInherited = document.getElementById("tableInternalMembersInherited");
+lable = document.getElementById("labelShowHideInheritedInternalMembers");
+}
+else if (type == "styles") {
+tableNew = document.getElementById("tableStyles");
+tableInherited = document.getElementById("tableStylesInherited");
+lable = document.getElementById("labelShowHideInheritedStyles");
+}
+else if (type == "events") {
+tableNew = document.getElementById("tableEvents");
+tableInherited = document.getElementById("tableEventsInherited");
+lable = document.getElementById("labelShowHideInheritedEvents");
+}
+else if (type == "functionsPublic") {
+tableNew = document.getElementById("tablePublicFunctions");
+tableInherited = document.getElementById("tablePublicFunctionsInherited");
+lable = document.getElementById("labelShowHideInheritedPublicFunctions");
+}
+else if (type == "functionsInternal") {
+tableNew = document.getElementById("tableInternalFunctions");
+tableInherited = document.getElementById("tableInternalFunctionsInherited");
+lable = document.getElementById("labelShowHideInheritedInternalFunctions");
+}
+if (tableInherited.style.display == "none") {
+if (tableNew != null)
+tableNew.style.display = "none";
+tableInherited.style.display = "table";
+lable.innerHTML = "Hide Inherited";
+}
+else {
+if (tableNew != null)
+tableNew.style.display = "table";
+tableInherited.style.display = "none";
+lable.innerHTML = "Show Inherited";
+}
+}
+</script>
+</head>
+<body style="font-size: 14px;">
+<table style="width: 100%;">
+<tr>
+<td style="border-right: solid 1px; vertical-align: top; padding: 10px;">
+<span style="font-size: 18px; font-weight: bold;">Classes</span><hr>
+<a href="AddedRemovedEvent.html">AddedRemovedEvent</a><br>
+<a href="AnchorContainerElement.html">AnchorContainerElement</a><br>
+<a href="ArrowShape.html">ArrowShape</a><br>
+<a href="ButtonElement.html">ButtonElement</a><br>
+<a href="CanvasElement.html">CanvasElement</a><br>
+<a href="CanvasManager.html">CanvasManager</a><br>
+<a href="CheckboxElement.html">CheckboxElement</a><br>
+<a href="CheckboxSkinElement.html">CheckboxSkinElement</a><br>
+<a href="CollectionChangedEvent.html">CollectionChangedEvent</a><br>
+<a href="CollectionSort.html">CollectionSort</a><br>
+<a href="ContainerBaseElement.html">ContainerBaseElement</a><br>
+<a href="CursorDefinition.html">CursorDefinition</a><br>
+<a href="DataGridColumnDefinition.html">DataGridColumnDefinition</a><br>
+<a href="DataGridDataRenderer.html">DataGridDataRenderer</a><br>
+<a href="DataGridElement.html">DataGridElement</a><br>
+<a href="DataGridHeaderColumnDividerSkinElement.html">DataGridHeaderColumnDividerSkinElement</a><br>
+<a href="DataGridHeaderElement.html">DataGridHeaderElement</a><br>
+<a href="DataGridHeaderItemRenderer.html">DataGridHeaderItemRenderer</a><br>
+<a href="DataGridItemData.html">DataGridItemData</a><br>
+<a href="DataGridLabelItemRenderer.html">DataGridLabelItemRenderer</a><br>
+<a href="DataListData.html">DataListData</a><br>
+<a href="DataListElement.html">DataListElement</a><br>
+<a href="DataRendererBaseElement.html">DataRendererBaseElement</a><br>
+<a href="DataRendererLabelElement.html">DataRendererLabelElement</a><br>
+<a href="DispatcherEvent.html">DispatcherEvent</a><br>
+<a href="DrawMetrics.html">DrawMetrics</a><br>
+<a href="DropdownArrowButtonSkinElement.html">DropdownArrowButtonSkinElement</a><br>
+<a href="DropdownElement.html">DropdownElement</a><br>
+<a href="ElementEvent.html">ElementEvent</a><br>
+<a href="ElementGridItemClickEvent.html">ElementGridItemClickEvent</a><br>
+<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
+<a href="ElementListItemClickEvent.html">ElementListItemClickEvent</a><br>
+<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+<a href="ElementMouseWheelEvent.html">ElementMouseWheelEvent</a><br>
+<a href="EllipseShape.html">EllipseShape</a><br>
+<a href="EventDispatcher.html">EventDispatcher</a><br>
+<a href="ImageElement.html">ImageElement</a><br>
+<a href="LabelElement.html">LabelElement</a><br>
+<a href="ListCollection.html">ListCollection</a><br>
+<a href="ListContainerElement.html">ListContainerElement</a><br>
+<a href="RadioButtonElement.html">RadioButtonElement</a><br>
+<a href="RadioButtonSkinElement.html">RadioButtonSkinElement</a><br>
+<a href="RoundedRectangleShape.html">RoundedRectangleShape</a><br>
+<a href="ScrollBarElement.html">ScrollBarElement</a><br>
+<a href="ScrollButtonSkinElement.html">ScrollButtonSkinElement</a><br>
+<a href="ShapeBase.html">ShapeBase</a><br>
+<a href="SkinnableElement.html">SkinnableElement</a><br>
+<a href="StyleableBase.html">StyleableBase</a><br>
+<a href="StyleChangedEvent.html">StyleChangedEvent</a><br>
+<a href="StyleData.html">StyleData</a><br>
+<a href="StyleDefinition.html">StyleDefinition</a><br>
+<a href="StyleProxy.html">StyleProxy</a><br>
+<a href="TextElement.html">TextElement</a><br>
+<a href="TextFieldElement.html">TextFieldElement</a><br>
+<a href="TextInputElement.html">TextInputElement</a><br>
+<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButtonGroup<br>
+<a href="Tween.html">Tween</a><br>
+<a href="ViewportElement.html">ViewportElement</a><br>
+<br><br>
+</td>
+<td style="vertical-align: top; padding: 10px; width: 100%;">
+<span style="font-size: 24px; font-weight: bold;">ToggleButtonGroup</span><br>
+<br>
+Convenience helper class for grouping ToggleButtons or subclasses.<br>
+The ToggleButtonGroup can be assigned to set of toggle buttons<br>
+and will only allow a single ToggleButton to be selected at a time.<br>
+When a ToggleButton changes state, the ToggleButtonGroup will dispatch<br>
+a changed event. Use this for functionality like RadioButtons and Tabs.<br>
+<br>
+<table>
+<tr>
+<td style="vertical-align: top;">
+<span style="font-weight: bold;">Inheritance: &nbsp;&nbsp;&nbsp;</span>
+</td>
+<td rowspan="2" style="vertical-align: top; width: 100%;">
+ToggleButtonGroup &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
+<tr>
+<td></td>
+</tr>
+</table>
+<br>
+<span style="font-weight: bold; font-size: 18px;">Events</span><br>
+<table id="tableEvents" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Event</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">changed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatched when the selected ToggleButton is changed due to user interaction.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<table id="tableEventsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Event</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">changed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatched when the selected ToggleButton is changed due to user interaction.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<br>
+<span style="font-weight: bold; font-size: 18px;">Public Functions</span><br>
+<a id="labelShowHideInheritedPublicFunctions" href="" onclick="{showHideInherited('functionsPublic'); return false;}">Show Inherited</a><br>
+<table id="tablePublicFunctions" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ToggleButtonGroup()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Constructor] ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Creates new ToggleButtonGroup instance.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">addButton(toggleButton)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Adds a ToggleButton or subclass to be managed by ToggleButtonGroup.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">toggleButton</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass to be managed by ToggleButtonGroup.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when successfully added, false if is not a instance of ToggleButton or already added.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearButtons()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes all ToggleButtons currently managed by ToggleButtonGroup.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getSelectedButton()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the selected ToggleButton.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass currently selected. May be null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">removeButton(toggleButton)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes a ToggleButton or subclass currently being managed by ToggleButtonGroup<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">toggleButton</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass to be removed from ToggleButtonGroup.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when successfully removed, false if the toggle button is not currently managed by ToggleButtonGroup.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setSelectedButton(toggleButton)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the ToggleButton to be selected.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">toggleButton</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass to be selected. May be set to null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<table id="tablePublicFunctionsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ToggleButtonGroup()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Constructor] ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Creates new ToggleButtonGroup instance.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">addButton(toggleButton)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Adds a ToggleButton or subclass to be managed by ToggleButtonGroup.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">toggleButton</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass to be managed by ToggleButtonGroup.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when successfully added, false if is not a instance of ToggleButton or already added.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">addEventListener(type, callback)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Registers an event lister function to be called when an event occurs.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">type</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the event type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">callback</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
+Function to be called when the event occurs.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearButtons()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes all ToggleButtons currently managed by ToggleButtonGroup.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getSelectedButton()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the selected ToggleButton.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass currently selected. May be null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">hasEventListener(type, callback)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Checks if an event listener has been registered with this EventDispatcher<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">type</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the event type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">callback</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
+Function callback to be called when the event occurs. This may be null to check<br>if the EventDispatcher has any events registered for the provided type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+Returns true if the EventDispatcher has the provided callback registered for the<br>provided type, or any callback for the provided type if the callback parameter is null.<br>Otherwise, returns false.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">removeButton(toggleButton)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes a ToggleButton or subclass currently being managed by ToggleButtonGroup<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">toggleButton</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass to be removed from ToggleButtonGroup.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when successfully removed, false if the toggle button is not currently managed by ToggleButtonGroup.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">removeEventListener(type, callback)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes a callback from the EventDispatcher<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">type</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the event type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">callback</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
+Function callback to be removed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+Returns true if the callback was successfully removed, otherwise false<br>such as if the function callback was not previously registered.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setSelectedButton(toggleButton)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the ToggleButton to be selected.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">toggleButton</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+ToggleButton or subclass to be selected. May be set to null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<br>
+<span style="font-weight: bold; font-size: 18px;">Internal Functions</span><br>
+<a id="labelShowHideInheritedInternalFunctions" href="" onclick="{showHideInherited('functionsInternal'); return false;}">Show Inherited</a><br>
+<table id="tableInternalFunctions" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_toggleButtonChanged(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for managed ToggleButton's "changed" event.<br>
+Updates toggle button selected states and dispatches "changed" event.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+ElementEvent to be processed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<table id="tableInternalFunctionsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_dispatchEvent(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatches an event to be processed by registered event listeners. The Event's target is the<br>
+EventDispatcher which called _dispatchEvent. The Event will be cloned prior to passing to callback functions<br>
+to ensure the callback cannot modify the Event data or properties. You can check if the event was canceled<br>
+by calling the Event's getIsCanceled after dispatching it. Re-dispatching the same event will re-set its canceled state to false.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
+The DispatcherEvent class or subclass to be dispatched.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_toggleButtonChanged(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ToggleButtonGroup</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for managed ToggleButton's "changed" event.<br>
+Updates toggle button selected states and dispatches "changed" event.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+ElementEvent to be processed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<br>
+</td>
+</tr>
+</table>
+</body>
+</html>
