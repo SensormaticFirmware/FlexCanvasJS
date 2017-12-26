@@ -1,0 +1,723 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>RoundedRectangleShape</title>
+<script type="text/javascript">
+function showHideInherited(type) {
+var tableNew = null;
+var tableInherited = null;
+var lable = null;
+if (type == "membersPublic") {
+tableNew = document.getElementById("tablePublicMembers");
+tableInherited = document.getElementById("tablePublicMembersInherited");
+lable = document.getElementById("labelShowHideInheritedPublicMembers");
+}
+else if (type == "membersInternal") {
+tableNew = document.getElementById("tableInternalMembers");
+tableInherited = document.getElementById("tableInternalMembersInherited");
+lable = document.getElementById("labelShowHideInheritedInternalMembers");
+}
+else if (type == "styles") {
+tableNew = document.getElementById("tableStyles");
+tableInherited = document.getElementById("tableStylesInherited");
+lable = document.getElementById("labelShowHideInheritedStyles");
+}
+else if (type == "events") {
+tableNew = document.getElementById("tableEvents");
+tableInherited = document.getElementById("tableEventsInherited");
+lable = document.getElementById("labelShowHideInheritedEvents");
+}
+else if (type == "functionsPublic") {
+tableNew = document.getElementById("tablePublicFunctions");
+tableInherited = document.getElementById("tablePublicFunctionsInherited");
+lable = document.getElementById("labelShowHideInheritedPublicFunctions");
+}
+else if (type == "functionsInternal") {
+tableNew = document.getElementById("tableInternalFunctions");
+tableInherited = document.getElementById("tableInternalFunctionsInherited");
+lable = document.getElementById("labelShowHideInheritedInternalFunctions");
+}
+if (tableInherited.style.display == "none") {
+if (tableNew != null)
+tableNew.style.display = "none";
+tableInherited.style.display = "table";
+lable.innerHTML = "Hide Inherited";
+}
+else {
+if (tableNew != null)
+tableNew.style.display = "table";
+tableInherited.style.display = "none";
+lable.innerHTML = "Show Inherited";
+}
+}
+</script>
+</head>
+<body style="font-size: 14px;">
+<table style="width: 100%;">
+<tr>
+<td style="border-right: solid 1px; vertical-align: top; padding: 10px;">
+<span style="font-size: 18px; font-weight: bold;">Classes</span><hr>
+<a href="AddedRemovedEvent.html">AddedRemovedEvent</a><br>
+<a href="AnchorContainerElement.html">AnchorContainerElement</a><br>
+<a href="ArrowShape.html">ArrowShape</a><br>
+<a href="ButtonElement.html">ButtonElement</a><br>
+<a href="CanvasElement.html">CanvasElement</a><br>
+<a href="CanvasManager.html">CanvasManager</a><br>
+<a href="CheckboxElement.html">CheckboxElement</a><br>
+<a href="CheckboxSkinElement.html">CheckboxSkinElement</a><br>
+<a href="CollectionChangedEvent.html">CollectionChangedEvent</a><br>
+<a href="CollectionSort.html">CollectionSort</a><br>
+<a href="ContainerBaseElement.html">ContainerBaseElement</a><br>
+<a href="CursorDefinition.html">CursorDefinition</a><br>
+<a href="DataGridColumnDefinition.html">DataGridColumnDefinition</a><br>
+<a href="DataGridDataRenderer.html">DataGridDataRenderer</a><br>
+<a href="DataGridElement.html">DataGridElement</a><br>
+<a href="DataGridHeaderColumnDividerSkinElement.html">DataGridHeaderColumnDividerSkinElement</a><br>
+<a href="DataGridHeaderElement.html">DataGridHeaderElement</a><br>
+<a href="DataGridHeaderItemRenderer.html">DataGridHeaderItemRenderer</a><br>
+<a href="DataGridItemData.html">DataGridItemData</a><br>
+<a href="DataGridLabelItemRenderer.html">DataGridLabelItemRenderer</a><br>
+<a href="DataListData.html">DataListData</a><br>
+<a href="DataListElement.html">DataListElement</a><br>
+<a href="DataRendererBaseElement.html">DataRendererBaseElement</a><br>
+<a href="DataRendererLabelElement.html">DataRendererLabelElement</a><br>
+<a href="DispatcherEvent.html">DispatcherEvent</a><br>
+<a href="DrawMetrics.html">DrawMetrics</a><br>
+<a href="DropdownArrowButtonSkinElement.html">DropdownArrowButtonSkinElement</a><br>
+<a href="DropdownElement.html">DropdownElement</a><br>
+<a href="ElementEvent.html">ElementEvent</a><br>
+<a href="ElementGridItemClickEvent.html">ElementGridItemClickEvent</a><br>
+<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
+<a href="ElementListItemClickEvent.html">ElementListItemClickEvent</a><br>
+<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+<a href="ElementMouseWheelEvent.html">ElementMouseWheelEvent</a><br>
+<a href="EllipseShape.html">EllipseShape</a><br>
+<a href="EventDispatcher.html">EventDispatcher</a><br>
+<a href="ImageElement.html">ImageElement</a><br>
+<a href="LabelElement.html">LabelElement</a><br>
+<a href="ListCollection.html">ListCollection</a><br>
+<a href="ListContainerElement.html">ListContainerElement</a><br>
+<a href="RadioButtonElement.html">RadioButtonElement</a><br>
+<a href="RadioButtonSkinElement.html">RadioButtonSkinElement</a><br>
+RoundedRectangleShape<br>
+<a href="ScrollBarElement.html">ScrollBarElement</a><br>
+<a href="ScrollButtonSkinElement.html">ScrollButtonSkinElement</a><br>
+<a href="ShapeBase.html">ShapeBase</a><br>
+<a href="SkinnableElement.html">SkinnableElement</a><br>
+<a href="StyleableBase.html">StyleableBase</a><br>
+<a href="StyleChangedEvent.html">StyleChangedEvent</a><br>
+<a href="StyleData.html">StyleData</a><br>
+<a href="StyleDefinition.html">StyleDefinition</a><br>
+<a href="StyleProxy.html">StyleProxy</a><br>
+<a href="TextElement.html">TextElement</a><br>
+<a href="TextFieldElement.html">TextFieldElement</a><br>
+<a href="TextInputElement.html">TextInputElement</a><br>
+<a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
+<a href="ToggleButtonGroup.html">ToggleButtonGroup</a><br>
+<a href="Tween.html">Tween</a><br>
+<a href="ViewportElement.html">ViewportElement</a><br>
+<br><br>
+</td>
+<td style="vertical-align: top; padding: 10px; width: 100%;">
+<span style="font-size: 24px; font-weight: bold;">RoundedRectangleShape</span><br>
+<br>
+Draws rectangles and rounded rectangles.<br>
+<br>
+<table>
+<tr>
+<td style="vertical-align: top;">
+<span style="font-weight: bold;">Inheritance: &nbsp;&nbsp;&nbsp;</span>
+</td>
+<td rowspan="2" style="vertical-align: top; width: 100%;">
+RoundedRectangleShape &#10142; <a href="ShapeBase.html">ShapeBase</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
+<tr>
+<td></td>
+</tr>
+</table>
+<br>
+<span style="font-weight: bold; font-size: 18px;">Styles</span><br>
+<table id="tableStyles" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Style</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadius</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's corners.<br>
+CornerRadius effects all corners of the rectangle.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusBottomLeft</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's bottom left corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusBottomRight</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's bottom right corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusTopLeft</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's top left corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusTopRight</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's top right corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<table id="tableStylesInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Style</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadius</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's corners.<br>
+CornerRadius effects all corners of the rectangle.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusBottomLeft</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's bottom left corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusBottomRight</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's bottom right corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusTopLeft</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's top left corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">CornerRadiusTopRight</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Radius size in pixels for the rectangle's top right corner.<br>
+This will override the CornerRadius style unless it is null.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<br>
+<span style="font-weight: bold; font-size: 18px;">Events</span><br>
+<a id="labelShowHideInheritedEvents" href="" onclick="{showHideInherited('events'); return false;}">Show Inherited</a><br>
+<table id="tableEventsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Event</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">stylechanged</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleChangedEvent.html">StyleChangedEvent</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleDefinition.html">StyleDefinition</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatched when a style is added, cleared, or changed.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<br>
+<span style="font-weight: bold; font-size: 18px;">Public Functions</span><br>
+<a id="labelShowHideInheritedPublicFunctions" href="" onclick="{showHideInherited('functionsPublic'); return false;}">Show Inherited</a><br>
+<table id="tablePublicFunctions" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">RoundedRectangleShape()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Constructor] RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Creates new RoundedRectangleShape instance.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<table id="tablePublicFunctionsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">RoundedRectangleShape()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Constructor] RoundedRectangleShape</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Creates new RoundedRectangleShape instance.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">addEventListener(type, callback)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Registers an event lister function to be called when an event occurs.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">type</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the event type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">callback</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
+Function to be called when the event occurs.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearStyle(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleDefinition.html">StyleDefinition</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Clears style data from this object. This is the same<br>
+passing undefined to setStyle().<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the style to clear.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">drawShape(ctx, metrics)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ShapeBase.html">ShapeBase</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Used to draw a sub-path shape path to the supplied Canvas2DContext using the supplied metrics.<br>
+Override this to draw custom shapes. Do *not* call beginPath() as that will destroy previous<br>
+sub-paths and *do not* do any filling or other context calls. Only draw and closePath() the sub-path.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">ctx</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Canvas2DContext<br>
+The Canvas2DContext to draw the sub-path on.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">metrics</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DrawMetrics.html">DrawMetrics</a><br>
+DrawMetrics object to use as the bounding box for the sub-path.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getStyle(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleDefinition.html">StyleDefinition</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the stored style value for this object.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the style to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
+Returns the associated style value if found, otherwise undefined.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getStyleData(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleableBase.html">StyleableBase</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the style data for the supplied style name, this includes<br>
+additional info than getStyle() such as the style priority.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing style to return the associated StyleData.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleData.html">StyleData</a><br>
+Returns the associated StyleData<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">hasEventListener(type, callback)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Checks if an event listener has been registered with this EventDispatcher<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">type</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the event type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">callback</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
+Function callback to be called when the event occurs. This may be null to check<br>if the EventDispatcher has any events registered for the provided type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+Returns true if the EventDispatcher has the provided callback registered for the<br>provided type, or any callback for the provided type if the callback parameter is null.<br>Otherwise, returns false.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">removeEventListener(type, callback)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes a callback from the EventDispatcher<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">type</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the event type.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">callback</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
+Function callback to be removed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+Returns true if the callback was successfully removed, otherwise false<br>such as if the function callback was not previously registered.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setStyle(styleName, value)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleDefinition.html">StyleDefinition</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the stored style value for this object.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the style to set.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
+The value to store. This may be null or undefined.<br>Note that a null style is different from an absent (undefined) style. A null style<br>will terminate a style chain lookup and return null value. An undefined style will cause<br>the system to look further up the style chain for a value. Passing undefined is the<br>same as calling clearStyle().<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<br>
+<span style="font-weight: bold; font-size: 18px;">Internal Functions</span><br>
+<a id="labelShowHideInheritedInternalFunctions" href="" onclick="{showHideInherited('functionsInternal'); return false;}">Show Inherited</a><br>
+<table id="tableInternalFunctionsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_dispatchEvent(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatches an event to be processed by registered event listeners. The Event's target is the<br>
+EventDispatcher which called _dispatchEvent. The Event will be cloned prior to passing to callback functions<br>
+to ensure the callback cannot modify the Event data or properties. You can check if the event was canceled<br>
+by calling the Event's getIsCanceled after dispatching it. Re-dispatching the same event will re-set its canceled state to false.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
+The DispatcherEvent class or subclass to be dispatched.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getDefaultStyle(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleableBase.html">StyleableBase</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets default value for the supplied style.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the default style to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
+Returns the associated default style value if found, otherwise undefined.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getDefaultStyleData(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleableBase.html">StyleableBase</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets default StyleData for the supplied style.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the default style to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleData.html">StyleData</a><br>
+Returns the associated default StyleData.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<br>
+</td>
+</tr>
+</table>
+</body>
+</html>
