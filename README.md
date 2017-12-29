@@ -26,7 +26,7 @@ Example below is using a full screen canvas, although any canvas will work.
 <html>
   <head>
     <meta charset=utf-8>
-    <title>FlexJS Web Application</title>
+    <title>FlexCanvasJS Web Application</title>
     <style>
       body { margin: 0; }
       html, body, canvas { width: 100%; height: 100%; overflow: hidden; }
