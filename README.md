@@ -2,7 +2,7 @@
 
 #### RIA Web Application Framework for HTML5 Canvas ####
 
-Easily create rich internet applications using the HTML5 <canvas>.
+Easily create rich internet applications using the HTML5 canvas.
 
 FlexCanvasJS provides highly customizable user interactive canvas display elements, hierarchical parent / child display list, UI events, styling and skinning, relative and dynamic layouts, automatic redraw regions, and includes many UI controls such as buttons, checkboxes, dropdowns, datagrids, editable and wrapping text controls, and more, while also allowing easy creation of custom components or controls.
 
@@ -16,7 +16,7 @@ FlexCanvasJS does the heavy lifting for you. Render caching, redraw regions, com
 
 ### Getting Started ###
 
-All you need is the minified library a HTML <canvas> and some Javascript. 
+All you need is the minified FlexCanvasJS library and a HTML canvas.
 Download the minified library from the latest release. 
 
 Example below is using a full screen canvas, although any canvas will work.
