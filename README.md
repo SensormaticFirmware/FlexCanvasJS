@@ -28,15 +28,14 @@ Example below is using a full screen canvas, although any canvas will work.
     <meta charset=utf-8>
     <title>FlexCanvasJS Web Application</title>
     <style>
-      body { margin: 0; }
-      html, body, canvas { width: 100%; height: 100%; overflow: hidden; }
+      html, body, canvas { width: 100%; height: 100%; margin: 0; overflow: hidden; }
     </style>
     <script src="FlexCanvasJS_min.js" type="text/javascript"></script> 
   </head>
-<body>
-  <!-- Full screen canvas -->
-  <canvas id="flexCanvasApplication"></canvas>
-</body>
+  <body>
+    <!-- Full screen canvas -->
+    <canvas id="flexCanvasApplication"></canvas>
+  </body>
 </html>
 ```
 Now attach the DOM canvas to the FlexCanvasJS CanvasManager and create and style our elements:
