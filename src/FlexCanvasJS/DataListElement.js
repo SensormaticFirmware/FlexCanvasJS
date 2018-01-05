@@ -84,6 +84,32 @@ DataListElement.prototype = Object.create(CanvasElement.prototype);
 DataListElement.prototype.constructor = DataListElement;
 DataListElement.base = CanvasElement;
 
+/**
+ * @function DefaultItemLabelFunction
+ * @static
+ * Default ItemLabelFunction function. Looks for typeof String or "label" property of supplied itemData.
+ * 
+ * @param itemData Object
+ * Collection item to extract label text.
+ * 
+ * @returns String
+ * Label text.
+ */
+DataListElement.DefaultItemLabelFunction = 
+	function (itemData)
+	{
+		if (itemData == null)
+			return "";
+		
+		if (typeof itemData === "string" || itemData instanceof String)
+			return itemData;
+	
+		if ("label" in itemData)
+			return itemData["label"];
+		
+		return itemData.toString();
+	};
+
 
 /////////////Events///////////////////////////////
 
@@ -194,33 +220,7 @@ DataListElement.StyleDefault.setStyle("ScrollBarStyle", 			null);										// St
 DataListElement._DataRendererProxyMap = Object.create(null);
 
 DataListElement._DataRendererProxyMap.Selectable = 				true;
-
-
-/**
- * @function DefaultItemLabelFunction
- * @static
- * Default ItemLabelFunction function. Looks for typeof String or "label" property of supplied itemData.
- * 
- * @param itemData Object
- * Collection item to extract label text.
- * 
- * @returns String
- * Label text.
- */
-DataListElement.DefaultItemLabelFunction = 
-	function (itemData)
-	{
-		if (itemData == null)
-			return "";
-		
-		if (typeof itemData === "string" || itemData instanceof String)
-			return itemData;
-	
-		if ("label" in itemData)
-			return itemData["label"];
-		
-		return itemData.toString();
-	};
+DataListElement._DataRendererProxyMap._Arbitrary = 				true;
 
 
 /////////////Public///////////////////////////////
@@ -455,38 +455,12 @@ DataListElement.prototype.getListCollection =
 DataListElement.prototype._getContentSize = 
 	function ()
 	{
+		var paddingSize = this._getPaddingSize();
+	
 		if (this.getStyle("ListDirection") == "vertical")
-		{
-			var padding = this.getStyle("Padding");
-			if (padding == null)
-				padding = 0;
-			
-			var paddingTop = this.getStyle("PaddingTop");
-			if (paddingTop == null)
-				paddingTop = padding;
-			
-			var paddingBottom = this.getStyle("PaddingBottom");
-			if (paddingBottom == null)
-				paddingBottom = padding;
-			
-			return this._contentSize + paddingTop + paddingBottom;
-		}
+			return this._contentSize + paddingSize.height;
 		else //if (this.getStyle("ListDirection") == "horizontal")
-		{
-			var padding = this.getStyle("Padding");
-			if (padding == null)
-				padding = 0;
-			
-			var paddingLeft = this.getStyle("PaddingLeft");
-			if (paddingLeft == null)
-				paddingLeft = padding;
-			
-			var paddingRight = this.getStyle("PaddingRight");
-			if (paddingRight == null)
-				paddingRight = padding;
-			
-			return this._contentSize + paddingLeft + paddingRight;
-		}
+			return this._contentSize + paddingSize.width;
 	};
 
 /**
@@ -794,7 +768,7 @@ DataListElement.prototype._doStylesUpdated =
 			var listItemStyle = this.getStyle("ListItemStyle");
 			
 			for (var i = 0; i < this._contentPane._children.length; i++)
-				this._contentPane._children[i].setStyleDefinition(listItemStyle);
+				this._contentPane._children[i].setStyleDefinitions(listItemStyle);
 			
 			this._invalidateLayout();
 		}
@@ -808,7 +782,7 @@ DataListElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		
 		if ("ScrollBarStyle" in stylesMap && this._scrollBar != null)
-			this._scrollBar.setStyleDefinition(this.getStyle("ScrollBarStyle"));
+			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
 		
 		if ("ItemLabelFunction" in stylesMap)
 			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
@@ -861,7 +835,7 @@ DataListElement.prototype._createRenderer =
 		var newRenderer = new (this.getStyle("ListItemClass"))();
 		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
 		newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinition(this.getStyle("ListItemStyle"));
+		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
 		
 		this._updateRendererData(newRenderer, itemIndex);
 		
@@ -1053,7 +1027,7 @@ DataListElement.prototype._doLayout =
 		{
 			this._scrollBar = new ScrollBarElement();
 			this._scrollBar._setStyleDefinitionDefault(this._getDefaultStyle("ScrollBarStyle"));
-			this._scrollBar.setStyleDefinition(this.getStyle("ScrollBarStyle"));
+			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
 			this._scrollBar.setStyle("ScrollBarDirection", listDirection);
 			this._scrollBar.setScrollLineSize(1);
 			

@@ -217,13 +217,13 @@ DataRendererBaseElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "up")
-			return [this.getStyle("UpSkinStyle")];
+			return this.getStyle("UpSkinStyle");
 		else if (state == "alt")
-			return [this.getStyle("AltSkinStyle")];
+			return this.getStyle("AltSkinStyle");
 		else if (state == "over")
-			return [this.getStyle("OverSkinStyle")];
+			return this.getStyle("OverSkinStyle");
 		else if (state == "selected")
-			return [this.getStyle("SelectedSkinStyle")];
+			return this.getStyle("SelectedSkinStyle");
 		
 		return DataRendererBaseElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};

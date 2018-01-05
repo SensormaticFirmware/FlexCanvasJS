@@ -170,7 +170,10 @@ DataGridElement.StyleDefault.setStyle("ListItemStyle", 					null); 									// S
 
 DataGridElement.StyleDefault.setStyle("BorderType",		 				"solid"); 	
 DataGridElement.StyleDefault.setStyle("BorderThickness",	 			1);
-DataGridElement.StyleDefault.setStyle("Padding",	 					1);
+DataGridElement.StyleDefault.setStyle("PaddingTop",	 					1);
+DataGridElement.StyleDefault.setStyle("PaddingBottom", 					1);
+DataGridElement.StyleDefault.setStyle("PaddingLeft",					1);
+DataGridElement.StyleDefault.setStyle("PaddingRight", 					1);
 DataGridElement.StyleDefault.setStyle("ScrollBarStyle", 				DataGridElement.ScrollBarStyleDefault);	// StyleDefinition
 
 //DataGrid specific
@@ -438,7 +441,7 @@ DataGridElement.prototype._doStylesUpdated =
 		}
 		
 		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
-			this._gridHeader.setStyleDefinition(this.getStyle("HeaderStyle"));
+			this._gridHeader.setStyleDefinitions(this.getStyle("HeaderStyle"));
 		
 		if ("GridLinesPriority" in stylesMap ||
 			"VerticalGridLinesClass" in stylesMap ||
@@ -457,7 +460,7 @@ DataGridElement.prototype._createRenderer =
 		var newRenderer = new (this.getStyle("ListItemClass"))();
 		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
 		//newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinition(this.getStyle("ListItemStyle"));
+		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
 		
 		this._updateRendererData(newRenderer, itemIndex);
 		
@@ -512,7 +515,7 @@ DataGridElement.prototype._updateHeaderItemRendererData =
 		else
 			listData = new DataGridItemData(this, -1, columnIndex);
 		
-		renderer.setStyleDefinition(columnDefinition.getStyle("HeaderItemStyle"));
+		renderer.setStyleDefinitions(columnDefinition.getStyle("HeaderItemStyle"));
 		
 		renderer._setListData(
 			listData,
@@ -605,7 +608,7 @@ DataGridElement.prototype._updateRowItemRendererData =
 		else
 			listData = new DataGridItemData(this, itemIndex, columnIndex);
 		
-		renderer.setStyleDefinition(columnDefinition.getStyle("RowItemStyle"));
+		renderer.setStyleDefinitions(columnDefinition.getStyle("RowItemStyle"));
 	
 		renderer._setListData(
 			listData,
@@ -662,13 +665,13 @@ DataGridElement.prototype._createGridLine =
 		{
 			line = new (this.getStyle("VerticalGridLinesClass"))();
 			line._setStyleDefinitionDefault(this._getDefaultStyle("VerticalGridLinesStyle"));
-			line.setStyleDefinition(this.getStyle("VerticalGridLinesStyle"));
+			line.setStyleDefinitions(this.getStyle("VerticalGridLinesStyle"));
 		}
 		else
 		{
 			line = new (this.getStyle("HorizontalGridLinesClass"))();
 			line._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalGridLinesStyle"));
-			line.setStyleDefinition(this.getStyle("HorizontalGridLinesStyle"));
+			line.setStyleDefinitions(this.getStyle("HorizontalGridLinesStyle"));
 		}
 		
 		return line;
@@ -792,7 +795,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinition(horizontalStyle);
+							gridLine.setStyleDefinitions(horizontalStyle);
 						
 						gridLine._setActualSize(this._gridLineContainer._width, gridLine.getStyle("Height"));
 						gridLine._setActualPosition(0, rowRenderer._y - (gridLine._height / 2));
@@ -826,7 +829,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinition(verticalStyle);
+							gridLine.setStyleDefinitions(verticalStyle);
 						
 						gridLine._setActualSize(gridLine.getStyle("Width"), this._gridLineContainer._height);
 						gridLine._setActualPosition(linePosition - (gridLine._width / 2), 0);

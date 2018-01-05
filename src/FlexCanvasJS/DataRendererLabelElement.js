@@ -22,6 +22,8 @@ function DataRendererLabelElement()
 	DataRendererLabelElement.base.prototype.constructor.call(this);
 	
 	this._labelElement = new LabelElement();
+	this._labelElement.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
+	
 	this._addChild(this._labelElement);
 }
 	
@@ -39,15 +41,23 @@ DataRendererLabelElement._StyleTypes = Object.create(null);
  * @style UpTextColor String
  * 
  * Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).
- * When this is null, the base class's TextColor style will be used.
+ * This will override the TextColor style of equal priority.
  */
 DataRendererLabelElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
+
+/**
+ * @style AltTextColor String
+ * 
+ * Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataRendererLabelElement._StyleTypes.AltTextColor = 			{inheritable:false};		//"#000000"
 
 /**
  * @style OverTextColor String
  * 
  * Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).
- * When this is null, the base class's TextColor style will be used.
+ * This will override the TextColor style of equal priority.
  */
 DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//"#000000"
 
@@ -55,7 +65,7 @@ DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//
  * @style SelectedTextColor String
  * 
  * Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).
- * When this is null, the base class's TextColor style will be used.
+ * This will override the TextColor style of equal priority.
  */
 DataRendererLabelElement._StyleTypes.SelectedTextColor = 		{inheritable:false};		//"#000000"
 
@@ -64,12 +74,16 @@ DataRendererLabelElement._StyleTypes.SelectedTextColor = 		{inheritable:false};	
 
 DataRendererLabelElement.StyleDefault = new StyleDefinition();
 
-DataRendererLabelElement.StyleDefault.setStyle("Padding", 					3);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingTop", 				4);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingBottom", 			4);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingLeft", 				4);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingRight", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("BorderType", 				"none");
 
-DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				null);
-DataRendererLabelElement.StyleDefault.setStyle("OverTextColor", 			null);
-DataRendererLabelElement.StyleDefault.setStyle("SelectedTextColor", 		null);
+DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("OverTextColor", 			"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("SelectedTextColor", 		"#000000");
 
 
 ////////////Internal/////////////////////////////
@@ -96,14 +110,24 @@ DataRendererLabelElement.prototype._changeState =
 DataRendererLabelElement.prototype._getTextColor = 
 	function (state)
 	{
+		var stateTextColor = null;
+		
 		if (state == "up")
-			return this.getStyle("UpTextColor") || this.getStyle("TextColor");
+			stateTextColor = this.getStyleData("UpTextColor");
+		else if (state == "alt")
+			stateTextColor = this.getStyleData("AltTextColor");
 		else if (state == "over")
-			return this.getStyle("OverTextColor") || this.getStyle("TextColor");
+			stateTextColor = this.getStyleData("OverTextColor");
 		else if (state == "selected")
-			return this.getStyle("SelectedTextColor") || this.getStyle("TextColor");
-		else
-			return null;
+			stateTextColor = this.getStyleData("SelectedTextColor");
+	
+		var textColor = this.getStyleData("TextColor");
+		
+		//Shouldnt have null stateTextColor
+		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
+			return textColor.value;
+		
+		return stateTextColor.value;
 	};
 
 /**
@@ -156,20 +180,8 @@ DataRendererLabelElement.prototype._doStylesUpdated =
 DataRendererLabelElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		//Get sizing based on skin
-		var measuredSize = DataRendererLabelElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
-	
-		//If we're larger than the skin increase size.
-		var labelWidth = this._labelElement._getStyledOrMeasuredWidth();
-		var labelHeight = this._labelElement._getStyledOrMeasuredHeight();
-			
-		if (padWidth + labelWidth > measuredSize.width)
-			measuredSize.width = padWidth + labelWidth;
-		
-		if (padHeight + labelHeight > measuredSize.height)
-			measuredSize.height = padHeight + labelHeight;
-		
-		return measuredSize;
+		return {width: this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
+				height: this._labelElement._getStyledOrMeasuredHeight() + padHeight};
 	};
 
 //@Override	

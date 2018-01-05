@@ -1152,6 +1152,96 @@ CanvasElement.prototype.clearStyleDefinitions =
 	};
 	
 /**
+ * @function setStyleDefinitions
+ * Replaces the elements current style definition list. This is more effecient than removing or 
+ * adding style definitions one at a time.
+ * 
+ * @param styleDefinitions StyleDefinition
+ * May be a StyleDefinition, or an Array of StyleDefinition
+ */
+CanvasElement.prototype.setStyleDefinitions = 
+	function (styleDefinitions)
+	{
+		if (styleDefinitions == null)
+			styleDefinitions = [];
+		
+		if (Array.isArray(styleDefinitions) == false)
+			styleDefinitions = [styleDefinitions];
+		
+		var i = 0;
+		
+		//trim the definitions for duplicates
+		for (i = styleDefinitions.length - 1; i >= 0; i--)
+		{
+			//Make sure this style definition is not already in the list (no adding duplicates)
+			if (styleDefinitions.indexOf(styleDefinitions[i]) < i || styleDefinitions[i] == this._styleDefinitionDefault)
+				styleDefinitions.splice(i, 1);
+		}
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			//Check if nothing changed before we do a bunch of work.
+			if (styleDefinitions.length == this._styleDefinitions.length)
+			{
+				var changed = false;
+				for (i = 0; i < styleDefinitions.length; i++)
+				{
+					if (styleDefinitions[i] != this._styleDefinitions[i])
+					{
+						changed = true;
+						break;
+					}
+				}
+				
+				//No changes.
+				if (changed == false)
+					return;
+			}
+			
+			var styleName = null;
+			var styleNamesMap = Object.create(null);
+			var styleDefinition = null;
+			
+			//Remove old
+			while (this._styleDefinitions.length > 0)
+			{
+				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
+				this._styleDefinitions.splice(skinElement._styleDefinitions.length - 1, 1);
+				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				
+				//Record removed style names
+				for (styleName in styleDefininition._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Add new
+			for (i = 0; i < styleDefinitions.length; i++)
+			{
+				styleDefinition = styleDefinitions[i];
+				this._styleDefinitions.push(styleDefinition);
+				styleDefinition.addEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
+				
+				//Record added style names
+				for (styleName in styleDefininition._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Spoof style changed events for normal style changed handling.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		else //Not attached to display chain, just swap the definitions
+		{
+			//Clear the definition list
+			this._styleDefinitions.splice(0, this._styleDefinitions.length);
+			
+			//Add the new definitions.
+			for (i = 0; i < styleDefinitions.length; i++)
+				this._styleDefinitions.push(styleDefinitions[i]);
+		}
+	};
+	
+/**
  * @function getNumStyleDefinitions
  * Gets the number of style definitions associated with this element.
  * 

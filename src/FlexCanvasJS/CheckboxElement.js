@@ -305,13 +305,13 @@ CheckboxElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "halfSelectedUp")
-			return [this.getStyle("HalfSelectedUpSkinStyle")];
+			return this.getStyle("HalfSelectedUpSkinStyle");
 		else if (state == "halfSelectedOver")
-			return [this.getStyle("HalfSelectedOverSkinStyle")];
+			return this.getStyle("HalfSelectedOverSkinStyle");
 		else if (state == "halfSelectedDown")
-			return [this.getStyle("HalfSelectedDownSkinStyle")];
+			return this.getStyle("HalfSelectedDownSkinStyle");
 		else if (state == "halfSelectedDisabled")
-			return [this.getStyle("HalfSelectedDisabledSkinStyle")];
+			return this.getStyle("HalfSelectedDisabledSkinStyle");
 		
 		return CheckboxElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};

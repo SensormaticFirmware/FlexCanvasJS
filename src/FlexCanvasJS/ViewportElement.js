@@ -255,9 +255,9 @@ ViewportElement.prototype._doStylesUpdated =
 		}
 		
 		if ("HorizontalScrollBarStyle" && this._horizontalScrollBar != null)
-			this._horizontalScrollBar.setStyleDefinition(this.getStyle("HorizontalScrollBarStyle"));
+			this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
 		if ("VerticalScrollBarStyle" && this._verticalScrollBar != null)
-			this._verticalScrollBar.setStyleDefinition(this.getStyle("VerticalScrollBarStyle"));
+			this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
 	};
 
 //@Override
@@ -342,7 +342,7 @@ ViewportElement.prototype._doLayout =
 			{
 				this._horizontalScrollBar = new ScrollBarElement();
 				this._horizontalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalScrollBarStyle"));
-				this._horizontalScrollBar.setStyleDefinition(this.getStyle("HorizontalScrollBarStyle"));
+				this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
 				this._horizontalScrollBar.setStyle("ScrollBarDirection", "horizontal");
 				this._horizontalScrollBar.setScrollLineSize(25);
 				
@@ -368,7 +368,7 @@ ViewportElement.prototype._doLayout =
 			{
 				this._verticalScrollBar = new ScrollBarElement();
 				this._verticalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("VerticalScrollBarStyle"));
-				this._verticalScrollBar.setStyleDefinition(this.getStyle("VerticalScrollBarStyle"));
+				this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
 				this._verticalScrollBar.setStyle("ScrollBarDirection", "vertical");
 				this._verticalScrollBar.setScrollLineSize(25);
 				

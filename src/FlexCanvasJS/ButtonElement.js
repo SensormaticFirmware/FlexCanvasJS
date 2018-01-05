@@ -399,13 +399,13 @@ ButtonElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "up")
-			return [this.getStyle("UpSkinStyle")];
+			return this.getStyle("UpSkinStyle");
 		else if (state == "over")
-			return [this.getStyle("OverSkinStyle")];
+			return this.getStyle("OverSkinStyle");
 		else if (state == "down")
-			return [this.getStyle("DownSkinStyle")];
+			return this.getStyle("DownSkinStyle");
 		else if (state == "disabled")
-			return [this.getStyle("DisabledSkinStyle")];
+			return this.getStyle("DisabledSkinStyle");
 		
 		return ButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};
@@ -506,11 +506,12 @@ ButtonElement.prototype._updateText =
 				if (this._labelElement != null)
 				{
 					this._updateTextColor();
-					this._labelElement.setStyle("Text", text);
-					
 					this._addChild(this._labelElement);
 				}
 			}
+			
+			if (this._labelElement != null)
+				this._labelElement.setStyle("Text", text);
 		}	
 	};
 	
@@ -567,6 +568,8 @@ ButtonElement.prototype._createLabel =
 		label.setStyle("MouseEnabled", false);
 		label.setStyle("TextAlign", this.getStyle("TextAlign"));
 		label.setStyle("TextBaseline", this.getStyle("TextBaseline"));
+		
+		label.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
 		
 		return label;
 	};

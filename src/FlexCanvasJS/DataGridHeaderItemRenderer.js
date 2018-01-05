@@ -186,7 +186,7 @@ DataGridHeaderItemRenderer.prototype._createSortIcon =
 		var newIcon = new (iconClass)();
 		newIcon._setStyleDefinitionDefault(iconDefaultStyle);
 		newIcon._setStyleProxy(new StyleProxy(this,DataGridHeaderItemRenderer._SortIconProxyMap));
-		newIcon.setStyleDefinition(iconStyle);
+		newIcon.setStyleDefinitions(iconStyle);
 		
 		return newIcon;
 	};
@@ -255,7 +255,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortAscIcon);
 				}
 				else
-					this._sortAscIcon.setStyleDefinition(this.getStyle("SortAscIconStyle"));
+					this._sortAscIcon.setStyleDefinitions(this.getStyle("SortAscIconStyle"));
 				
 				if (this._sortDescIcon != null)
 					this._sortDescIcon.setStyle("Visible", false);
@@ -289,7 +289,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortDescIcon);
 				}
 				else
-					this._sortDescIcon.setStyleDefinition(this.getStyle("SortDescIconStyle"));
+					this._sortDescIcon.setStyleDefinitions(this.getStyle("SortDescIconStyle"));
 				
 				if (this._sortAscIcon != null)
 					this._sortAscIcon.setStyle("Visible", false);

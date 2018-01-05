@@ -336,13 +336,13 @@ ToggleButtonElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "selectedUp")
-			return [this.getStyle("SelectedUpSkinStyle")];
+			return this.getStyle("SelectedUpSkinStyle");
 		else if (state == "selectedOver")
-			return [this.getStyle("SelectedOverSkinStyle")];
+			return this.getStyle("SelectedOverSkinStyle");
 		else if (state == "selectedDown")
-			return [this.getStyle("SelectedDownSkinStyle")];
+			return this.getStyle("SelectedDownSkinStyle");
 		else if (state == "selectedDisabled")
-			return [this.getStyle("SelectedDisabledSkinStyle")];
+			return this.getStyle("SelectedDisabledSkinStyle");
 		
 		return ToggleButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};	

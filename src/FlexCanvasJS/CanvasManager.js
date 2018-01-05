@@ -1579,10 +1579,10 @@ CanvasManager.prototype._updateCursor =
 						cursorDefinition._cursorElement.constructor != cursorClass)
 					{
 						cursorDefinition._cursorElement = new (cursorClass)();
-						cursorDefinition._cursorElement.setStyleDefinition(cursorDefinition.getStyle("CursorStyle"));
+						cursorDefinition._cursorElement.setStyleDefinitions(cursorDefinition.getStyle("CursorStyle"));
 					}
 					else
-						cursorDefinition._cursorElement.setStyleDefinition(cursorDefinition.getStyle("CursorStyle"));
+						cursorDefinition._cursorElement.setStyleDefinitions(cursorDefinition.getStyle("CursorStyle"));
 					
 					cursorElement = cursorDefinition._cursorElement;
 				}
@@ -1653,7 +1653,7 @@ CanvasManager.prototype._onCursorDefinitionStyleChanged =
 				cursorDefinition._cursorElement = null;
 		}
 		if (styleName == "CursorStyle" && cursorDefinition._cursorElement != null)
-			cursorDefinition._cursorElement.setStyleDefinition(this.getStyle("CursorStyle"));
+			cursorDefinition._cursorElement.setStyleDefinitions(this.getStyle("CursorStyle"));
 		
 		this._updateCursor();
 	};

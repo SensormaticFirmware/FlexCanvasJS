@@ -177,7 +177,6 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	{inheritable:false};
 
 ////////////Default Styles////////////////////
 
-DropdownElement.StyleDefault = new StyleDefinition();
 
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
@@ -213,10 +212,17 @@ DropdownElement.DataListStyleDefault.setStyle("ListItemClass", 					DataRenderer
 DropdownElement.DataListStyleDefault.setStyle("ListItemStyle", 					DropdownElement.DataListItemStyleDefault);										
 DropdownElement.DataListStyleDefault.setStyle("BorderType", 					"solid");
 DropdownElement.DataListStyleDefault.setStyle("BorderThickness", 				1);
-DropdownElement.DataListStyleDefault.setStyle("Padding", 						1);
-DropdownElement.StyleDefault.setStyle("PaddingTop",								3);
-DropdownElement.StyleDefault.setStyle("PaddingBottom",							3);
+DropdownElement.DataListStyleDefault.setStyle("PaddingTop",						1);
+DropdownElement.DataListStyleDefault.setStyle("PaddingBottom",					1);
+DropdownElement.DataListStyleDefault.setStyle("PaddingLeft",					1);
+DropdownElement.DataListStyleDefault.setStyle("PaddingRight",					1);
 ///////////////////////////////////
+
+DropdownElement.StyleDefault = new StyleDefinition();
+DropdownElement.StyleDefault.setStyle("PaddingTop",								4);
+DropdownElement.StyleDefault.setStyle("PaddingBottom",							4);
+DropdownElement.StyleDefault.setStyle("PaddingRight",							4);
+DropdownElement.StyleDefault.setStyle("PaddingLeft",							4);
 
 DropdownElement.StyleDefault.setStyle("PopupDataListClass", 					DataListElement); 								// DataListElement constructor
 DropdownElement.StyleDefault.setStyle("PopupDataListStyle", 					DropdownElement.DataListStyleDefault); 			// StyleDefinition
@@ -227,8 +233,6 @@ DropdownElement.StyleDefault.setStyle("MaxPopupHeight", 						200); 											/
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				300); 											// number (milliseconds)
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 							// function (fraction) { return fraction}
 DropdownElement.StyleDefault.setStyle("PopupDataListClipTopOrBottom", 			1); 											// number
-
-//Proxied to popup DataList
 DropdownElement.StyleDefault.setStyle("ItemLabelFunction", 						DataListElement.DefaultItemLabelFunction); 		// function (itemData) { return "" }
 
 
@@ -237,10 +241,12 @@ DropdownElement.StyleDefault.setStyle("ItemLabelFunction", 						DataListElement
 //Proxy map for styles we want to pass to the DataList popup.
 DropdownElement._PopupDataListProxyMap = Object.create(null);
 DropdownElement._PopupDataListProxyMap.ItemLabelFunction = 				true;
+DropdownElement._PopupDataListProxyMap._Arbitrary = 					true;
 
 //Proxy map for styles we want to pass to the arrow button.
 DropdownElement._ArrowButtonProxyMap = Object.create(null);
 DropdownElement._ArrowButtonProxyMap.SkinState = 						true;
+DropdownElement._ArrowButtonProxyMap._Arbitrary = 						true;
 
 
 /////////////Public///////////////////////////////
@@ -712,7 +718,7 @@ DropdownElement.prototype._createDataListPopup =
 		var dataListPopup = new DataListElement();
 		dataListPopup._setStyleDefinitionDefault(this._getDefaultStyle("PopupDataListStyle"));
 		dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
-		dataListPopup.setStyleDefinition(this.getStyle("PopupDataListStyle"));
+		dataListPopup.setStyleDefinitions(this.getStyle("PopupDataListStyle"));
 		
 		dataListPopup.setListCollection(this._listCollection);
 		dataListPopup.setSelectedIndex(this._selectedIndex);
@@ -723,19 +729,41 @@ DropdownElement.prototype._createDataListPopup =
 		return dataListPopup;
 	};
 	
-//@Override	
+//@override	
 DropdownElement.prototype._updateText = 
 	function ()
 	{
-		//Always create label (we need it for measurement even if no text is displayed)
-		if (this._labelElement == null)
-			this._createLabel();
-	
+		var text = null;
 		var labelFunction = this.getStyle("ItemLabelFunction");
+		
 		if (this._selectedItem == null || labelFunction == null)
-			this._labelElement.setStyle("Text", this.getStyle("Text"));
+			text = this.getStyle("Text");
 		else
-			this._labelElement.setStyle("Text", labelFunction(this._selectedItem));
+			text = labelFunction(this._selectedItem);
+		
+		if (text == null || text == "")
+		{
+			if (this._labelElement != null)
+			{
+				this._removeChild(this._labelElement);
+				this._labelElement = null;
+			}
+		}
+		else
+		{
+			if (this._labelElement == null)
+			{
+				this._labelElement = this._createLabel();
+				if (this._labelElement != null)
+				{
+					this._updateTextColor();
+					this._addChild(this._labelElement);
+				}
+			}
+			
+			if (this._labelElement != null)
+				this._labelElement.setStyle("Text", text);
+		}
 	};	
 	
 /**
@@ -759,7 +787,7 @@ DropdownElement.prototype._onCanvasElementAdded =
 	{
 		DropdownElement.base.prototype._onCanvasElementAdded.call(this, addedRemovedEvent);
 	
-		if (this._listCollection != null)
+		if (this._listCollection != null && this._listCollection.hasEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance) == false)
 			this._listCollection.addEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance);
 	};
 
@@ -769,7 +797,7 @@ DropdownElement.prototype._onCanvasElementRemoved =
 	{
 		DropdownElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
 		
-		if (this._listCollection != null)
+		if (this._listCollection != null && this._listCollection.hasEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance) == true)
 			this._listCollection.removeEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance);
 		
 		this.close(false);
@@ -823,7 +851,7 @@ DropdownElement.prototype._createArrowButton =
 		var newIcon = new (arrowClass)();
 		newIcon._setStyleDefinitionDefault(this._getDefaultStyle("ArrowButtonStyle"));
 		newIcon._setStyleProxy(new StyleProxy(this, DropdownElement._ArrowButtonProxyMap));
-		newIcon.setStyleDefinition(this.getStyle("ArrowButtonStyle"));
+		newIcon.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
 		
 		return newIcon;
 	};
@@ -856,7 +884,7 @@ DropdownElement.prototype._updateArrowButton =
 				this._addChild(this._arrowButton);
 			}
 			else
-				this._arrowButton.setStyleDefinition(this.getStyle("ArrowButtonStyle"));
+				this._arrowButton.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
 		}
 	};
 	
@@ -874,7 +902,7 @@ DropdownElement.prototype._doStylesUpdated =
 		}
 		
 		if ("PopupDataListStyle" in stylesMap && this._dataListPopup != null)
-			this._dataListPopup.setStyleDefinition(this.getStyle("PopupListStyle"));
+			this._dataListPopup.setStyleDefinitions(this.getStyle("PopupListStyle"));
 		
 		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
 			this._updateArrowButton();
@@ -901,7 +929,7 @@ DropdownElement.prototype._doStylesUpdated =
 DropdownElement.prototype._sampleTextWidths = 
 	function ()
 	{
-		var labelFont = this._labelElement._getFontString();
+		var labelFont = this._getFontString();
 		
 		var text = this.getStyle("Text");
 		if (text == null)
@@ -933,19 +961,12 @@ DropdownElement.prototype._sampleTextWidths =
 DropdownElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		//Skin size, calling base.base
-		var skinMeasuredSize = ButtonElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
-	
 		if (this._sampledTextWidth == null)
 			this._sampledTextWidth = this._sampleTextWidths();
 		
-		var labelPadding = this._labelElement._getPaddingSize();
-		var textHeight = this._labelElement.getStyle("TextSize");
+		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
 		
-		var measuredSize = {width: this._sampledTextWidth + labelPadding.width, height: textHeight + labelPadding.height};
-		measuredSize.width += padWidth;
-		measuredSize.height += padHeight;
-		
+		var measuredSize = {width: this._sampledTextWidth + padWidth, height: textHeight + padHeight};
 		measuredSize.width += 20; //Add some extra space
 		
 		if (this._arrowButton != null)
@@ -958,13 +979,8 @@ DropdownElement.prototype._doMeasure =
 			if (iconWidth != null)
 				measuredSize.width += iconWidth;
 			else
-				measuredSize.width += (measuredSize.height * .85);
+				measuredSize.width += Math.round(measuredSize.height * .85);
 		}
-		
-		if (skinMeasuredSize.width > measuredSize.width)
-			measuredSize.width = skinMeasuredSize.width;
-		if (skinMeasuredSize.height > measuredSize.height)
-			measuredSize.height = skinMeasuredSize.height;
 
 		return measuredSize;
 	};	

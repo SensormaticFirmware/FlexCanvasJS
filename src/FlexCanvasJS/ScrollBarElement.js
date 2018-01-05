@@ -527,16 +527,16 @@ ScrollBarElement.prototype._doStylesUpdated =
 			this._createChildren();
 		
 		if ("ScrollButtonIncrementStyle" in stylesMap)
-			this._buttonIncrement.setStyleDefinition(this.getStyle("ScrollButtonIncrementStyle"));
+			this._buttonIncrement.setStyleDefinitions(this.getStyle("ScrollButtonIncrementStyle"));
 		
 		if ("ScrollButtonDecrementStyle" in stylesMap)
-			this._buttonDecrement.setStyleDefinition(this.getStyle("ScrollButtonDecrementStyle"));
+			this._buttonDecrement.setStyleDefinitions(this.getStyle("ScrollButtonDecrementStyle"));
 		
 		if ("ButtonTrackStyle" in stylesMap)
-			this._buttonTrack.setStyleDefinition(this.getStyle("ButtonTrackStyle"));
+			this._buttonTrack.setStyleDefinitions(this.getStyle("ButtonTrackStyle"));
 		
 		if ("ButtonTabStyle" in stylesMap)
-			this._buttonTab.setStyleDefinition(this.getStyle("ButtonTabStyle"));
+			this._buttonTab.setStyleDefinitions(this.getStyle("ButtonTabStyle"));
 		
 		if ("ScrollBarDirection" in stylesMap)
 		{

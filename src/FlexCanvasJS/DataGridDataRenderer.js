@@ -134,12 +134,7 @@ DataGridDataRenderer.prototype._doLayout =
 		var currentPosition = 0;
 		var columnSize = 0;
 		
-		var padLeft = this.getStyle("PaddingLeft");
-		
-		if (padLeft == null)
-			padLeft = this.getStyle("Padding");
-		if (padLeft == null)
-			padLeft = 0;
+		var paddingSize = this._getPaddingSize();
 		
 		for (var i = 0; i < parentGrid._columnSizes.length; i++)
 		{
@@ -147,7 +142,7 @@ DataGridDataRenderer.prototype._doLayout =
 			columnSize = parentGrid._columnSizes[i];
 			
 			if (i == 0)
-				columnSize -= padLeft;
+				columnSize -= paddingSize.paddingLeft;
 			else if (i == parentGrid._columnSizes.length - 1) //Consume the rest available.
 				columnSize = this._itemRenderersContainer._width - currentPosition;
 			
