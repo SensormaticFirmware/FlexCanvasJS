@@ -159,17 +159,6 @@ RadioButtonElement.StyleDefault.setStyle("SelectedDisabledSkinStyle", 			RadioBu
 
 /////////////Internal Functions/////////////////////	
 
-//@override	
-RadioButtonElement.prototype._createLabel = 
-	function ()
-	{
-		var label = RadioButtonElement.base.prototype._createLabel.call(this);
-		label.setStyle("PaddingTop", 0);
-		label.setStyle("PaddingBottom", 0);
-		
-		return label;
-	};	
-
 //@override
 RadioButtonElement.prototype._doMeasure = 
 	function(padWidth, padHeight)

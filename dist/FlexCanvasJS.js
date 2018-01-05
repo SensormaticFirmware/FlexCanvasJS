@@ -1,4 +1,33 @@
 
+
+//Create elements
+var canvasManager = new CanvasManager();
+var dropdown = new DropdownElement();
+
+function init()
+{
+	//Attach the DOM canvas to our CanvasManager
+	canvasManager.setCanvas(document.getElementById("flexCanvasApplication"));
+	
+	var dropdownLocaleCollection = new ListCollection();
+	dropdownLocaleCollection.addItem({key:"en-us", label:"English"});
+	dropdownLocaleCollection.addItem({key:"es-es", label:"Espanol"});
+	
+	dropdownLocale = new DropdownElement();
+	dropdownLocale.setListCollection(dropdownLocaleCollection);
+	dropdownLocale.setSelectedIndex(0);
+	
+	//Add dropdown to CanvasManager
+	canvasManager.addElement(dropdownLocale);
+}
+
+
+
+
+
+
+
+
 ///////////////////////////////////////////////////////
 //////////////////Tween////////////////////////////////
 	
@@ -4702,6 +4731,96 @@ CanvasElement.prototype.clearStyleDefinitions =
 	};
 	
 /**
+ * @function setStyleDefinitions
+ * Replaces the elements current style definition list. This is more effecient than removing or 
+ * adding style definitions one at a time.
+ * 
+ * @param styleDefinitions StyleDefinition
+ * May be a StyleDefinition, or an Array of StyleDefinition
+ */
+CanvasElement.prototype.setStyleDefinitions = 
+	function (styleDefinitions)
+	{
+		if (styleDefinitions == null)
+			styleDefinitions = [];
+		
+		if (Array.isArray(styleDefinitions) == false)
+			styleDefinitions = [styleDefinitions];
+		
+		var i = 0;
+		
+		//trim the definitions for duplicates
+		for (i = styleDefinitions.length - 1; i >= 0; i--)
+		{
+			//Make sure this style definition is not already in the list (no adding duplicates)
+			if (styleDefinitions.indexOf(styleDefinitions[i]) < i || styleDefinitions[i] == this._styleDefinitionDefault)
+				styleDefinitions.splice(i, 1);
+		}
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			//Check if nothing changed before we do a bunch of work.
+			if (styleDefinitions.length == this._styleDefinitions.length)
+			{
+				var changed = false;
+				for (i = 0; i < styleDefinitions.length; i++)
+				{
+					if (styleDefinitions[i] != this._styleDefinitions[i])
+					{
+						changed = true;
+						break;
+					}
+				}
+				
+				//No changes.
+				if (changed == false)
+					return;
+			}
+			
+			var styleName = null;
+			var styleNamesMap = Object.create(null);
+			var styleDefinition = null;
+			
+			//Remove old
+			while (this._styleDefinitions.length > 0)
+			{
+				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
+				this._styleDefinitions.splice(skinElement._styleDefinitions.length - 1, 1);
+				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				
+				//Record removed style names
+				for (styleName in styleDefininition._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Add new
+			for (i = 0; i < styleDefinitions.length; i++)
+			{
+				styleDefinition = styleDefinitions[i];
+				this._styleDefinitions.push(styleDefinition);
+				styleDefinition.addEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
+				
+				//Record added style names
+				for (styleName in styleDefininition._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Spoof style changed events for normal style changed handling.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		else //Not attached to display chain, just swap the definitions
+		{
+			//Clear the definition list
+			this._styleDefinitions.splice(0, this._styleDefinitions.length);
+			
+			//Add the new definitions.
+			for (i = 0; i < styleDefinitions.length; i++)
+				this._styleDefinitions.push(styleDefinitions[i]);
+		}
+	};
+	
+/**
  * @function getNumStyleDefinitions
  * Gets the number of style definitions associated with this element.
  * 
@@ -8789,9 +8908,8 @@ TextFieldElement.StyleDefault.setStyle("TabStop",						0);
 TextFieldElement.StyleDefault.setStyle("Cursor", 						"text");			
 
 TextFieldElement.StyleDefault.setStyle("BorderType", 					"none");
-TextFieldElement.StyleDefault.setStyle("Padding", 						0);
-TextFieldElement.StyleDefault.setStyle("PaddingTop", 					null);
-TextFieldElement.StyleDefault.setStyle("PaddingBottom",					null);
+TextFieldElement.StyleDefault.setStyle("PaddingTop", 					0);
+TextFieldElement.StyleDefault.setStyle("PaddingBottom",					0);
 TextFieldElement.StyleDefault.setStyle("PaddingLeft", 					3);
 TextFieldElement.StyleDefault.setStyle("PaddingRight", 					2);
 TextFieldElement.StyleDefault.setStyle("BackgroundColor",				null);
@@ -10086,16 +10204,19 @@ TextElement.prototype._doStylesUpdated =
 			this._textField.setStyle("Selectable", this.getStyle("Selectable"));
 		
 		//Proxy padding to TextField for proper mouse handling
-		if ("Padding" in stylesMap)
-			this._textField.setStyle("Padding", this.getStyle("Padding"));
-		if ("PaddingTop" in stylesMap)
-			this._textField.setStyle("PaddingTop", this.getStyle("PaddingTop"));
-		if ("PaddingBottom" in stylesMap)
-			this._textField.setStyle("PaddingBottom", this.getStyle("PaddingBottom"));
-		if ("PaddingLeft" in stylesMap)
-			this._textField.setStyle("PaddingLeft", this.getStyle("PaddingLeft"));
-		if ("PaddingRight" in stylesMap)
-			this._textField.setStyle("PaddingRight", this.getStyle("PaddingRight"));
+		if ("Padding" in stylesMap ||
+			"PaddingTop" in stylesMap ||
+			"PaddingBottom" in stylesMap ||
+			"PaddingLeft" in stylesMap ||
+			"PaddingRight" in stylesMap)
+		{
+			var paddingSize = this._getPaddingSize();
+			
+			this._textField.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._textField.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			this._textField.setStyle("PaddingLeft", paddingSize.paddingLeft);
+			this._textField.setStyle("PaddingRight", paddingSize.paddingRight);
+		}
 	};
 	
 //@Override
@@ -10829,7 +10950,7 @@ SkinnableElement.prototype._getSkinClass =
 SkinnableElement.prototype._getSkinStyleDefinitions = 
 	function (state)
 	{
-		return [];
+		return null;
 	};
 
 /**
@@ -10887,81 +11008,7 @@ SkinnableElement.prototype._updateSkinStyleDefinitions =
 		if (skinElement == null)
 			return;
 	
-		var i = 0;
-		
-		//Get the skins definition list
-		var definitions = this._getSkinStyleDefinitions(state);
-		
-		//trim the definitions for duplicates
-		for (i = definitions.length - 1; i >= 0; i--)
-		{
-			//Make sure this style definition is not already in the list (no adding duplicates)
-			if (skinElement._styleDefinitions.indexOf(definitions[i]) != -1 || definitions[i] == skinElement._styleDefinitionDefault)
-				definitions.splice(i, 1);
-		}
-		
-		//Check if nothing changed before we do a bunch of work.
-		if (definitions.length == skinElement._styleDefinitions.length)
-		{
-			var changed = false;
-			for (i = 0; i < definitions.length; i++)
-			{
-				if (definitions[i] != skinElement._styleDefinitions[i])
-				{
-					changed = true;
-					break;
-				}
-			}
-			
-			//No changes.
-			if (changed == false)
-				return;
-		}
-		
-		if (skinElement._manager != null) //Attached to display chain
-		{
-			var styleName = null;
-			var styleNamesMap = Object.create(null);
-			var styleDefinition = null;
-			
-			//Remove old
-			while (skinElement._styleDefinitions.length > 0)
-			{
-				styleDefinition = skinElement._styleDefinitions.splice(skinElement._styleDefinitions.length - 1, 1)[0];
-				
-				styleDefinition.removeEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in styleDefininition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Add new
-			for (i = 0; i < definitions.length; i++)
-			{
-				styleDefinition = definitions[i];
-				skinElement._styleDefinitions.push(styleDefinition);
-				
-				styleDefinition.addEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
-				
-				//Record added style names
-				for (styleName in styleDefininition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal style changed handling.
-			for (styleName in styleNamesMap)
-				skinElement._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached to display chain, just swap the definitions
-		{
-			//Clear the definition list
-			skinElement._styleDefinitions.splice(0, skinElement._styleDefinitions.length);
-			
-			//Add the new definitions.
-			for (i = 0; i < definitions.length; i++)
-				skinElement._styleDefinitions.push(definitions[i]);
-		}
+		skinElement.setStyleDefinitions(this._getSkinStyleDefinitions(state));
 	};
 	
 /**
@@ -11475,9 +11522,9 @@ TextInputElement.prototype._getSkinStyleDefinitions =
 function (state)
 {
 	if (state == "up")
-		return [this.getStyle("UpSkinStyle")];
+		return this.getStyle("UpSkinStyle");
 	else if (state == "disabled")
-		return [this.getStyle("DisabledSkinStyle")];
+		return this.getStyle("DisabledSkinStyle");
 	
 	return TextInputElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 };	
@@ -12597,13 +12644,13 @@ DataRendererBaseElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "up")
-			return [this.getStyle("UpSkinStyle")];
+			return this.getStyle("UpSkinStyle");
 		else if (state == "alt")
-			return [this.getStyle("AltSkinStyle")];
+			return this.getStyle("AltSkinStyle");
 		else if (state == "over")
-			return [this.getStyle("OverSkinStyle")];
+			return this.getStyle("OverSkinStyle");
 		else if (state == "selected")
-			return [this.getStyle("SelectedSkinStyle")];
+			return this.getStyle("SelectedSkinStyle");
 		
 		return DataRendererBaseElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};
@@ -12720,6 +12767,8 @@ function DataRendererLabelElement()
 	DataRendererLabelElement.base.prototype.constructor.call(this);
 	
 	this._labelElement = new LabelElement();
+	this._labelElement.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
+	
 	this._addChild(this._labelElement);
 }
 	
@@ -12737,15 +12786,23 @@ DataRendererLabelElement._StyleTypes = Object.create(null);
  * @style UpTextColor String
  * 
  * Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).
- * When this is null, the base class's TextColor style will be used.
+ * This will override the TextColor style of equal priority.
  */
 DataRendererLabelElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
+
+/**
+ * @style AltTextColor String
+ * 
+ * Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataRendererLabelElement._StyleTypes.AltTextColor = 			{inheritable:false};		//"#000000"
 
 /**
  * @style OverTextColor String
  * 
  * Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).
- * When this is null, the base class's TextColor style will be used.
+ * This will override the TextColor style of equal priority.
  */
 DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//"#000000"
 
@@ -12753,7 +12810,7 @@ DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//
  * @style SelectedTextColor String
  * 
  * Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).
- * When this is null, the base class's TextColor style will be used.
+ * This will override the TextColor style of equal priority.
  */
 DataRendererLabelElement._StyleTypes.SelectedTextColor = 		{inheritable:false};		//"#000000"
 
@@ -12762,12 +12819,16 @@ DataRendererLabelElement._StyleTypes.SelectedTextColor = 		{inheritable:false};	
 
 DataRendererLabelElement.StyleDefault = new StyleDefinition();
 
-DataRendererLabelElement.StyleDefault.setStyle("Padding", 					3);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingTop", 				4);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingBottom", 			4);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingLeft", 				4);
+DataRendererLabelElement.StyleDefault.setStyle("PaddingRight", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("BorderType", 				"none");
 
-DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				null);
-DataRendererLabelElement.StyleDefault.setStyle("OverTextColor", 			null);
-DataRendererLabelElement.StyleDefault.setStyle("SelectedTextColor", 		null);
+DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("OverTextColor", 			"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("SelectedTextColor", 		"#000000");
 
 
 ////////////Internal/////////////////////////////
@@ -12794,14 +12855,24 @@ DataRendererLabelElement.prototype._changeState =
 DataRendererLabelElement.prototype._getTextColor = 
 	function (state)
 	{
+		var stateTextColor = null;
+		
 		if (state == "up")
-			return this.getStyle("UpTextColor") || this.getStyle("TextColor");
+			stateTextColor = this.getStyleData("UpTextColor");
+		else if (state == "alt")
+			stateTextColor = this.getStyleData("AltTextColor");
 		else if (state == "over")
-			return this.getStyle("OverTextColor") || this.getStyle("TextColor");
+			stateTextColor = this.getStyleData("OverTextColor");
 		else if (state == "selected")
-			return this.getStyle("SelectedTextColor") || this.getStyle("TextColor");
-		else
-			return null;
+			stateTextColor = this.getStyleData("SelectedTextColor");
+	
+		var textColor = this.getStyleData("TextColor");
+		
+		//Shouldnt have null stateTextColor
+		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
+			return textColor.value;
+		
+		return stateTextColor.value;
 	};
 
 /**
@@ -12854,20 +12925,8 @@ DataRendererLabelElement.prototype._doStylesUpdated =
 DataRendererLabelElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		//Get sizing based on skin
-		var measuredSize = DataRendererLabelElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
-	
-		//If we're larger than the skin increase size.
-		var labelWidth = this._labelElement._getStyledOrMeasuredWidth();
-		var labelHeight = this._labelElement._getStyledOrMeasuredHeight();
-			
-		if (padWidth + labelWidth > measuredSize.width)
-			measuredSize.width = padWidth + labelWidth;
-		
-		if (padHeight + labelHeight > measuredSize.height)
-			measuredSize.height = padHeight + labelHeight;
-		
-		return measuredSize;
+		return {width: this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
+				height: this._labelElement._getStyledOrMeasuredHeight() + padHeight};
 	};
 
 //@Override	
@@ -12967,6 +13026,32 @@ function DataListElement()
 DataListElement.prototype = Object.create(CanvasElement.prototype);
 DataListElement.prototype.constructor = DataListElement;
 DataListElement.base = CanvasElement;
+
+/**
+ * @function DefaultItemLabelFunction
+ * @static
+ * Default ItemLabelFunction function. Looks for typeof String or "label" property of supplied itemData.
+ * 
+ * @param itemData Object
+ * Collection item to extract label text.
+ * 
+ * @returns String
+ * Label text.
+ */
+DataListElement.DefaultItemLabelFunction = 
+	function (itemData)
+	{
+		if (itemData == null)
+			return "";
+		
+		if (typeof itemData === "string" || itemData instanceof String)
+			return itemData;
+	
+		if ("label" in itemData)
+			return itemData["label"];
+		
+		return itemData.toString();
+	};
 
 
 /////////////Events///////////////////////////////
@@ -13078,33 +13163,7 @@ DataListElement.StyleDefault.setStyle("ScrollBarStyle", 			null);										// St
 DataListElement._DataRendererProxyMap = Object.create(null);
 
 DataListElement._DataRendererProxyMap.Selectable = 				true;
-
-
-/**
- * @function DefaultItemLabelFunction
- * @static
- * Default ItemLabelFunction function. Looks for typeof String or "label" property of supplied itemData.
- * 
- * @param itemData Object
- * Collection item to extract label text.
- * 
- * @returns String
- * Label text.
- */
-DataListElement.DefaultItemLabelFunction = 
-	function (itemData)
-	{
-		if (itemData == null)
-			return "";
-		
-		if (typeof itemData === "string" || itemData instanceof String)
-			return itemData;
-	
-		if ("label" in itemData)
-			return itemData["label"];
-		
-		return itemData.toString();
-	};
+DataListElement._DataRendererProxyMap._Arbitrary = 				true;
 
 
 /////////////Public///////////////////////////////
@@ -13339,38 +13398,12 @@ DataListElement.prototype.getListCollection =
 DataListElement.prototype._getContentSize = 
 	function ()
 	{
+		var paddingSize = this._getPaddingSize();
+	
 		if (this.getStyle("ListDirection") == "vertical")
-		{
-			var padding = this.getStyle("Padding");
-			if (padding == null)
-				padding = 0;
-			
-			var paddingTop = this.getStyle("PaddingTop");
-			if (paddingTop == null)
-				paddingTop = padding;
-			
-			var paddingBottom = this.getStyle("PaddingBottom");
-			if (paddingBottom == null)
-				paddingBottom = padding;
-			
-			return this._contentSize + paddingTop + paddingBottom;
-		}
+			return this._contentSize + paddingSize.height;
 		else //if (this.getStyle("ListDirection") == "horizontal")
-		{
-			var padding = this.getStyle("Padding");
-			if (padding == null)
-				padding = 0;
-			
-			var paddingLeft = this.getStyle("PaddingLeft");
-			if (paddingLeft == null)
-				paddingLeft = padding;
-			
-			var paddingRight = this.getStyle("PaddingRight");
-			if (paddingRight == null)
-				paddingRight = padding;
-			
-			return this._contentSize + paddingLeft + paddingRight;
-		}
+			return this._contentSize + paddingSize.width;
 	};
 
 /**
@@ -13678,7 +13711,7 @@ DataListElement.prototype._doStylesUpdated =
 			var listItemStyle = this.getStyle("ListItemStyle");
 			
 			for (var i = 0; i < this._contentPane._children.length; i++)
-				this._contentPane._children[i].setStyleDefinition(listItemStyle);
+				this._contentPane._children[i].setStyleDefinitions(listItemStyle);
 			
 			this._invalidateLayout();
 		}
@@ -13692,7 +13725,7 @@ DataListElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		
 		if ("ScrollBarStyle" in stylesMap && this._scrollBar != null)
-			this._scrollBar.setStyleDefinition(this.getStyle("ScrollBarStyle"));
+			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
 		
 		if ("ItemLabelFunction" in stylesMap)
 			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
@@ -13745,7 +13778,7 @@ DataListElement.prototype._createRenderer =
 		var newRenderer = new (this.getStyle("ListItemClass"))();
 		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
 		newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinition(this.getStyle("ListItemStyle"));
+		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
 		
 		this._updateRendererData(newRenderer, itemIndex);
 		
@@ -13937,7 +13970,7 @@ DataListElement.prototype._doLayout =
 		{
 			this._scrollBar = new ScrollBarElement();
 			this._scrollBar._setStyleDefinitionDefault(this._getDefaultStyle("ScrollBarStyle"));
-			this._scrollBar.setStyleDefinition(this.getStyle("ScrollBarStyle"));
+			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
 			this._scrollBar.setStyle("ScrollBarDirection", listDirection);
 			this._scrollBar.setScrollLineSize(1);
 			
@@ -14274,12 +14307,7 @@ DataGridDataRenderer.prototype._doLayout =
 		var currentPosition = 0;
 		var columnSize = 0;
 		
-		var padLeft = this.getStyle("PaddingLeft");
-		
-		if (padLeft == null)
-			padLeft = this.getStyle("Padding");
-		if (padLeft == null)
-			padLeft = 0;
+		var paddingSize = this._getPaddingSize();
 		
 		for (var i = 0; i < parentGrid._columnSizes.length; i++)
 		{
@@ -14287,7 +14315,7 @@ DataGridDataRenderer.prototype._doLayout =
 			columnSize = parentGrid._columnSizes[i];
 			
 			if (i == 0)
-				columnSize -= padLeft;
+				columnSize -= paddingSize.paddingLeft;
 			else if (i == parentGrid._columnSizes.length - 1) //Consume the rest available.
 				columnSize = this._itemRenderersContainer._width - currentPosition;
 			
@@ -15693,13 +15721,13 @@ ButtonElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "up")
-			return [this.getStyle("UpSkinStyle")];
+			return this.getStyle("UpSkinStyle");
 		else if (state == "over")
-			return [this.getStyle("OverSkinStyle")];
+			return this.getStyle("OverSkinStyle");
 		else if (state == "down")
-			return [this.getStyle("DownSkinStyle")];
+			return this.getStyle("DownSkinStyle");
 		else if (state == "disabled")
-			return [this.getStyle("DisabledSkinStyle")];
+			return this.getStyle("DisabledSkinStyle");
 		
 		return ButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};
@@ -15800,11 +15828,12 @@ ButtonElement.prototype._updateText =
 				if (this._labelElement != null)
 				{
 					this._updateTextColor();
-					this._labelElement.setStyle("Text", text);
-					
 					this._addChild(this._labelElement);
 				}
 			}
+			
+			if (this._labelElement != null)
+				this._labelElement.setStyle("Text", text);
 		}	
 	};
 	
@@ -15861,6 +15890,8 @@ ButtonElement.prototype._createLabel =
 		label.setStyle("MouseEnabled", false);
 		label.setStyle("TextAlign", this.getStyle("TextAlign"));
 		label.setStyle("TextBaseline", this.getStyle("TextBaseline"));
+		
+		label.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
 		
 		return label;
 	};
@@ -16237,13 +16268,13 @@ ToggleButtonElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "selectedUp")
-			return [this.getStyle("SelectedUpSkinStyle")];
+			return this.getStyle("SelectedUpSkinStyle");
 		else if (state == "selectedOver")
-			return [this.getStyle("SelectedOverSkinStyle")];
+			return this.getStyle("SelectedOverSkinStyle");
 		else if (state == "selectedDown")
-			return [this.getStyle("SelectedDownSkinStyle")];
+			return this.getStyle("SelectedDownSkinStyle");
 		else if (state == "selectedDisabled")
-			return [this.getStyle("SelectedDisabledSkinStyle")];
+			return this.getStyle("SelectedDisabledSkinStyle");
 		
 		return ToggleButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};	
@@ -16846,16 +16877,16 @@ ScrollBarElement.prototype._doStylesUpdated =
 			this._createChildren();
 		
 		if ("ScrollButtonIncrementStyle" in stylesMap)
-			this._buttonIncrement.setStyleDefinition(this.getStyle("ScrollButtonIncrementStyle"));
+			this._buttonIncrement.setStyleDefinitions(this.getStyle("ScrollButtonIncrementStyle"));
 		
 		if ("ScrollButtonDecrementStyle" in stylesMap)
-			this._buttonDecrement.setStyleDefinition(this.getStyle("ScrollButtonDecrementStyle"));
+			this._buttonDecrement.setStyleDefinitions(this.getStyle("ScrollButtonDecrementStyle"));
 		
 		if ("ButtonTrackStyle" in stylesMap)
-			this._buttonTrack.setStyleDefinition(this.getStyle("ButtonTrackStyle"));
+			this._buttonTrack.setStyleDefinitions(this.getStyle("ButtonTrackStyle"));
 		
 		if ("ButtonTabStyle" in stylesMap)
-			this._buttonTab.setStyleDefinition(this.getStyle("ButtonTabStyle"));
+			this._buttonTab.setStyleDefinitions(this.getStyle("ButtonTabStyle"));
 		
 		if ("ScrollBarDirection" in stylesMap)
 		{
@@ -17247,17 +17278,6 @@ RadioButtonElement.StyleDefault.setStyle("SelectedDisabledSkinStyle", 			RadioBu
 
 /////////////Internal Functions/////////////////////	
 
-//@override	
-RadioButtonElement.prototype._createLabel = 
-	function ()
-	{
-		var label = RadioButtonElement.base.prototype._createLabel.call(this);
-		label.setStyle("PaddingTop", 0);
-		label.setStyle("PaddingBottom", 0);
-		
-		return label;
-	};	
-
 //@override
 RadioButtonElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
@@ -17498,7 +17518,6 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	{inheritable:false};
 
 ////////////Default Styles////////////////////
 
-DropdownElement.StyleDefault = new StyleDefinition();
 
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
@@ -17534,10 +17553,17 @@ DropdownElement.DataListStyleDefault.setStyle("ListItemClass", 					DataRenderer
 DropdownElement.DataListStyleDefault.setStyle("ListItemStyle", 					DropdownElement.DataListItemStyleDefault);										
 DropdownElement.DataListStyleDefault.setStyle("BorderType", 					"solid");
 DropdownElement.DataListStyleDefault.setStyle("BorderThickness", 				1);
-DropdownElement.DataListStyleDefault.setStyle("Padding", 						1);
-DropdownElement.StyleDefault.setStyle("PaddingTop",								3);
-DropdownElement.StyleDefault.setStyle("PaddingBottom",							3);
+DropdownElement.DataListStyleDefault.setStyle("PaddingTop",						1);
+DropdownElement.DataListStyleDefault.setStyle("PaddingBottom",					1);
+DropdownElement.DataListStyleDefault.setStyle("PaddingLeft",					1);
+DropdownElement.DataListStyleDefault.setStyle("PaddingRight",					1);
 ///////////////////////////////////
+
+DropdownElement.StyleDefault = new StyleDefinition();
+DropdownElement.StyleDefault.setStyle("PaddingTop",								4);
+DropdownElement.StyleDefault.setStyle("PaddingBottom",							4);
+DropdownElement.StyleDefault.setStyle("PaddingRight",							4);
+DropdownElement.StyleDefault.setStyle("PaddingLeft",							4);
 
 DropdownElement.StyleDefault.setStyle("PopupDataListClass", 					DataListElement); 								// DataListElement constructor
 DropdownElement.StyleDefault.setStyle("PopupDataListStyle", 					DropdownElement.DataListStyleDefault); 			// StyleDefinition
@@ -17548,8 +17574,6 @@ DropdownElement.StyleDefault.setStyle("MaxPopupHeight", 						200); 											/
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				300); 											// number (milliseconds)
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 							// function (fraction) { return fraction}
 DropdownElement.StyleDefault.setStyle("PopupDataListClipTopOrBottom", 			1); 											// number
-
-//Proxied to popup DataList
 DropdownElement.StyleDefault.setStyle("ItemLabelFunction", 						DataListElement.DefaultItemLabelFunction); 		// function (itemData) { return "" }
 
 
@@ -17558,10 +17582,12 @@ DropdownElement.StyleDefault.setStyle("ItemLabelFunction", 						DataListElement
 //Proxy map for styles we want to pass to the DataList popup.
 DropdownElement._PopupDataListProxyMap = Object.create(null);
 DropdownElement._PopupDataListProxyMap.ItemLabelFunction = 				true;
+DropdownElement._PopupDataListProxyMap._Arbitrary = 					true;
 
 //Proxy map for styles we want to pass to the arrow button.
 DropdownElement._ArrowButtonProxyMap = Object.create(null);
 DropdownElement._ArrowButtonProxyMap.SkinState = 						true;
+DropdownElement._ArrowButtonProxyMap._Arbitrary = 						true;
 
 
 /////////////Public///////////////////////////////
@@ -18033,7 +18059,7 @@ DropdownElement.prototype._createDataListPopup =
 		var dataListPopup = new DataListElement();
 		dataListPopup._setStyleDefinitionDefault(this._getDefaultStyle("PopupDataListStyle"));
 		dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
-		dataListPopup.setStyleDefinition(this.getStyle("PopupDataListStyle"));
+		dataListPopup.setStyleDefinitions(this.getStyle("PopupDataListStyle"));
 		
 		dataListPopup.setListCollection(this._listCollection);
 		dataListPopup.setSelectedIndex(this._selectedIndex);
@@ -18044,19 +18070,41 @@ DropdownElement.prototype._createDataListPopup =
 		return dataListPopup;
 	};
 	
-//@Override	
+//@override	
 DropdownElement.prototype._updateText = 
 	function ()
 	{
-		//Always create label (we need it for measurement even if no text is displayed)
-		if (this._labelElement == null)
-			this._createLabel();
-	
+		var text = null;
 		var labelFunction = this.getStyle("ItemLabelFunction");
+		
 		if (this._selectedItem == null || labelFunction == null)
-			this._labelElement.setStyle("Text", this.getStyle("Text"));
+			text = this.getStyle("Text");
 		else
-			this._labelElement.setStyle("Text", labelFunction(this._selectedItem));
+			text = labelFunction(this._selectedItem);
+		
+		if (text == null || text == "")
+		{
+			if (this._labelElement != null)
+			{
+				this._removeChild(this._labelElement);
+				this._labelElement = null;
+			}
+		}
+		else
+		{
+			if (this._labelElement == null)
+			{
+				this._labelElement = this._createLabel();
+				if (this._labelElement != null)
+				{
+					this._updateTextColor();
+					this._addChild(this._labelElement);
+				}
+			}
+			
+			if (this._labelElement != null)
+				this._labelElement.setStyle("Text", text);
+		}
 	};	
 	
 /**
@@ -18080,7 +18128,7 @@ DropdownElement.prototype._onCanvasElementAdded =
 	{
 		DropdownElement.base.prototype._onCanvasElementAdded.call(this, addedRemovedEvent);
 	
-		if (this._listCollection != null)
+		if (this._listCollection != null && this._listCollection.hasEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance) == false)
 			this._listCollection.addEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance);
 	};
 
@@ -18090,7 +18138,7 @@ DropdownElement.prototype._onCanvasElementRemoved =
 	{
 		DropdownElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
 		
-		if (this._listCollection != null)
+		if (this._listCollection != null && this._listCollection.hasEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance) == true)
 			this._listCollection.removeEventListener("collectionchanged", this._onDropdownListCollectionChangedInstance);
 		
 		this.close(false);
@@ -18144,7 +18192,7 @@ DropdownElement.prototype._createArrowButton =
 		var newIcon = new (arrowClass)();
 		newIcon._setStyleDefinitionDefault(this._getDefaultStyle("ArrowButtonStyle"));
 		newIcon._setStyleProxy(new StyleProxy(this, DropdownElement._ArrowButtonProxyMap));
-		newIcon.setStyleDefinition(this.getStyle("ArrowButtonStyle"));
+		newIcon.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
 		
 		return newIcon;
 	};
@@ -18177,7 +18225,7 @@ DropdownElement.prototype._updateArrowButton =
 				this._addChild(this._arrowButton);
 			}
 			else
-				this._arrowButton.setStyleDefinition(this.getStyle("ArrowButtonStyle"));
+				this._arrowButton.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
 		}
 	};
 	
@@ -18195,7 +18243,7 @@ DropdownElement.prototype._doStylesUpdated =
 		}
 		
 		if ("PopupDataListStyle" in stylesMap && this._dataListPopup != null)
-			this._dataListPopup.setStyleDefinition(this.getStyle("PopupListStyle"));
+			this._dataListPopup.setStyleDefinitions(this.getStyle("PopupListStyle"));
 		
 		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
 			this._updateArrowButton();
@@ -18222,7 +18270,7 @@ DropdownElement.prototype._doStylesUpdated =
 DropdownElement.prototype._sampleTextWidths = 
 	function ()
 	{
-		var labelFont = this._labelElement._getFontString();
+		var labelFont = this._getFontString();
 		
 		var text = this.getStyle("Text");
 		if (text == null)
@@ -18254,19 +18302,12 @@ DropdownElement.prototype._sampleTextWidths =
 DropdownElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		//Skin size, calling base.base
-		var skinMeasuredSize = ButtonElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
-	
 		if (this._sampledTextWidth == null)
 			this._sampledTextWidth = this._sampleTextWidths();
 		
-		var labelPadding = this._labelElement._getPaddingSize();
-		var textHeight = this._labelElement.getStyle("TextSize");
+		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
 		
-		var measuredSize = {width: this._sampledTextWidth + labelPadding.width, height: textHeight + labelPadding.height};
-		measuredSize.width += padWidth;
-		measuredSize.height += padHeight;
-		
+		var measuredSize = {width: this._sampledTextWidth + padWidth, height: textHeight + padHeight};
 		measuredSize.width += 20; //Add some extra space
 		
 		if (this._arrowButton != null)
@@ -18279,13 +18320,8 @@ DropdownElement.prototype._doMeasure =
 			if (iconWidth != null)
 				measuredSize.width += iconWidth;
 			else
-				measuredSize.width += (measuredSize.height * .85);
+				measuredSize.width += Math.round(measuredSize.height * .85);
 		}
-		
-		if (skinMeasuredSize.width > measuredSize.width)
-			measuredSize.width = skinMeasuredSize.width;
-		if (skinMeasuredSize.height > measuredSize.height)
-			measuredSize.height = skinMeasuredSize.height;
 
 		return measuredSize;
 	};	
@@ -18516,7 +18552,7 @@ DataGridHeaderItemRenderer.prototype._createSortIcon =
 		var newIcon = new (iconClass)();
 		newIcon._setStyleDefinitionDefault(iconDefaultStyle);
 		newIcon._setStyleProxy(new StyleProxy(this,DataGridHeaderItemRenderer._SortIconProxyMap));
-		newIcon.setStyleDefinition(iconStyle);
+		newIcon.setStyleDefinitions(iconStyle);
 		
 		return newIcon;
 	};
@@ -18585,7 +18621,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortAscIcon);
 				}
 				else
-					this._sortAscIcon.setStyleDefinition(this.getStyle("SortAscIconStyle"));
+					this._sortAscIcon.setStyleDefinitions(this.getStyle("SortAscIconStyle"));
 				
 				if (this._sortDescIcon != null)
 					this._sortDescIcon.setStyle("Visible", false);
@@ -18619,7 +18655,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortDescIcon);
 				}
 				else
-					this._sortDescIcon.setStyleDefinition(this.getStyle("SortDescIconStyle"));
+					this._sortDescIcon.setStyleDefinitions(this.getStyle("SortDescIconStyle"));
 				
 				if (this._sortAscIcon != null)
 					this._sortAscIcon.setStyle("Visible", false);
@@ -19074,7 +19110,7 @@ DataGridHeaderElement.prototype._setListData =
 			{
 				renderer = new (dividerClass)();
 				renderer._setStyleDefinitionDefault(this._getDefaultStyle("ColumnDividerStyle"));
-				renderer.setStyleDefinition(this.getStyle("ColumnDividerStyle"));
+				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
 				renderer.setStyle("Draggable", draggableColumns);
 				
 				if (draggableColumns == true)
@@ -19083,7 +19119,7 @@ DataGridHeaderElement.prototype._setListData =
 				this._itemRenderersContainer._addChildAt(renderer, i2);
 			}
 			else
-				renderer.setStyleDefinition(this.getStyle("ColumnDividerStyle"));
+				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
 		}
 		
 		//Purge excess renderers.
@@ -19300,7 +19336,10 @@ DataGridElement.StyleDefault.setStyle("ListItemStyle", 					null); 									// S
 
 DataGridElement.StyleDefault.setStyle("BorderType",		 				"solid"); 	
 DataGridElement.StyleDefault.setStyle("BorderThickness",	 			1);
-DataGridElement.StyleDefault.setStyle("Padding",	 					1);
+DataGridElement.StyleDefault.setStyle("PaddingTop",	 					1);
+DataGridElement.StyleDefault.setStyle("PaddingBottom", 					1);
+DataGridElement.StyleDefault.setStyle("PaddingLeft",					1);
+DataGridElement.StyleDefault.setStyle("PaddingRight", 					1);
 DataGridElement.StyleDefault.setStyle("ScrollBarStyle", 				DataGridElement.ScrollBarStyleDefault);	// StyleDefinition
 
 //DataGrid specific
@@ -19568,7 +19607,7 @@ DataGridElement.prototype._doStylesUpdated =
 		}
 		
 		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
-			this._gridHeader.setStyleDefinition(this.getStyle("HeaderStyle"));
+			this._gridHeader.setStyleDefinitions(this.getStyle("HeaderStyle"));
 		
 		if ("GridLinesPriority" in stylesMap ||
 			"VerticalGridLinesClass" in stylesMap ||
@@ -19587,7 +19626,7 @@ DataGridElement.prototype._createRenderer =
 		var newRenderer = new (this.getStyle("ListItemClass"))();
 		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
 		//newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinition(this.getStyle("ListItemStyle"));
+		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
 		
 		this._updateRendererData(newRenderer, itemIndex);
 		
@@ -19642,7 +19681,7 @@ DataGridElement.prototype._updateHeaderItemRendererData =
 		else
 			listData = new DataGridItemData(this, -1, columnIndex);
 		
-		renderer.setStyleDefinition(columnDefinition.getStyle("HeaderItemStyle"));
+		renderer.setStyleDefinitions(columnDefinition.getStyle("HeaderItemStyle"));
 		
 		renderer._setListData(
 			listData,
@@ -19735,7 +19774,7 @@ DataGridElement.prototype._updateRowItemRendererData =
 		else
 			listData = new DataGridItemData(this, itemIndex, columnIndex);
 		
-		renderer.setStyleDefinition(columnDefinition.getStyle("RowItemStyle"));
+		renderer.setStyleDefinitions(columnDefinition.getStyle("RowItemStyle"));
 	
 		renderer._setListData(
 			listData,
@@ -19792,13 +19831,13 @@ DataGridElement.prototype._createGridLine =
 		{
 			line = new (this.getStyle("VerticalGridLinesClass"))();
 			line._setStyleDefinitionDefault(this._getDefaultStyle("VerticalGridLinesStyle"));
-			line.setStyleDefinition(this.getStyle("VerticalGridLinesStyle"));
+			line.setStyleDefinitions(this.getStyle("VerticalGridLinesStyle"));
 		}
 		else
 		{
 			line = new (this.getStyle("HorizontalGridLinesClass"))();
 			line._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalGridLinesStyle"));
-			line.setStyleDefinition(this.getStyle("HorizontalGridLinesStyle"));
+			line.setStyleDefinitions(this.getStyle("HorizontalGridLinesStyle"));
 		}
 		
 		return line;
@@ -19922,7 +19961,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinition(horizontalStyle);
+							gridLine.setStyleDefinitions(horizontalStyle);
 						
 						gridLine._setActualSize(this._gridLineContainer._width, gridLine.getStyle("Height"));
 						gridLine._setActualPosition(0, rowRenderer._y - (gridLine._height / 2));
@@ -19956,7 +19995,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinition(verticalStyle);
+							gridLine.setStyleDefinitions(verticalStyle);
 						
 						gridLine._setActualSize(gridLine.getStyle("Width"), this._gridLineContainer._height);
 						gridLine._setActualPosition(linePosition - (gridLine._width / 2), 0);
@@ -20409,13 +20448,13 @@ CheckboxElement.prototype._getSkinStyleDefinitions =
 	function (state)
 	{
 		if (state == "halfSelectedUp")
-			return [this.getStyle("HalfSelectedUpSkinStyle")];
+			return this.getStyle("HalfSelectedUpSkinStyle");
 		else if (state == "halfSelectedOver")
-			return [this.getStyle("HalfSelectedOverSkinStyle")];
+			return this.getStyle("HalfSelectedOverSkinStyle");
 		else if (state == "halfSelectedDown")
-			return [this.getStyle("HalfSelectedDownSkinStyle")];
+			return this.getStyle("HalfSelectedDownSkinStyle");
 		else if (state == "halfSelectedDisabled")
-			return [this.getStyle("HalfSelectedDisabledSkinStyle")];
+			return this.getStyle("HalfSelectedDisabledSkinStyle");
 		
 		return CheckboxElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 	};
@@ -21183,9 +21222,9 @@ ViewportElement.prototype._doStylesUpdated =
 		}
 		
 		if ("HorizontalScrollBarStyle" && this._horizontalScrollBar != null)
-			this._horizontalScrollBar.setStyleDefinition(this.getStyle("HorizontalScrollBarStyle"));
+			this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
 		if ("VerticalScrollBarStyle" && this._verticalScrollBar != null)
-			this._verticalScrollBar.setStyleDefinition(this.getStyle("VerticalScrollBarStyle"));
+			this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
 	};
 
 //@Override
@@ -21270,7 +21309,7 @@ ViewportElement.prototype._doLayout =
 			{
 				this._horizontalScrollBar = new ScrollBarElement();
 				this._horizontalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalScrollBarStyle"));
-				this._horizontalScrollBar.setStyleDefinition(this.getStyle("HorizontalScrollBarStyle"));
+				this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
 				this._horizontalScrollBar.setStyle("ScrollBarDirection", "horizontal");
 				this._horizontalScrollBar.setScrollLineSize(25);
 				
@@ -21296,7 +21335,7 @@ ViewportElement.prototype._doLayout =
 			{
 				this._verticalScrollBar = new ScrollBarElement();
 				this._verticalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("VerticalScrollBarStyle"));
-				this._verticalScrollBar.setStyleDefinition(this.getStyle("VerticalScrollBarStyle"));
+				this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
 				this._verticalScrollBar.setStyle("ScrollBarDirection", "vertical");
 				this._verticalScrollBar.setScrollLineSize(25);
 				
@@ -23026,10 +23065,10 @@ CanvasManager.prototype._updateCursor =
 						cursorDefinition._cursorElement.constructor != cursorClass)
 					{
 						cursorDefinition._cursorElement = new (cursorClass)();
-						cursorDefinition._cursorElement.setStyleDefinition(cursorDefinition.getStyle("CursorStyle"));
+						cursorDefinition._cursorElement.setStyleDefinitions(cursorDefinition.getStyle("CursorStyle"));
 					}
 					else
-						cursorDefinition._cursorElement.setStyleDefinition(cursorDefinition.getStyle("CursorStyle"));
+						cursorDefinition._cursorElement.setStyleDefinitions(cursorDefinition.getStyle("CursorStyle"));
 					
 					cursorElement = cursorDefinition._cursorElement;
 				}
@@ -23100,7 +23139,7 @@ CanvasManager.prototype._onCursorDefinitionStyleChanged =
 				cursorDefinition._cursorElement = null;
 		}
 		if (styleName == "CursorStyle" && cursorDefinition._cursorElement != null)
-			cursorDefinition._cursorElement.setStyleDefinition(this.getStyle("CursorStyle"));
+			cursorDefinition._cursorElement.setStyleDefinitions(this.getStyle("CursorStyle"));
 		
 		this._updateCursor();
 	};

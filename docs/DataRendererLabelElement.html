@@ -147,6 +147,21 @@ DataRendererLabelElement &#10142; <a href="DataRendererBaseElement.html">DataRen
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">AltTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DataRendererLabelElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).<br>
+This will override the TextColor style of equal priority.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">OverTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -156,7 +171,7 @@ DataRendererLabelElement &#10142; <a href="DataRendererBaseElement.html">DataRen
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).<br>
-When this is null, the base class's TextColor style will be used.<br>
+This will override the TextColor style of equal priority.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -171,7 +186,7 @@ When this is null, the base class's TextColor style will be used.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).<br>
-When this is null, the base class's TextColor style will be used.<br>
+This will override the TextColor style of equal priority.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -186,7 +201,7 @@ When this is null, the base class's TextColor style will be used.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).<br>
-When this is null, the base class's TextColor style will be used.<br>
+This will override the TextColor style of equal priority.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -239,6 +254,21 @@ This will override SkinClass.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The StyleDefinition to apply to the "alt" state skin element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">AltTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DataRendererLabelElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).<br>
+This will override the TextColor style of equal priority.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -698,7 +728,7 @@ The StyleDefinition to apply to the "over" state skin element.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).<br>
-When this is null, the base class's TextColor style will be used.<br>
+This will override the TextColor style of equal priority.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -934,7 +964,7 @@ The StyleDefinition to apply to the "selected" state skin element.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).<br>
-When this is null, the base class's TextColor style will be used.<br>
+This will override the TextColor style of equal priority.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1238,7 +1268,7 @@ The StyleDefinition to apply to the "up" state skin element.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).<br>
-When this is null, the base class's TextColor style will be used.<br>
+This will override the TextColor style of equal priority.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -2365,6 +2395,30 @@ String representing the style to set.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
 The value to store. This may be null or undefined.<br>Note that a null style is different from an absent (undefined) style. A null style<br>will terminate a style chain lookup and return null value. An undefined style will cause<br>the system to look further up the style chain for a value. Passing undefined is the<br>same as calling clearStyle().<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setStyleDefinitions(styleDefinitions)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Replaces the elements current style definition list. This is more effecient than removing or<br>
+adding style definitions one at a time.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleDefinitions</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
+May be a StyleDefinition, or an Array of StyleDefinition<br>
 </td>
 </tr>
 </table>

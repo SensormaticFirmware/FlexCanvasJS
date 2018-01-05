@@ -330,9 +330,8 @@ TextFieldElement.StyleDefault.setStyle("TabStop",						0);
 TextFieldElement.StyleDefault.setStyle("Cursor", 						"text");			
 
 TextFieldElement.StyleDefault.setStyle("BorderType", 					"none");
-TextFieldElement.StyleDefault.setStyle("Padding", 						0);
-TextFieldElement.StyleDefault.setStyle("PaddingTop", 					null);
-TextFieldElement.StyleDefault.setStyle("PaddingBottom",					null);
+TextFieldElement.StyleDefault.setStyle("PaddingTop", 					0);
+TextFieldElement.StyleDefault.setStyle("PaddingBottom",					0);
 TextFieldElement.StyleDefault.setStyle("PaddingLeft", 					3);
 TextFieldElement.StyleDefault.setStyle("PaddingRight", 					2);
 TextFieldElement.StyleDefault.setStyle("BackgroundColor",				null);

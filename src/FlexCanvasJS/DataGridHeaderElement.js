@@ -351,7 +351,7 @@ DataGridHeaderElement.prototype._setListData =
 			{
 				renderer = new (dividerClass)();
 				renderer._setStyleDefinitionDefault(this._getDefaultStyle("ColumnDividerStyle"));
-				renderer.setStyleDefinition(this.getStyle("ColumnDividerStyle"));
+				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
 				renderer.setStyle("Draggable", draggableColumns);
 				
 				if (draggableColumns == true)
@@ -360,7 +360,7 @@ DataGridHeaderElement.prototype._setListData =
 				this._itemRenderersContainer._addChildAt(renderer, i2);
 			}
 			else
-				renderer.setStyleDefinition(this.getStyle("ColumnDividerStyle"));
+				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
 		}
 		
 		//Purge excess renderers.

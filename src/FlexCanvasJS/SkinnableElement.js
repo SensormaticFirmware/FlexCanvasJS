@@ -93,7 +93,7 @@ SkinnableElement.prototype._getSkinClass =
 SkinnableElement.prototype._getSkinStyleDefinitions = 
 	function (state)
 	{
-		return [];
+		return null;
 	};
 
 /**
@@ -151,81 +151,7 @@ SkinnableElement.prototype._updateSkinStyleDefinitions =
 		if (skinElement == null)
 			return;
 	
-		var i = 0;
-		
-		//Get the skins definition list
-		var definitions = this._getSkinStyleDefinitions(state);
-		
-		//trim the definitions for duplicates
-		for (i = definitions.length - 1; i >= 0; i--)
-		{
-			//Make sure this style definition is not already in the list (no adding duplicates)
-			if (skinElement._styleDefinitions.indexOf(definitions[i]) != -1 || definitions[i] == skinElement._styleDefinitionDefault)
-				definitions.splice(i, 1);
-		}
-		
-		//Check if nothing changed before we do a bunch of work.
-		if (definitions.length == skinElement._styleDefinitions.length)
-		{
-			var changed = false;
-			for (i = 0; i < definitions.length; i++)
-			{
-				if (definitions[i] != skinElement._styleDefinitions[i])
-				{
-					changed = true;
-					break;
-				}
-			}
-			
-			//No changes.
-			if (changed == false)
-				return;
-		}
-		
-		if (skinElement._manager != null) //Attached to display chain
-		{
-			var styleName = null;
-			var styleNamesMap = Object.create(null);
-			var styleDefinition = null;
-			
-			//Remove old
-			while (skinElement._styleDefinitions.length > 0)
-			{
-				styleDefinition = skinElement._styleDefinitions.splice(skinElement._styleDefinitions.length - 1, 1)[0];
-				
-				styleDefinition.removeEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in styleDefininition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Add new
-			for (i = 0; i < definitions.length; i++)
-			{
-				styleDefinition = definitions[i];
-				skinElement._styleDefinitions.push(styleDefinition);
-				
-				styleDefinition.addEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
-				
-				//Record added style names
-				for (styleName in styleDefininition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal style changed handling.
-			for (styleName in styleNamesMap)
-				skinElement._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached to display chain, just swap the definitions
-		{
-			//Clear the definition list
-			skinElement._styleDefinitions.splice(0, skinElement._styleDefinitions.length);
-			
-			//Add the new definitions.
-			for (i = 0; i < definitions.length; i++)
-				skinElement._styleDefinitions.push(definitions[i]);
-		}
+		skinElement.setStyleDefinitions(this._getSkinStyleDefinitions(state));
 	};
 	
 /**

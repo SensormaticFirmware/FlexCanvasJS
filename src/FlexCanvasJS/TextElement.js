@@ -81,16 +81,19 @@ TextElement.prototype._doStylesUpdated =
 			this._textField.setStyle("Selectable", this.getStyle("Selectable"));
 		
 		//Proxy padding to TextField for proper mouse handling
-		if ("Padding" in stylesMap)
-			this._textField.setStyle("Padding", this.getStyle("Padding"));
-		if ("PaddingTop" in stylesMap)
-			this._textField.setStyle("PaddingTop", this.getStyle("PaddingTop"));
-		if ("PaddingBottom" in stylesMap)
-			this._textField.setStyle("PaddingBottom", this.getStyle("PaddingBottom"));
-		if ("PaddingLeft" in stylesMap)
-			this._textField.setStyle("PaddingLeft", this.getStyle("PaddingLeft"));
-		if ("PaddingRight" in stylesMap)
-			this._textField.setStyle("PaddingRight", this.getStyle("PaddingRight"));
+		if ("Padding" in stylesMap ||
+			"PaddingTop" in stylesMap ||
+			"PaddingBottom" in stylesMap ||
+			"PaddingLeft" in stylesMap ||
+			"PaddingRight" in stylesMap)
+		{
+			var paddingSize = this._getPaddingSize();
+			
+			this._textField.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._textField.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			this._textField.setStyle("PaddingLeft", paddingSize.paddingLeft);
+			this._textField.setStyle("PaddingRight", paddingSize.paddingRight);
+		}
 	};
 	
 //@Override

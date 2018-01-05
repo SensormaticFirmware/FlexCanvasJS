@@ -346,9 +346,9 @@ TextInputElement.prototype._getSkinStyleDefinitions =
 function (state)
 {
 	if (state == "up")
-		return [this.getStyle("UpSkinStyle")];
+		return this.getStyle("UpSkinStyle");
 	else if (state == "disabled")
-		return [this.getStyle("DisabledSkinStyle")];
+		return this.getStyle("DisabledSkinStyle");
 	
 	return TextInputElement.base.prototype._getSkinStyleDefinitions.call(this, state);
 };	
