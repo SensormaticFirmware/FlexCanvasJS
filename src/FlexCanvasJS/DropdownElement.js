@@ -1037,9 +1037,11 @@ DropdownElement.prototype._doLayout =
 			}
 			else
 			{
-
-				this._labelElement._setActualPosition(x, y);
-				this._labelElement._setActualSize(w - iconWidth, h);
+				if (this._labelElement != null)
+				{
+					this._labelElement._setActualPosition(x, y);
+					this._labelElement._setActualSize(w - iconWidth, h);
+				}
 					
 				this._arrowButton._setActualPosition(this._width - iconWidth, y + (h / 2) - (iconHeight / 2));
 				this._arrowButton._setActualSize(iconWidth, iconHeight);
