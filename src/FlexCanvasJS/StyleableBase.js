@@ -219,8 +219,8 @@ StyleableBase.prototype.setStyle =
 			
 			var newStyleData = this.getStyleData(styleName);
 			
-			if (oldStyleData.equals(newStyleData) == true)
-				this._dispatchEvent(new StyleChagnedEvent(styleName));
+			if (oldStyleData.equals(newStyleData) == false)
+				this._dispatchEvent(new StyleChangedEvent(styleName));
 		}
 		else
 		{
