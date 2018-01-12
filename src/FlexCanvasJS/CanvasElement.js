@@ -1219,7 +1219,7 @@ CanvasElement.prototype.setStyleDefinitions =
 			{
 				styleDefinition = styleDefinitions[i];
 				this._styleDefinitions.push(styleDefinition);
-				styleDefinition.addEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
+				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record added style names
 				for (styleName in styleDefininition._styleMap)
