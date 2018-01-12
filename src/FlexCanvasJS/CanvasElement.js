@@ -1222,7 +1222,7 @@ CanvasElement.prototype.setStyleDefinitions =
 				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record added style names
-				for (styleName in styleDefininition._styleMap)
+				for (styleName in styleDefinition._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
