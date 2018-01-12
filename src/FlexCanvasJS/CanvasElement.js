@@ -3906,9 +3906,16 @@ CanvasElement.prototype._getAutoGradientLinear =
 		var fillGradient = context.createLinearGradient(
 									gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
 									gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
-		
-		fillGradient.addColorStop(0, lighterFill);
-		fillGradient.addColorStop(1, darkerFill);
+		try
+		{
+			fillGradient.addColorStop(0, lighterFill);
+			fillGradient.addColorStop(1, darkerFill);
+		}
+		catch (ex)
+		{
+			//Swallow, invalid color
+			return null;
+		}
 		
 		return fillGradient;
 	};	
