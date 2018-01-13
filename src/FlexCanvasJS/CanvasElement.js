@@ -1206,7 +1206,7 @@ CanvasElement.prototype.setStyleDefinitions =
 			while (this._styleDefinitions.length > 0)
 			{
 				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
-				this._styleDefinitions.splice(skinElement._styleDefinitions.length - 1, 1);
+				this._styleDefinitions.splice(this._styleDefinitions.length - 1, 1);
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
