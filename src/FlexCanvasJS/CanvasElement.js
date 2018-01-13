@@ -1210,7 +1210,7 @@ CanvasElement.prototype.setStyleDefinitions =
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
-				for (styleName in styleDefininition._styleMap)
+				for (styleName in styleDefinition._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
