@@ -354,7 +354,16 @@ TextFieldElement.prototype.setText =
 	
 		//Make sure we have an actual string
 		if (typeof text !== "string")
-			text = text.toString();
+		{
+			try
+			{
+				text = text.toString();
+			}
+			catch (ex)
+			{
+				text = "";
+			}
+		}
 		
 		var maxChars = this.getStyle("MaxChars");
 		
