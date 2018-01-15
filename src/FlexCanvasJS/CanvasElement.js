@@ -1206,11 +1206,11 @@ CanvasElement.prototype.setStyleDefinitions =
 			while (this._styleDefinitions.length > 0)
 			{
 				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
-				this._styleDefinitions.splice(skinElement._styleDefinitions.length - 1, 1);
+				this._styleDefinitions.splice(this._styleDefinitions.length - 1, 1);
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
-				for (styleName in styleDefininition._styleMap)
+				for (styleName in styleDefinition._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
@@ -1219,10 +1219,10 @@ CanvasElement.prototype.setStyleDefinitions =
 			{
 				styleDefinition = styleDefinitions[i];
 				this._styleDefinitions.push(styleDefinition);
-				styleDefinition.addEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
+				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record added style names
-				for (styleName in styleDefininition._styleMap)
+				for (styleName in styleDefinition._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
@@ -2196,6 +2196,33 @@ CanvasElement.normalizeDegrees =
 		return value;
 	};	
 
+/**
+ * @function roundToPrecision
+ * @static
+ * Rounds a number to specified precision (decimal points).
+ * 
+ * @param value Number
+ * Number to round.
+ * 
+ * @param precision int
+ * Number of decimal points.
+ * 
+ * @returns Number
+ * Rounded value.
+ */	
+CanvasElement.roundToPrecision = 
+	function (value, precision)
+	{
+		if (precision == 0)
+			return Math.round(value);
+		
+		var multiplier = Math.pow(10, precision);
+		
+		value = value * multiplier;
+		value = Math.round(value);
+		return value / multiplier;
+	};
+	
 /////////////CanvasElement Internal Static Functions//////////////////	
 	
 CanvasElement._browserType = "";	
@@ -3906,9 +3933,16 @@ CanvasElement.prototype._getAutoGradientLinear =
 		var fillGradient = context.createLinearGradient(
 									gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
 									gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
-		
-		fillGradient.addColorStop(0, lighterFill);
-		fillGradient.addColorStop(1, darkerFill);
+		try
+		{
+			fillGradient.addColorStop(0, lighterFill);
+			fillGradient.addColorStop(1, darkerFill);
+		}
+		catch (ex)
+		{
+			//Swallow, invalid color
+			return null;
+		}
 		
 		return fillGradient;
 	};	

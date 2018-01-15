@@ -122,34 +122,10 @@ DrawMetrics.prototype.mergeReduce =
 DrawMetrics.prototype.roundToPrecision = 
 	function (precision)
 	{
-		if (precision == 0)
-		{
-			this._x = Math.round(this._x);
-			this._y = Math.round(this._y);
-			
-			this._width = Math.round(this._width);
-			this._height = Math.round(this._height);
-			
-			return;
-		}
-		
-		var multiplier = precision * 10;
-		
-		this._x = this._x * multiplier;
-		this._x = Math.round(this._x);
-		this._x = this._x / multiplier;
-		
-		this._y = this._y * multiplier;
-		this._y = Math.round(this._y);
-		this._y = this._y / multiplier;
-		
-		this._width = this._width * multiplier;
-		this._width = Math.round(this._width);
-		this._width = this._width / multiplier;
-		
-		this._height = this._height * multiplier;
-		this._height = Math.round(this._height);
-		this._height = this._height / multiplier;
+		this._x = CanvasElement.roundToPrecision(this._x, precision);
+		this._y = CanvasElement.roundToPrecision(this._y, precision);
+		this._width = CanvasElement.roundToPrecision(this._width, precision);
+		this._height = CanvasElement.roundToPrecision(this._height, precision);
 	};
 	
 //@private (for now)	
