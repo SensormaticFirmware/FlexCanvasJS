@@ -962,6 +962,9 @@ DataListElement.prototype._doLayout =
 				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
 			else // if (listDirection == "vertical")
 				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+			
+			//Handle rounding errors
+			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 		}
 		
 		//Extra space - need another renderer or scroll shift
@@ -992,6 +995,9 @@ DataListElement.prototype._doLayout =
 						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
 					else // if (listDirection == "vertical")
 						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+					
+					//Handle rounding errors
+					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 				}
 				else if (clipFirst > 0 && collectionLength == this._contentPane._children.length)
 				{//We dont have enough clipping, but we're out of data (cannot make new renderer)

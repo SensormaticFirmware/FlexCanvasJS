@@ -2196,6 +2196,19 @@ CanvasElement.normalizeDegrees =
 		return value;
 	};	
 
+CanvasElement.roundToPrecision = 
+	function (value, precision)
+	{
+		if (precision == 0)
+			return Math.round(value);
+		
+		var multiplier = Math.pow(10, precision);
+		
+		value = value * multiplier;
+		value = Math.round(value);
+		return value / multiplier;
+	};
+	
 /////////////CanvasElement Internal Static Functions//////////////////	
 	
 CanvasElement._browserType = "";	
