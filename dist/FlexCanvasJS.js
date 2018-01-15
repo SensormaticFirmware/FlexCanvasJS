@@ -2001,8 +2001,8 @@ StyleableBase.prototype.setStyle =
 			
 			var newStyleData = this.getStyleData(styleName);
 			
-			if (oldStyleData.equals(newStyleData) == true)
-				this._dispatchEvent(new StyleChagnedEvent(styleName));
+			if (oldStyleData.equals(newStyleData) == false)
+				this._dispatchEvent(new StyleChangedEvent(styleName));
 		}
 		else
 		{
@@ -3169,34 +3169,10 @@ DrawMetrics.prototype.mergeReduce =
 DrawMetrics.prototype.roundToPrecision = 
 	function (precision)
 	{
-		if (precision == 0)
-		{
-			this._x = Math.round(this._x);
-			this._y = Math.round(this._y);
-			
-			this._width = Math.round(this._width);
-			this._height = Math.round(this._height);
-			
-			return;
-		}
-		
-		var multiplier = precision * 10;
-		
-		this._x = this._x * multiplier;
-		this._x = Math.round(this._x);
-		this._x = this._x / multiplier;
-		
-		this._y = this._y * multiplier;
-		this._y = Math.round(this._y);
-		this._y = this._y / multiplier;
-		
-		this._width = this._width * multiplier;
-		this._width = Math.round(this._width);
-		this._width = this._width / multiplier;
-		
-		this._height = this._height * multiplier;
-		this._height = Math.round(this._height);
-		this._height = this._height / multiplier;
+		this._x = CanvasElement.roundToPrecision(this._x, precision);
+		this._y = CanvasElement.roundToPrecision(this._y, precision);
+		this._width = CanvasElement.roundToPrecision(this._width, precision);
+		this._height = CanvasElement.roundToPrecision(this._height, precision);
 	};
 	
 //@private (for now)	
@@ -4756,11 +4732,11 @@ CanvasElement.prototype.setStyleDefinitions =
 			while (this._styleDefinitions.length > 0)
 			{
 				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
-				this._styleDefinitions.splice(skinElement._styleDefinitions.length - 1, 1);
+				this._styleDefinitions.splice(this._styleDefinitions.length - 1, 1);
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
-				for (styleName in styleDefininition._styleMap)
+				for (styleName in styleDefinition._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
@@ -4769,10 +4745,10 @@ CanvasElement.prototype.setStyleDefinitions =
 			{
 				styleDefinition = styleDefinitions[i];
 				this._styleDefinitions.push(styleDefinition);
-				styleDefinition.addEventListener("stylechanged", skinElement._onExternalStyleChangedInstance);
+				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record added style names
-				for (styleName in styleDefininition._styleMap)
+				for (styleName in styleDefinition._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
@@ -5746,6 +5722,33 @@ CanvasElement.normalizeDegrees =
 		return value;
 	};	
 
+/**
+ * @function roundToPrecision
+ * @static
+ * Rounds a number to specified precision (decimal points).
+ * 
+ * @param value Number
+ * Number to round.
+ * 
+ * @param precision int
+ * Number of decimal points.
+ * 
+ * @returns Number
+ * Rounded value.
+ */	
+CanvasElement.roundToPrecision = 
+	function (value, precision)
+	{
+		if (precision == 0)
+			return Math.round(value);
+		
+		var multiplier = Math.pow(10, precision);
+		
+		value = value * multiplier;
+		value = Math.round(value);
+		return value / multiplier;
+	};
+	
 /////////////CanvasElement Internal Static Functions//////////////////	
 	
 CanvasElement._browserType = "";	
@@ -7456,9 +7459,16 @@ CanvasElement.prototype._getAutoGradientLinear =
 		var fillGradient = context.createLinearGradient(
 									gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
 									gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
-		
-		fillGradient.addColorStop(0, lighterFill);
-		fillGradient.addColorStop(1, darkerFill);
+		try
+		{
+			fillGradient.addColorStop(0, lighterFill);
+			fillGradient.addColorStop(1, darkerFill);
+		}
+		catch (ex)
+		{
+			//Swallow, invalid color
+			return null;
+		}
 		
 		return fillGradient;
 	};	
@@ -8901,6 +8911,19 @@ TextFieldElement.prototype.setText =
 		if (text == null)
 			text = "";
 	
+		//Make sure we have an actual string
+		if (typeof text !== "string")
+		{
+			try
+			{
+				text = text.toString();
+			}
+			catch (ex)
+			{
+				text = "";
+			}
+		}
+		
 		var maxChars = this.getStyle("MaxChars");
 		
 		if (maxChars > 0 && text.length > maxChars)
@@ -13876,6 +13899,9 @@ DataListElement.prototype._doLayout =
 				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
 			else // if (listDirection == "vertical")
 				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+			
+			//Handle rounding errors
+			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 		}
 		
 		//Extra space - need another renderer or scroll shift
@@ -13906,6 +13932,9 @@ DataListElement.prototype._doLayout =
 						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
 					else // if (listDirection == "vertical")
 						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+					
+					//Handle rounding errors
+					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 				}
 				else if (clipFirst > 0 && collectionLength == this._contentPane._children.length)
 				{//We dont have enough clipping, but we're out of data (cannot make new renderer)
@@ -17724,14 +17753,14 @@ DropdownElement.prototype.open =
 		{
 			if (this._openCloseTween != null) //Tween running
 			{
-				if (this._openCloseTween.endVal == 0) //Reverse if closing, ignore if opening.
+				if (this._openCloseTween.startVal != 0) //Reverse if closing, ignore if opening.
 					this._reverseTween();
 			}
 			else if (this._openHeight == null) //Dont open if already open
 			{
 				this._openCloseTween = new Tween();
 				this._openCloseTween.startVal = 0; 
-				this._openCloseTween.endVal = null;
+				this._openCloseTween.endVal = null;	//Dont know the end val yet (popup size unknown)
 				this._openCloseTween.duration = tweenDuration;
 				this._openCloseTween.startTime = Date.now();
 				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
@@ -17762,7 +17791,7 @@ DropdownElement.prototype.close =
 		{
 			if (this._openCloseTween != null) //Tween running
 			{
-				if (this._openCloseTween.endVal != 0) //Reverse if opening, ignore if closing.
+				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
 					this._reverseTween();
 			}
 			else if (this._openHeight != null) //Dont close if already closed
@@ -17938,20 +17967,15 @@ DropdownElement.prototype._onDropdownDataListPopupLayoutComplete =
 			//Get actual Popup list height.
 			var contentSize = this._dataListPopup._getContentSize();
 			
-			if (this._dataListPopup._height < maxHeight)
+			if (contentSize < maxHeight)
 			{
-				if (contentSize > this._dataListPopup._height || (this._listCollection != null && this._dataListPopup._getNumRenderers() < this._listCollection.getLength()))
+				if (this._listCollection != null && this._dataListPopup._getNumRenderers() < this._listCollection.getLength())
 					height = maxHeight;
 				else
-					height = this._dataListPopup._height;
-			}
-			else //if (this._dataListPopup._height == maxHeight)
-			{
-				if (contentSize < maxHeight)
 					height = contentSize;
-				else
-					height = maxHeight;
 			}
+			else //contentSize >= maxHeight
+				height = maxHeight;
 		}
 		
 		//Determine open up/down and correct if not enough available space.
@@ -17986,12 +18010,17 @@ DropdownElement.prototype._onDropdownDataListPopupLayoutComplete =
 
 		//Fix list height
 		this._dataListPopup._setActualSize(this._dataListPopup._width, this._openHeight);
+		this._dataListPopupClipContainer.setStyle("Height", this._openHeight);
 		
 		var clipTopOrBottom = this.getStyle("PopupDataListClipTopOrBottom");
 		
 		if (this._openCloseTween != null)
 		{
-			this._openCloseTween.endVal = this._openHeight - clipTopOrBottom;
+			if (this._openCloseTween.startVal == 0) //Closing
+				this._openCloseTween.endVal = this._openHeight - clipTopOrBottom;
+			else //Opening
+				this._openCloseTween.startVal = this._openHeight - clipTopOrBottom;
+			
 			this._onDropDownEnterFrame(null); //Force a tween update.
 		}
 		else
@@ -18023,9 +18052,7 @@ DropdownElement.prototype._onDropdownDataListPopupChanged =
 DropdownElement.prototype._createDataListPopup = 
 	function ()
 	{
-		//TODO: Use ListItemClass style - purge when style changes.
-	
-		//var newIcon = new (arrowClass)();
+		//TODO: Use PopupDataListClass style.
 	
 		var dataListPopup = new DataListElement();
 		dataListPopup._setStyleDefinitionDefault(this._getDefaultStyle("PopupDataListStyle"));
@@ -18088,7 +18115,21 @@ DropdownElement.prototype._updateText =
 DropdownElement.prototype._onDropdownListCollectionChanged = 
 	function (collectionChangedEvent)
 	{
+		//Room to optimize here
+//		var type = collectionChangedEvent.getKind();
+//		var index = collectionChangedEvent.getIndex();
+	
+		//Fix selected index/item 
+		if (this._selectedItem != null)
+		{
+			this._selectedIndex = this._listCollection.getItemIndex(this._selectedItem);
+			
+			if (this._selectedIndex == -1)
+				this._selectedItem = null;
+		}
+		
 		this._updateText();
+		
 		this._sampledTextWidth = null;
 		this._invalidateMeasure();
 	};	
@@ -18303,6 +18344,18 @@ DropdownElement.prototype._doLayout =
 	{
 		DropdownElement.base.prototype._doLayout.call(this, paddingMetrics);
 		
+		if (this._openDirection != null) //dropdown open
+		{
+			//Update the dropdown metrics
+			this._dropdownManagerMetrics = this.getMetrics(this._manager);
+			
+			//Update the widths of the popup container and list. (Heights handled by tween / list layoutcomplete)
+			//This is here so that when the Dropdown is using measured width, and the collection changes,
+			//it may change the width of the dropdown button, so we need to make sure we keep the widths in sync.
+			this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
+			this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, this._dataListPopup._height);
+		}
+		
 		if (this._arrowButton != null)
 		{
 			var x = paddingMetrics.getX();
@@ -18325,9 +18378,11 @@ DropdownElement.prototype._doLayout =
 			}
 			else
 			{
-
-				this._labelElement._setActualPosition(x, y);
-				this._labelElement._setActualSize(w - iconWidth, h);
+				if (this._labelElement != null)
+				{
+					this._labelElement._setActualPosition(x, y);
+					this._labelElement._setActualSize(w - iconWidth, h);
+				}
 					
 				this._arrowButton._setActualPosition(this._width - iconWidth, y + (h / 2) - (iconHeight / 2));
 				this._arrowButton._setActualSize(iconWidth, iconHeight);
