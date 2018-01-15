@@ -2196,6 +2196,20 @@ CanvasElement.normalizeDegrees =
 		return value;
 	};	
 
+/**
+ * @function roundToPrecision
+ * @static
+ * Rounds a number to specified precision (decimal points).
+ * 
+ * @param value Number
+ * Number to round.
+ * 
+ * @param precision int
+ * Number of decimal points.
+ * 
+ * @returns Number
+ * Rounded value.
+ */	
 CanvasElement.roundToPrecision = 
 	function (value, precision)
 	{
