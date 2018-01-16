@@ -197,7 +197,7 @@ LabelElement.prototype._doRender =
 		var textXPosition;
 		if (textAlign == "left")
 			textXPosition = x;
-		else if (textAlign = "right")
+		else if (textAlign == "right")
 			textXPosition = x + w - totalWidth;
 		else //center
 			textXPosition = Math.round(x + (w / 2) - (totalWidth / 2));
