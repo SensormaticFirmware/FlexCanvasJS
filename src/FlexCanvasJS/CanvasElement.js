@@ -309,6 +309,16 @@ CanvasElement.StylePriorities =
  * For example, DropdownElement uses this to adjust the height of the dropdown popup
  * since we do not know how much height it will need until after it has finished layout.
  * 
+ * @event measurecomplete DispatcherEvent
+ * Typically an internal event. Dispatched when an element has completed its 
+ * measure phase. This is used when it is necessary to wait for an element to
+ * finish its measure pass so that its content size or _measuredSize calculation is complete.
+ * This is very expensive and should only be used when absolutely necessary.  Its usually
+ * only needed when elements are not directly related via parent/child.
+ * For example, ViewportElement uses this to invoke a layout pass when its content child
+ * changes _measuredSize. The Viewport uses an intermediate CanvasElement as a clipping container
+ * for the content child, which does not measure children, so an event is needed to notify the Viewport.
+ * 
  * @event keydown ElementKeyboardEvent
  * Dispatched when the element has focus and a key is pressed, repeatedly dispatched if the key is held down.
  * 
@@ -4259,6 +4269,9 @@ CanvasElement.prototype._validateMeasure =
 		var measuredSize = this._doMeasure(paddingSize.width, paddingSize.height);
 			
 		this._setMeasuredSize(measuredSize.width, measuredSize.height);
+		
+		if (this._measureInvalid == false && this.hasEventListener("measurecomplete", null) == true)
+			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
 	};
 	
 //@private	
@@ -4268,7 +4281,7 @@ CanvasElement.prototype._validateLayout =
 		this._layoutInvalid = false;
 		this._doLayout(this._getPaddingMetrics());
 		
-		if (this._layoutInvalid == false && this.hasEventListener("layoutcomplete", null))
+		if (this._layoutInvalid == false && this.hasEventListener("layoutcomplete", null) == true)
 			this._dispatchEvent(new DispatcherEvent("layoutcomplete"));
 	};	
 	
