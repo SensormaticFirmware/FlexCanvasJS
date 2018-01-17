@@ -4510,7 +4510,7 @@ CanvasElement.prototype._renderRedrawRegion =
 			
 			this._compositeCtx.globalAlpha = element.getStyle("Alpha");
 		}
-		else if (element._compositeMetrics.length > 0 && element._graphicsClear == false)
+		else if (isCompositeChildElement == false && element._compositeMetrics.length > 0 && element._graphicsClear == false)
 		{
 			compositeMetrics = element._compositeMetrics[0].metrics;
 			drawableMetrics = element._compositeMetrics[0].drawableMetrics;
