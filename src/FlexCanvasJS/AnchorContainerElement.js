@@ -199,26 +199,15 @@ AnchorContainerElement.prototype._doMeasure =
 				//No explicit sizing
 				if (width == null)
 				{
-					//Add size for measured or min
-					if (pWidth == null && (left == null || right == null))
-					{
-						width = child._measuredWidth;
-						width = Math.min(width, maxWidth);
-						width = Math.max(width, minWidth);
-					}
-					else
-						width = minWidth;
+					width = child._measuredWidth;
+					width = Math.min(width, maxWidth);
+					width = Math.max(width, minWidth);
 				}
 				if (height == null)
 				{
-					if (pHeight == null && (top == null || bottom == null))
-					{
-						height = child._measuredHeight;
-						height = Math.min(height, maxHeight);
-						height = Math.max(height, minHeight);
-					}
-					else
-						height = minHeight;
+					height = child._measuredHeight;
+					height = Math.min(height, maxHeight);
+					height = Math.max(height, minHeight);
 				}
 				
 				childSize.width += width;

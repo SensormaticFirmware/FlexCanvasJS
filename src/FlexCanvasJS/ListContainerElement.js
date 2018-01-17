@@ -143,22 +143,22 @@ ListContainerElement.prototype._doMeasure =
 			if (maxHeight == null)
 				maxHeight = Number.MAX_VALUE;			
 			
+			if (width == null)
+			{
+				width = child._measuredWidth;
+				width = Math.min(width, maxWidth);
+				width = Math.max(width, minWidth);
+			}
+			
+			if (height == null)
+			{
+				height = child._measuredHeight;
+				height = Math.min(height, maxHeight);
+				height = Math.max(height, minHeight);
+			}
+			
 			if (rotateDegrees != 0)
 			{
-				if (width == null)
-				{
-					width = child._measuredWidth;
-					width = Math.min(width, maxWidth);
-					width = Math.max(width, minWidth);
-				}
-				
-				if (height == null)
-				{
-					height = child._measuredHeight;
-					height = Math.min(height, maxHeight);
-					height = Math.max(height, minHeight);
-				}
-				
 				//Record child's current w/h & rotation
 				tempWidth = child._width;
 				tempHeight = child._height;
@@ -185,32 +185,6 @@ ListContainerElement.prototype._doMeasure =
 			{
 				pWidth = child.getStyle("PercentWidth");
 				pHeight = child.getStyle("PercentHeight");
-								
-				//No explicit sizing
-				if (width == null)
-				{
-					//Add size for measured or min
-					if (pWidth == null)
-					{
-						width = child._measuredWidth;
-						width = Math.min(width, maxWidth);
-						width = Math.max(width, minWidth);
-					}
-					else
-						width = minWidth;
-				}
-				
-				if (height == null)
-				{
-					if (pHeight == null)
-					{
-						height = child._measuredHeight;
-						height = Math.min(height, maxHeight);
-						height = Math.max(height, minHeight);
-					}
-					else
-						height = minHeight;
-				}
 			}
 		
 			if (layoutDirection == "horizontal")

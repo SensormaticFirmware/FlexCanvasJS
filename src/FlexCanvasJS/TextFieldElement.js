@@ -1363,7 +1363,10 @@ TextFieldElement.prototype._doMeasure =
 		//If using multi-line, height is dependent on actual width so layout
 		//must run and do the actual measurment...
 		if (this.getStyle("Multiline") == true)
+		{	
+			measuredSize.width = this.getStyle("MinWidth"); //We need the parent to know it can contract us.
 			this._invalidateLayout();
+		}
 		
 		return measuredSize;
 	};	
@@ -1462,7 +1465,7 @@ TextFieldElement.prototype._doLayout =
 		
 		//Update the measured size now that we know the height. (May cause another layout pass)
 		if (isMultiline == true)
-			this._setMeasuredSize(this._width, totalTextHeight + this._getPaddingSize().height);
+			this._setMeasuredSize(this._measuredWidth, totalTextHeight + this._getPaddingSize().height);
 			
 		var textYPosition;
 		if (textBaseline == "top")
