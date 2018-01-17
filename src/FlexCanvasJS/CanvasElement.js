@@ -3777,8 +3777,21 @@ CanvasElement.prototype._getStyledOrMeasuredWidth =
 	function ()
 	{
 		var width = this.getStyle("Width");
+		
 		if (width == null)
+		{
+			var maxWidth = this.getStyle("MaxWidth");
+			var minWidth = this.getStyle("MinWidth");
+			
+			if (minWidth == null)
+				minWidth = 0;
+			if (maxWidth == null)
+				maxWidth = Number.MAX_VALUE;
+			
 			width = this._measuredWidth;
+			width = Math.min(width, maxWidth);
+			width = Math.max(width, minWidth);
+		}
 		
 		return width;
 	};
@@ -3795,8 +3808,21 @@ CanvasElement.prototype._getStyledOrMeasuredHeight =
 	function ()
 	{
 		var height = this.getStyle("Height");
+		
 		if (height == null)
+		{
+			var maxHeight = this.getStyle("MaxHeight");
+			var minHeight = this.getStyle("MinHeight");			
+			
+			if (minHeight == null)
+				minHeight = 0;
+			if (maxHeight == null)
+				maxHeight = Number.MAX_VALUE;	
+			
 			height = this._measuredHeight;
+			height = Math.min(height, maxHeight);
+			height = Math.max(height, minHeight);
+		}
 		
 		return height;
 	};
