@@ -50,12 +50,7 @@ AnchorContainerElement.prototype._doMeasure =
 		var y;
 		var width;
 		var height;
-		var pWidth;
-		var pHeight;
-		var minWidth;
-		var minHeight;
-		var maxWidth;
-		var maxHeight;
+
 		var top;
 		var left;
 		var bottom;
@@ -83,49 +78,31 @@ AnchorContainerElement.prototype._doMeasure =
 			
 			var childSize = {width: 0, height:0};
 			
+			width = child._getStyledOrMeasuredWidth();
+			height = child._getStyledOrMeasuredHeight();
+			
 			x = child.getStyle("X");
 			y = child.getStyle("Y");
 			top = child.getStyle("Top");
 			left = child.getStyle("Left");
 			bottom = child.getStyle("Bottom");
 			right = child.getStyle("Right");
-			width = child.getStyle("Width");
-			height = child.getStyle("Height");
-			minWidth = child.getStyle("MinWidth");
-			minHeight = child.getStyle("MinHeight");
-			maxWidth = child.getStyle("MaxWidth");
-			maxHeight = child.getStyle("MaxHeight");
+			
+			//prioritize x/y over left/top (but they're the same)
+			if (x == null)
+				x = left;
+			if (y == null)
+				y = top;
+			
 			hCenter = child.getStyle("HorizontalCenter");
 			vCenter = child.getStyle("VerticalCenter");
+			
 			rotateDegrees = child.getStyle("RotateDegrees");
 			rotateCenterX = child.getStyle("RotateCenterX");
 			rotateCenterY = child.getStyle("RotateCenterY");
 			
-			if (minWidth == null)
-				minWidth = 0;
-			if (minHeight == null)
-				minHeight = 0;
-			if (maxWidth == null)
-				maxWidth = Number.MAX_VALUE;
-			if (maxHeight == null)
-				maxHeight = Number.MAX_VALUE;
-			
 			if (rotateDegrees != 0)
 			{
-				if (width == null)
-				{
-					width = child._measuredWidth;
-					width = Math.min(width, maxWidth);
-					width = Math.max(width, minWidth);
-				}
-				
-				if (height == null)
-				{
-					height = child._measuredHeight;
-					height = Math.min(height, maxHeight);
-					height = Math.max(height, minHeight);
-				}
-				
 				//Record child's current x/y & w/h & rotation
 				tempX = child._x;
 				tempY = child._y;
@@ -162,68 +139,20 @@ AnchorContainerElement.prototype._doMeasure =
 					x = Math.max(rotatedMetrics.getX(), 0);
 					y = Math.max(rotatedMetrics.getY(), 0);
 				}
-				else
-				{
-					//prioritize x/y over left/top (but they're the same)
-					if (x == null)
-						x = left;
-					if (y == null)
-						y = top;
-					
-					if (x == null && right != null)
-						childSize.width += right;
-					if (y == null && bottom != null)
-						childSize.height += bottom;
-				}
 				
 				childSize.width += Math.ceil(rotatedMetrics.getWidth());
 				childSize.height += Math.ceil(rotatedMetrics.getHeight());
 			}
 			else //Non-Rotated Element
 			{
-				//prioritize x/y over left/top (but they're the same)
-				if (x == null)
-					x = left;
-				if (y == null)
-					y = top;
-				
-				pWidth = child.getStyle("PercentWidth");
-				pHeight = child.getStyle("PercentHeight");
-								
-				//right/bottom cannot be used when both x/y and width/height are in use.
-				if ((width == null || x == null) && right != null)
-					childSize.width += right;
-				if ((height == null || y == null) && bottom != null)
-					childSize.height += bottom;
-				
-				//No explicit sizing
-				if (width == null)
-				{
-					//Add size for measured or min
-					if (pWidth == null && (left == null || right == null))
-					{
-						width = child._measuredWidth;
-						width = Math.min(width, maxWidth);
-						width = Math.max(width, minWidth);
-					}
-					else
-						width = minWidth;
-				}
-				if (height == null)
-				{
-					if (pHeight == null && (top == null || bottom == null))
-					{
-						height = child._measuredHeight;
-						height = Math.min(height, maxHeight);
-						height = Math.max(height, minHeight);
-					}
-					else
-						height = minHeight;
-				}
-				
 				childSize.width += width;
 				childSize.height += height;
 			}
+			
+			if (right != null)
+				childSize.width += right;
+			if (bottom != null)
+				childSize.height += bottom;
 			
 			if (x == null && right == null && hCenter != null)
 				childSize.width += Math.abs(hCenter * 2);

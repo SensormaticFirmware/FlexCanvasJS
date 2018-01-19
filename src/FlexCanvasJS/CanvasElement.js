@@ -309,6 +309,16 @@ CanvasElement.StylePriorities =
  * For example, DropdownElement uses this to adjust the height of the dropdown popup
  * since we do not know how much height it will need until after it has finished layout.
  * 
+ * @event measurecomplete DispatcherEvent
+ * Typically an internal event. Dispatched when an element has completed its 
+ * measure phase. This is used when it is necessary to wait for an element to
+ * finish its measure pass so that its content size or _measuredSize calculation is complete.
+ * This is very expensive and should only be used when absolutely necessary.  Its usually
+ * only needed when elements are not directly related via parent/child.
+ * For example, ViewportElement uses this to invoke a layout pass when its content child
+ * changes _measuredSize. The Viewport uses an intermediate CanvasElement as a clipping container
+ * for the content child, which does not measure children, so an event is needed to notify the Viewport.
+ * 
  * @event keydown ElementKeyboardEvent
  * Dispatched when the element has focus and a key is pressed, repeatedly dispatched if the key is held down.
  * 
@@ -3612,6 +3622,17 @@ CanvasElement.prototype._setActualRotation =
 			{
 				this._compositeEffectChanged = true;
 				this._invalidateCompositeRender();
+				
+				//Check if we need to re-render due to auto gradient
+				var autoGradientType = this.getStyle("AutoGradientType");
+				var backgroundColor = this.getStyle("BackgroundColor");
+				var borderType = this.getStyle("BorderType");
+				
+				if (autoGradientType != null && autoGradientType != "none" && 
+					(backgroundColor != null || (borderType != null && borderType != "none")))
+				{
+					this._invalidateRender();
+				}
 			}
 		}
 		
@@ -3635,6 +3656,9 @@ CanvasElement.prototype._setMeasuredSize =
 			this._parent._invalidateMeasure();
 			this._parent._invalidateLayout();
 		}
+		
+		if (this.hasEventListener("measurecomplete", null) == true)
+			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
 	};
 	
 //@private	
@@ -3764,8 +3788,21 @@ CanvasElement.prototype._getStyledOrMeasuredWidth =
 	function ()
 	{
 		var width = this.getStyle("Width");
+		
 		if (width == null)
+		{
+			var maxWidth = this.getStyle("MaxWidth");
+			var minWidth = this.getStyle("MinWidth");
+			
+			if (minWidth == null)
+				minWidth = 0;
+			if (maxWidth == null)
+				maxWidth = Number.MAX_VALUE;
+			
 			width = this._measuredWidth;
+			width = Math.min(width, maxWidth);
+			width = Math.max(width, minWidth);
+		}
 		
 		return width;
 	};
@@ -3782,8 +3819,21 @@ CanvasElement.prototype._getStyledOrMeasuredHeight =
 	function ()
 	{
 		var height = this.getStyle("Height");
+		
 		if (height == null)
+		{
+			var maxHeight = this.getStyle("MaxHeight");
+			var minHeight = this.getStyle("MinHeight");			
+			
+			if (minHeight == null)
+				minHeight = 0;
+			if (maxHeight == null)
+				maxHeight = Number.MAX_VALUE;	
+			
 			height = this._measuredHeight;
+			height = Math.min(height, maxHeight);
+			height = Math.max(height, minHeight);
+		}
 		
 		return height;
 	};
@@ -4268,7 +4318,7 @@ CanvasElement.prototype._validateLayout =
 		this._layoutInvalid = false;
 		this._doLayout(this._getPaddingMetrics());
 		
-		if (this._layoutInvalid == false && this.hasEventListener("layoutcomplete", null))
+		if (this._layoutInvalid == false && this.hasEventListener("layoutcomplete", null) == true)
 			this._dispatchEvent(new DispatcherEvent("layoutcomplete"));
 	};	
 	
@@ -4471,7 +4521,7 @@ CanvasElement.prototype._renderRedrawRegion =
 			
 			this._compositeCtx.globalAlpha = element.getStyle("Alpha");
 		}
-		else if (element._compositeMetrics.length > 0 && element._graphicsClear == false)
+		else if (isCompositeChildElement == false && element._compositeMetrics.length > 0 && element._graphicsClear == false)
 		{
 			compositeMetrics = element._compositeMetrics[0].metrics;
 			drawableMetrics = element._compositeMetrics[0].drawableMetrics;

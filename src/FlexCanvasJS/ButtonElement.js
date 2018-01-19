@@ -197,10 +197,10 @@ ButtonElement._StyleTypes.TextBaseline =				{inheritable:false};  		// "top" || 
 ButtonElement.StyleDefault = new StyleDefinition();
 
 //Override base class styles
-ButtonElement.StyleDefault.setStyle("PaddingTop",						2);
-ButtonElement.StyleDefault.setStyle("PaddingBottom",                    2);
-ButtonElement.StyleDefault.setStyle("PaddingLeft",                      3);
-ButtonElement.StyleDefault.setStyle("PaddingRight",                     3);
+ButtonElement.StyleDefault.setStyle("PaddingTop",						3);
+ButtonElement.StyleDefault.setStyle("PaddingBottom",                    3);
+ButtonElement.StyleDefault.setStyle("PaddingLeft",                      4);
+ButtonElement.StyleDefault.setStyle("PaddingRight",                     4);
 
 ButtonElement.StyleDefault.setStyle("TextAlign", 						"center"); 
 ButtonElement.StyleDefault.setStyle("TextBaseline",                     "middle");

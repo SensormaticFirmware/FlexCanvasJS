@@ -1,7 +1,6 @@
 
 /**
  * @depends CanvasElement.js
- * @depends AnchorContainerElement.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -11,8 +10,9 @@
  * @class ViewportElement
  * @inherits CanvasElement
  * 
- * Viewport is an AnchorContainer that only supports one child element (usually another container).
- * When the child is too large for the view area, the Viewport will optionally pop up scroll bars.
+ * Viewport is a container that only supports one child element (usually another container).
+ * When the child's content size is too large for the view area, the Viewport will optionally 
+ * pop up scroll bars, otherwise the child element will assume the size of the ViewportElement.
  * 
  * This class needs more work. More styles are needed for controlling tween behavior and allowing
  * scrolling even if scroll bars are disabled.
@@ -30,7 +30,8 @@ function ViewportElement()
 	this._horizontalScrollBar = null;
 	this._verticalScrollBar = null;
 	
-	this._viewPortContainer = new ViewportAnchorContainerElement();
+	this._viewPortContainer = new CanvasElement();
+	this._viewPortContainer.setStyle("ClipContent", true);
 	this._addChild(this._viewPortContainer);
 	
 	var _self = this;
@@ -47,6 +48,13 @@ function ViewportElement()
 		{
 			_self._onViewportMouseWheelEvent(elementMouseWheelEvent);
 		};
+		
+	this._onViewElementMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onViewElementMeasureComplete(event);
+		};
+		
 		
 	this.addEventListener("wheel", this._onViewportMouseWheelEventInstance);
 }
@@ -126,12 +134,18 @@ ViewportElement.prototype.setElement =
 	function (element)
 	{
 		if (this._viewElement != null)
-			this._viewPortContainer.removeElement(this._viewElement);
+		{
+			this._viewElement.removeEventListener("measurecomplete", this._onViewElementMeasureCompleteInstance);
+			this._viewPortContainer._removeChild(this._viewElement);
+		}
 		
 		this._viewElement = element;
 		
 		if (this._viewElement != null)
-			this._viewPortContainer.addElement(this._viewElement);
+		{
+			this._viewElement.addEventListener("measurecomplete", this._onViewElementMeasureCompleteInstance);
+			this._viewPortContainer._addChild(this._viewElement);
+		}
 		
 		this._invalidateLayout();
 	};
@@ -148,6 +162,12 @@ ViewportElement.prototype.setElement =
  */		
 ViewportElement.prototype._onViewportScrollBarChange = 
 	function (elementEvent)
+	{
+		this._invalidateLayout();
+	};
+
+ViewportElement.prototype._onViewElementMeasureComplete = 
+	function (event)
 	{
 		this._invalidateLayout();
 	};
@@ -409,12 +429,6 @@ ViewportElement.prototype._doLayout =
 		verticalScrollValue = Math.min(verticalScrollValue, contentHeight - paneHeight);
 		verticalScrollValue = Math.max(verticalScrollValue, 0);
 		
-		//Only enable clipping if we need it (its expensive)
-		if (paneWidth < contentWidth || paneHeight < contentHeight)
-			this._viewPortContainer.setStyle("ClipContent", true);
-		else
-			this._viewPortContainer.setStyle("ClipContent", false);		
-		
 		var horizontalBarPlacement = this.getStyle("HorizontalScrollBarPlacement");
 		var verticalBarPlacement = this.getStyle("VerticalScrollBarPlacement");
 		
@@ -482,37 +496,9 @@ ViewportElement.prototype._doLayout =
 		
 		if (this._viewElement != null)
 		{
-			this._viewElement.setStyle("X", horizontalScrollValue * -1);
-			this._viewElement.setStyle("Y", verticalScrollValue * -1);
+			this._viewElement._setActualSize(Math.max(paneWidth, contentWidth), Math.max(paneHeight, contentHeight));
+			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1)
 		}
 	};
-	
-	
-///////////////////////////////////////////////////////////////////////
-///////////////////////ViewportAnchorContainerElement//////////////////
-
-
-//This is an internal class used by the Viewport. Its identical to an 
-//AnchorContainer except it blocks the _doMeasure() function. Viewport
-//uses this as a layout mechanism and doesn't want changes to this
-//elements children to cause redundant measurement and layout.
-
-function ViewportAnchorContainerElement()
-{
-	ViewportAnchorContainerElement.base.prototype.constructor.call(this);
-}
-
-//Inherit from AnchorContainerElement
-ViewportAnchorContainerElement.prototype = Object.create(AnchorContainerElement.prototype);
-ViewportAnchorContainerElement.prototype.constructor = ViewportAnchorContainerElement;
-ViewportAnchorContainerElement.base = AnchorContainerElement;
-
-//@Override
-ViewportAnchorContainerElement.prototype._doMeasure = 
-	function(padWidth, padHeight)
-	{
-		return {width:0, height:0};
-	};	
-	
 	
 	

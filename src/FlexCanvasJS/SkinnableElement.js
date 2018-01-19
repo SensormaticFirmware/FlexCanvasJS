@@ -275,7 +275,38 @@ SkinnableElement.prototype._changeState =
 		return true;
 	};
 
-//@Override
+//@override	
+SkinnableElement.prototype._setActualRotation = 
+	function (degrees, centerX, centerY)
+	{
+		var currentDegrees = this._rotateDegrees;
+	
+		SkinnableElement.base.prototype._setActualRotation.call(this, degrees, centerX, centerY);
+	
+		//Rotation changed
+		if (this._rotateDegrees != currentDegrees)
+		{
+			var autoGradientType;
+			var backgroundColor;
+			var borderType;
+			
+			for (var skinState in this._skins)
+			{
+				//Check if we need to re-render due to auto gradient
+				autoGradientType = this._skins[skinState].getStyle("AutoGradientType");
+				backgroundColor = this._skins[skinState].getStyle("BackgroundColor");
+				borderType = this._skins[skinState].getStyle("BorderType");
+				
+				if (autoGradientType != null && autoGradientType != "none" && 
+					(backgroundColor != null || (borderType != null && borderType != "none")))
+				{
+					this._skins[skinState]._invalidateRender();
+				}
+			}
+		}
+	};	
+	
+//@override
 SkinnableElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
@@ -285,7 +316,7 @@ SkinnableElement.prototype._doStylesUpdated =
 			this._changeState(this.getStyle("SkinState"));
 	};	
 	
-//@Override	
+//@override	
 SkinnableElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
