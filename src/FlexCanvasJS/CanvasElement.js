@@ -3622,6 +3622,17 @@ CanvasElement.prototype._setActualRotation =
 			{
 				this._compositeEffectChanged = true;
 				this._invalidateCompositeRender();
+				
+				//Check if we need to re-render due to auto gradient
+				var autoGradientType = this.getStyle("AutoGradientType");
+				var backgroundColor = this.getStyle("BackgroundColor");
+				var borderType = this.getStyle("BorderType");
+				
+				if (autoGradientType != null && autoGradientType != "none" && 
+					(backgroundColor != null || (borderType != null && borderType != "none")))
+				{
+					this._invalidateRender();
+				}
 			}
 		}
 		

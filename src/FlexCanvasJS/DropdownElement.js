@@ -68,6 +68,12 @@ function DropdownElement()
 			_self._onDropdownDataListPopupChanged(event);
 		};
 	
+	this._onDropdownDataListPopupListItemClickedInstance = 
+		function (event)
+		{
+			_self._onDropdownDataListPopupListItemClicked(event);
+		};
+		
 	this._onDropdownDataListPopupLayoutCompleteInstance = 
 		function (event)
 		{
@@ -103,7 +109,12 @@ DropdownElement.base = ButtonElement;
 /**
  * @event changed ElementEvent
  * Dispatched when the drop down selection changes as a result of user input.
+ * 
+ * @event listitemclick ElementListItemClickEvent
+ * Dispatched when a DataRenderer in the popup list is clicked. Includes associated collection item/index.
  */
+
+
 
 /////////////Style Types/////////////////////////
 
@@ -698,7 +709,24 @@ DropdownElement.prototype._onDropdownDataListPopupChanged =
 	{
 		this.setSelectedIndex(this._dataListPopup.getSelectedIndex());
 		this.close(true);
-		this._dispatchEvent(new ElementEvent("changed", false));
+		
+		if (this.hasEventListener("changed", null) == true)
+			this._dispatchEvent(new ElementEvent("changed", false));
+	};
+
+/**
+ * @function _onDropdownDataListPopupListItemClicked
+ * Event handler for pop up list "listitemclick" event. 
+ * 
+ * @param elementListItemClickEvent ElementListItemClickEvent
+ * ElementListItemClickEvent to process.
+ */		
+DropdownElement.prototype._onDropdownDataListPopupListItemClicked = 
+	function (elementListItemClickEvent)
+	{
+		//Just proxy the event from the popup list
+		if (this.hasEventListener("listitemclick", null) == true)
+			this._dispatchEvent(elementListItemClickEvent);
 	};
 	
 /**
@@ -722,6 +750,7 @@ DropdownElement.prototype._createDataListPopup =
 		dataListPopup.setSelectedIndex(this._selectedIndex);
 		
 		dataListPopup.addEventListener("changed", this._onDropdownDataListPopupChangedInstance);
+		dataListPopup.addEventListener("listitemclick", this._onDropdownDataListPopupListItemClickedInstance);
 		dataListPopup.addEventListener("layoutcomplete", this._onDropdownDataListPopupLayoutCompleteInstance);
 		
 		return dataListPopup;

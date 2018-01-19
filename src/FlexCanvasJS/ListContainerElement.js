@@ -104,16 +104,11 @@ ListContainerElement.prototype._doMeasure =
 		var layoutDirection = this.getStyle("LayoutDirection");
 		
 		var child = null;
+		
 		var width = null;
 		var height = null;
-		var pWidth = null;
-		var pHeight = null;
-		var maxWidth = null;
-		var maxHeight = null;
-		var minWidth = null;
-		var minHeight = null;
 		var rotateDegrees = null;
-
+		
 		var tempWidth;
 		var tempHeight;
 		var tempRotateDegrees;		
@@ -126,36 +121,10 @@ ListContainerElement.prototype._doMeasure =
 			if (child.getStyle("IncludeInLayout") == false)
 				continue;
 			
-			width = child.getStyle("Width");
-			height = child.getStyle("Height");
-			maxWidth = child.getStyle("MaxWidth");
-			maxHeight = child.getStyle("MaxHeight");
-			minWidth = child.getStyle("MinWidth");
-			minHeight = child.getStyle("MinHeight");			
 			rotateDegrees = child.getStyle("RotateDegrees");
 			
-			if (minWidth == null)
-				minWidth = 0;
-			if (minHeight == null)
-				minHeight = 0;
-			if (maxWidth == null)
-				maxWidth = Number.MAX_VALUE;
-			if (maxHeight == null)
-				maxHeight = Number.MAX_VALUE;			
-			
-			if (width == null)
-			{
-				width = child._measuredWidth;
-				width = Math.min(width, maxWidth);
-				width = Math.max(width, minWidth);
-			}
-			
-			if (height == null)
-			{
-				height = child._measuredHeight;
-				height = Math.min(height, maxHeight);
-				height = Math.max(height, minHeight);
-			}
+			width = child._getStyledOrMeasuredWidth();
+			height = child._getStyledOrMeasuredHeight();
 			
 			if (rotateDegrees != 0)
 			{
@@ -180,11 +149,6 @@ ListContainerElement.prototype._doMeasure =
 				
 				width = Math.ceil(rotatedMetrics.getWidth());
 				height = Math.ceil(rotatedMetrics.getHeight());
-			}
-			else //Non-Rotated Element
-			{
-				pWidth = child.getStyle("PercentWidth");
-				pHeight = child.getStyle("PercentHeight");
 			}
 		
 			if (layoutDirection == "horizontal")
@@ -410,7 +374,6 @@ ListContainerElement.prototype._doLayout =
 				else // "vertical"
 					availableSize -= child.height;
 			}
-		
 		}
 		
 		//We're not using all the space, shrink us.

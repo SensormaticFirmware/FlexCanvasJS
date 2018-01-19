@@ -314,6 +314,8 @@ DataListElement.prototype.getSelectedItem =
 DataListElement.prototype.setScrollIndex = 
 	function (scrollIndex)
 	{
+		scrollIndex = CanvasElement.roundToPrecision(scrollIndex, 6);
+	
 		this._invalidateLayout();
 		
 		if (this._contentPane._children.length == 0 || this._listCollection == null)
@@ -578,9 +580,10 @@ DataListElement.prototype._onDataListMouseWheelEvent =
 DataListElement.prototype._onDataListScrollBarChanged = 
 	function (elementEvent)
 	{
-		var scrollValue = this._scrollBar.getScrollValue();
-		var scrollPageSize = this._scrollBar.getScrollPageSize();
-		var scrollViewSize = this._scrollBar.getScrollViewSize();
+		//Handle rounding errors
+		var scrollValue = CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6);
+		var scrollPageSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollPageSize(), 6);
+		var scrollViewSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollViewSize(), 6);
 		
 		//Fix for issue where last renderer is larger than first, resulting in exponential adjustments 
 		//due to view size shrinking / scroll range increasing at the same time as scroll. We check if the
@@ -809,10 +812,16 @@ DataListElement.prototype._onDataListRendererClick =
 		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
 		
 		var dispatchChanged = false;
+		var elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable");
 		
-		if (this.getStyle("Selectable") == true && this.setSelectedIndex(itemIndex) == true)
-			dispatchChanged = true;
+		//Update selected index
+		if (this.getStyle("Selectable") == true && (elementIsSelectable === undefined || elementIsSelectable == true))
+		{
+			if (this.setSelectedIndex(itemIndex) == true)
+				dispatchChanged = true;
+		}
 		
+		//Dispatch events
 		this._dispatchEvent(new ElementListItemClickEvent(itemData, itemIndex));
 		
 		if (dispatchChanged == true)
@@ -964,7 +973,7 @@ DataListElement.prototype._doLayout =
 				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
 			
 			//Handle rounding errors
-			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
+			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
 		}
 		
 		//Extra space - need another renderer or scroll shift
@@ -997,7 +1006,7 @@ DataListElement.prototype._doLayout =
 						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
 					
 					//Handle rounding errors
-					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
+					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
 				}
 				else if (clipFirst > 0 && collectionLength == this._contentPane._children.length)
 				{//We dont have enough clipping, but we're out of data (cannot make new renderer)
@@ -1154,7 +1163,7 @@ DataListElement.prototype._doLayout =
 			this._scrollBar.setScrollPageSize(collectionLength);
 			this._scrollBar.setScrollViewSize(viewSize);
 			
-			if (this._scrollBar.getScrollValue() != this._scrollIndex)
+			if (CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6) != this._scrollIndex)
 			{
 				this._scrollBar.endScrollTween();
 				this._scrollBar.setScrollValue(this._scrollIndex);
