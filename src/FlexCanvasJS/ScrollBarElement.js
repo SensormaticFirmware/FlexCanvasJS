@@ -124,12 +124,19 @@ ScrollBarElement._StyleTypes.ButtonTabStyle = 				{inheritable:false};		// Style
 
 ScrollBarElement.StyleDefault = new StyleDefinition();
 
+ScrollBarElement.TrackSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderType", 				"solid");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderThickness", 			1);
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderColor", 				"#333333");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundColor", 			"#D9D9D9");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("AutoGradientType", 		"none");
+
 //Button style defaults
 ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("BorderType", 					"none");
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ButtonElement.UpSkinStyleDefault);  //Dont need this same as button default
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ButtonElement.UpSkinStyleDefault); 
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ButtonElement.UpSkinStyleDefault);
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault); 
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ButtonElement.DisabledSkinStyleDefault); //Dont need this same as button default
 
 ScrollBarElement.ButtonTabStyleDefault = new StyleDefinition();

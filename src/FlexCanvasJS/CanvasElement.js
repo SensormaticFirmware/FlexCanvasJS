@@ -3055,7 +3055,10 @@ CanvasElement.prototype._dispatchEvent =
 						listeners[i2](handlerEvent);
 						
 						if (handlerEvent._defaultPrevented == true)
+						{
 							dispatchEvent._defaultPrevented = true;
+							event._defaultPrevented = true;
+						}
 						
 						if (handlerEvent._canceled == true)
 						{
@@ -3093,7 +3096,10 @@ CanvasElement.prototype._dispatchEvent =
 						listeners[i2](handlerEvent);
 						
 						if (handlerEvent._defaultPrevented == true)
+						{
 							dispatchEvent._defaultPrevented = true;
+							event._defaultPrevented = true;
+						}
 						
 						if (handlerEvent._canceled == true)
 						{
@@ -3124,7 +3130,10 @@ CanvasElement.prototype._dispatchEvent =
 					listeners[i2](handlerEvent);
 					
 					if (handlerEvent._defaultPrevented == true)
+					{
 						dispatchEvent._defaultPrevented = true;
+						event._defaultPrevented = true;
+					}
 					
 					if (handlerEvent._canceled == true)
 					{
@@ -3149,7 +3158,10 @@ CanvasElement.prototype._dispatchEvent =
 					listeners[i2](handlerEvent);
 					
 					if (handlerEvent._defaultPrevented == true)
+					{
 						dispatchEvent._defaultPrevented = true;
+						event._defaultPrevented = true;
+					}
 					
 					if (handlerEvent._canceled == true)
 					{

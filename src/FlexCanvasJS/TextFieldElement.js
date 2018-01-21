@@ -1476,57 +1476,57 @@ TextFieldElement.prototype._doLayout =
 			textYPosition = Math.round((h / 2) - (totalTextHeight / 2));
 		 
 		//Update actual line data
-		var totalNewOldLines = Math.max(lines.length, this._textLinesContainer._getNumChildren());
+		
+		//Purge excess
+		while (this._textLinesContainer._getNumChildren() > lines.length)
+			this._textLinesContainer._removeChildAt(this._textLinesContainer._getNumChildren() - 1);
+		
+		//Update Add
 		var textFieldLine = null;
 		var lineWidth = 0;
 		var lineXPosition;
-		for (var i = 0; i < totalNewOldLines; i++)
+		for (var i = 0; i < lines.length; i++)
 		{
-			//Line removed
-			if (lines[i] == null)
-				this._textLinesContainer._removeChildAt(i);
-			else
-			{
+			if (i < this._textLinesContainer._getNumChildren()) //Update line
 				textFieldLine = this._textLinesContainer._getChildAt(i);
-				if (textFieldLine == null) //Line added
-				{
-					textFieldLine = new TextFieldLineElement();
-					this._textLinesContainer._addChild(textFieldLine);
-				}
-				
-				//Update line
-				textFieldLine.setParentLineMetrics(this, lines[i].charMetricsStartIndex, lines[i].charMetricsEndIndex);
-				textFieldLine.setParentSelection(this._textHighlightStartIndex, this._caretIndex);
-				
-				textFieldLine.setStyle("PaddingTop", linePaddingTop);
-				textFieldLine.setStyle("PaddingBottom", linePaddingBottom);
-				
-				lineWidth = textFieldLine.getLineWidth();
-				textFieldLine._setActualSize(lineWidth, lineHeight);
-				
-				if (lineWidth < availableWidth || isMultiline == true) //align
-				{
-					if (textAlign == "right")
-						lineXPosition = availableWidth - lineWidth;
-					else if (textAlign == "center")
-						lineXPosition = Math.round((availableWidth / 2) - (lineWidth / 2));
-					else // "left"
-						lineXPosition = 0;
-				}
-				else //fill excess (over-scroll or resize)
-				{
-					if (textFieldLine._x > 0)
-						lineXPosition = 0;					
-					else if (textFieldLine._x + lineWidth < availableWidth)
-						lineXPosition = availableWidth - lineWidth;
-					else
-						lineXPosition = textFieldLine._x;
-				}
-				
-				textFieldLine._setActualPosition(lineXPosition, textYPosition);
-				
-				textYPosition += (lineHeight + lineSpacing);
+			else //Line added
+			{
+				textFieldLine = new TextFieldLineElement();
+				this._textLinesContainer._addChild(textFieldLine);
 			}
+			
+			//Update line
+			textFieldLine.setParentLineMetrics(this, lines[i].charMetricsStartIndex, lines[i].charMetricsEndIndex);
+			textFieldLine.setParentSelection(this._textHighlightStartIndex, this._caretIndex);
+			
+			textFieldLine.setStyle("PaddingTop", linePaddingTop);
+			textFieldLine.setStyle("PaddingBottom", linePaddingBottom);
+			
+			lineWidth = textFieldLine.getLineWidth();
+			textFieldLine._setActualSize(lineWidth, lineHeight);
+			
+			if (lineWidth < availableWidth || isMultiline == true) //align
+			{
+				if (textAlign == "right")
+					lineXPosition = availableWidth - lineWidth;
+				else if (textAlign == "center")
+					lineXPosition = Math.round((availableWidth / 2) - (lineWidth / 2));
+				else // "left"
+					lineXPosition = 0;
+			}
+			else //fill excess (over-scroll or resize)
+			{
+				if (textFieldLine._x > 0)
+					lineXPosition = 0;					
+				else if (textFieldLine._x + lineWidth < availableWidth)
+					lineXPosition = availableWidth - lineWidth;
+				else
+					lineXPosition = textFieldLine._x;
+			}
+			
+			textFieldLine._setActualPosition(lineXPosition, textYPosition);
+			
+			textYPosition += (lineHeight + lineSpacing);
 		}
 		
 		
