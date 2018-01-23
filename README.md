@@ -12,7 +12,7 @@ Complex scalable layouts are easily achieved by nesting container elements. Data
 
 A robust styling and skinning system is provided allowing you to easily modify and customize the appearance and behaviour of any UI control. 
 
-FlexCanvasJS does the heavy lifting for you. Render caching, redraw regions, composite layers and effects are all automatic, for good performance  even in the most complex, animated, and heavily layered applications. 
+FlexCanvasJS does the heavy lifting for you. Render caching, redraw regions, composite layers and effects are all automatic, for good performance  even in the most complex, animated, and heavily layered applications and games. 
 
 ### Getting Started ###
 
