@@ -2561,7 +2561,7 @@ ArrowShape.prototype.drawShape =
 			if (rectWidthPercent == null)
 				baseWidth = 0;
 			else
-				baseWidth = Math.round(w * (rectWidthPercent / 100));
+				baseWidth = Math.round(width * (rectWidthPercent / 100));
 		}
 		if (baseHeight == null)
 		{
@@ -2569,7 +2569,7 @@ ArrowShape.prototype.drawShape =
 			if (rectHeightPercent == null)
 				baseHeight = 0;
 			else
-				baseHeight = Math.round(h * (rectHeightPercent / 100));
+				baseHeight = Math.round(height * (rectHeightPercent / 100));
 		}
 		
 		if (baseWidth == 0 || baseHeight == 0)
@@ -4346,20 +4346,20 @@ CanvasElement._StyleTypes.TextFont =						{inheritable:true};		// "Arial"
 CanvasElement._StyleTypes.TextSize =						{inheritable:true};		// number
 
 /**
- * @style TextAlign String
+ * @style TextHorizontalAlign String
  * @inheritable
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-CanvasElement._StyleTypes.TextAlign =						{inheritable:true};		// "left" || "center" || "right"
+CanvasElement._StyleTypes.TextHorizontalAlign =						{inheritable:true};		// "left" || "center" || "right"
 
 /**
- * @style TextBaseline String
+ * @style TextVerticalAlign String
  * @inheritable
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-CanvasElement._StyleTypes.TextBaseline =					{inheritable:true};  	// "top" || "middle" || "bottom"
+CanvasElement._StyleTypes.TextVerticalAlign =					{inheritable:true};  	// "top" || "middle" || "bottom"
 
 /**
  * @style LinePaddingTop Number
@@ -4489,8 +4489,8 @@ CanvasElement.StyleDefault.setStyle("CompositeLayer",					false);
 CanvasElement.StyleDefault.setStyle("TextStyle", 						"normal");
 CanvasElement.StyleDefault.setStyle("TextFont", 						"Arial");
 CanvasElement.StyleDefault.setStyle("TextSize", 						12);
-CanvasElement.StyleDefault.setStyle("TextAlign",						"left");
-CanvasElement.StyleDefault.setStyle("TextBaseline", 					"middle");
+CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
+CanvasElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
 CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				1);
 CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
@@ -6581,7 +6581,10 @@ CanvasElement.prototype._dispatchEvent =
 						listeners[i2](handlerEvent);
 						
 						if (handlerEvent._defaultPrevented == true)
+						{
 							dispatchEvent._defaultPrevented = true;
+							event._defaultPrevented = true;
+						}
 						
 						if (handlerEvent._canceled == true)
 						{
@@ -6619,7 +6622,10 @@ CanvasElement.prototype._dispatchEvent =
 						listeners[i2](handlerEvent);
 						
 						if (handlerEvent._defaultPrevented == true)
+						{
 							dispatchEvent._defaultPrevented = true;
+							event._defaultPrevented = true;
+						}
 						
 						if (handlerEvent._canceled == true)
 						{
@@ -6650,7 +6656,10 @@ CanvasElement.prototype._dispatchEvent =
 					listeners[i2](handlerEvent);
 					
 					if (handlerEvent._defaultPrevented == true)
+					{
 						dispatchEvent._defaultPrevented = true;
+						event._defaultPrevented = true;
+					}
 					
 					if (handlerEvent._canceled == true)
 					{
@@ -6675,7 +6684,10 @@ CanvasElement.prototype._dispatchEvent =
 					listeners[i2](handlerEvent);
 					
 					if (handlerEvent._defaultPrevented == true)
+					{
 						dispatchEvent._defaultPrevented = true;
+						event._defaultPrevented = true;
+					}
 					
 					if (handlerEvent._canceled == true)
 					{
@@ -10350,8 +10362,8 @@ TextFieldElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("TextAlign" in stylesMap ||
-			"TextBaseline" in stylesMap || 
+		else if ("TextHorizontalAlign" in stylesMap ||
+			"TextVerticalAlign" in stylesMap || 
 			"TextLineSpacing" in stylesMap)
 		{
 			this._invalidateLayout();
@@ -10504,8 +10516,8 @@ TextFieldElement.prototype._doLayout =
 		this._textLinesContainer._setActualSize(availableWidth, h);
 		
 		var isMultiline = this.getStyle("Multiline");
-		var textAlign = this.getStyle("TextAlign");
-		var textBaseline = this.getStyle("TextBaseline");
+		var textAlign = this.getStyle("TextHorizontalAlign");
+		var textBaseline = this.getStyle("TextVerticalAlign");
 		var textSize = this.getStyle("TextSize");
 		var lineSpacing = this.getStyle("TextLineSpacing");
 		var linePaddingTop = this.getStyle("TextLinePaddingTop");
@@ -10590,57 +10602,57 @@ TextFieldElement.prototype._doLayout =
 			textYPosition = Math.round((h / 2) - (totalTextHeight / 2));
 		 
 		//Update actual line data
-		var totalNewOldLines = Math.max(lines.length, this._textLinesContainer._getNumChildren());
+		
+		//Purge excess
+		while (this._textLinesContainer._getNumChildren() > lines.length)
+			this._textLinesContainer._removeChildAt(this._textLinesContainer._getNumChildren() - 1);
+		
+		//Update Add
 		var textFieldLine = null;
 		var lineWidth = 0;
 		var lineXPosition;
-		for (var i = 0; i < totalNewOldLines; i++)
+		for (var i = 0; i < lines.length; i++)
 		{
-			//Line removed
-			if (lines[i] == null)
-				this._textLinesContainer._removeChildAt(i);
-			else
-			{
+			if (i < this._textLinesContainer._getNumChildren()) //Update line
 				textFieldLine = this._textLinesContainer._getChildAt(i);
-				if (textFieldLine == null) //Line added
-				{
-					textFieldLine = new TextFieldLineElement();
-					this._textLinesContainer._addChild(textFieldLine);
-				}
-				
-				//Update line
-				textFieldLine.setParentLineMetrics(this, lines[i].charMetricsStartIndex, lines[i].charMetricsEndIndex);
-				textFieldLine.setParentSelection(this._textHighlightStartIndex, this._caretIndex);
-				
-				textFieldLine.setStyle("PaddingTop", linePaddingTop);
-				textFieldLine.setStyle("PaddingBottom", linePaddingBottom);
-				
-				lineWidth = textFieldLine.getLineWidth();
-				textFieldLine._setActualSize(lineWidth, lineHeight);
-				
-				if (lineWidth < availableWidth || isMultiline == true) //align
-				{
-					if (textAlign == "right")
-						lineXPosition = availableWidth - lineWidth;
-					else if (textAlign == "center")
-						lineXPosition = Math.round((availableWidth / 2) - (lineWidth / 2));
-					else // "left"
-						lineXPosition = 0;
-				}
-				else //fill excess (over-scroll or resize)
-				{
-					if (textFieldLine._x > 0)
-						lineXPosition = 0;					
-					else if (textFieldLine._x + lineWidth < availableWidth)
-						lineXPosition = availableWidth - lineWidth;
-					else
-						lineXPosition = textFieldLine._x;
-				}
-				
-				textFieldLine._setActualPosition(lineXPosition, textYPosition);
-				
-				textYPosition += (lineHeight + lineSpacing);
+			else //Line added
+			{
+				textFieldLine = new TextFieldLineElement();
+				this._textLinesContainer._addChild(textFieldLine);
 			}
+			
+			//Update line
+			textFieldLine.setParentLineMetrics(this, lines[i].charMetricsStartIndex, lines[i].charMetricsEndIndex);
+			textFieldLine.setParentSelection(this._textHighlightStartIndex, this._caretIndex);
+			
+			textFieldLine.setStyle("PaddingTop", linePaddingTop);
+			textFieldLine.setStyle("PaddingBottom", linePaddingBottom);
+			
+			lineWidth = textFieldLine.getLineWidth();
+			textFieldLine._setActualSize(lineWidth, lineHeight);
+			
+			if (lineWidth < availableWidth || isMultiline == true) //align
+			{
+				if (textAlign == "right")
+					lineXPosition = availableWidth - lineWidth;
+				else if (textAlign == "center")
+					lineXPosition = Math.round((availableWidth / 2) - (lineWidth / 2));
+				else // "left"
+					lineXPosition = 0;
+			}
+			else //fill excess (over-scroll or resize)
+			{
+				if (textFieldLine._x > 0)
+					lineXPosition = 0;					
+				else if (textFieldLine._x + lineWidth < availableWidth)
+					lineXPosition = availableWidth - lineWidth;
+				else
+					lineXPosition = textFieldLine._x;
+			}
+			
+			textFieldLine._setActualPosition(lineXPosition, textYPosition);
+			
+			textYPosition += (lineHeight + lineSpacing);
 		}
 		
 		
@@ -10980,7 +10992,7 @@ RadioButtonSkinElement.prototype._doStylesUpdated =
 	{
 		RadioButtonSkinElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		if ("SkinState" in stylesMap || "CheckColor" in stylesMap)
+		if ("SkinState" in stylesMap || "CheckColor" in stylesMap || "CheckSize" in stylesMap)
 			this._invalidateRender();
 	};
 
@@ -11307,6 +11319,14 @@ CheckboxSkinElement._StyleTypes = Object.create(null);
  */
 CheckboxSkinElement._StyleTypes.CheckColor =				{inheritable:false};		//"#000000"
 
+/**
+ * @style CheckSize Number
+ * 
+ * Value between 0 and 1 used to determine the size that the "selected" indicator 
+ * should be rendered relative to this element's size.
+ */
+CheckboxSkinElement._StyleTypes.CheckSize = 				{inheritable:false};
+
 
 ////////Default Styles////////////////
 
@@ -11314,6 +11334,9 @@ CheckboxSkinElement.StyleDefault = new StyleDefinition();
 
 //CheckboxSkinElement specific styles
 CheckboxSkinElement.StyleDefault.setStyle("CheckColor", 						"#000000");
+CheckboxSkinElement.StyleDefault.setStyle("CheckSize", 							.80);
+
+
 
 
 /////////Protected Functions////////////////////////
@@ -11324,7 +11347,7 @@ CheckboxSkinElement.prototype._doStylesUpdated =
 	{
 		CheckboxSkinElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		if ("SkinState" in stylesMap || "CheckColor" in stylesMap)
+		if ("SkinState" in stylesMap || "CheckColor" in stylesMap || "CheckSize" in stylesMap)
 			this._invalidateRender();
 	};
 
@@ -11352,10 +11375,12 @@ CheckboxSkinElement.prototype._doRender =
 			var borderThickness = this._getBorderThickness();
 			var checkColor = this.getStyle("CheckColor");
 			
-			var x = borderThickness;
-			var y = borderThickness;
-			var width = this._width - (borderThickness * 2);
-			var height = this._height - (borderThickness * 2);
+			var checkSize = this.getStyle("CheckSize");
+			var width = this._width * checkSize;
+			var height = this._height * checkSize;
+			
+			var x = 0 + ((this._width - width) / 2);
+			var y = 0 + ((this._height - height) / 2);
 			
 			if (currentState.indexOf("selected") == 0) //Draw check
 			{
@@ -12432,8 +12457,8 @@ LabelElement.prototype._doStylesUpdated =
 			this._invalidateRender();
 		}
 		
-		if ("TextAlign" in stylesMap ||
-			"TextBaseline" in stylesMap ||
+		if ("TextHorizontalAlign" in stylesMap ||
+			"TextVerticalAlign" in stylesMap ||
 			"TextColor" in stylesMap ||
 			"TextFillType" in stylesMap)
 		{
@@ -12527,8 +12552,8 @@ LabelElement.prototype._doRender =
 		var linePaddingTop = this.getStyle("TextLinePaddingTop");
 		var linePaddingBottom = this.getStyle("TextLinePaddingBottom");
 		
-		var textBaseline = this.getStyle("TextBaseline");
-		var textAlign = this.getStyle("TextAlign");
+		var textBaseline = this.getStyle("TextVerticalAlign");
+		var textAlign = this.getStyle("TextHorizontalAlign");
 		var textFillType = this.getStyle("TextFillType");
 		var textColor = this.getStyle("TextColor");
 		
@@ -16035,18 +16060,18 @@ ButtonElement._StyleTypes.DisabledTextColor = 			{inheritable:false};		//"#00000
 //so the label will use button defaults if no style explicitly set.
 
 /**
- * @style TextAlign String
+ * @style TextHorizontalAlign String
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-ButtonElement._StyleTypes.TextAlign =					{inheritable:false};		// "left" || "center" || "right"
+ButtonElement._StyleTypes.TextHorizontalAlign =					{inheritable:false};		// "left" || "center" || "right"
 
 /**
- * @style TextBaseline String
+ * @style TextVerticalAlign String
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-ButtonElement._StyleTypes.TextBaseline =				{inheritable:false};  		// "top" || "middle" || "bottom"
+ButtonElement._StyleTypes.TextVerticalAlign =				{inheritable:false};  		// "top" || "middle" || "bottom"
 
 
 /////////Default Styles//////////////////////////////
@@ -16059,8 +16084,8 @@ ButtonElement.StyleDefault.setStyle("PaddingBottom",                    3);
 ButtonElement.StyleDefault.setStyle("PaddingLeft",                      4);
 ButtonElement.StyleDefault.setStyle("PaddingRight",                     4);
 
-ButtonElement.StyleDefault.setStyle("TextAlign", 						"center"); 
-ButtonElement.StyleDefault.setStyle("TextBaseline",                     "middle");
+ButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 				"center"); 
+ButtonElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
 
 ButtonElement.StyleDefault.setStyle("TabStop", 							0);			// number
 
@@ -16400,11 +16425,11 @@ ButtonElement.prototype._doStylesUpdated =
 		if ("Enabled" in stylesMap && this.getStyle("MouseEnabled") == true)
 			this._updateState();
 		
-		if ("TextAlign" in stylesMap && this._labelElement != null)
-			this._labelElement.setStyle("TextAlign", this.getStyle("TextAlign"));
+		if ("TextHorizontalAlign" in stylesMap && this._labelElement != null)
+			this._labelElement.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
 		
-		if ("TextBaseline" in stylesMap && this._labelElement != null)
-			this._labelElement.setStyle("TextBaseline", this.getStyle("TextBaseline"));
+		if ("TextVerticalAlign" in stylesMap && this._labelElement != null)
+			this._labelElement.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
 		
 		//Always call (can optimize by checking for all text color styles)
 		this._updateTextColor();
@@ -16423,8 +16448,8 @@ ButtonElement.prototype._createLabel =
 		var label = new LabelElement();
 	
 		label.setStyle("MouseEnabled", false);
-		label.setStyle("TextAlign", this.getStyle("TextAlign"));
-		label.setStyle("TextBaseline", this.getStyle("TextBaseline"));
+		label.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+		label.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
 		
 		label.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
 		
@@ -17009,12 +17034,19 @@ ScrollBarElement._StyleTypes.ButtonTabStyle = 				{inheritable:false};		// Style
 
 ScrollBarElement.StyleDefault = new StyleDefinition();
 
+ScrollBarElement.TrackSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderType", 				"solid");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderThickness", 			1);
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderColor", 				"#333333");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundColor", 			"#D9D9D9");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("AutoGradientType", 		"none");
+
 //Button style defaults
 ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("BorderType", 					"none");
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ButtonElement.UpSkinStyleDefault);  //Dont need this same as button default
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ButtonElement.UpSkinStyleDefault); 
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ButtonElement.UpSkinStyleDefault);
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault); 
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ButtonElement.DisabledSkinStyleDefault); //Dont need this same as button default
 
 ScrollBarElement.ButtonTabStyleDefault = new StyleDefinition();
@@ -17734,8 +17766,8 @@ RadioButtonElement.StyleDefault.setStyle("PaddingBottom",                       
 RadioButtonElement.StyleDefault.setStyle("PaddingLeft",                         0);
 RadioButtonElement.StyleDefault.setStyle("PaddingRight",                        0);
 
-RadioButtonElement.StyleDefault.setStyle("TextAlign", 							"left");
-RadioButtonElement.StyleDefault.setStyle("TextBaseline", 						"middle");
+RadioButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 				"left");
+RadioButtonElement.StyleDefault.setStyle("TextVerticalAlign", 					"middle");
 
 RadioButtonElement.StyleDefault.setStyle("SkinClass", 							RadioButtonSkinElement); //Not necessary, just for completeness
 
@@ -17812,6 +17844,21 @@ RadioButtonElement.StyleDefault.setStyle("SelectedDisabledSkinStyle", 			RadioBu
 
 
 /////////////Internal Functions/////////////////////	
+
+//@override
+RadioButtonElement.prototype._doStylesUpdated = 
+	function (stylesMap)
+	{
+		RadioButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		if ("LabelGap" in stylesMap)
+		{
+			this._invalidateMeasure();
+			this._invalidateLayout();
+		}
+		else if ("LabelPlacement" in stylesMap)
+			this._invalidateLayout();
+	};
 
 //@override
 RadioButtonElement.prototype._doMeasure = 
@@ -18115,7 +18162,7 @@ DropdownElement.StyleDefault.setStyle("PopupDataListClass", 					DataListElement
 DropdownElement.StyleDefault.setStyle("PopupDataListStyle", 					DropdownElement.DataListStyleDefault); 			// StyleDefinition
 DropdownElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 								// Element constructor
 DropdownElement.StyleDefault.setStyle("ArrowButtonStyle", 						DropdownElement.ArrowButtonStyleDefault); 		// StyleDefinition
-DropdownElement.StyleDefault.setStyle("TextAlign", 								"left"); 								
+DropdownElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 								
 DropdownElement.StyleDefault.setStyle("MaxPopupHeight", 						200); 											// number
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				300); 											// number (milliseconds)
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 							// function (fraction) { return fraction}
@@ -18827,8 +18874,8 @@ DropdownElement.prototype._doStylesUpdated =
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap ||
-			"TextAlign" in stylesMap ||
-			"TextBaseline" in stylesMap || 
+			"TextHorizontalAlign" in stylesMap ||
+			"TextVerticalAlign" in stylesMap || 
 			"Text" in stylesMap)
 		{
 			this._sampledTextWidth = null;
@@ -19046,7 +19093,7 @@ DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 		null);
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("BorderType", 				"none");		
 DataGridHeaderItemRenderer.StyleDefault.setStyle("TextSize", 				12);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextAlign", 				"left");
+DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 	"left");
 DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",				3);
 DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",			3);
 DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",				8);
