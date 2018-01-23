@@ -1236,8 +1236,8 @@ TextFieldElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("TextAlign" in stylesMap ||
-			"TextBaseline" in stylesMap || 
+		else if ("TextHorizontalAlign" in stylesMap ||
+			"TextVerticalAlign" in stylesMap || 
 			"TextLineSpacing" in stylesMap)
 		{
 			this._invalidateLayout();
@@ -1390,8 +1390,8 @@ TextFieldElement.prototype._doLayout =
 		this._textLinesContainer._setActualSize(availableWidth, h);
 		
 		var isMultiline = this.getStyle("Multiline");
-		var textAlign = this.getStyle("TextAlign");
-		var textBaseline = this.getStyle("TextBaseline");
+		var textAlign = this.getStyle("TextHorizontalAlign");
+		var textBaseline = this.getStyle("TextVerticalAlign");
 		var textSize = this.getStyle("TextSize");
 		var lineSpacing = this.getStyle("TextLineSpacing");
 		var linePaddingTop = this.getStyle("TextLinePaddingTop");

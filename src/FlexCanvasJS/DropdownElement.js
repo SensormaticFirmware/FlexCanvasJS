@@ -239,7 +239,7 @@ DropdownElement.StyleDefault.setStyle("PopupDataListClass", 					DataListElement
 DropdownElement.StyleDefault.setStyle("PopupDataListStyle", 					DropdownElement.DataListStyleDefault); 			// StyleDefinition
 DropdownElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 								// Element constructor
 DropdownElement.StyleDefault.setStyle("ArrowButtonStyle", 						DropdownElement.ArrowButtonStyleDefault); 		// StyleDefinition
-DropdownElement.StyleDefault.setStyle("TextAlign", 								"left"); 								
+DropdownElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 								
 DropdownElement.StyleDefault.setStyle("MaxPopupHeight", 						200); 											// number
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				300); 											// number (milliseconds)
 DropdownElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 							// function (fraction) { return fraction}
@@ -951,8 +951,8 @@ DropdownElement.prototype._doStylesUpdated =
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap ||
-			"TextAlign" in stylesMap ||
-			"TextBaseline" in stylesMap || 
+			"TextHorizontalAlign" in stylesMap ||
+			"TextVerticalAlign" in stylesMap || 
 			"Text" in stylesMap)
 		{
 			this._sampledTextWidth = null;

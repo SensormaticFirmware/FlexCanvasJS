@@ -90,7 +90,7 @@ DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 		null);
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("BorderType", 				"none");		
 DataGridHeaderItemRenderer.StyleDefault.setStyle("TextSize", 				12);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextAlign", 				"left");
+DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 	"left");
 DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",				3);
 DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",			3);
 DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",				8);

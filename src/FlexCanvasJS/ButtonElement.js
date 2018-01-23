@@ -178,18 +178,18 @@ ButtonElement._StyleTypes.DisabledTextColor = 			{inheritable:false};		//"#00000
 //so the label will use button defaults if no style explicitly set.
 
 /**
- * @style TextAlign String
+ * @style TextHorizontalAlign String
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-ButtonElement._StyleTypes.TextAlign =					{inheritable:false};		// "left" || "center" || "right"
+ButtonElement._StyleTypes.TextHorizontalAlign =					{inheritable:false};		// "left" || "center" || "right"
 
 /**
- * @style TextBaseline String
+ * @style TextVerticalAlign String
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-ButtonElement._StyleTypes.TextBaseline =				{inheritable:false};  		// "top" || "middle" || "bottom"
+ButtonElement._StyleTypes.TextVerticalAlign =				{inheritable:false};  		// "top" || "middle" || "bottom"
 
 
 /////////Default Styles//////////////////////////////
@@ -202,8 +202,8 @@ ButtonElement.StyleDefault.setStyle("PaddingBottom",                    3);
 ButtonElement.StyleDefault.setStyle("PaddingLeft",                      4);
 ButtonElement.StyleDefault.setStyle("PaddingRight",                     4);
 
-ButtonElement.StyleDefault.setStyle("TextAlign", 						"center"); 
-ButtonElement.StyleDefault.setStyle("TextBaseline",                     "middle");
+ButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 				"center"); 
+ButtonElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
 
 ButtonElement.StyleDefault.setStyle("TabStop", 							0);			// number
 
@@ -543,11 +543,11 @@ ButtonElement.prototype._doStylesUpdated =
 		if ("Enabled" in stylesMap && this.getStyle("MouseEnabled") == true)
 			this._updateState();
 		
-		if ("TextAlign" in stylesMap && this._labelElement != null)
-			this._labelElement.setStyle("TextAlign", this.getStyle("TextAlign"));
+		if ("TextHorizontalAlign" in stylesMap && this._labelElement != null)
+			this._labelElement.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
 		
-		if ("TextBaseline" in stylesMap && this._labelElement != null)
-			this._labelElement.setStyle("TextBaseline", this.getStyle("TextBaseline"));
+		if ("TextVerticalAlign" in stylesMap && this._labelElement != null)
+			this._labelElement.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
 		
 		//Always call (can optimize by checking for all text color styles)
 		this._updateTextColor();
@@ -566,8 +566,8 @@ ButtonElement.prototype._createLabel =
 		var label = new LabelElement();
 	
 		label.setStyle("MouseEnabled", false);
-		label.setStyle("TextAlign", this.getStyle("TextAlign"));
-		label.setStyle("TextBaseline", this.getStyle("TextBaseline"));
+		label.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+		label.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
 		
 		label.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
 		

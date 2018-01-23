@@ -80,8 +80,8 @@ RadioButtonElement.StyleDefault.setStyle("PaddingBottom",                       
 RadioButtonElement.StyleDefault.setStyle("PaddingLeft",                         0);
 RadioButtonElement.StyleDefault.setStyle("PaddingRight",                        0);
 
-RadioButtonElement.StyleDefault.setStyle("TextAlign", 							"left");
-RadioButtonElement.StyleDefault.setStyle("TextBaseline", 						"middle");
+RadioButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 				"left");
+RadioButtonElement.StyleDefault.setStyle("TextVerticalAlign", 					"middle");
 
 RadioButtonElement.StyleDefault.setStyle("SkinClass", 							RadioButtonSkinElement); //Not necessary, just for completeness
 
@@ -158,6 +158,21 @@ RadioButtonElement.StyleDefault.setStyle("SelectedDisabledSkinStyle", 			RadioBu
 
 
 /////////////Internal Functions/////////////////////	
+
+//@override
+RadioButtonElement.prototype._doStylesUpdated = 
+	function (stylesMap)
+	{
+		RadioButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		if ("LabelGap" in stylesMap)
+		{
+			this._invalidateMeasure();
+			this._invalidateLayout();
+		}
+		else if ("LabelPlacement" in stylesMap)
+			this._invalidateLayout();
+	};
 
 //@override
 RadioButtonElement.prototype._doMeasure = 

@@ -93,8 +93,8 @@ LabelElement.prototype._doStylesUpdated =
 			this._invalidateRender();
 		}
 		
-		if ("TextAlign" in stylesMap ||
-			"TextBaseline" in stylesMap ||
+		if ("TextHorizontalAlign" in stylesMap ||
+			"TextVerticalAlign" in stylesMap ||
 			"TextColor" in stylesMap ||
 			"TextFillType" in stylesMap)
 		{
@@ -188,8 +188,8 @@ LabelElement.prototype._doRender =
 		var linePaddingTop = this.getStyle("TextLinePaddingTop");
 		var linePaddingBottom = this.getStyle("TextLinePaddingBottom");
 		
-		var textBaseline = this.getStyle("TextBaseline");
-		var textAlign = this.getStyle("TextAlign");
+		var textBaseline = this.getStyle("TextVerticalAlign");
+		var textAlign = this.getStyle("TextHorizontalAlign");
 		var textFillType = this.getStyle("TextFillType");
 		var textColor = this.getStyle("TextColor");
 		

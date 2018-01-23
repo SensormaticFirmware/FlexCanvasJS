@@ -820,20 +820,20 @@ CanvasElement._StyleTypes.TextFont =						{inheritable:true};		// "Arial"
 CanvasElement._StyleTypes.TextSize =						{inheritable:true};		// number
 
 /**
- * @style TextAlign String
+ * @style TextHorizontalAlign String
  * @inheritable
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-CanvasElement._StyleTypes.TextAlign =						{inheritable:true};		// "left" || "center" || "right"
+CanvasElement._StyleTypes.TextHorizontalAlign =						{inheritable:true};		// "left" || "center" || "right"
 
 /**
- * @style TextBaseline String
+ * @style TextVerticalAlign String
  * @inheritable
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-CanvasElement._StyleTypes.TextBaseline =					{inheritable:true};  	// "top" || "middle" || "bottom"
+CanvasElement._StyleTypes.TextVerticalAlign =					{inheritable:true};  	// "top" || "middle" || "bottom"
 
 /**
  * @style LinePaddingTop Number
@@ -963,8 +963,8 @@ CanvasElement.StyleDefault.setStyle("CompositeLayer",					false);
 CanvasElement.StyleDefault.setStyle("TextStyle", 						"normal");
 CanvasElement.StyleDefault.setStyle("TextFont", 						"Arial");
 CanvasElement.StyleDefault.setStyle("TextSize", 						12);
-CanvasElement.StyleDefault.setStyle("TextAlign",						"left");
-CanvasElement.StyleDefault.setStyle("TextBaseline", 					"middle");
+CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
+CanvasElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
 CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				1);
 CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
