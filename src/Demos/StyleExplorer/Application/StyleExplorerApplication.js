@@ -1,0 +1,522 @@
+
+function StyleExplorerApplication() //extends CanvasManager
+{
+	//Call base constructor
+	StyleExplorerApplication.base.prototype.constructor.call(this);
+	
+	////////////////LAYOUT & STYLING/////////////////////////////
+	//This section could be handled by an XML markup interpreter.
+	
+	//Using indentation to help visualize nest level of elements.
+	
+	this.setStyleDefinitions(canvasManagerStyle); //Set root styles
+	
+		this._applicationViewport = new ViewportElement();
+		this._applicationViewport.setStyle("PercentWidth", 100);
+		this._applicationViewport.setStyle("PercentHeight", 100);
+
+			this._applicationContainer = new ListContainerElement();
+			this._applicationContainer.setStyle("LayoutDirection", "vertical");
+			this._applicationContainer.addStyleDefinition(applicationContainerStyle);
+			
+				this._headerContainer = new ListContainerElement();
+				this._headerContainer.setStyle("PercentWidth", 100);
+				this._headerContainer.setStyle("LayoutDirection", "horizontal");
+				
+					this._textTitle = new TextElement();
+					this._textTitle.setStyle("PercentWidth", 100);
+					this._textTitle.addStyleDefinition(textTitleStyle);
+					
+					this._languageSelectContainer = new ListContainerElement();
+					this._languageSelectContainer.setStyle("LayoutDirection", "horizontal");
+					this._languageSelectContainer.setStyle("LayoutVerticalAlign", "middle");
+					this._languageSelectContainer.setStyle("LayoutGap", 6);
+					
+						this._labelLanguage = new LabelElement();
+						this._dropdownLocale = new DropdownElement();
+						
+					this._languageSelectContainer.addElement(this._labelLanguage);
+					this._languageSelectContainer.addElement(this._dropdownLocale);
+					
+				this._headerContainer.addElement(this._textTitle);
+				this._headerContainer.addElement(this._languageSelectContainer);
+				
+				this._dividerHeader = new CanvasElement();
+				this._dividerHeader.setStyleDefinitions(hDividerLineStyle);
+				
+				this._contentContainer = new ListContainerElement();
+				this._contentContainer.setStyle("PercentWidth", 100);
+				this._contentContainer.setStyle("PercentHeight", 100);
+				this._contentContainer.setStyle("LayoutDirection", "horizontal");
+				this._contentContainer.setStyle("LayoutGap", 8);
+				
+					this._controlSelectOuterContainer = new AnchorContainerElement();
+					this._controlSelectOuterContainer.setStyle("PercentHeight", 100);
+					this._controlSelectOuterContainer.setStyle("Width", 180);
+					
+						this._controlSelectPanelBackground = new CanvasElement();
+						this._controlSelectPanelBackground.setStyleDefinitions(panelBackgroundStyle);
+					
+						this._controlSelectInnerContainer = new ListContainerElement();
+						this._controlSelectInnerContainer.setStyleDefinitions(panelInnerContainerStyle);
+						
+							this._labelSelectControl = new LabelElement();
+							this._labelSelectControl.setStyle("TextStyle", "bold");
+							
+							this._dividerSelectControl = new CanvasElement();
+							this._dividerSelectControl.setStyleDefinitions(hDividerLineStyle);
+							
+							this._spacerSelectControl = new CanvasElement();
+							this._spacerSelectControl.setStyle("PercentWidth", 100);
+							this._spacerSelectControl.setStyle("Height", 5);
+							
+							this._dataListControls = new DataListElement();
+							this._dataListControls.setStyle("PercentWidth", 100);
+							this._dataListControls.setStyle("PercentHeight", 100);
+							
+						this._controlSelectInnerContainer.addElement(this._labelSelectControl);
+						this._controlSelectInnerContainer.addElement(this._dividerSelectControl);
+						this._controlSelectInnerContainer.addElement(this._spacerSelectControl);
+						this._controlSelectInnerContainer.addElement(this._dataListControls);
+						
+					this._controlSelectOuterContainer.addElement(this._controlSelectPanelBackground);
+					this._controlSelectOuterContainer.addElement(this._controlSelectInnerContainer);
+					
+					this._styleSelectOuterContainer = new AnchorContainerElement();
+					this._styleSelectOuterContainer.setStyle("PercentHeight", 100);
+					this._styleSelectOuterContainer.setStyle("Width", 450);
+					
+						this._styleSelectPanelBackground = new CanvasElement();
+						this._styleSelectPanelBackground.setStyleDefinitions(panelBackgroundStyle);
+					
+						this._styleSelectInnerContainer = new ListContainerElement();
+						this._styleSelectInnerContainer.setStyleDefinitions(panelInnerContainerStyle);
+					
+							this._labelSelectStyle = new LabelElement();
+							this._labelSelectStyle.setStyle("TextStyle", "bold");
+							
+							this._dividerSelectStyle = new CanvasElement();
+							this._dividerSelectStyle.setStyleDefinitions(hDividerLineStyle);
+						
+							this._spacerSelectStyle = new CanvasElement();
+							this._spacerSelectStyle.setStyle("PercentWidth", 100);
+							this._spacerSelectStyle.setStyle("Height", 5);
+							
+							this._stylesControlViewport = new ViewportElement();
+							this._stylesControlViewport.setStyle("PercentWidth", 100);
+							this._stylesControlViewport.setStyle("PercentHeight", 100);
+							
+								this._stylesControlContainer = new ListContainerElement();
+								this._stylesControlContainer.setStyle("PaddingRight", 5);
+								
+							this._stylesControlViewport.setElement(this._stylesControlContainer);
+							
+						this._styleSelectInnerContainer.addElement(this._labelSelectStyle);
+						this._styleSelectInnerContainer.addElement(this._dividerSelectStyle);
+						this._styleSelectInnerContainer.addElement(this._spacerSelectStyle);
+						this._styleSelectInnerContainer.addElement(this._stylesControlViewport);
+							
+					this._styleSelectOuterContainer.addElement(this._styleSelectPanelBackground);
+					this._styleSelectOuterContainer.addElement(this._styleSelectInnerContainer);
+					
+					this._sandboxOuterContainer = new AnchorContainerElement();
+					this._sandboxOuterContainer.setStyle("PercentHeight", 100);
+					this._sandboxOuterContainer.setStyle("PercentWidth", 100);
+					this._sandboxOuterContainer.setStyle("MinWidth", 300);
+					
+						this._sandboxPanelBackground = new CanvasElement();
+						this._sandboxPanelBackground.setStyleDefinitions(panelBackgroundStyle);
+					
+						this._sandboxInnerContainer = new ListContainerElement();
+						this._sandboxInnerContainer.setStyleDefinitions(panelInnerContainerStyle);
+					
+							this._sandboxHeaderContainer = new ListContainerElement();
+							this._sandboxHeaderContainer.setStyle("PercentWidth", 100);
+							this._sandboxHeaderContainer.setStyle("LayoutDirection", "horizontal");
+							this._sandboxHeaderContainer.setStyle("LayoutVerticalAlign", "middle");
+						
+								this._sandboxHeaderRadioButtonContainer = new ListContainerElement();
+								this._sandboxHeaderRadioButtonContainer.setStyle("Padding", 2);
+								this._sandboxHeaderRadioButtonContainer.setStyle("LayoutGap", 15);
+								this._sandboxHeaderRadioButtonContainer.setStyle("LayoutVerticalAlign", "middle");
+								this._sandboxHeaderRadioButtonContainer.setStyle("LayoutDirection", "horizontal");
+								
+									this._radioButtonSandbox = new RadioButtonElement();
+									this._radioButtonSandbox.setStyle("TextStyle", "bold");
+									
+									this._radioButtonStyleCode = new RadioButtonElement();
+									this._radioButtonStyleCode.setStyle("TextStyle", "bold");
+								
+								this._sandboxHeaderRadioButtonContainer.addElement(this._radioButtonSandbox);
+								this._sandboxHeaderRadioButtonContainer.addElement(this._radioButtonStyleCode);
+									
+							this._sandboxHeaderContainer.addElement(this._sandboxHeaderRadioButtonContainer);
+								
+							this._dividerSandbox = new CanvasElement();
+							this._dividerSandbox.setStyleDefinitions(hDividerLineStyle);
+							
+							this._sandboxControlOuterContainer = new AnchorContainerElement();
+							this._sandboxControlOuterContainer.setStyle("PercentWidth", 100);
+							this._sandboxControlOuterContainer.setStyle("PercentHeight", 100);
+							
+								this._sandboxControlPanelBackground = new CanvasElement();
+								this._sandboxControlPanelBackground.setStyle("Top", 5);
+								this._sandboxControlPanelBackground.setStyle("Bottom", 5);
+								this._sandboxControlPanelBackground.setStyle("Left", 5);
+								this._sandboxControlPanelBackground.setStyle("Right", 5);
+								this._sandboxControlPanelBackground.setStyle("BackgroundColor", "#FFFFFF");
+								this._sandboxControlPanelBackground.setStyle("Alpha", .35);
+							
+								//Visibility Toggled
+								this._sandboxControlContainer = new AnchorContainerElement();
+								this._sandboxControlContainer.setStyle("Top", 5);
+								this._sandboxControlContainer.setStyle("Bottom", 5);
+								this._sandboxControlContainer.setStyle("Left", 5);
+								this._sandboxControlContainer.setStyle("Right", 5);
+							
+								//Visibility Toggled
+								this._textSandboxStyleCode = new TextElement();
+								this._textSandboxStyleCode.setStyle("TextVerticalAlign", "top");
+								this._textSandboxStyleCode.setStyle("PercentWidth", 100);
+								this._textSandboxStyleCode.setStyle("PercentHeight", 100);
+								this._textSandboxStyleCode.setStyle("Top", 8);
+								this._textSandboxStyleCode.setStyle("Bottom", 8);
+								this._textSandboxStyleCode.setStyle("Left", 8);
+								this._textSandboxStyleCode.setStyle("Right", 8);
+								
+							this._sandboxControlOuterContainer.addElement(this._sandboxControlPanelBackground);
+							this._sandboxControlOuterContainer.addElement(this._sandboxControlContainer);
+							this._sandboxControlOuterContainer.addElement(this._textSandboxStyleCode);
+							
+						this._sandboxInnerContainer.addElement(this._sandboxHeaderContainer);	
+						this._sandboxInnerContainer.addElement(this._dividerSandbox);
+						this._sandboxInnerContainer.addElement(this._sandboxControlOuterContainer);
+						
+					this._sandboxOuterContainer.addElement(this._sandboxPanelBackground);
+					this._sandboxOuterContainer.addElement(this._sandboxInnerContainer);
+					
+				this._contentContainer.addElement(this._controlSelectOuterContainer);
+				this._contentContainer.addElement(this._styleSelectOuterContainer);
+				this._contentContainer.addElement(this._sandboxOuterContainer);
+				
+				this._dividerFooter = new CanvasElement();
+				this._dividerFooter.setStyleDefinitions(hDividerLineStyle);
+				
+				this._footerContainer = new ListContainerElement();
+				this._footerContainer.setStyle("PercentWidth", 100);
+				this._footerContainer.setStyle("LayoutDirection", "horizontal");
+				this._footerContainer.setStyle("LayoutHorizontalAlign", "right");
+				
+					this._labelPoweredBy = new LabelElement();
+					this._labelFlexCanvasJS = new LabelElement();
+					this._labelFlexCanvasJS.setStyle("TextStyle", "bold italic");
+					
+				this._footerContainer.addElement(this._labelPoweredBy);
+				this._footerContainer.addElement(this._labelFlexCanvasJS);	
+				
+			this._applicationContainer.addElement(this._headerContainer);
+			this._applicationContainer.addElement(this._dividerHeader);
+			this._applicationContainer.addElement(this._contentContainer);
+			this._applicationContainer.addElement(this._dividerFooter);
+			this._applicationContainer.addElement(this._footerContainer);
+		
+		this._applicationViewport.setElement(this._applicationContainer);	
+			
+	this.addElement(this._applicationViewport);	
+	
+	////Non display////
+	
+	//ToggleButtonGroup (Helper class)
+	this._sandboxHeaderRadioButtonGroup = new ToggleButtonGroup();
+	this._sandboxHeaderRadioButtonGroup.addButton(this._radioButtonSandbox);
+	this._sandboxHeaderRadioButtonGroup.addButton(this._radioButtonStyleCode);
+	this._sandboxHeaderRadioButtonGroup.setSelectedButton(this._radioButtonSandbox);
+	
+	
+	//////////////////EVENT HANDLING//////////////////////////
+	//This section could be handled by a XML markup interpreter.
+	
+	var _self = this;
+	
+	//Private event handlers (need function for each instance), proxy to prototype.
+	this._onLocaleChangedInstance = 
+		function (event)
+		{
+			_self._onLocaleChanged(event);
+		};
+	this._onDropdownLocaleChangedInstance =
+		function (event)
+		{
+			_self._onDropdownLocaleChanged(event);
+		};
+	this._onDataListControlsChangedInstance = 
+		function (event)
+		{
+			_self._onDataListControlsChanged(event);
+		};
+	this._onSandboxHeaderRadioButtonGroupChangedInstance = 
+		function (event)
+		{
+			_self._onSandboxHeaderRadioButtonGroupChanged(event);
+		};
+	this._onStylingChangedInstance = 
+		function (event)
+		{
+			_self._onStylingChanged(event);
+		};
+	this._onEnterFrameStyleCodeUpdateInstance = 
+		function (event)
+		{
+			_self._onEnterFrameStyleCodeUpdate(event);
+		};
+		
+	//Add event listeners	
+	this.addEventListener("localechanged", this._onLocaleChangedInstance);
+	this.addEventListener("stylingchanged", this._onStylingChangedInstance); //Custom event
+	this._dropdownLocale.addEventListener("changed", this._onDropdownLocaleChangedInstance);
+	this._dataListControls.addEventListener("changed", this._onDataListControlsChangedInstance);
+	this._sandboxHeaderRadioButtonGroup.addEventListener("changed", this._onSandboxHeaderRadioButtonGroupChangedInstance);
+	
+	
+	/////////////////FUNCTIONAL///////////////////////////////
+	
+	//////Build controls and style data//////
+	this._dataListControlsCollection = new ListCollection();
+	
+	//Button
+	var buttonDef = new StyleDefinition();
+	buttonDef.setStyle("Text", "My Text");
+	
+	var buttonControl = new ButtonElement();
+	buttonControl.setStyleDefinitions(buttonDef);
+	
+	var buttonControlStyleType = new ControlStyleType("", "ButtonStyle", "root", false, false, buttonControl, null, null, null);
+	buttonControlStyleType.styleListCodeString = "var ButtonStyle = new StyleDefinition();\n";
+	
+	buttonControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"Button", 
+											control:buttonControl, 
+											rootControlStyleType:buttonControlStyleType});
+	//CanvasElement
+	var canvasElementDef = new StyleDefinition();
+	canvasElementDef.setStyle("BackgroundColor", "#FFFF00");
+	canvasElementDef.setStyle("MinWidth", 75);
+	canvasElementDef.setStyle("MinHeight", 75);
+	
+	var canvasElementControl = new CanvasElement();
+	canvasElementControl.setStyleDefinitions(canvasElementDef);
+	
+	var canvasElementControlStyleType = new ControlStyleType("", "CanvasElementStyle", "root", false, false, canvasElementControl, null, null, null);
+	canvasElementControlStyleType.styleListCodeString = "var CanvasElementStyle = new StyleDefinition();\n";
+	
+	canvasElementControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"CanvasElement", 
+											control:canvasElementControl, 
+											rootControlStyleType:canvasElementControlStyleType});
+	//ToggleButtonElement
+	var toggleButtonDef = new StyleDefinition();
+	toggleButtonDef.setStyle("Text", "My Text");
+	
+	var toggleButtonControl = new ToggleButtonElement();
+	toggleButtonControl.setStyleDefinitions(toggleButtonDef)
+	
+	var toggleButtonControlStyleType = new ControlStyleType("", "ToggleButtonStyle", "root", false, false, toggleButtonControl, null, null, null);
+	toggleButtonControlStyleType.styleListCodeString = "var ToggleButtonStyle = new StyleDefinition();\n";
+	
+	toggleButtonControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"ToggleButton", 
+											control:toggleButtonControl, 
+											rootControlStyleType:toggleButtonControlStyleType});
+	//RadioButtonElement
+	var radioButtonDef = new StyleDefinition();
+	radioButtonDef.setStyle("Text", "My Text");
+	
+	var radioButtonControl = new RadioButtonElement();
+	radioButtonControl.setStyleDefinitions(radioButtonDef)
+	
+	var radioButtonControlStyleType = new ControlStyleType("", "RadioButtonStyle", "root", false, false, radioButtonControl, null, null, null);
+	radioButtonControlStyleType.styleListCodeString = "var RadioButtonStyle = new StyleDefinition();\n";
+	
+	radioButtonControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"RadioButton", 
+											control:radioButtonControl, 
+											rootControlStyleType:radioButtonControlStyleType});
+	//CheckboxElement
+	var checkboxDef = new StyleDefinition();
+	checkboxDef.setStyle("Text", "My Text");
+	
+	var checkboxControl = new CheckboxElement();
+	checkboxControl.setStyleDefinitions(checkboxDef)
+	
+	var checkboxControlStyleType = new ControlStyleType("", "CheckboxStyle", "root", false, false, checkboxControl, null, null, null);
+	checkboxControlStyleType.styleListCodeString = "var CheckboxStyle = new StyleDefinition();\n";
+	
+	checkboxControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"Checkbox", 
+											control:checkboxControl, 
+											rootControlStyleType:checkboxControlStyleType});
+	//TextInputElement
+	var textInputDef = new StyleDefinition();
+	
+	var textInputControl = new TextInputElement();
+	textInputControl.setStyleDefinitions(textInputDef)
+	
+	var textInputControlStyleType = new ControlStyleType("", "TextInputStyle", "root", false, false, textInputControl, null, null, null);
+	textInputControlStyleType.styleListCodeString = "var TextInputStyle = new StyleDefinition();\n";
+	
+	textInputControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"TextInput", 
+											control:textInputControl, 
+											rootControlStyleType:textInputControlStyleType});
+	
+	
+	//Set static collection sort
+	if (StyleExplorerApplication.LabelSort == null)
+		StyleExplorerApplication.LabelSort = new CollectionSort(StyleExplorerApplication.LabelSortFunction, false);
+	
+	//Apply sort
+	this._dataListControlsCollection.setCollectionSort(StyleExplorerApplication.LabelSort);
+	
+	//Do sort
+	this._dataListControlsCollection.sort();
+	
+	//Apply data to controls DataList
+	this._dataListControls.setListCollection(this._dataListControlsCollection);
+	
+	//////
+	
+	//Build locale Dropdown data
+	this._dropdownLocaleCollection = new ListCollection();
+	this._dropdownLocaleCollection.addItem({key:"en-us", label:"English"});
+	this._dropdownLocaleCollection.addItem({key:"es-es", label:"Español"});
+	
+	//Apply data to Dropdown.
+	this._dropdownLocale.setListCollection(this._dropdownLocaleCollection);
+	this._dropdownLocale.setSelectedIndex(0);
+	
+	this._onSandboxHeaderRadioButtonGroupChanged(null);
+}
+
+//Inherit from CanvasManager
+StyleExplorerApplication.prototype = Object.create(CanvasManager.prototype);
+StyleExplorerApplication.prototype.constructor = StyleExplorerApplication;
+StyleExplorerApplication.base = CanvasManager;
+
+//Static
+StyleExplorerApplication.LabelSortFunction = 
+	function (objA, objB)
+	{
+		if (objA.label < objB.label)
+			return -1;
+		if (objA.label > objB.label)
+			return 1;
+		
+		return 0;
+	};
+	
+StyleExplorerApplication.LabelSort = null; //Set via constructor (avoid file ordering dependencies)
+
+//Internal
+StyleExplorerApplication.prototype._onLocaleChanged = 
+	function (event)
+	{
+		//Bail if not attached to manager.
+		//This is not necessary here (it'll never happen), but its possible
+		//under other scenarios when an element is added and immediately removed
+		//before this event gets to fire. Best always to check.
+		if (this.getManager() == null) 
+			return;
+	
+		//Get locale from manager
+		var currentLocale = this.getManager().getLocale();
+		
+		//Update text per current locale
+		this._textTitle.setStyle("Text", 					localeStrings["all"]["FlexCanvasJS"] + " " + localeStrings["all"]["Style Explorer"]);
+		this._labelLanguage.setStyle("Text", 				localeStrings[currentLocale]["Language"]);
+		this._labelPoweredBy.setStyle("Text", 				localeStrings[currentLocale]["Powered By"] + " ");
+		this._labelFlexCanvasJS.setStyle("Text", 			localeStrings["all"]["FlexCanvasJS"]);
+		this._labelSelectControl.setStyle("Text", 			localeStrings[currentLocale]["Select Control"]);
+		this._labelSelectStyle.setStyle("Text", 			localeStrings[currentLocale]["Select Styles"]);
+		this._radioButtonSandbox.setStyle("Text", 			localeStrings[currentLocale]["Sandbox"] + " (AnchorContainer)");
+		this._radioButtonStyleCode.setStyle("Text", 		localeStrings[currentLocale]["Style Code"]);
+	}
+
+StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
+	function (event)
+	{
+		if (this._sandboxHeaderRadioButtonGroup.getSelectedButton() == this._radioButtonSandbox)
+		{
+			this._sandboxControlContainer.setStyle("Visible", true);
+			this._textSandboxStyleCode.setStyle("Visible", false);
+		}
+		else
+		{
+			this._sandboxControlContainer.setStyle("Visible", false);
+			this._textSandboxStyleCode.setStyle("Visible", true);
+		}
+	};
+
+StyleExplorerApplication.prototype._onDropdownLocaleChanged = 
+	function (event)
+	{
+		//Update manager locale. Broadcasts localechanged event
+		this.getManager().setLocale(this._dropdownLocale.getSelectedItem().key);
+	};
+	
+StyleExplorerApplication.prototype._onDataListControlsChanged = 
+	function (event)
+	{
+		//Purge sandbox
+		while (this._sandboxControlContainer.getNumElements() > 0)
+			this._sandboxControlContainer.removeElementAt(0);
+		
+		//Purge style selection
+		while (this._stylesControlContainer.getNumElements() > 0)
+			this._stylesControlContainer.removeElementAt(0);
+		
+		//Purge style code
+		this._textSandboxStyleCode.setStyle("Text", "");
+		
+		//Bail if no selection
+		if (this._dataListControls.getSelectedIndex() == -1)
+			return;
+		
+		//Add new control to sandbox
+		this._sandboxControlContainer.addElement(this._dataListControls.getSelectedItem().control);
+		
+		//Create root style list
+		var styleListRenderer = new StyleListRenderer();
+		this._stylesControlContainer.addElement(styleListRenderer);
+		
+		//Set style list data
+		styleListRenderer.setStyleControlType(this._dataListControls.getSelectedItem().rootControlStyleType);
+		
+		this._onStylingChanged(null);
+	};
+	
+StyleExplorerApplication.prototype._onStylingChanged = 
+	function (event)
+	{
+		//We might get lots of stylingchanged events in a row when changing controls. 
+		//Updating the style code is expensive, so we defer till the next frame so we only process once.
+		if (this.hasEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance) == false)
+			this.addEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance);
+	};
+	
+StyleExplorerApplication.prototype._onEnterFrameStyleCodeUpdate = 
+	function (event)
+	{
+		//Purge the enterframe listener
+		this.removeEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance);
+		
+		//Update style code
+		this._textSandboxStyleCode.setStyle("Text", this._dataListControls.getSelectedItem().rootControlStyleType.generateStylingCode());
+	};
+	
+	
