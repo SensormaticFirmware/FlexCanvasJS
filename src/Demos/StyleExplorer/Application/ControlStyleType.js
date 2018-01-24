@@ -56,7 +56,7 @@ ControlStyleType._GenerateStylingCodeRecurse =
 			var newData = {value:controlStyleType.styleListCodeString};
 			for (var i = 0; i < controlStyleType.styleList.getLength(); i++)
 			{
-				ControlStyleType._GenerateStylingCodeRecurse(resultArray, controlStyleType.styleList.getItemAt(i), newData)
+				ControlStyleType._GenerateStylingCodeRecurse(resultArray, controlStyleType.styleList.getItemAt(i), newData);
 			}
 			
 			resultArray.push(newData);
@@ -89,7 +89,7 @@ ControlStyleType.prototype.generateStylingCode =
 		var result = [];
 		ControlStyleType._GenerateStylingCodeRecurse(result, this, null);
 		
-		var stringResult = ""
+		var stringResult = "";
 		for (var i = 0; i < result.length; i++)
 			stringResult += (result[i].value + "\n");
 
@@ -160,7 +160,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"AutoGradientStop", 						"number", 	false, 	false, 	styleDef, this,	(-.05),						null));
 			}
 			
-			if (this.styleName == "TextInputStyle" ||
+			if (this.styleName == "LabelStyle" || 
+				this.styleName == "TextInputStyle" ||
 				this.styleName == "ButtonStyle" || 
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
@@ -176,16 +177,32 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Text", 		"TextLinePaddingBottom", 					"number", 	false, 	false, 	styleDef, this,	1,							null));
 				this.styleList.addItem(new ControlStyleType("Text", 		"TextFillType", 							"string", 	false, 	false, 	styleDef, this,	"fill",						[{label:"fill", value:"fill"}, {label:"stroke", value:"stroke"}]));
 				
-				this.styleList.addItem(new ControlStyleType("Text", 		"UpTextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-				this.styleList.addItem(new ControlStyleType("Text", 		"DisabledTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-				
 				this.styleList.addItem(new ControlStyleType("Layout", 		"Padding", 									"number", 	false, 	false, 	styleDef, this,	2,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingTop", 								"number", 	false, 	false, 	styleDef, this,	2,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingBottom", 							"number", 	false, 	false, 	styleDef, this,	2,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingRight", 							"number", 	false, 	false, 	styleDef, this,	2,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingLeft", 								"number", 	false, 	false, 	styleDef, this,	2,							null));
-				
+			}
+			
+			if (this.styleName == "LabelStyle" || 
+				this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Functional", 	"Text", 									"string", 	true, 	false, 	styleDef, this, "My Text",					null));
+			}
+			
+			if (this.styleName == "TextInputStyle" ||
+				this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle")
+			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"Enabled", 									"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+				
+				this.styleList.addItem(new ControlStyleType("Text", 		"UpTextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+				this.styleList.addItem(new ControlStyleType("Text", 		"DisabledTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"UpSkinStyle", 								"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DisabledSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
@@ -207,13 +224,16 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Text", 		"TextCaretColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
+			if (this.styleName == "LabelStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Functional", 	"TruncateToFit", 							"string", 	false, 	false, 	styleDef, this, "...",						null));
+			}
+			
 			if (this.styleName == "ButtonStyle" || 
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle")
 			{
-				this.styleList.addItem(new ControlStyleType("Functional", 	"Text", 									"string", 	true, 	false, 	styleDef, this, "My Text",					null));
-				
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"OverSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DownSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				

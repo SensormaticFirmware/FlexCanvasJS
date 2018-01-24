@@ -320,7 +320,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	toggleButtonDef.setStyle("Text", "My Text");
 	
 	var toggleButtonControl = new ToggleButtonElement();
-	toggleButtonControl.setStyleDefinitions(toggleButtonDef)
+	toggleButtonControl.setStyleDefinitions(toggleButtonDef);
 	
 	var toggleButtonControlStyleType = new ControlStyleType("", "ToggleButtonStyle", "root", false, false, toggleButtonControl, null, null, null);
 	toggleButtonControlStyleType.styleListCodeString = "var ToggleButtonStyle = new StyleDefinition();\n";
@@ -335,7 +335,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	radioButtonDef.setStyle("Text", "My Text");
 	
 	var radioButtonControl = new RadioButtonElement();
-	radioButtonControl.setStyleDefinitions(radioButtonDef)
+	radioButtonControl.setStyleDefinitions(radioButtonDef);
 	
 	var radioButtonControlStyleType = new ControlStyleType("", "RadioButtonStyle", "root", false, false, radioButtonControl, null, null, null);
 	radioButtonControlStyleType.styleListCodeString = "var RadioButtonStyle = new StyleDefinition();\n";
@@ -350,7 +350,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	checkboxDef.setStyle("Text", "My Text");
 	
 	var checkboxControl = new CheckboxElement();
-	checkboxControl.setStyleDefinitions(checkboxDef)
+	checkboxControl.setStyleDefinitions(checkboxDef);
 	
 	var checkboxControlStyleType = new ControlStyleType("", "CheckboxStyle", "root", false, false, checkboxControl, null, null, null);
 	checkboxControlStyleType.styleListCodeString = "var CheckboxStyle = new StyleDefinition();\n";
@@ -364,7 +364,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var textInputDef = new StyleDefinition();
 	
 	var textInputControl = new TextInputElement();
-	textInputControl.setStyleDefinitions(textInputDef)
+	textInputControl.setStyleDefinitions(textInputDef);
 	
 	var textInputControlStyleType = new ControlStyleType("", "TextInputStyle", "root", false, false, textInputControl, null, null, null);
 	textInputControlStyleType.styleListCodeString = "var TextInputStyle = new StyleDefinition();\n";
@@ -374,6 +374,20 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._dataListControlsCollection.addItem({label:"TextInput", 
 											control:textInputControl, 
 											rootControlStyleType:textInputControlStyleType});
+	//LabelElement
+	var labelDef = new StyleDefinition();
+	
+	var labelControl = new LabelElement();
+	labelControl.setStyleDefinitions(labelDef);
+	
+	var labelControlStyleType = new ControlStyleType("", "LabelStyle", "root", false, false, labelControl, null, null, null);
+	labelControlStyleType.styleListCodeString = "var LabelStyle = new StyleDefinition();\n";
+	
+	labelControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"Label", 
+											control:labelControl, 
+											rootControlStyleType:labelControlStyleType});
 	
 	
 	//Set static collection sort
