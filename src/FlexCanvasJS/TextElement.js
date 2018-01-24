@@ -24,6 +24,7 @@ function TextElement()
 	
 	this._textField = new TextFieldElement();
 	this._textField.setStyle("Multiline", true);
+	this._textField.setStyle("WordWrap", true);
 	this._textField.setStyle("Cursor", null);
 	this._textField.setStyle("TabStop", -1);
 	this._addChild(this._textField);
