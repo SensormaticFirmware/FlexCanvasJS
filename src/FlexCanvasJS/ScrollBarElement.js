@@ -146,36 +146,43 @@ ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBa
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledTrackSkinStyleDefault); 
 
 //disabled skin of arrow buttons
-ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 	"#777777");
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault = new StyleDefinition();
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderType", 					"solid");
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderThickness", 				1);
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderColor", 					"#999999");
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BackgroundColor", 				"#ECECEC");
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientType", 			"linear");
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientStart", 			(+.05));
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientStop", 			(-.05));
+ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("ArrowColor", 					"#777777");
 
 //Applied dynamically based on ScrollBarDirection
 ScrollBarElement.VButtonScrollArrowIncStyleDefault = new StyleDefinition();
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"down");
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
 //Applied dynamically based on ScrollBarDirection
 ScrollBarElement.VButtonScrollArrowDecStyleDefault = new StyleDefinition();
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"up"); 
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
 //Applied dynamically based on ScrollBarDirection
 ScrollBarElement.HButtonScrollArrowIncStyleDefault = new StyleDefinition();
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"right");
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
 //Applied dynamically based on ScrollBarDirection
 ScrollBarElement.HButtonScrollArrowDecStyleDefault = new StyleDefinition();
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"left"); 
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
 ScrollBarElement.StyleDefault = new StyleDefinition();
 ScrollBarElement.StyleDefault.setStyle("ScrollTweenDuration", 						180); 			// number (milliseconds)
