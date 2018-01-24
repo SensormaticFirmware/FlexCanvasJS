@@ -2,7 +2,6 @@
 /**
  * @depends CanvasElement.js
  * @depends ScrollButtonSkinElement.js
- * @depends ButtonElement.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -72,7 +71,7 @@ ScrollBarElement.base = CanvasElement;
 
 /**
  * @event changed ElementEvent
- * Dispatched when the scroll position changes as a result of user interation or tween.
+ * Dispatched when the scroll position changes as a result of user interaction or tween.
  */
 
 
@@ -96,14 +95,12 @@ ScrollBarElement._StyleTypes.ScrollTweenDuration =			{inheritable:false};		// nu
 /**
  * @style ScrollButtonIncrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll increment Button.
- * ScrollBar automatically sets an inline "ArrowDirection" style to this button which is either "down" or "right" depending on ScrollBarDirection.
  */
 ScrollBarElement._StyleTypes.ScrollButtonIncrementStyle = 	{inheritable:false};		// StyleDefinition
 
 /**
  * @style ScrollButtonDecrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll decrement Button.
- * ScrollBar automatically sets an inline "ArrowDirection" style to this button which is either "up" or "left" depending on ScrollBarDirection.
  */
 ScrollBarElement._StyleTypes.ScrollButtonDecrementStyle = 	{inheritable:false};		// StyleDefinition
 
@@ -122,52 +119,72 @@ ScrollBarElement._StyleTypes.ButtonTabStyle = 				{inheritable:false};		// Style
 
 ////////////Default Styles////////////////////////////
 
-ScrollBarElement.StyleDefault = new StyleDefinition();
-
+//up/over/down skins of track
 ScrollBarElement.TrackSkinStyleDefault = new StyleDefinition();
-ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderType", 				"solid");
-ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderThickness", 			1);
-ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundColor", 			"#D9D9D9");
-ScrollBarElement.TrackSkinStyleDefault.setStyle("AutoGradientType", 		"none");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderType", 						"solid");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderThickness", 					1);
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderColor", 						"#333333");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundColor", 					"#D9D9D9");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("AutoGradientType", 				"none");
 
-//Button style defaults
+//disabled skin of track
+ScrollBarElement.DisabledTrackSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderType", 				"solid");
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderThickness", 			1);
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderColor", 				"#999999");
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BackgroundColor", 			"#ECECEC");
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
+
+//track style
 ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("BorderType", 					"none");
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault); 
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ButtonElement.DisabledSkinStyleDefault); //Dont need this same as button default
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledTrackSkinStyleDefault); 
 
-ScrollBarElement.ButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonTabStyleDefault.setStyle("UpSkinStyle", 						ButtonElement.UpSkinStyleDefault);		//Dont actually need these (could be null)	
-ScrollBarElement.ButtonTabStyleDefault.setStyle("OverSkinStyle", 					ButtonElement.OverSkinStyleDefault);
-ScrollBarElement.ButtonTabStyleDefault.setStyle("DownSkinStyle", 					ButtonElement.DownSkinStyleDefault);
-ScrollBarElement.ButtonTabStyleDefault.setStyle("DisabledSkinStyle", 				ButtonElement.DisabledSkinStyleDefault);
+//disabled skin of arrow buttons
+ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault = new StyleDefinition();
+ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 	"#777777");
 
-ScrollBarElement.ButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
-ScrollBarElement.ButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000");
-ScrollBarElement.ButtonScrollArrowIncStyleDefault.setStyle("UpSkinStyle", 			ButtonElement.UpSkinStyleDefault);		//Dont actually need these (could be null)	
-ScrollBarElement.ButtonScrollArrowIncStyleDefault.setStyle("OverSkinStyle", 		ButtonElement.OverSkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowIncStyleDefault.setStyle("DownSkinStyle", 		ButtonElement.DownSkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ButtonElement.DisabledSkinStyleDefault);
+//Applied dynamically based on ScrollBarDirection
+ScrollBarElement.VButtonScrollArrowIncStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"down");
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
 
-ScrollBarElement.ButtonScrollArrowDecStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
-ScrollBarElement.ButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
-ScrollBarElement.ButtonScrollArrowDecStyleDefault.setStyle("UpSkinStyle", 			ButtonElement.UpSkinStyleDefault);		//Dont actually need these (could be null)	
-ScrollBarElement.ButtonScrollArrowDecStyleDefault.setStyle("OverSkinStyle", 		ButtonElement.OverSkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowDecStyleDefault.setStyle("DownSkinStyle", 		ButtonElement.DownSkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ButtonElement.DisabledSkinStyleDefault);
+//Applied dynamically based on ScrollBarDirection
+ScrollBarElement.VButtonScrollArrowDecStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"up"); 
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
 
-ScrollBarElement.StyleDefault.setStyle("ScrollButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowIncStyleDefault); 
-ScrollBarElement.StyleDefault.setStyle("ScrollButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowDecStyleDefault); 
-ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 							ScrollBarElement.ButtonTrackStyleDefault);
-ScrollBarElement.StyleDefault.setStyle("ButtonTabStyle", 							ScrollBarElement.ButtonTabStyleDefault);
+//Applied dynamically based on ScrollBarDirection
+ScrollBarElement.HButtonScrollArrowIncStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"right");
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
+
+//Applied dynamically based on ScrollBarDirection
+ScrollBarElement.HButtonScrollArrowDecStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"left"); 
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowIncStyleDefault);
+
+ScrollBarElement.StyleDefault = new StyleDefinition();
 ScrollBarElement.StyleDefault.setStyle("ScrollTweenDuration", 						180); 			// number (milliseconds)
-
 ScrollBarElement.StyleDefault.setStyle("ScrollBarDirection", 						"vertical");	// "vertical" || "horizontal"
+ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 							ScrollBarElement.ButtonTrackStyleDefault);
+
+//Applied dynamically based on ScrollBarDirection
+//ScrollBarElement.StyleDefault.setStyle("ScrollButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowIncStyleDefault); 
+//ScrollBarElement.StyleDefault.setStyle("ScrollButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowDecStyleDefault); 
 
 
 
@@ -499,27 +516,21 @@ ScrollBarElement.prototype._createChildren =
 	function ()
 	{
 		this._buttonIncrement = new ButtonElement();
-		this._buttonIncrement._setStyleDefinitionDefault(this._getDefaultStyle("ScrollButtonIncrementStyle"));
-		
 		this._buttonIncrement.addEventListener("click", this._onScrollButtonClickInstance);
 		this._addChild(this._buttonIncrement);
 
 		this._buttonDecrement = new ButtonElement();
-		this._buttonDecrement._setStyleDefinitionDefault(this._getDefaultStyle("ScrollButtonDecrementStyle"));
-		
 		this._buttonDecrement.addEventListener("click", this._onScrollButtonClickInstance);
 		this._addChild(this._buttonDecrement);
 
 		this._buttonTrack = new ButtonElement();
 		this._buttonTrack._setStyleDefinitionDefault(this._getDefaultStyle("ButtonTrackStyle"));
-		
 		this._buttonTrack.addEventListener("click", this._onScrollButtonClickInstance);
 		this._addChild(this._buttonTrack);
 
 		this._buttonTab = new ButtonElement();
 		this._buttonTab._setStyleDefinitionDefault(this._getDefaultStyle("ButtonTabStyle"));
 		this._buttonTab.setStyle("Draggable", true);
-		
 		this._buttonTab.addEventListener("dragging", this._onScrollTabDragInstance);
 		this._addChild(this._buttonTab);
 	};
@@ -533,6 +544,23 @@ ScrollBarElement.prototype._doStylesUpdated =
 		if (this._buttonIncrement == null)
 			this._createChildren();
 		
+		if ("ScrollBarDirection" in stylesMap)
+		{
+			if (this.getStyle("ScrollBarDirection") == "horizontal")
+			{
+				this._buttonIncrement._setStyleDefinitionDefault(ScrollBarElement.HButtonScrollArrowIncStyleDefault);
+				this._buttonDecrement._setStyleDefinitionDefault(ScrollBarElement.HButtonScrollArrowDecStyleDefault);
+			}
+			else
+			{
+				this._buttonIncrement._setStyleDefinitionDefault(ScrollBarElement.VButtonScrollArrowIncStyleDefault);
+				this._buttonDecrement._setStyleDefinitionDefault(ScrollBarElement.VButtonScrollArrowDecStyleDefault);
+			}
+			
+			this._invalidateMeasure();
+			this._invalidateLayout();
+		}
+		
 		if ("ScrollButtonIncrementStyle" in stylesMap)
 			this._buttonIncrement.setStyleDefinitions(this.getStyle("ScrollButtonIncrementStyle"));
 		
@@ -544,23 +572,6 @@ ScrollBarElement.prototype._doStylesUpdated =
 		
 		if ("ButtonTabStyle" in stylesMap)
 			this._buttonTab.setStyleDefinitions(this.getStyle("ButtonTabStyle"));
-		
-		if ("ScrollBarDirection" in stylesMap)
-		{
-			if (this.getStyle("ScrollBarDirection") == "horizontal")
-			{
-				this._buttonIncrement.setStyle("ArrowDirection", "right");
-				this._buttonDecrement.setStyle("ArrowDirection", "left");
-			}
-			else
-			{
-				this._buttonIncrement.setStyle("ArrowDirection", "down");
-				this._buttonDecrement.setStyle("ArrowDirection", "up");
-			}
-			
-			this._invalidateMeasure();
-			this._invalidateLayout();
-		}
 		
 		if ("ScrollTweenDuration" in stylesMap && this.getStyle("ScrollTweenDuration") == 0)
 			this.endScrollTween();

@@ -261,8 +261,6 @@ ButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#ECECEC");
 ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 	"linear");
 ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 	(+.05));
 ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 	(-.05));
-//Not used by button, used by scrollbutton, but want button, scrollbutton to use the same style.
-ButtonElement.DisabledSkinStyleDefault.setStyle("ArrowColor", 			"#777777");
 /////////////////////////////////////////////////
 
 //Apply Skin Defaults

@@ -1024,6 +1024,7 @@ CanvasElement.prototype.addStyleDefinitionAt =
 		if (index < 0 || index > this._styleDefinitions.length)
 			return null;
 		
+		//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 		//Make sure this style definition is not already in the list (no adding duplicates)
 		if (this._styleDefinitions.indexOf(styleDefinition) != -1 || styleDefinition == this._styleDefinitionDefault)
 			return null;
@@ -1112,6 +1113,7 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 					styleNamesMap[styleName] = true;
 			}
 			
+			//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 			//Remove definition
 			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
 			styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
@@ -1145,6 +1147,7 @@ CanvasElement.prototype.clearStyleDefinitions =
 			{
 				styleDefinition = this._styleDefinitions[i];
 				
+				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
@@ -1219,6 +1222,8 @@ CanvasElement.prototype.setStyleDefinitions =
 			{
 				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
 				this._styleDefinitions.splice(this._styleDefinitions.length - 1, 1);
+				
+				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
@@ -1231,6 +1236,8 @@ CanvasElement.prototype.setStyleDefinitions =
 			{
 				styleDefinition = styleDefinitions[i];
 				this._styleDefinitions.push(styleDefinition);
+				
+				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record added style names
