@@ -1094,6 +1094,8 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 		if (index < 0 || index > this._styleDefinitions.length - 1)
 			return null;
 		
+		var styleDefinition = null;
+		
 		if (this._manager != null) //Attached to display chain
 		{
 			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
@@ -1111,7 +1113,7 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 			}
 			
 			//Remove definition
-			var styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
+			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
 			styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 			
 			//Spoof style changed event for relevant styles.
@@ -1119,7 +1121,7 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
 		}
 		else //Not attached, just remove the definition
-			this._styleDefinitions.splice(index, 1)
+			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
 		
 		return styleDefinition;
 	};
@@ -2659,7 +2661,7 @@ CanvasElement.prototype._onExternalStyleChanged =
 		var styleName = styleChangedEvent.getStyleName();	
 		var styleType = this._getStyleType(styleName);
 		
-		if (this._styleProxy != null &&  styleChangedEvent.getTarget() == this._styleProxy._proxyElement)
+		if (this._styleProxy != null && styleChangedEvent.getTarget() == this._styleProxy._proxyElement)
 			isProxy = true;
 		if (this._parent != null && styleChangedEvent.getTarget() == this._parent)
 			isParent = true;
@@ -2765,10 +2767,8 @@ CanvasElement.prototype._getDefaultStyleData =
  * @function _setStyleDefinitionDefault
  * 
  * Sets the default style definition. Use this when you need to supply a default definition 
- * that differs from the class based definition. For example, you're component uses a Button, 
- * but you need to supply styles to the button (or its skins) that differ from a Button's 
- * class defaults. Default styles do not track changes at runtime so this should always be 
- * called *before* the element is added to its parent and is included in the display chain.
+ * to a sub component that differs from the class based definition but also need to allow 
+ * the implementor to supply a style definition to the sub component. 
  * 
  * @param styleDefinition StyleDefintion
  * The default style definiton to apply to the element.
@@ -2776,7 +2776,41 @@ CanvasElement.prototype._getDefaultStyleData =
 CanvasElement.prototype._setStyleDefinitionDefault = 
 	function (styleDefinition)
 	{
-		this._styleDefinitionDefault = styleDefinition;
+		if (this._manager != null) //Attached to display chain
+		{
+			//Bail if no change
+			if (this._styleDefinitionDefault == styleDefinition)
+				return;
+			
+			var styleName = null;
+			var styleNamesMap = Object.create(null);
+			
+			if (this._styleDefinitionDefault != null)
+			{
+				this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				
+				//Record removed style names
+				for (styleName in styleDefinition._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			this._styleDefinitionDefault = styleDefinition;
+			
+			if (this._styleDefinitionDefault != null)
+			{
+				this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				
+				//Record added style names
+				for (styleName in styleDefinition._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Spoof style changed events for normal style changed handling.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		else //Not attached, just swap the definition
+			this._styleDefinitionDefault = styleDefinition;
 	};
 	
 /**
@@ -2809,7 +2843,9 @@ CanvasElement.prototype._onCanvasElementAdded =
 	{
 		/////////Added to the Display Chain/////////////
 	
-		for (var i = 0; i < this._styleDefinitions.length; i++)
+		var i;
+	
+		for (i = 0; i < this._styleDefinitions.length; i++)
 		{
 			if (this._styleDefinitions[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
 				this._styleDefinitions[i].addEventListener("stylechanged", this._onExternalStyleChangedInstance);
@@ -2822,20 +2858,23 @@ CanvasElement.prototype._onCanvasElementAdded =
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
+		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+			this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);				
+		
 		//Add broadcast events to manager//
 		if ("enterframe" in this._eventListeners && this._eventListeners["enterframe"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["enterframe"].length; i++)
+			for (i = 0; i < this._eventListeners["enterframe"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("enterframe", this._eventListeners["enterframe"][i]);
 		}
 		if ("localechanged" in this._eventListeners && this._eventListeners["localechanged"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["localechanged"].length; i++)
+			for (i = 0; i < this._eventListeners["localechanged"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("localechanged", this._eventListeners["localechanged"][i]);
 		}
 		if ("mousemoveex" in this._eventListeners && this._eventListeners["mousemoveex"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["mousemoveex"].length; i++)
+			for (i = 0; i < this._eventListeners["mousemoveex"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("mousemoveex", this._eventListeners["mousemoveex"][i]);
 		}
 		
@@ -2904,6 +2943,9 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.removeEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
+		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+			this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+		
 		if (this._rollOverCursorInstance != null)
 		{
 			addedRemovedEvent.getManager().removeCursor(this._rollOverCursorInstance);
@@ -2948,17 +2990,17 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		//Remove broadcast events from manager//
 		if ("enterframe" in this._eventListeners && this._eventListeners["enterframe"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["enterframe"].length; i++)
+			for (i = 0; i < this._eventListeners["enterframe"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("enterframe", this._eventListeners["enterframe"][i]);
 		}
 		if ("localechanged" in this._eventListeners && this._eventListeners["localechanged"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["localechanged"].length; i++)
+			for (i = 0; i < this._eventListeners["localechanged"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("localechanged", this._eventListeners["localechanged"][i]);
 		}
 		if ("mousemoveex" in this._eventListeners && this._eventListeners["mousemoveex"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["mousemoveex"].length; i++)
+			for (i = 0; i < this._eventListeners["mousemoveex"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("mousemoveex", this._eventListeners["mousemoveex"][i]);
 		}
 	};	
