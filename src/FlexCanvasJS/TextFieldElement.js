@@ -1383,13 +1383,6 @@ TextFieldElement.prototype._doMeasure =
 				if (this._spaceSpans[i].type != "nline")
 					continue;
 				
-				//Newline is last character, ignore
-				if (this._spaceSpans[i].start == this._charMetrics.length - 2)
-				{
-					lineStartIndex = this._spaceSpans[i].start + 1;
-					break;
-				}
-				
 				if (this._charMetrics[this._spaceSpans[i].start].x - this._charMetrics[lineStartIndex].x > widestLineSize)
 					widestLineSize = this._charMetrics[this._spaceSpans[i].start].x - this._charMetrics[lineStartIndex].x;
 				
@@ -1521,7 +1514,7 @@ TextFieldElement.prototype._doLayout =
 		var totalTextHeight = (lines.length * lineHeight) + ((lines.length - 1) * lineSpacing); 
 		
 		//Update the measured size now that we know the height. (May cause another layout pass)
-		if (isWordwrap == true)
+		if (isWordWrap == true)
 			this._setMeasuredSize(this._measuredWidth, totalTextHeight + this._getPaddingSize().height);
 			
 		var textYPosition;
