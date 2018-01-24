@@ -2790,7 +2790,7 @@ CanvasElement.prototype._setStyleDefinitionDefault =
 				this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
-				for (styleName in styleDefinition._styleMap)
+				for (styleName in this._styleDefinitionDefault._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
@@ -2801,7 +2801,7 @@ CanvasElement.prototype._setStyleDefinitionDefault =
 				this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record added style names
-				for (styleName in styleDefinition._styleMap)
+				for (styleName in this._styleDefinitionDefault._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
