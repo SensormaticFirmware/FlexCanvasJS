@@ -770,7 +770,8 @@ ScrollBarElement.prototype._doLayout =
 				else
 					tabHeight = 0;
 				
-				tabHeight = Math.max(tabMinHeight, tabHeight);
+				tabHeight = Math.min(tabHeight, tabMaxHeight);
+				tabHeight = Math.max(tabHeight, tabMinHeight);
 			}
 			
 			var tabActualWidth = tabWidth;
@@ -836,7 +837,8 @@ ScrollBarElement.prototype._doLayout =
 				else
 					tabWidth = 0;
 				
-				tabWidth = Math.max(tabMinWidth, tabWidth);
+				tabWidth = Math.min(tabWidth, tabMaxWidth);
+				tabWidth = Math.max(tabWidth, tabMinWidth);
 			}
 			
 			var tabActualHeight = tabHeight;
