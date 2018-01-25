@@ -74,10 +74,13 @@ ScrollButtonSkinElement.prototype._doRender =
 	{
 		ScrollButtonSkinElement.base.prototype._doRender.call(this);
 		
-		var ctx = this._getGraphicsCtx();
-		
 		var arrowDirection = this.getStyle("ArrowDirection");
 		var arrowColor = this.getStyle("ArrowColor");
+		
+		if (arrowColor == null || arrowDirection == null)
+			return;
+		
+		var ctx = this._getGraphicsCtx();
 		
 		var borderThickness = this._getBorderThickness();
 		
