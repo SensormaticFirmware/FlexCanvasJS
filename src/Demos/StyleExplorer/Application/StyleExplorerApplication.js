@@ -155,38 +155,58 @@ function StyleExplorerApplication() //extends CanvasManager
 							this._dividerSandbox = new CanvasElement();
 							this._dividerSandbox.setStyleDefinitions(hDividerLineStyle);
 							
-							this._sandboxControlOuterContainer = new AnchorContainerElement();
+							this._sandboxControlOuterContainer = new ListContainerElement();
 							this._sandboxControlOuterContainer.setStyle("PercentWidth", 100);
 							this._sandboxControlOuterContainer.setStyle("PercentHeight", 100);
 							
-								this._sandboxControlPanelBackground = new CanvasElement();
-								this._sandboxControlPanelBackground.setStyle("Top", 5);
-								this._sandboxControlPanelBackground.setStyle("Bottom", 5);
-								this._sandboxControlPanelBackground.setStyle("Left", 5);
-								this._sandboxControlPanelBackground.setStyle("Right", 5);
-								this._sandboxControlPanelBackground.setStyle("BackgroundColor", "#FFFFFF");
-								this._sandboxControlPanelBackground.setStyle("Alpha", .35);
+								this._sandboxControlAndCodeContainer = new AnchorContainerElement();
+								this._sandboxControlAndCodeContainer.setStyle("PercentWidth", 100);
+								this._sandboxControlAndCodeContainer.setStyle("PercentHeight", 100);
 							
-								//Visibility Toggled
-								this._sandboxControlContainer = new AnchorContainerElement();
-								this._sandboxControlContainer.setStyle("Top", 5);
-								this._sandboxControlContainer.setStyle("Bottom", 5);
-								this._sandboxControlContainer.setStyle("Left", 5);
-								this._sandboxControlContainer.setStyle("Right", 5);
-							
-								//Visibility Toggled
-								this._textSandboxStyleCode = new TextElement();
-								this._textSandboxStyleCode.setStyle("TextVerticalAlign", "top");
-								this._textSandboxStyleCode.setStyle("PercentWidth", 100);
-								this._textSandboxStyleCode.setStyle("PercentHeight", 100);
-								this._textSandboxStyleCode.setStyle("Top", 8);
-								this._textSandboxStyleCode.setStyle("Bottom", 8);
-								this._textSandboxStyleCode.setStyle("Left", 8);
-								this._textSandboxStyleCode.setStyle("Right", 8);
+									this._sandboxControlPanelBackground = new CanvasElement();
+									this._sandboxControlPanelBackground.setStyle("Top", 5);
+									this._sandboxControlPanelBackground.setStyle("Bottom", 5);
+									this._sandboxControlPanelBackground.setStyle("Left", 5);
+									this._sandboxControlPanelBackground.setStyle("Right", 5);
+									this._sandboxControlPanelBackground.setStyle("BackgroundColor", "#FFFFFF");
+									this._sandboxControlPanelBackground.setStyle("Alpha", .35);
 								
-							this._sandboxControlOuterContainer.addElement(this._sandboxControlPanelBackground);
-							this._sandboxControlOuterContainer.addElement(this._sandboxControlContainer);
-							this._sandboxControlOuterContainer.addElement(this._textSandboxStyleCode);
+									//Visibility Toggled
+									this._sandboxControlContainer = new AnchorContainerElement();
+									this._sandboxControlContainer.setStyle("Top", 5);
+									this._sandboxControlContainer.setStyle("Bottom", 5);
+									this._sandboxControlContainer.setStyle("Left", 5);
+									this._sandboxControlContainer.setStyle("Right", 5);
+								
+									//Visibility Toggled
+									this._viewportSandboxStyleCode = new ViewportElement();
+									this._viewportSandboxStyleCode.setStyle("Top", 8);
+									this._viewportSandboxStyleCode.setStyle("Bottom", 8);
+									this._viewportSandboxStyleCode.setStyle("Left", 8);
+									this._viewportSandboxStyleCode.setStyle("Right", 8);
+									
+										this._textSandboxStyleCode = new TextElement();
+										this._textSandboxStyleCode.setStyle("TextVerticalAlign", "top");
+										this._textSandboxStyleCode.setStyle("WordWrap", false);
+									
+									this._viewportSandboxStyleCode.setElement(this._textSandboxStyleCode);
+									
+								this._sandboxControlAndCodeContainer.addElement(this._sandboxControlPanelBackground);
+								this._sandboxControlAndCodeContainer.addElement(this._sandboxControlContainer);
+								this._sandboxControlAndCodeContainer.addElement(this._viewportSandboxStyleCode);
+								
+								this._sandboxCopyCodeContainer = new ListContainerElement();
+								this._sandboxCopyCodeContainer.setStyle("PercentWidth", 100);
+								this._sandboxCopyCodeContainer.setStyle("PaddingLeft", 5);
+								this._sandboxCopyCodeContainer.setStyle("PaddingRight", 5);
+								
+									this._buttonCopyCode = new ButtonElement();
+									this._buttonCopyCode.setStyle("PercentWidth", 100);
+								
+								this._sandboxCopyCodeContainer.addElement(this._buttonCopyCode);
+									
+							this._sandboxControlOuterContainer.addElement(this._sandboxControlAndCodeContainer);
+							this._sandboxControlOuterContainer.addElement(this._sandboxCopyCodeContainer);
 							
 						this._sandboxInnerContainer.addElement(this._sandboxHeaderContainer);	
 						this._sandboxInnerContainer.addElement(this._dividerSandbox);
@@ -476,6 +496,7 @@ StyleExplorerApplication.prototype._onLocaleChanged =
 		this._labelSelectStyle.setStyle("Text", 			localeStrings[currentLocale]["Select Styles"]);
 		this._radioButtonSandbox.setStyle("Text", 			localeStrings[currentLocale]["Sandbox"] + " (AnchorContainer)");
 		this._radioButtonStyleCode.setStyle("Text", 		localeStrings[currentLocale]["Style Code"]);
+		this._buttonCopyCode.setStyle("Text", 				localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
 	}
 
 StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
@@ -484,12 +505,18 @@ StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
 		if (this._sandboxHeaderRadioButtonGroup.getSelectedButton() == this._radioButtonSandbox)
 		{
 			this._sandboxControlContainer.setStyle("Visible", true);
-			this._textSandboxStyleCode.setStyle("Visible", false);
+			this._viewportSandboxStyleCode.setStyle("Visible", false);
+			
+			this._sandboxCopyCodeContainer.setStyle("Visible", false);
+			this._sandboxCopyCodeContainer.setStyle("IncludeInLayout", false);
 		}
 		else
 		{
 			this._sandboxControlContainer.setStyle("Visible", false);
-			this._textSandboxStyleCode.setStyle("Visible", true);
+			this._viewportSandboxStyleCode.setStyle("Visible", true);
+			
+			this._sandboxCopyCodeContainer.setStyle("Visible", true);
+			this._sandboxCopyCodeContainer.setStyle("IncludeInLayout", true);
 		}
 	};
 

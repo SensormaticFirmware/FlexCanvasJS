@@ -19,6 +19,8 @@ localeStrings["en-us"]["Sandbox"] = 				"Sandbox";
 localeStrings["en-us"]["Add"] = 					"Add";
 localeStrings["en-us"]["Styles"] = 					"Styles";
 localeStrings["en-us"]["Style Code"] = 				"Style Code";
+localeStrings["en-us"]["Copy"] = 					"Copy";
+
 
 //es-es////////
 localeStrings["es-es"] = Object.create(null);
@@ -29,7 +31,8 @@ localeStrings["es-es"]["Select Styles"] = 			"Seleccionar Estilos";
 localeStrings["es-es"]["Sandbox"] = 				"Salvadera";
 localeStrings["es-es"]["Add"] = 					"Añadir";
 localeStrings["es-es"]["Styles"] = 					"Estilos";
-localeStrings["es-es"]["Style Code"] = 				"Código de estilo";
+localeStrings["es-es"]["Style Code"] = 				"Código De Estilo";
+localeStrings["es-es"]["Copy"] = 					"Copiar";
 
 
 //////IMAGES///////////////////////
