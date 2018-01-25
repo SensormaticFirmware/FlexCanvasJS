@@ -13,7 +13,7 @@
  * 
  * ScrollBarElement renders a skin-able scroll bar that can be
  * oriented horizontally or vertically and assigns a default
- * skin to the scroll buttons. 
+ * skin to the scroll buttons.
  * 
  * See the default skin ScrollButtonSkinElement for additional skin styles.
  * 
@@ -65,11 +65,13 @@ function ScrollBarElement()
 		{
 			_self._onScrollBarEnterFrame(event);
 		};
-	this._onTrackAndTabMeasureCompleteInstance = 
+	this._onTrackAndTabContainerMeasureCompleteInstance = 
 		function (event)
 		{
-			_self._onTrackAndTabMeasureComplete(event);
+			_self._onTrackAndTabContainerMeasureComplete(event);
 		};
+		
+	this._trackAndTabContainer.addEventListener("measurecomplete", this._onTrackAndTabContainerMeasureCompleteInstance);
 }
 
 //Inherit from ListContainerElement
@@ -141,17 +143,29 @@ ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientType", 		"l
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
 
-//track style
-ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("BorderType", 					"none");
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("MinWidth", 						15);
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("MinHeight", 						15);
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault); 
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);
-ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledTrackSkinStyleDefault); 
+//Applied dynamically based on LayoutDirection (vertical)
+ScrollBarElement.VButtonTrackStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("BorderType", 					"none");
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("MinHeight", 					15);
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("PercentWidth", 					100);
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault); 
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault);
+ScrollBarElement.VButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.DisabledTrackSkinStyleDefault); 
 
-//disabled skin of arrow buttons
+//Applied dynamically based on LayoutDirection (horizontal)
+ScrollBarElement.HButtonTrackStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("BorderType", 					"none");
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("MinHeight", 					15);
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("PercentHeight", 				100);
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault); 
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault);
+ScrollBarElement.HButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.DisabledTrackSkinStyleDefault); 
+
+//disabled skin of arrow buttons (other states using Button defaults)
 ScrollBarElement.DisabledButtonScrollArrowStyleDefault = new StyleDefinition();
 ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderType", 					"solid");
 ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderThickness", 				1);
@@ -162,60 +176,66 @@ ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientSta
 ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientStop", 			(-.05));
 ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("ArrowColor", 					"#777777");
 
-//Applied dynamically based on LayoutDirection
+//Applied dynamically based on LayoutDirection (vertical)
 ScrollBarElement.VButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 	15);
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 	30);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 		15);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 		30);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("PercentWidth", 	100);
 
-//Applied dynamically based on LayoutDirection
+//Applied dynamically based on LayoutDirection (horizontal)
 ScrollBarElement.HButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 	30);
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 	15);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 		30);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 		15);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("PercentHeight", 	100);
 
-//Applied dynamically based on LayoutDirection
+//Applied dynamically based on LayoutDirection (vertical)
 ScrollBarElement.VButtonScrollArrowIncStyleDefault = new StyleDefinition();
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"down");
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("MinWidth", 			15);
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("MinHeight", 			15);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("PercentWidth", 		100);
 ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
-//Applied dynamically based on LayoutDirection
+//Applied dynamically based on LayoutDirection (vertical)
 ScrollBarElement.VButtonScrollArrowDecStyleDefault = new StyleDefinition();
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"up"); 
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("MinWidth", 			15);
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("MinHeight", 			15);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("PercentWidth", 		100);
 ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
-//Applied dynamically based on LayoutDirection
+//Applied dynamically based on LayoutDirection (horizontal)
 ScrollBarElement.HButtonScrollArrowIncStyleDefault = new StyleDefinition();
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"right");
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("MinWidth", 			15);
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("MinHeight", 			15);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("PercentHeight", 		100);
 ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
-//Applied dynamically based on LayoutDirection
+//Applied dynamically based on LayoutDirection (horizontal)
 ScrollBarElement.HButtonScrollArrowDecStyleDefault = new StyleDefinition();
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"left"); 
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("MinWidth", 			15);
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("MinHeight", 			15);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("PercentHeight", 		100);
 ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
 ScrollBarElement.StyleDefault = new StyleDefinition();
 ScrollBarElement.StyleDefault.setStyle("ScrollTweenDuration", 						180); 			// number (milliseconds)
 ScrollBarElement.StyleDefault.setStyle("LayoutDirection", 							"vertical");	// "vertical" || "horizontal"
-ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 							ScrollBarElement.ButtonTrackStyleDefault);
 ScrollBarElement.StyleDefault.setStyle("ClipContent", 								false);
 ScrollBarElement.StyleDefault.setStyle("LayoutGap", 								-1); //Collapse borders
 
 //Applied dynamically based on LayoutDirection
+//ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 						ScrollBarElement.ButtonTrackStyleDefault);
 //ScrollBarElement.StyleDefault.setStyle("ScrollButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowIncStyleDefault); 
 //ScrollBarElement.StyleDefault.setStyle("ScrollButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowDecStyleDefault);
 //ScrollBarElement.StyleDefault.setStyle("ButtonTabStyle", 							ScrollBarElement.ButtonTabStyleDefault); 
@@ -415,10 +435,11 @@ ScrollBarElement.prototype.getTweenToValue =
 /////////////ScrollBarElement Internal Functions///////////////////
 
 //@private container doesnt measure need to be notified by track & tab buttons	
-ScrollBarElement.prototype._onTrackAndTabMeasureComplete =
+ScrollBarElement.prototype._onTrackAndTabContainerMeasureComplete =
 	function (event)
 	{
 		this._invalidateMeasure();
+		this._invalidateLayout();
 	};
 	
 //@private - only active when a tween is running.
@@ -560,7 +581,6 @@ ScrollBarElement.prototype._createChildren =
 		this._buttonTrack = new ButtonElement();
 		this._buttonTrack._setStyleDefinitionDefault(this._getDefaultStyle("ButtonTrackStyle"));
 		this._buttonTrack.addEventListener("click", this._onScrollButtonClickInstance);
-		this._buttonTrack.addEventListener("measurecomplete", this._onTrackAndTabMeasureCompleteInstance);
 		this._trackAndTabContainer._addChild(this._buttonTrack);
 	
 		//Add tab to container
@@ -568,7 +588,6 @@ ScrollBarElement.prototype._createChildren =
 		this._buttonTab._setStyleDefinitionDefault(this._getDefaultStyle("ButtonTabStyle"));
 		this._buttonTab.setStyle("Draggable", true);
 		this._buttonTab.addEventListener("dragging", this._onScrollTabDragInstance);
-		this._buttonTab.addEventListener("measurecomplete", this._onTrackAndTabMeasureCompleteInstance);
 		this._trackAndTabContainer._addChild(this._buttonTab);
 	
 		this._buttonDecrement = new ButtonElement();
@@ -597,12 +616,14 @@ ScrollBarElement.prototype._doStylesUpdated =
 			{
 				this._buttonIncrement._setStyleDefinitionDefault(ScrollBarElement.HButtonScrollArrowIncStyleDefault);
 				this._buttonDecrement._setStyleDefinitionDefault(ScrollBarElement.HButtonScrollArrowDecStyleDefault);
+				this._buttonTrack._setStyleDefinitionDefault(ScrollBarElement.HButtonTrackStyleDefault);
 				this._buttonTab._setStyleDefinitionDefault(ScrollBarElement.HButtonTabStyleDefault);
 			}
 			else //vertical
 			{
 				this._buttonIncrement._setStyleDefinitionDefault(ScrollBarElement.VButtonScrollArrowIncStyleDefault);
 				this._buttonDecrement._setStyleDefinitionDefault(ScrollBarElement.VButtonScrollArrowDecStyleDefault);
+				this._buttonTrack._setStyleDefinitionDefault(ScrollBarElement.VButtonTrackStyleDefault);
 				this._buttonTab._setStyleDefinitionDefault(ScrollBarElement.VButtonTabStyleDefault);
 			}
 			
@@ -698,16 +719,32 @@ ScrollBarElement.prototype._doLayout =
 		var pixelsPerScaleUnit;
 		
 		//TODO: Handle rotation of tab??
+		var tabWidth = this._buttonTab.getStyle("Width");
+		var tabMinWidth = this._buttonTab.getStyle("MinWidth");
+		var tabMaxWidth = this._buttonTab.getStyle("MinWidth");
+		var tabPWidth = this._buttonTab.getStyle("PercentWidth");
+		
+		var tabHeight = this._buttonTab.getStyle("Height");
+		var tabMinHeight = this._buttonTab.getStyle("MinHeight");
+		var tabMaxHeight = this._buttonTab.getStyle("MaxHeight");
+		var tabPHeight = this._buttonTab.getStyle("PercentHeight");
+		
+		var trackWidth = this._buttonTrack.getStyle("Width");
+		var trackMinWidth = this._buttonTrack.getStyle("MinWidth");
+		var trackMaxWidth = this._buttonTrack.getStyle("MinWidth");
+		var trackPWidth = this._buttonTrack.getStyle("PercentWidth");		
+		
+		var trackHeight = this._buttonTrack.getStyle("Height");
+		var trackMinHeight = this._buttonTrack.getStyle("MinHeight");
+		var trackMaxHeight = this._buttonTrack.getStyle("MaxHeight");
+		var trackPHeight = this._buttonTrack.getStyle("PercentHeight");
 		
 		//Size and position the track and tab (their parent container doesnt layout or measure)
 		var direction = this.getStyle("LayoutDirection");
 		if (direction == "vertical")
 		{
-			var tabHeight = this._buttonTab.getStyle("Height");
 			if (tabHeight == null)
 			{
-				var tabMinHeight = this._buttonTab.getStyle("MinHeight");
-				
 				if (this._scrollPageSize > 0)
 					tabHeight = Math.round(this._trackAndTabContainer._height * (this._scrollViewSize / this._scrollPageSize));
 				else
@@ -716,11 +753,37 @@ ScrollBarElement.prototype._doLayout =
 				tabHeight = Math.max(tabMinHeight, tabHeight);
 			}
 			
+			var tabActualWidth = tabWidth;
+			if (tabActualWidth == null)
+			{
+				if (tabPWidth != null)
+					tabActualWidth = Math.round(this._trackAndTabContainer._width * (tabPWidth / 100));
+				
+				if (tabActualWidth == null)
+					tabActualWidth = tabMinWidth;
+				
+				tabActualWidth = Math.min(tabActualWidth, tabMaxWidth);
+				tabActualWidth = Math.max(tabActualWidth, tabMinWidth);
+			}
+			
+			var trackActualWidth = trackWidth;
+			if (trackActualWidth == null)
+			{
+				if (trackPWidth != null)
+					trackActualWidth = Math.round(this._trackAndTabContainer._width * (trackPWidth / 100));
+				
+				if (trackActualWidth == null)
+					trackActualWidth = trackMinWidth;
+				
+				trackActualWidth = Math.min(tabActualWidth, trackMaxWidth);
+				trackActualWidth = Math.max(tabActualWidth, trackMinWidth);
+			}
+			
 			availableTrackSize = this._trackAndTabContainer._height - tabHeight;
 			pixelsPerScaleUnit = availableTrackSize / (this._scrollPageSize - this._scrollViewSize);
 			
-			this._buttonTrack._setActualSize(this._buttonTrack._getStyledOrMeasuredWidth(), this._trackAndTabContainer._height);
-			this._buttonTab._setActualSize(this._buttonTab._getStyledOrMeasuredWidth(), tabHeight);
+			this._buttonTrack._setActualSize(trackActualWidth, this._trackAndTabContainer._height);
+			this._buttonTab._setActualSize(tabActualWidth, tabHeight);
 			
 			var hAlign = this.getStyle("LayoutHorizontalAlign");
 			if (hAlign == "left")
@@ -741,7 +804,6 @@ ScrollBarElement.prototype._doLayout =
 		}
 		else //horizontal
 		{
-			var tabWidth = this._buttonTab.getStyle("Width");
 			if (tabWidth == null)
 			{
 				var tabMinWidth = this._buttonTab.getStyle("MinWidth");
@@ -754,11 +816,37 @@ ScrollBarElement.prototype._doLayout =
 				tabWidth = Math.max(tabMinWidth, tabWidth);
 			}
 			
+			var tabActualHeight = tabHeight;
+			if (tabActualHeight == null)
+			{
+				if (tabPHeight != null)
+					tabActualHeight = Math.round(this._trackAndTabContainer._height * (tabPHeight / 100));
+				
+				if (tabActualHeight == null)
+					tabActualHeight = tabMinHeight;
+				
+				tabActualHeight = Math.min(tabActualHeight, tabMaxHeight);
+				tabActualHeight = Math.max(tabActualHeight, tabMinHeight);
+			}
+			
+			var trackActualHeight = trackHeight;
+			if (trackActualHeight == null)
+			{
+				if (trackPHeight != null)
+					trackActualHeight = Math.round(this._trackAndTabContainer._height * (trackPHeight / 100));
+				
+				if (trackActualHeight == null)
+					trackActualHeight = trackMinHeight;
+				
+				trackActualHeight = Math.min(tabActualHeight, trackMaxHeight);
+				trackActualHeight = Math.max(tabActualHeight, trackMinHeight);
+			}
+			
 			availableTrackSize = this._trackAndTabContainer._width - tabWidth;
 			pixelsPerScaleUnit = availableTrackSize / (this._scrollPageSize - this._scrollViewSize);
 			
-			this._buttonTrack._setActualSize(this._trackAndTabContainer._width, this._buttonTrack._getStyledOrMeasuredHeight());
-			this._buttonTab._setActualSize(tabWidth, this._buttonTab._getStyledOrMeasuredHeight());
+			this._buttonTrack._setActualSize(this._trackAndTabContainer._width, trackActualHeight);
+			this._buttonTab._setActualSize(tabWidth,tabActualHeight);
 			
 			var vAlign = this.getStyle("LayoutVerticalAlign");
 			if (vAlign == "top")

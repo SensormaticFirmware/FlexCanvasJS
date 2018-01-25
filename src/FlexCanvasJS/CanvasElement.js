@@ -3717,9 +3717,6 @@ CanvasElement.prototype._setMeasuredSize =
 			this._parent._invalidateMeasure();
 			this._parent._invalidateLayout();
 		}
-		
-		if (this.hasEventListener("measurecomplete", null) == true)
-			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
 	};
 	
 //@private	
@@ -4370,6 +4367,9 @@ CanvasElement.prototype._validateMeasure =
 		var measuredSize = this._doMeasure(paddingSize.width, paddingSize.height);
 			
 		this._setMeasuredSize(measuredSize.width, measuredSize.height);
+		
+		if (this.hasEventListener("measurecomplete", null) == true)
+			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
 	};
 	
 //@private	
