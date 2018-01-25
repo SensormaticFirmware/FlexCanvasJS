@@ -388,6 +388,23 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._dataListControlsCollection.addItem({label:"Label", 
 											control:labelControl, 
 											rootControlStyleType:labelControlStyleType});
+	//ScrollBarElement
+	var scrollBarDef = new StyleDefinition();
+	scrollBarDef.setStyle("LayoutDirection", "vertical");
+	scrollBarDef.setStyle("PercentHeight", 100);
+	scrollBarDef.setStyle("PercentWidth", null);
+	
+	var scrollBarControl = new ScrollBarElement();
+	scrollBarControl.setStyleDefinitions(scrollBarDef);
+	
+	var scrollBarControlStyleType = new ControlStyleType("", "ScrollBarStyle", "root", false, false, scrollBarControl, null, null, null);
+	scrollBarControlStyleType.styleListCodeString = "var ScrollBarStyle = new StyleDefinition();\n";
+	
+	scrollBarControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"ScrollBar", 
+											control:scrollBarControl, 
+											rootControlStyleType:scrollBarControlStyleType});
 	
 	
 	//Set static collection sort

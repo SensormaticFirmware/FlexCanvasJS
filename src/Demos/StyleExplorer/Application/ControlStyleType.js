@@ -229,6 +229,18 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Functional", 	"TruncateToFit", 							"string", 	false, 	false, 	styleDef, this, "...",						null));
 			}
 			
+			if (this.styleName == "ScrollBarStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutDirection", 							"string", 	false, 	false, 	styleDef, this,	"vertical",					[{label:"vertical", value:"vertical"}, {label:"horizontal", value:"horizontal"}]));
+				
+				this.styleList.addItem(new ControlStyleType("Functional", 	"ScrollTweenDuration", 						"number", 	false, 	false, 	styleDef, this,	180,						null));
+				
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollButtonIncrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollButtonDecrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonTrackStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonTabStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			}
+			
 			if (this.styleName == "ButtonStyle" || 
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
