@@ -724,20 +724,40 @@ ScrollBarElement.prototype._doLayout =
 		var tabMaxWidth = this._buttonTab.getStyle("MinWidth");
 		var tabPWidth = this._buttonTab.getStyle("PercentWidth");
 		
+		if (tabMinWidth == null)
+			tabMinWidth = 0;
+		if (tabMaxWidth == null)
+			tabMaxWidth = Number.MAX_VALUE;
+		
 		var tabHeight = this._buttonTab.getStyle("Height");
 		var tabMinHeight = this._buttonTab.getStyle("MinHeight");
 		var tabMaxHeight = this._buttonTab.getStyle("MaxHeight");
 		var tabPHeight = this._buttonTab.getStyle("PercentHeight");
+		
+		if (tabMinHeight == null)
+			tabMinHeight = 0;
+		if (tabMaxHeight == null)
+			tabMaxHeight = Number.MAX_VALUE;
 		
 		var trackWidth = this._buttonTrack.getStyle("Width");
 		var trackMinWidth = this._buttonTrack.getStyle("MinWidth");
 		var trackMaxWidth = this._buttonTrack.getStyle("MinWidth");
 		var trackPWidth = this._buttonTrack.getStyle("PercentWidth");		
 		
+		if (trackMinWidth == null)
+			trackMinWidth = 0;
+		if (trackMaxWidth == null)
+			trackMaxWidth = Number.MAX_VALUE;
+		
 		var trackHeight = this._buttonTrack.getStyle("Height");
 		var trackMinHeight = this._buttonTrack.getStyle("MinHeight");
 		var trackMaxHeight = this._buttonTrack.getStyle("MaxHeight");
 		var trackPHeight = this._buttonTrack.getStyle("PercentHeight");
+		
+		if (trackMinHeight == null)
+			trackMinHeight = 0;
+		if (trackMaxHeight == null)
+			trackMaxHeight = Number.MAX_VALUE;
 		
 		//Size and position the track and tab (their parent container doesnt layout or measure)
 		var direction = this.getStyle("LayoutDirection");
