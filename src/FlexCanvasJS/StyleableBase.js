@@ -267,25 +267,48 @@ StyleableBase.prototype.getStyleData =
 StyleableBase.prototype._getStyleType = 
 	function (styleName)
 	{
-		var thisProto = Object.getPrototypeOf(this);
-		if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-			return null;
+		this._flattenStyleTypes();
 		
-		var thisClass = thisProto.constructor;
+		if (styleName in this.constructor.__StyleTypesFlat)
+			return this.constructor.__StyleTypesFlat[styleName];
+		
+		return null;
+	};
+
+//@private	
+StyleableBase.prototype._flattenStyleTypes = 
+	function ()
+	{
+		if (this.constructor.__StyleTypesFlat != null)
+			return;
+		
+		this.constructor.__StyleTypesFlat = Object.create(null);
+		
+		var thisClass = this.constructor;
+		var thisProto = Object.getPrototypeOf(this);
+		var styleName = null;
 		
 		while (true)
 		{
-			if ("_StyleTypes" in thisClass && styleName in thisClass._StyleTypes)
-				return thisClass._StyleTypes[styleName];
+			if ("_StyleTypes" in thisClass)
+			{
+				for (styleName in thisClass._StyleTypes)
+				{
+					if (styleName in this.constructor.__StyleTypesFlat)
+						continue;
+					
+					this.constructor.__StyleTypesFlat[styleName] = thisClass._StyleTypes[styleName];
+				}
+			}
 			
 			thisProto = Object.getPrototypeOf(thisProto);
 			if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-				return null;
+				break;
 			
 			thisClass = thisProto.constructor;
 		}
 	};
-
+	
 /**
  * @function _getDefaultStyle
  * 
@@ -329,28 +352,45 @@ StyleableBase.prototype._getDefaultStyleData =
 StyleableBase.prototype._getClassStyle = 
 	function (styleName)
 	{
-		var styleValue = undefined;
+		this._flattenClassStyles();
 		
+		if (styleName in this.constructor.__StyleDefaultsFlat)
+			return this.constructor.__StyleDefaultsFlat[styleName];
+		
+		return undefined;
+	};	
+	
+//@private	
+StyleableBase.prototype._flattenClassStyles = 
+	function ()
+	{
+		if (this.constructor.__StyleDefaultsFlat != null)
+			return;
+		
+		this.constructor.__StyleDefaultsFlat = Object.create(null);
+		
+		var thisClass = this.constructor;
 		var thisProto = Object.getPrototypeOf(this);
-		if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-			return styleValue;
-		
-		var thisClass = thisProto.constructor;
+		var styleName = null;
 		
 		while (true)
 		{
 			if ("StyleDefault" in thisClass)
 			{
-				styleValue = thisClass.StyleDefault.getStyle(styleName);
-				if (styleValue !== undefined)
-					return styleValue;
+				for (styleName in thisClass.StyleDefault._styleMap)
+				{
+					if (styleName in this.constructor.__StyleDefaultsFlat)
+						continue;
+					
+					this.constructor.__StyleDefaultsFlat[styleName] = thisClass.StyleDefault._styleMap[styleName];
+				}
 			}
 			
 			thisProto = Object.getPrototypeOf(thisProto);
 			if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-				return styleValue;
+				break;
 			
 			thisClass = thisProto.constructor;
 		}
-	};	
+	};
 	
