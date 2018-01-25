@@ -363,7 +363,7 @@ ViewportElement.prototype._doLayout =
 				this._horizontalScrollBar = new ScrollBarElement();
 				this._horizontalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalScrollBarStyle"));
 				this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
-				this._horizontalScrollBar.setStyle("ScrollBarDirection", "horizontal");
+				this._horizontalScrollBar.setStyle("LayoutDirection", "horizontal");
 				this._horizontalScrollBar.setScrollLineSize(25);
 				
 				this._horizontalScrollBar.addEventListener("changed", this._onViewportScrollBarChangeInstance);
@@ -389,7 +389,7 @@ ViewportElement.prototype._doLayout =
 				this._verticalScrollBar = new ScrollBarElement();
 				this._verticalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("VerticalScrollBarStyle"));
 				this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
-				this._verticalScrollBar.setStyle("ScrollBarDirection", "vertical");
+				this._verticalScrollBar.setStyle("LayoutDirection", "vertical");
 				this._verticalScrollBar.setScrollLineSize(25);
 				
 				this._verticalScrollBar.addEventListener("changed", this._onViewportScrollBarChangeInstance);

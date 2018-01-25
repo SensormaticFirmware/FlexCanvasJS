@@ -1043,7 +1043,7 @@ DataListElement.prototype._doLayout =
 			this._scrollBar = new ScrollBarElement();
 			this._scrollBar._setStyleDefinitionDefault(this._getDefaultStyle("ScrollBarStyle"));
 			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
-			this._scrollBar.setStyle("ScrollBarDirection", listDirection);
+			this._scrollBar.setStyle("LayoutDirection", listDirection);
 			this._scrollBar.setScrollLineSize(1);
 			
 			this._scrollBar.addEventListener("changed", this._onDataListScrollBarChangedInstance);
