@@ -269,8 +269,8 @@ StyleableBase.prototype._getStyleType =
 	{
 		this._flattenStyleTypes();
 		
-		if (styleName in this.constructor.__StyleTypesFlat)
-			return this.constructor.__StyleTypesFlat[styleName];
+		if (styleName in this.constructor.__StyleTypesFlatMap)
+			return this.constructor.__StyleTypesFlatMap[styleName];
 		
 		return null;
 	};
@@ -279,10 +279,11 @@ StyleableBase.prototype._getStyleType =
 StyleableBase.prototype._flattenStyleTypes = 
 	function ()
 	{
-		if (this.constructor.__StyleTypesFlat != null)
+		if (this.constructor.__StyleTypesFlatMap != null)
 			return;
 		
-		this.constructor.__StyleTypesFlat = Object.create(null);
+		this.constructor.__StyleTypesFlatMap = Object.create(null);
+		this.constructor.__StyleTypesFlatArray = [];
 		
 		var thisClass = this.constructor;
 		var thisProto = Object.getPrototypeOf(this);
@@ -294,10 +295,11 @@ StyleableBase.prototype._flattenStyleTypes =
 			{
 				for (styleName in thisClass._StyleTypes)
 				{
-					if (styleName in this.constructor.__StyleTypesFlat)
+					if (styleName in this.constructor.__StyleTypesFlatMap)
 						continue;
 					
-					this.constructor.__StyleTypesFlat[styleName] = thisClass._StyleTypes[styleName];
+					this.constructor.__StyleTypesFlatMap[styleName] = thisClass._StyleTypes[styleName];
+					this.constructor.__StyleTypesFlatArray.push({styleName:styleName, styleType:thisClass._StyleTypes[styleName]});
 				}
 			}
 			
@@ -354,8 +356,8 @@ StyleableBase.prototype._getClassStyle =
 	{
 		this._flattenClassStyles();
 		
-		if (styleName in this.constructor.__StyleDefaultsFlat)
-			return this.constructor.__StyleDefaultsFlat[styleName];
+		if (styleName in this.constructor.__StyleDefaultsFlatMap)
+			return this.constructor.__StyleDefaultsFlatMap[styleName];
 		
 		return undefined;
 	};	
@@ -364,10 +366,10 @@ StyleableBase.prototype._getClassStyle =
 StyleableBase.prototype._flattenClassStyles = 
 	function ()
 	{
-		if (this.constructor.__StyleDefaultsFlat != null)
+		if (this.constructor.__StyleDefaultsFlatMap != null)
 			return;
 		
-		this.constructor.__StyleDefaultsFlat = Object.create(null);
+		this.constructor.__StyleDefaultsFlatMap = Object.create(null);
 		
 		var thisClass = this.constructor;
 		var thisProto = Object.getPrototypeOf(this);
@@ -379,10 +381,10 @@ StyleableBase.prototype._flattenClassStyles =
 			{
 				for (styleName in thisClass.StyleDefault._styleMap)
 				{
-					if (styleName in this.constructor.__StyleDefaultsFlat)
+					if (styleName in this.constructor.__StyleDefaultsFlatMap)
 						continue;
 					
-					this.constructor.__StyleDefaultsFlat[styleName] = thisClass.StyleDefault._styleMap[styleName];
+					this.constructor.__StyleDefaultsFlatMap[styleName] = thisClass.StyleDefault._styleMap[styleName];
 				}
 			}
 			

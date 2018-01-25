@@ -1319,6 +1319,13 @@ CanvasElement.prototype.getStyleDefinitionAt =
 CanvasElement.prototype.getStyle = 
 	function (styleName)
 	{
+		if (styleName in this._stylesCache)
+		{
+			var styleCache = this._stylesCache[styleName];
+			if (styleCache.cacheInvalid == false)
+				return styleCache.styleData.value;
+		}
+	
 		return CanvasElement.base.prototype.getStyle.call(this, styleName);
 	};	
 	
@@ -2896,26 +2903,9 @@ CanvasElement.prototype._onCanvasElementAdded =
 			this._stylesCache[prop].cacheInvalid = true;
 		
 		//Invalidate *all* styles, don't need to propagate, display propagates when attaching.
-		var thisProto = Object.getPrototypeOf(this);
-		var thisClass = null;
-		
-		if (thisProto == null || thisProto.hasOwnProperty("constructor") == true)
-			thisClass = thisProto.constructor;
-		
-		while (thisClass != null)
-		{
-			if ("_StyleTypes" in thisClass)
-			{
-				for (var styleName in thisClass._StyleTypes)
-					this._invalidateStyle(styleName);
-			}
-			
-			thisProto = Object.getPrototypeOf(thisProto);
-			if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-				thisClass = null;
-			else
-				thisClass = thisProto.constructor;			
-		}
+		this._flattenStyleTypes();
+		for (i = 0; i < this.constructor.__StyleTypesFlatArray.length; i++)
+			this._invalidateStyle(this.constructor.__StyleTypesFlatArray[i].styleName);
 		
 		//Always dispatch when added.
 		if (this.hasEventListener("localechanged", null) == true)
