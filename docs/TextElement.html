@@ -125,7 +125,7 @@ TextElement<br>
 Renders mutli-line style-able select-able text.<br>
 TextElement respects newline characters and will<br>
 wrap text when width is constrained. If only a single<br>
-line of text is needed, you should use LabelElement.<br>
+line of text is needed, LabelElement is more efficient.<br>
 <br>
 <table>
 <tr>
@@ -145,6 +145,20 @@ TextElement &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a 
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Style</td>
 <td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Multiline</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When true, newline characters are respected and text will be rendered on multiple lines if necessary.<br>
+</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
@@ -171,6 +185,20 @@ When true, text can be highlighted and copied.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Text to be rendered by the TextElement.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">WordWrap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -609,6 +637,20 @@ works if the element is a child of a Container element.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 When false disables mouse events for the element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Multiline</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When true, newline characters are respected and text will be rendered on multiple lines if necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1105,6 +1147,20 @@ When false the element will not be rendered.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The Width the element should be rendered relative to its parent container. This only<br>
 works if the element is a child of a Container element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">WordWrap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -3905,10 +3961,8 @@ The CanvasElement to move this element relative too.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Sets the default style definition. Use this when you need to supply a default definition<br>
-that differs from the class based definition. For example, you're component uses a Button,<br>
-but you need to supply styles to the button (or its skins) that differ from a Button's<br>
-class defaults. Default styles do not track changes at runtime so this should always be<br>
-called *before* the element is added to its parent and is included in the display chain.<br>
+to a sub component that differs from the class based definition but also need to allow<br>
+the implementor to supply a style definition to the sub component.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>

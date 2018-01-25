@@ -5521,10 +5521,8 @@ The CanvasElement to move this element relative too.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Sets the default style definition. Use this when you need to supply a default definition<br>
-that differs from the class based definition. For example, you're component uses a Button,<br>
-but you need to supply styles to the button (or its skins) that differ from a Button's<br>
-class defaults. Default styles do not track changes at runtime so this should always be<br>
-called *before* the element is added to its parent and is included in the display chain.<br>
+to a sub component that differs from the class based definition but also need to allow<br>
+the implementor to supply a style definition to the sub component.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
