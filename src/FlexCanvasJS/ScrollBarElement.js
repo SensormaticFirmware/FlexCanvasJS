@@ -716,7 +716,7 @@ ScrollBarElement.prototype._doLayout =
 		}
 		
 		var availableTrackSize;
-		var pixelsPerScaleUnit;
+		var pixelsPerScaleUnit = 0;
 		
 		//TODO: Handle rotation of tab??
 		var tabWidth = this._buttonTab.getStyle("Width");
@@ -779,8 +779,11 @@ ScrollBarElement.prototype._doLayout =
 				trackActualWidth = Math.max(tabActualWidth, trackMinWidth);
 			}
 			
-			availableTrackSize = this._trackAndTabContainer._height - tabHeight;
-			pixelsPerScaleUnit = availableTrackSize / (this._scrollPageSize - this._scrollViewSize);
+			if (this._scrollPageSize > this._scrollViewSize)
+			{
+				availableTrackSize = this._trackAndTabContainer._height - tabHeight;
+				pixelsPerScaleUnit = availableTrackSize / (this._scrollPageSize - this._scrollViewSize);
+			}
 			
 			this._buttonTrack._setActualSize(trackActualWidth, this._trackAndTabContainer._height);
 			this._buttonTab._setActualSize(tabActualWidth, tabHeight);
@@ -842,8 +845,11 @@ ScrollBarElement.prototype._doLayout =
 				trackActualHeight = Math.max(tabActualHeight, trackMinHeight);
 			}
 			
-			availableTrackSize = this._trackAndTabContainer._width - tabWidth;
-			pixelsPerScaleUnit = availableTrackSize / (this._scrollPageSize - this._scrollViewSize);
+			if (this._scrollPageSize > this._scrollViewSize)
+			{
+				availableTrackSize = this._trackAndTabContainer._width - tabWidth;
+				pixelsPerScaleUnit = availableTrackSize / (this._scrollPageSize - this._scrollViewSize);
+			}
 			
 			this._buttonTrack._setActualSize(this._trackAndTabContainer._width, trackActualHeight);
 			this._buttonTab._setActualSize(tabWidth,tabActualHeight);
