@@ -16282,6 +16282,8 @@ ScrollBarElement.StyleDefault.setStyle("ScrollTweenDuration", 						180); 			// 
 ScrollBarElement.StyleDefault.setStyle("LayoutDirection", 							"vertical");	// "vertical" || "horizontal"
 ScrollBarElement.StyleDefault.setStyle("ClipContent", 								false);
 ScrollBarElement.StyleDefault.setStyle("LayoutGap", 								-1); //Collapse borders
+ScrollBarElement.StyleDefault.setStyle("LayoutHorizontalAlign", 					"center");
+ScrollBarElement.StyleDefault.setStyle("LayoutVerticalAlign", 						"middle"); 
 
 //Applied dynamically based on LayoutDirection
 //ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 						ScrollBarElement.ButtonTrackStyleDefault);
@@ -16866,7 +16868,7 @@ ScrollBarElement.prototype._doLayout =
 			}
 			else if (hAlign == "center")
 			{
-				this._buttonTrack._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTrack._width / 2), 0));
+				this._buttonTrack._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTrack._width / 2)), 0);
 				this._buttonTab._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTab._width / 2), Math.round(this._scrollValue * pixelsPerScaleUnit)));
 			}
 			else //right
