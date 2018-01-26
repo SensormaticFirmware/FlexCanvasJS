@@ -1805,19 +1805,19 @@ function StyleData(styleName)
 {
 	/**
 	 * @member styleName string
-	 * Name of associated style
+	 * Read Only - Name of associated style
 	 */
 	this.styleName = styleName;
 	
 	/**
 	 * @member value Any
-	 * Value of associated style 
+	 * Read Only - Value of associated style 
 	 */
 	this.value = undefined;
 	
 	/**
 	 * @member priority Array
-	 * Array of integers representing the position 
+	 * Read Only - Array of integers representing the position 
 	 * in the style chain the style was found.
 	 */
 	this.priority = [];
@@ -2017,7 +2017,8 @@ StyleableBase.prototype.setStyle =
  * @function getStyleData
  * 
  * Gets the style data for the supplied style name, this includes
- * additional info than getStyle() such as the style priority.
+ * additional info than getStyle() such as the style priority. You should
+ * not modify the returned StyleData.
  * 
  * @param styleName String
  * String representing style to return the associated StyleData.
@@ -2049,25 +2050,50 @@ StyleableBase.prototype.getStyleData =
 StyleableBase.prototype._getStyleType = 
 	function (styleName)
 	{
-		var thisProto = Object.getPrototypeOf(this);
-		if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-			return null;
+		this._flattenStyleTypes();
 		
-		var thisClass = thisProto.constructor;
+		if (styleName in this.constructor.__StyleTypesFlatMap)
+			return this.constructor.__StyleTypesFlatMap[styleName];
+		
+		return null;
+	};
+
+//@private	
+StyleableBase.prototype._flattenStyleTypes = 
+	function ()
+	{
+		if (this.constructor.__StyleTypesFlatMap != null)
+			return;
+		
+		this.constructor.__StyleTypesFlatMap = Object.create(null);
+		this.constructor.__StyleTypesFlatArray = [];
+		
+		var thisClass = this.constructor;
+		var thisProto = Object.getPrototypeOf(this);
+		var styleName = null;
 		
 		while (true)
 		{
-			if ("_StyleTypes" in thisClass && styleName in thisClass._StyleTypes)
-				return thisClass._StyleTypes[styleName];
+			if ("_StyleTypes" in thisClass)
+			{
+				for (styleName in thisClass._StyleTypes)
+				{
+					if (styleName in this.constructor.__StyleTypesFlatMap)
+						continue;
+					
+					this.constructor.__StyleTypesFlatMap[styleName] = thisClass._StyleTypes[styleName];
+					this.constructor.__StyleTypesFlatArray.push({styleName:styleName, styleType:thisClass._StyleTypes[styleName]});
+				}
+			}
 			
 			thisProto = Object.getPrototypeOf(thisProto);
 			if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-				return null;
+				break;
 			
 			thisClass = thisProto.constructor;
 		}
 	};
-
+	
 /**
  * @function _getDefaultStyle
  * 
@@ -2111,30 +2137,47 @@ StyleableBase.prototype._getDefaultStyleData =
 StyleableBase.prototype._getClassStyle = 
 	function (styleName)
 	{
-		var styleValue = undefined;
+		this._flattenClassStyles();
 		
+		if (styleName in this.constructor.__StyleDefaultsFlatMap)
+			return this.constructor.__StyleDefaultsFlatMap[styleName];
+		
+		return undefined;
+	};	
+	
+//@private	
+StyleableBase.prototype._flattenClassStyles = 
+	function ()
+	{
+		if (this.constructor.__StyleDefaultsFlatMap != null)
+			return;
+		
+		this.constructor.__StyleDefaultsFlatMap = Object.create(null);
+		
+		var thisClass = this.constructor;
 		var thisProto = Object.getPrototypeOf(this);
-		if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-			return styleValue;
-		
-		var thisClass = thisProto.constructor;
+		var styleName = null;
 		
 		while (true)
 		{
 			if ("StyleDefault" in thisClass)
 			{
-				styleValue = thisClass.StyleDefault.getStyle(styleName);
-				if (styleValue !== undefined)
-					return styleValue;
+				for (styleName in thisClass.StyleDefault._styleMap)
+				{
+					if (styleName in this.constructor.__StyleDefaultsFlatMap)
+						continue;
+					
+					this.constructor.__StyleDefaultsFlatMap[styleName] = thisClass.StyleDefault._styleMap[styleName];
+				}
 			}
 			
 			thisProto = Object.getPrototypeOf(thisProto);
 			if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-				return styleValue;
+				break;
 			
 			thisClass = thisProto.constructor;
 		}
-	};	
+	};
 	
 
 
@@ -4862,7 +4905,7 @@ CanvasElement.prototype.getStyleData =
 		
 		//Check cache
 		if (styleCache.cacheInvalid == false)
-			return styleCache.styleData.clone();
+			return styleCache.styleData;
 		
 		styleCache.cacheInvalid = false;
 		var styleData = styleCache.styleData;
@@ -4878,7 +4921,7 @@ CanvasElement.prototype.getStyleData =
 		if (styleData.value !== undefined)
 		{
 			styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
-			return styleData.clone();
+			return styleData;
 		}
 		
 		//Counters (priority depth)
@@ -4895,7 +4938,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 				styleData.priority.push((this._styleDefinitions.length - 1) - ctr); //StyleDefinition depth
 				
-				return styleData.clone();
+				return styleData;
 			}
 		}
 		
@@ -4922,7 +4965,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
 				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);	
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			//Check proxy definitions
@@ -4937,7 +4980,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);	
 					styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
 					
-					return styleData.clone();
+					return styleData;
 				}
 			}
 			
@@ -4975,7 +5018,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(ctr);	//Parent depth
 				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			//Check style definitions
@@ -4990,7 +5033,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 					styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
 					
-					return styleData.clone();
+					return styleData;
 				}
 			}
 			
@@ -5017,7 +5060,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
 					styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);		
 					
-					return styleData.clone();
+					return styleData;
 				}
 				
 				//Check proxy definition
@@ -5034,7 +5077,7 @@ CanvasElement.prototype.getStyleData =
 						styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
 						
-						return styleData.clone();
+						return styleData;
 					}
 				}
 
@@ -5052,7 +5095,7 @@ CanvasElement.prototype.getStyleData =
 		if (styleData.value !== undefined)
 		{
 			styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_DEFINITION);
-			return styleData.clone();
+			return styleData;
 		}	
 		
 		//Check default proxy
@@ -5074,7 +5117,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_PROXY);
 				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			ctr++;
@@ -5085,7 +5128,7 @@ CanvasElement.prototype.getStyleData =
 		styleData.value = this._getClassStyle(styleName);
 		styleData.priority.push(CanvasElement.StylePriorities.CLASS);
 		
-		return styleData.clone();		
+		return styleData;		
 	};
 	
 //@override	
@@ -5882,6 +5925,10 @@ CanvasElement._measureText =
 CanvasElement._fillText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
+		//Firefox weirdly renders text higher than normal
+		if (CanvasElement._browserType == "Firefox")
+			y += 2;
+	
 		var bitmapMap = CanvasElement._characterFillBitmapMap[fontString];
 		if (bitmapMap == null)
 		{
@@ -5993,6 +6040,10 @@ CanvasElement._fillText =
 CanvasElement._strokeText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
+		//Firefox weirdly renders text higher than normal
+		if (CanvasElement._browserType == "Firefox")
+			y += 2;
+	
 		var bitmapMap = CanvasElement._characterStrokeBitmapMap[fontString];
 		if (bitmapMap == null)
 		{
@@ -6422,26 +6473,9 @@ CanvasElement.prototype._onCanvasElementAdded =
 			this._stylesCache[prop].cacheInvalid = true;
 		
 		//Invalidate *all* styles, don't need to propagate, display propagates when attaching.
-		var thisProto = Object.getPrototypeOf(this);
-		var thisClass = null;
-		
-		if (thisProto == null || thisProto.hasOwnProperty("constructor") == true)
-			thisClass = thisProto.constructor;
-		
-		while (thisClass != null)
-		{
-			if ("_StyleTypes" in thisClass)
-			{
-				for (var styleName in thisClass._StyleTypes)
-					this._invalidateStyle(styleName);
-			}
-			
-			thisProto = Object.getPrototypeOf(thisProto);
-			if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-				thisClass = null;
-			else
-				thisClass = thisProto.constructor;			
-		}
+		this._flattenStyleTypes();
+		for (i = 0; i < this.constructor.__StyleTypesFlatArray.length; i++)
+			this._invalidateStyle(this.constructor.__StyleTypesFlatArray[i].styleName);
 		
 		//Always dispatch when added.
 		if (this.hasEventListener("localechanged", null) == true)
@@ -9201,6 +9235,19 @@ TextFieldLineElement.prototype = Object.create(CanvasElement.prototype);
 TextFieldLineElement.prototype.constructor = TextFieldLineElement;
 TextFieldLineElement.base = CanvasElement;	
 
+//Optimize - turn off inheriting for rendering styles. We'll pull styles from parent so
+//we can utilize the parents cache rather than each line having to lookup and cache styles.
+//Parent also responsible for invalidating our render when styles changes.
+TextFieldLineElement._StyleTypes = Object.create(null);
+TextFieldLineElement._StyleTypes.TextStyle =						{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextFont =							{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextSize =							{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextColor =						{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextFillType =						{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextHighlightedColor = 			{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:false};			
+
+
 TextFieldLineElement.prototype.setParentLineMetrics = 
 	function (parentTextField, charStartIndex, charEndIndex)
 	{
@@ -9253,29 +9300,6 @@ TextFieldLineElement.prototype.getLineWidth =
 	};	
 	
 //@Override
-TextFieldLineElement.prototype._doStylesUpdated =
-	function (stylesMap)
-	{
-		TextFieldLineElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-	
-		if ("TextStyle" in stylesMap ||
-			"TextFont" in stylesMap ||
-			"TextSize" in stylesMap ||
-			"TextColor" in stylesMap ||
-			"TextFillType" in stylesMap)
-		{
-			this._invalidateRender();
-		}
-		else if ("TextHighlightedColor" in stylesMap ||
-				"TextHighlightedBackgroundColor" in stylesMap)
-		{
-			//Only re-render if in fact we have a highlighted selection.
-			if (this._highlightMinIndex != this._highlightMaxIndex)
-				this._invalidateRender();
-		}
-	};		
-	
-//@Override
 TextFieldLineElement.prototype._doRender =
 	function()
 	{
@@ -9288,11 +9312,11 @@ TextFieldLineElement.prototype._doRender =
 		var ctx = this._getGraphicsCtx();
 		
 		//Get styles
-		var textFillType = this.getStyle("TextFillType");
-		var textColor = this.getStyle("TextColor");
-		var highlightTextColor = this.getStyle("TextHighlightedColor");
-		var backgroundHighlightTextColor = this.getStyle("TextHighlightedBackgroundColor");
-		var fontString = this._getFontString();
+		var textFillType = this._parentTextField.getStyle("TextFillType");
+		var textColor = this._parentTextField.getStyle("TextColor");
+		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
+		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
+		var fontString = this._parentTextField._getFontString();
 		
 		var x = paddingMetrics.getX();
 		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
@@ -10402,6 +10426,28 @@ TextFieldElement.prototype._doStylesUpdated =
 	{
 		TextFieldElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
+		////Update line renderers////
+		if ("TextStyle" in stylesMap ||
+			"TextFont" in stylesMap ||
+			"TextSize" in stylesMap ||
+			"TextColor" in stylesMap ||
+			"TextFillType" in stylesMap)
+		{
+			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
+				this._textLinesContainer._getChildAt(i)._invalidateRender();
+		}
+		else if ("TextHighlightedColor" in stylesMap ||
+				"TextHighlightedBackgroundColor" in stylesMap)
+		{
+			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
+			{
+				//Only re-render if in fact we have a highlighted selection.
+				if (this._textLinesContainer._getChildAt(i)._highlightMinIndex != this._textLinesContainer._getChildAt(i)._highlightMaxIndex)
+					this._textLinesContainer._getChildAt(i)._invalidateRender();
+			}
+		}
+		
+		//Update ourself
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap)
@@ -16724,7 +16770,7 @@ ScrollBarElement.prototype._doLayout =
 		//TODO: Handle rotation of tab??
 		var tabWidth = this._buttonTab.getStyle("Width");
 		var tabMinWidth = this._buttonTab.getStyle("MinWidth");
-		var tabMaxWidth = this._buttonTab.getStyle("MinWidth");
+		var tabMaxWidth = this._buttonTab.getStyle("MaxWidth");
 		var tabPWidth = this._buttonTab.getStyle("PercentWidth");
 		
 		if (tabMinWidth == null)
@@ -16744,7 +16790,7 @@ ScrollBarElement.prototype._doLayout =
 		
 		var trackWidth = this._buttonTrack.getStyle("Width");
 		var trackMinWidth = this._buttonTrack.getStyle("MinWidth");
-		var trackMaxWidth = this._buttonTrack.getStyle("MinWidth");
+		var trackMaxWidth = this._buttonTrack.getStyle("MaxWidth");
 		var trackPWidth = this._buttonTrack.getStyle("PercentWidth");		
 		
 		if (trackMinWidth == null)
@@ -16773,7 +16819,8 @@ ScrollBarElement.prototype._doLayout =
 				else
 					tabHeight = 0;
 				
-				tabHeight = Math.max(tabMinHeight, tabHeight);
+				tabHeight = Math.min(tabHeight, tabMaxHeight);
+				tabHeight = Math.max(tabHeight, tabMinHeight);
 			}
 			
 			var tabActualWidth = tabWidth;
@@ -16819,8 +16866,8 @@ ScrollBarElement.prototype._doLayout =
 			}
 			else if (hAlign == "center")
 			{
-				this._buttonTrack._setActualPosition(Math.round(this._trackAndTabContainer._width / 2) - (this._buttonTrack._width / 2), 0);
-				this._buttonTab._setActualPosition(Math.round(this._trackAndTabContainer._width / 2) - (this._buttonTab._width / 2), Math.round(this._scrollValue * pixelsPerScaleUnit));
+				this._buttonTrack._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTrack._width / 2), 0));
+				this._buttonTab._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTab._width / 2), Math.round(this._scrollValue * pixelsPerScaleUnit)));
 			}
 			else //right
 			{
@@ -16832,14 +16879,13 @@ ScrollBarElement.prototype._doLayout =
 		{
 			if (tabWidth == null)
 			{
-				var tabMinWidth = this._buttonTab.getStyle("MinWidth");
-				
 				if (this._scrollPageSize > 0)
 					tabWidth = Math.round(this._trackAndTabContainer._width * (this._scrollViewSize / this._scrollPageSize));
 				else
 					tabWidth = 0;
 				
-				tabWidth = Math.max(tabMinWidth, tabWidth);
+				tabWidth = Math.min(tabWidth, tabMaxWidth);
+				tabWidth = Math.max(tabWidth, tabMinWidth);
 			}
 			
 			var tabActualHeight = tabHeight;
@@ -16885,8 +16931,8 @@ ScrollBarElement.prototype._doLayout =
 			}
 			else if (vAlign == "middle")
 			{
-				this._buttonTrack._setActualPosition(0, Math.round(this._trackAndTabContainer._height / 2) - (this._buttonTrack._height / 2));
-				this._buttonTab._setActualPosition(Math.round(this._scrollValue * pixelsPerScaleUnit), Math.round(this._trackAndTabContainer._height / 2) - (this._buttonTab._height / 2));
+				this._buttonTrack._setActualPosition(0, Math.round((this._trackAndTabContainer._height / 2) - (this._buttonTrack._height / 2)));
+				this._buttonTab._setActualPosition(Math.round(this._scrollValue * pixelsPerScaleUnit), Math.round((this._trackAndTabContainer._height / 2) - (this._buttonTab._height / 2)));
 			}
 			else //bottom
 			{
@@ -21868,9 +21914,9 @@ function CanvasManager()
 				return;
 			}
 			
-			window.requestAnimationFrame(_self._onCanvasFrame);	
-			
 			_self.updateNow();
+			
+			window.requestAnimationFrame(_self._onCanvasFrame);	
 		};
 	
 	this._canvasResizeEventHandler = 
@@ -22351,15 +22397,15 @@ CanvasManager.prototype.setCanvas =
 //			canvas.style.mozUserSelect = "none";
 //			canvas.setAttribute("unselectable", "on"); // For IE and Opera
 
+			if (navigator.userAgent.indexOf("Firefox") > 0)
+				CanvasElement._browserType = "Firefox";
+			
 			//Prevent double render frames if someone changes our associated canvas.
 			if (this._canvasRenderFramePending == false)
 			{
 				this._canvasRenderFramePending = true;
 				window.requestAnimationFrame(this._onCanvasFrame);	
 			}
-			
-			if (navigator.userAgent.indexOf("Firefox") > 0)
-				CanvasElement._browserType = "Firefox";
 		}
 		
 		if (addedOrRemoved == true)
