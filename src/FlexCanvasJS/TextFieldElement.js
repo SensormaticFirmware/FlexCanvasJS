@@ -26,6 +26,19 @@ TextFieldLineElement.prototype = Object.create(CanvasElement.prototype);
 TextFieldLineElement.prototype.constructor = TextFieldLineElement;
 TextFieldLineElement.base = CanvasElement;	
 
+//Optimize - turn off inheriting for rendering styles. We'll pull styles from parent so
+//we can utilize the parents cache rather than each line having to lookup and cache styles.
+//Parent also responsible for invalidating our render when styles changes.
+TextFieldLineElement._StyleTypes = Object.create(null);
+TextFieldLineElement._StyleTypes.TextStyle =						{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextFont =							{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextSize =							{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextColor =						{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextFillType =						{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextHighlightedColor = 			{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:false};			
+
+
 TextFieldLineElement.prototype.setParentLineMetrics = 
 	function (parentTextField, charStartIndex, charEndIndex)
 	{
@@ -78,29 +91,6 @@ TextFieldLineElement.prototype.getLineWidth =
 	};	
 	
 //@Override
-TextFieldLineElement.prototype._doStylesUpdated =
-	function (stylesMap)
-	{
-		TextFieldLineElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-	
-		if ("TextStyle" in stylesMap ||
-			"TextFont" in stylesMap ||
-			"TextSize" in stylesMap ||
-			"TextColor" in stylesMap ||
-			"TextFillType" in stylesMap)
-		{
-			this._invalidateRender();
-		}
-		else if ("TextHighlightedColor" in stylesMap ||
-				"TextHighlightedBackgroundColor" in stylesMap)
-		{
-			//Only re-render if in fact we have a highlighted selection.
-			if (this._highlightMinIndex != this._highlightMaxIndex)
-				this._invalidateRender();
-		}
-	};		
-	
-//@Override
 TextFieldLineElement.prototype._doRender =
 	function()
 	{
@@ -113,11 +103,11 @@ TextFieldLineElement.prototype._doRender =
 		var ctx = this._getGraphicsCtx();
 		
 		//Get styles
-		var textFillType = this.getStyle("TextFillType");
-		var textColor = this.getStyle("TextColor");
-		var highlightTextColor = this.getStyle("TextHighlightedColor");
-		var backgroundHighlightTextColor = this.getStyle("TextHighlightedBackgroundColor");
-		var fontString = this._getFontString();
+		var textFillType = this._parentTextField.getStyle("TextFillType");
+		var textColor = this._parentTextField.getStyle("TextColor");
+		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
+		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
+		var fontString = this._parentTextField._getFontString();
 		
 		var x = paddingMetrics.getX();
 		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
@@ -1227,6 +1217,28 @@ TextFieldElement.prototype._doStylesUpdated =
 	{
 		TextFieldElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
+		////Update line renderers////
+		if ("TextStyle" in stylesMap ||
+			"TextFont" in stylesMap ||
+			"TextSize" in stylesMap ||
+			"TextColor" in stylesMap ||
+			"TextFillType" in stylesMap)
+		{
+			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
+				this._textLinesContainer._getChildAt(i)._invalidateRender();
+		}
+		else if ("TextHighlightedColor" in stylesMap ||
+				"TextHighlightedBackgroundColor" in stylesMap)
+		{
+			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
+			{
+				//Only re-render if in fact we have a highlighted selection.
+				if (this._textLinesContainer._getChildAt(i)._highlightMinIndex != this._textLinesContainer._getChildAt(i)._highlightMaxIndex)
+					this._textLinesContainer._getChildAt(i)._invalidateRender();
+			}
+		}
+		
+		//Update ourself
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap)

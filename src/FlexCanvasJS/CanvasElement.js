@@ -2363,6 +2363,10 @@ CanvasElement._measureText =
 CanvasElement._fillText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
+		//Firefox weirdly renders text higher than normal
+		if (CanvasElement._browserType == "Firefox")
+			y += 2;
+	
 		var bitmapMap = CanvasElement._characterFillBitmapMap[fontString];
 		if (bitmapMap == null)
 		{
@@ -2474,6 +2478,10 @@ CanvasElement._fillText =
 CanvasElement._strokeText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
+		//Firefox weirdly renders text higher than normal
+		if (CanvasElement._browserType == "Firefox")
+			y += 2;
+	
 		var bitmapMap = CanvasElement._characterStrokeBitmapMap[fontString];
 		if (bitmapMap == null)
 		{
