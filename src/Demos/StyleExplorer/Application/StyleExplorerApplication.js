@@ -323,6 +323,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._buttonFontSmaller.addEventListener("click", this._onButtonFontClickInstance);
 	this._buttonFontLarger.addEventListener("click", this._onButtonFontClickInstance);
 	
+	
 	/////////////////FUNCTIONAL///////////////////////////////
 	
 	this._currentListRenderer = null;
@@ -345,7 +346,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"Button", 
 											control:buttonControl, 
-											rootControlStyleType:buttonControlStyleType});
+											rootControlStyleType:buttonControlStyleType,
+											list:null});
 	//CanvasElement
 	var canvasElementDef = new StyleDefinition();
 	canvasElementDef.setStyle("BackgroundColor", "#FFFF00");
@@ -362,7 +364,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"CanvasElement", 
 											control:canvasElementControl, 
-											rootControlStyleType:canvasElementControlStyleType});
+											rootControlStyleType:canvasElementControlStyleType,
+											list:null});
 	//ToggleButtonElement
 	var toggleButtonDef = new StyleDefinition();
 	toggleButtonDef.setStyle("Text", "My Text");
@@ -377,7 +380,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"ToggleButton", 
 											control:toggleButtonControl, 
-											rootControlStyleType:toggleButtonControlStyleType});
+											rootControlStyleType:toggleButtonControlStyleType,
+											list:null});
 	//RadioButtonElement
 	var radioButtonDef = new StyleDefinition();
 	radioButtonDef.setStyle("Text", "My Text");
@@ -392,7 +396,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"RadioButton", 
 											control:radioButtonControl, 
-											rootControlStyleType:radioButtonControlStyleType});
+											rootControlStyleType:radioButtonControlStyleType,
+											list:null});
 	//CheckboxElement
 	var checkboxDef = new StyleDefinition();
 	checkboxDef.setStyle("Text", "My Text");
@@ -407,7 +412,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"Checkbox", 
 											control:checkboxControl, 
-											rootControlStyleType:checkboxControlStyleType});
+											rootControlStyleType:checkboxControlStyleType,
+											list:null});
 	//TextInputElement
 	var textInputDef = new StyleDefinition();
 	
@@ -421,7 +427,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"TextInput", 
 											control:textInputControl, 
-											rootControlStyleType:textInputControlStyleType});
+											rootControlStyleType:textInputControlStyleType,
+											list:null});
 	//LabelElement
 	var labelDef = new StyleDefinition();
 	labelDef.setStyle("Text", "My Text");
@@ -436,7 +443,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"Label", 
 											control:labelControl, 
-											rootControlStyleType:labelControlStyleType});
+											rootControlStyleType:labelControlStyleType,
+											list:null});
 	//ScrollBarElement
 	var scrollBarDef = new StyleDefinition();
 	scrollBarDef.setStyle("LayoutDirection", "vertical");
@@ -453,7 +461,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._dataListControlsCollection.addItem({label:"ScrollBar", 
 											control:scrollBarControl, 
-											rootControlStyleType:scrollBarControlStyleType});
+											rootControlStyleType:scrollBarControlStyleType,
+											list:null});
 	
 	
 	//Set static collection sort
@@ -630,8 +639,7 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 StyleExplorerApplication.prototype._onStylingChanged = 
 	function (event)
 	{
-		//We might get lots of stylingchanged events in a row when changing controls. 
-		//Updating the style code is expensive, so we defer till the next frame so we only process once.
+		//Updating the style code is expensive, so we defer till the next frame to spread the load.
 		if (this.hasEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance) == false)
 			this.addEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance);
 	};
