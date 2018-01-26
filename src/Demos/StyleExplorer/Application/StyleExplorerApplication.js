@@ -300,6 +300,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	/////////////////FUNCTIONAL///////////////////////////////
 	
+	this._currentListRenderer = null;
+	
 	//////Build controls and style data//////
 	this._dataListControlsCollection = new ListCollection();
 	
@@ -497,7 +499,7 @@ StyleExplorerApplication.prototype._onLocaleChanged =
 		this._radioButtonSandbox.setStyle("Text", 			localeStrings[currentLocale]["Sandbox"] + " (AnchorContainer)");
 		this._radioButtonStyleCode.setStyle("Text", 		localeStrings[currentLocale]["Style Code"]);
 		this._buttonCopyCode.setStyle("Text", 				localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
-	}
+	};
 
 StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
 	function (event)
@@ -534,10 +536,6 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 		while (this._sandboxControlContainer.getNumElements() > 0)
 			this._sandboxControlContainer.removeElementAt(0);
 		
-		//Purge style selection
-		while (this._stylesControlContainer.getNumElements() > 0)
-			this._stylesControlContainer.removeElementAt(0);
-		
 		//Purge style code
 		this._textSandboxStyleCode.setStyle("Text", "");
 		
@@ -545,15 +543,34 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 		if (this._dataListControls.getSelectedIndex() == -1)
 			return;
 		
-		//Add new control to sandbox
-		this._sandboxControlContainer.addElement(this._dataListControls.getSelectedItem().control);
+		var controlData = this._dataListControls.getSelectedItem();
 		
-		//Create root style list
-		var styleListRenderer = new StyleListRenderer();
-		this._stylesControlContainer.addElement(styleListRenderer);
+		//Add control to sandbox
+		this._sandboxControlContainer.addElement(controlData.control);
 		
-		//Set style list data
-		styleListRenderer.setStyleControlType(this._dataListControls.getSelectedItem().rootControlStyleType);
+		//Create select style root list if does not exist.
+		if (controlData.list == null)
+		{
+			controlData.list = new StyleListRenderer();
+			controlData.list.setStyleControlType(controlData.rootControlStyleType);
+			this._stylesControlContainer.addElement(controlData.list);
+		}
+		
+		//Hide old list
+		if (this._currentListRenderer != null)
+		{
+			this._currentListRenderer.setStyle("Visible", false);
+			this._currentListRenderer.setStyle("IncludeInLayout", false);
+		}
+		
+		this._currentListRenderer = controlData.list;
+		
+		//Show new list
+		if (this._currentListRenderer != null)
+		{
+			this._currentListRenderer.setStyle("Visible", true);
+			this._currentListRenderer.setStyle("IncludeInLayout", true);
+		}
 		
 		this._onStylingChanged(null);
 	};

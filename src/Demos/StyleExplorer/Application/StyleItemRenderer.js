@@ -191,7 +191,7 @@ StyleItemRenderer.prototype._onValueChanged =
 StyleItemRenderer.prototype._updateStyleValue = 
 	function (value)
 	{
-		var styleDefName = ""
+		var styleDefName = "";
 		var parent = this._styleControlType.parent;
 		while (parent != null)
 		{
@@ -211,7 +211,7 @@ StyleItemRenderer.prototype._updateStyleValue =
 			}
 			else if (this._styleControlType.styleType == "class")
 			{
-				this._styleControlType.styleListCodeString = "var " + styleDefName + this._styleControlType.styleName + " = new " + value.name + "();\n"
+				this._styleControlType.styleListCodeString = "var " + styleDefName + this._styleControlType.styleName + " = new " + value.name + "();\n";
 				this._styleControlType.styleItemCodeString += (styleDefName + this._styleControlType.styleName + ");"); 
 				
 				var existingInstance = undefined;
@@ -226,14 +226,14 @@ StyleItemRenderer.prototype._updateStyleValue =
 			else if (this._styleControlType.styleType == "bool")
 			{
 				if (value == true)
-					this._styleControlType.styleItemCodeString += "true);"
+					this._styleControlType.styleItemCodeString += "true);";
 				else
-					this._styleControlType.styleItemCodeString += "false);"
+					this._styleControlType.styleItemCodeString += "false);";
 			}
 			else 
 			{
 				value = value.toString();
-				this._styleControlType.styleItemCodeString += ("\"" + value + "\");")
+				this._styleControlType.styleItemCodeString += ("\"" + value + "\");");
 			}
 		}
 		else
@@ -254,6 +254,7 @@ StyleItemRenderer.prototype._updateStyleValue =
 				{
 					this._styleListRenderer = new StyleListRenderer();
 					this._styleListRenderer.setStyle("PaddingLeft", 30);
+					
 					this.addElement(this._styleListRenderer);
 				}
 				
@@ -282,6 +283,7 @@ StyleItemRenderer.prototype._updateStyleValue =
 		}
 		
 		//Dispatch an event from the manager to fire the styling code re-build.
-		this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
-	}	
+		if (this.getManager() != null)
+			this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
+	};	
 	

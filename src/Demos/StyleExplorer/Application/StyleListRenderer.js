@@ -57,7 +57,7 @@ StyleListRenderer.addStyleDropdownLabelFunction =
 			return itemData.styleName;
 		
 		return itemData.category;
-	}
+	};
 
 //////INTERNAL/////////////////
 
@@ -111,7 +111,7 @@ StyleListRenderer.prototype._onItemRendererCleared =
 	function (event)
 	{
 		this._clearItemRenderer(event.getTarget());		
-	}	
+	}	;
 	
 StyleListRenderer.prototype._clearItemRenderer = 
 	function (itemRenderer)
@@ -161,9 +161,9 @@ StyleListRenderer.prototype.setStyleControlType =
 			{
 				var itemRenderer = new StyleItemRenderer();
 				itemRenderer.addEventListener("cleared", this._onItemRendererClearedInstance);
+				itemRenderer.setStyleControlType(sct);
 				
 				this.addElementAt(itemRenderer, 1);
-				itemRenderer.setStyleControlType(sct);
 			}
 		}
 	};
