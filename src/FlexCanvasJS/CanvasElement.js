@@ -1319,13 +1319,6 @@ CanvasElement.prototype.getStyleDefinitionAt =
 CanvasElement.prototype.getStyle = 
 	function (styleName)
 	{
-		if (styleName in this._stylesCache)
-		{
-			var styleCache = this._stylesCache[styleName];
-			if (styleCache.cacheInvalid == false)
-				return styleCache.styleData.value;
-		}
-	
 		return CanvasElement.base.prototype.getStyle.call(this, styleName);
 	};	
 	
@@ -1343,7 +1336,7 @@ CanvasElement.prototype.getStyleData =
 		
 		//Check cache
 		if (styleCache.cacheInvalid == false)
-			return styleCache.styleData.clone();
+			return styleCache.styleData;
 		
 		styleCache.cacheInvalid = false;
 		var styleData = styleCache.styleData;
@@ -1359,7 +1352,7 @@ CanvasElement.prototype.getStyleData =
 		if (styleData.value !== undefined)
 		{
 			styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
-			return styleData.clone();
+			return styleData;
 		}
 		
 		//Counters (priority depth)
@@ -1376,7 +1369,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 				styleData.priority.push((this._styleDefinitions.length - 1) - ctr); //StyleDefinition depth
 				
-				return styleData.clone();
+				return styleData;
 			}
 		}
 		
@@ -1403,7 +1396,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
 				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);	
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			//Check proxy definitions
@@ -1418,7 +1411,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);	
 					styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
 					
-					return styleData.clone();
+					return styleData;
 				}
 			}
 			
@@ -1456,7 +1449,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(ctr);	//Parent depth
 				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			//Check style definitions
@@ -1471,7 +1464,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 					styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
 					
-					return styleData.clone();
+					return styleData;
 				}
 			}
 			
@@ -1498,7 +1491,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
 					styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);		
 					
-					return styleData.clone();
+					return styleData;
 				}
 				
 				//Check proxy definition
@@ -1515,7 +1508,7 @@ CanvasElement.prototype.getStyleData =
 						styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
 						
-						return styleData.clone();
+						return styleData;
 					}
 				}
 
@@ -1533,7 +1526,7 @@ CanvasElement.prototype.getStyleData =
 		if (styleData.value !== undefined)
 		{
 			styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_DEFINITION);
-			return styleData.clone();
+			return styleData;
 		}	
 		
 		//Check default proxy
@@ -1555,7 +1548,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_PROXY);
 				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			ctr++;
@@ -1566,7 +1559,7 @@ CanvasElement.prototype.getStyleData =
 		styleData.value = this._getClassStyle(styleName);
 		styleData.priority.push(CanvasElement.StylePriorities.CLASS);
 		
-		return styleData.clone();		
+		return styleData;		
 	};
 	
 //@override	

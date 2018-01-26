@@ -23,19 +23,19 @@ function StyleData(styleName)
 {
 	/**
 	 * @member styleName string
-	 * Name of associated style
+	 * Read Only - Name of associated style
 	 */
 	this.styleName = styleName;
 	
 	/**
 	 * @member value Any
-	 * Value of associated style 
+	 * Read Only - Value of associated style 
 	 */
 	this.value = undefined;
 	
 	/**
 	 * @member priority Array
-	 * Array of integers representing the position 
+	 * Read Only - Array of integers representing the position 
 	 * in the style chain the style was found.
 	 */
 	this.priority = [];
@@ -235,7 +235,8 @@ StyleableBase.prototype.setStyle =
  * @function getStyleData
  * 
  * Gets the style data for the supplied style name, this includes
- * additional info than getStyle() such as the style priority.
+ * additional info than getStyle() such as the style priority. You should
+ * not modify the returned StyleData.
  * 
  * @param styleName String
  * String representing style to return the associated StyleData.
