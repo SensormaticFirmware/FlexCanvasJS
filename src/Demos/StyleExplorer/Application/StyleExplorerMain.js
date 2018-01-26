@@ -78,7 +78,7 @@ panelInnerContainerStyle.setStyle("PercentHeight",			100);
 var hDividerLineStyle = new StyleDefinition();				
 hDividerLineStyle.setStyle("Height", 						1); 
 hDividerLineStyle.setStyle("PercentWidth", 					100);
-hDividerLineStyle.setStyle("BackgroundColor", 				"#999999")
+hDividerLineStyle.setStyle("BackgroundColor", 				"#999999");
 
 //////Clear Style Button
 var clearStyleButtonStyle = new StyleDefinition();

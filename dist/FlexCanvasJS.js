@@ -19250,6 +19250,9 @@ DropdownElement.prototype._doLayout =
 			//This is here so that when the Dropdown is using measured width, and the collection changes,
 			//it may change the width of the dropdown button, so we need to make sure we keep the widths in sync.
 			this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
+			this._dataListPopupClipContainer.setStyle("X", this._dropdownManagerMetrics._x);
+			this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y + this._dropdownManagerMetrics._height);
+			
 			this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, this._dataListPopup._height);
 		}
 		
