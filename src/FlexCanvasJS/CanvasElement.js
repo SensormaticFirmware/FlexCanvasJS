@@ -820,20 +820,20 @@ CanvasElement._StyleTypes.TextFont =						{inheritable:true};		// "Arial"
 CanvasElement._StyleTypes.TextSize =						{inheritable:true};		// number
 
 /**
- * @style TextAlign String
+ * @style TextHorizontalAlign String
  * @inheritable
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-CanvasElement._StyleTypes.TextAlign =						{inheritable:true};		// "left" || "center" || "right"
+CanvasElement._StyleTypes.TextHorizontalAlign =						{inheritable:true};		// "left" || "center" || "right"
 
 /**
- * @style TextBaseline String
+ * @style TextVerticalAlign String
  * @inheritable
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-CanvasElement._StyleTypes.TextBaseline =					{inheritable:true};  	// "top" || "middle" || "bottom"
+CanvasElement._StyleTypes.TextVerticalAlign =					{inheritable:true};  	// "top" || "middle" || "bottom"
 
 /**
  * @style LinePaddingTop Number
@@ -963,8 +963,8 @@ CanvasElement.StyleDefault.setStyle("CompositeLayer",					false);
 CanvasElement.StyleDefault.setStyle("TextStyle", 						"normal");
 CanvasElement.StyleDefault.setStyle("TextFont", 						"Arial");
 CanvasElement.StyleDefault.setStyle("TextSize", 						12);
-CanvasElement.StyleDefault.setStyle("TextAlign",						"left");
-CanvasElement.StyleDefault.setStyle("TextBaseline", 					"middle");
+CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
+CanvasElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
 CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				1);
 CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
@@ -1024,6 +1024,7 @@ CanvasElement.prototype.addStyleDefinitionAt =
 		if (index < 0 || index > this._styleDefinitions.length)
 			return null;
 		
+		//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 		//Make sure this style definition is not already in the list (no adding duplicates)
 		if (this._styleDefinitions.indexOf(styleDefinition) != -1 || styleDefinition == this._styleDefinitionDefault)
 			return null;
@@ -1094,6 +1095,8 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 		if (index < 0 || index > this._styleDefinitions.length - 1)
 			return null;
 		
+		var styleDefinition = null;
+		
 		if (this._manager != null) //Attached to display chain
 		{
 			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
@@ -1110,8 +1113,9 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 					styleNamesMap[styleName] = true;
 			}
 			
+			//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 			//Remove definition
-			var styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
+			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
 			styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 			
 			//Spoof style changed event for relevant styles.
@@ -1119,7 +1123,7 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
 		}
 		else //Not attached, just remove the definition
-			this._styleDefinitions.splice(index, 1)
+			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
 		
 		return styleDefinition;
 	};
@@ -1143,6 +1147,7 @@ CanvasElement.prototype.clearStyleDefinitions =
 			{
 				styleDefinition = this._styleDefinitions[i];
 				
+				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
@@ -1217,6 +1222,8 @@ CanvasElement.prototype.setStyleDefinitions =
 			{
 				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
 				this._styleDefinitions.splice(this._styleDefinitions.length - 1, 1);
+				
+				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record removed style names
@@ -1229,6 +1236,8 @@ CanvasElement.prototype.setStyleDefinitions =
 			{
 				styleDefinition = styleDefinitions[i];
 				this._styleDefinitions.push(styleDefinition);
+				
+				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
 				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
 				
 				//Record added style names
@@ -1327,7 +1336,7 @@ CanvasElement.prototype.getStyleData =
 		
 		//Check cache
 		if (styleCache.cacheInvalid == false)
-			return styleCache.styleData.clone();
+			return styleCache.styleData;
 		
 		styleCache.cacheInvalid = false;
 		var styleData = styleCache.styleData;
@@ -1343,7 +1352,7 @@ CanvasElement.prototype.getStyleData =
 		if (styleData.value !== undefined)
 		{
 			styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
-			return styleData.clone();
+			return styleData;
 		}
 		
 		//Counters (priority depth)
@@ -1360,7 +1369,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 				styleData.priority.push((this._styleDefinitions.length - 1) - ctr); //StyleDefinition depth
 				
-				return styleData.clone();
+				return styleData;
 			}
 		}
 		
@@ -1387,7 +1396,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
 				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);	
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			//Check proxy definitions
@@ -1402,7 +1411,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);	
 					styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
 					
-					return styleData.clone();
+					return styleData;
 				}
 			}
 			
@@ -1440,7 +1449,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(ctr);	//Parent depth
 				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			//Check style definitions
@@ -1455,7 +1464,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 					styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
 					
-					return styleData.clone();
+					return styleData;
 				}
 			}
 			
@@ -1482,7 +1491,7 @@ CanvasElement.prototype.getStyleData =
 					styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
 					styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);		
 					
-					return styleData.clone();
+					return styleData;
 				}
 				
 				//Check proxy definition
@@ -1499,7 +1508,7 @@ CanvasElement.prototype.getStyleData =
 						styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
 						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
 						
-						return styleData.clone();
+						return styleData;
 					}
 				}
 
@@ -1517,7 +1526,7 @@ CanvasElement.prototype.getStyleData =
 		if (styleData.value !== undefined)
 		{
 			styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_DEFINITION);
-			return styleData.clone();
+			return styleData;
 		}	
 		
 		//Check default proxy
@@ -1539,7 +1548,7 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_PROXY);
 				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
 				
-				return styleData.clone();
+				return styleData;
 			}
 			
 			ctr++;
@@ -1550,7 +1559,7 @@ CanvasElement.prototype.getStyleData =
 		styleData.value = this._getClassStyle(styleName);
 		styleData.priority.push(CanvasElement.StylePriorities.CLASS);
 		
-		return styleData.clone();		
+		return styleData;		
 	};
 	
 //@override	
@@ -2347,6 +2356,10 @@ CanvasElement._measureText =
 CanvasElement._fillText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
+		//Firefox weirdly renders text higher than normal
+		if (CanvasElement._browserType == "Firefox")
+			y += 2;
+	
 		var bitmapMap = CanvasElement._characterFillBitmapMap[fontString];
 		if (bitmapMap == null)
 		{
@@ -2458,6 +2471,10 @@ CanvasElement._fillText =
 CanvasElement._strokeText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
+		//Firefox weirdly renders text higher than normal
+		if (CanvasElement._browserType == "Firefox")
+			y += 2;
+	
 		var bitmapMap = CanvasElement._characterStrokeBitmapMap[fontString];
 		if (bitmapMap == null)
 		{
@@ -2659,7 +2676,7 @@ CanvasElement.prototype._onExternalStyleChanged =
 		var styleName = styleChangedEvent.getStyleName();	
 		var styleType = this._getStyleType(styleName);
 		
-		if (this._styleProxy != null &&  styleChangedEvent.getTarget() == this._styleProxy._proxyElement)
+		if (this._styleProxy != null && styleChangedEvent.getTarget() == this._styleProxy._proxyElement)
 			isProxy = true;
 		if (this._parent != null && styleChangedEvent.getTarget() == this._parent)
 			isParent = true;
@@ -2765,10 +2782,8 @@ CanvasElement.prototype._getDefaultStyleData =
  * @function _setStyleDefinitionDefault
  * 
  * Sets the default style definition. Use this when you need to supply a default definition 
- * that differs from the class based definition. For example, you're component uses a Button, 
- * but you need to supply styles to the button (or its skins) that differ from a Button's 
- * class defaults. Default styles do not track changes at runtime so this should always be 
- * called *before* the element is added to its parent and is included in the display chain.
+ * to a sub component that differs from the class based definition but also need to allow 
+ * the implementor to supply a style definition to the sub component. 
  * 
  * @param styleDefinition StyleDefintion
  * The default style definiton to apply to the element.
@@ -2776,7 +2791,41 @@ CanvasElement.prototype._getDefaultStyleData =
 CanvasElement.prototype._setStyleDefinitionDefault = 
 	function (styleDefinition)
 	{
-		this._styleDefinitionDefault = styleDefinition;
+		if (this._manager != null) //Attached to display chain
+		{
+			//Bail if no change
+			if (this._styleDefinitionDefault == styleDefinition)
+				return;
+			
+			var styleName = null;
+			var styleNamesMap = Object.create(null);
+			
+			if (this._styleDefinitionDefault != null)
+			{
+				this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				
+				//Record removed style names
+				for (styleName in this._styleDefinitionDefault._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			this._styleDefinitionDefault = styleDefinition;
+			
+			if (this._styleDefinitionDefault != null)
+			{
+				this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				
+				//Record added style names
+				for (styleName in this._styleDefinitionDefault._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Spoof style changed events for normal style changed handling.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		else //Not attached, just swap the definition
+			this._styleDefinitionDefault = styleDefinition;
 	};
 	
 /**
@@ -2809,7 +2858,9 @@ CanvasElement.prototype._onCanvasElementAdded =
 	{
 		/////////Added to the Display Chain/////////////
 	
-		for (var i = 0; i < this._styleDefinitions.length; i++)
+		var i;
+	
+		for (i = 0; i < this._styleDefinitions.length; i++)
 		{
 			if (this._styleDefinitions[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
 				this._styleDefinitions[i].addEventListener("stylechanged", this._onExternalStyleChangedInstance);
@@ -2822,20 +2873,23 @@ CanvasElement.prototype._onCanvasElementAdded =
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
+		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+			this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);				
+		
 		//Add broadcast events to manager//
 		if ("enterframe" in this._eventListeners && this._eventListeners["enterframe"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["enterframe"].length; i++)
+			for (i = 0; i < this._eventListeners["enterframe"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("enterframe", this._eventListeners["enterframe"][i]);
 		}
 		if ("localechanged" in this._eventListeners && this._eventListeners["localechanged"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["localechanged"].length; i++)
+			for (i = 0; i < this._eventListeners["localechanged"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("localechanged", this._eventListeners["localechanged"][i]);
 		}
 		if ("mousemoveex" in this._eventListeners && this._eventListeners["mousemoveex"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["mousemoveex"].length; i++)
+			for (i = 0; i < this._eventListeners["mousemoveex"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("mousemoveex", this._eventListeners["mousemoveex"][i]);
 		}
 		
@@ -2850,26 +2904,9 @@ CanvasElement.prototype._onCanvasElementAdded =
 			this._stylesCache[prop].cacheInvalid = true;
 		
 		//Invalidate *all* styles, don't need to propagate, display propagates when attaching.
-		var thisProto = Object.getPrototypeOf(this);
-		var thisClass = null;
-		
-		if (thisProto == null || thisProto.hasOwnProperty("constructor") == true)
-			thisClass = thisProto.constructor;
-		
-		while (thisClass != null)
-		{
-			if ("_StyleTypes" in thisClass)
-			{
-				for (var styleName in thisClass._StyleTypes)
-					this._invalidateStyle(styleName);
-			}
-			
-			thisProto = Object.getPrototypeOf(thisProto);
-			if (thisProto == null || thisProto.hasOwnProperty("constructor") == false)
-				thisClass = null;
-			else
-				thisClass = thisProto.constructor;			
-		}
+		this._flattenStyleTypes();
+		for (i = 0; i < this.constructor.__StyleTypesFlatArray.length; i++)
+			this._invalidateStyle(this.constructor.__StyleTypesFlatArray[i].styleName);
 		
 		//Always dispatch when added.
 		if (this.hasEventListener("localechanged", null) == true)
@@ -2903,6 +2940,9 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.removeEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
+		
+		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+			this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 		
 		if (this._rollOverCursorInstance != null)
 		{
@@ -2948,17 +2988,17 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		//Remove broadcast events from manager//
 		if ("enterframe" in this._eventListeners && this._eventListeners["enterframe"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["enterframe"].length; i++)
+			for (i = 0; i < this._eventListeners["enterframe"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("enterframe", this._eventListeners["enterframe"][i]);
 		}
 		if ("localechanged" in this._eventListeners && this._eventListeners["localechanged"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["localechanged"].length; i++)
+			for (i = 0; i < this._eventListeners["localechanged"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("localechanged", this._eventListeners["localechanged"][i]);
 		}
 		if ("mousemoveex" in this._eventListeners && this._eventListeners["mousemoveex"].length > 0)
 		{
-			for (var i = 0; i < this._eventListeners["mousemoveex"].length; i++)
+			for (i = 0; i < this._eventListeners["mousemoveex"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("mousemoveex", this._eventListeners["mousemoveex"][i]);
 		}
 	};	
@@ -3055,7 +3095,10 @@ CanvasElement.prototype._dispatchEvent =
 						listeners[i2](handlerEvent);
 						
 						if (handlerEvent._defaultPrevented == true)
+						{
 							dispatchEvent._defaultPrevented = true;
+							event._defaultPrevented = true;
+						}
 						
 						if (handlerEvent._canceled == true)
 						{
@@ -3093,7 +3136,10 @@ CanvasElement.prototype._dispatchEvent =
 						listeners[i2](handlerEvent);
 						
 						if (handlerEvent._defaultPrevented == true)
+						{
 							dispatchEvent._defaultPrevented = true;
+							event._defaultPrevented = true;
+						}
 						
 						if (handlerEvent._canceled == true)
 						{
@@ -3124,7 +3170,10 @@ CanvasElement.prototype._dispatchEvent =
 					listeners[i2](handlerEvent);
 					
 					if (handlerEvent._defaultPrevented == true)
+					{
 						dispatchEvent._defaultPrevented = true;
+						event._defaultPrevented = true;
+					}
 					
 					if (handlerEvent._canceled == true)
 					{
@@ -3149,7 +3198,10 @@ CanvasElement.prototype._dispatchEvent =
 					listeners[i2](handlerEvent);
 					
 					if (handlerEvent._defaultPrevented == true)
+					{
 						dispatchEvent._defaultPrevented = true;
+						event._defaultPrevented = true;
+					}
 					
 					if (handlerEvent._canceled == true)
 					{
@@ -3656,9 +3708,6 @@ CanvasElement.prototype._setMeasuredSize =
 			this._parent._invalidateMeasure();
 			this._parent._invalidateLayout();
 		}
-		
-		if (this.hasEventListener("measurecomplete", null) == true)
-			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
 	};
 	
 //@private	
@@ -4309,6 +4358,9 @@ CanvasElement.prototype._validateMeasure =
 		var measuredSize = this._doMeasure(paddingSize.width, paddingSize.height);
 			
 		this._setMeasuredSize(measuredSize.width, measuredSize.height);
+		
+		if (this.hasEventListener("measurecomplete", null) == true)
+			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
 	};
 	
 //@private	

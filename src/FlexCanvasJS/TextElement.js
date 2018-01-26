@@ -13,7 +13,7 @@
  * Renders mutli-line style-able select-able text. 
  * TextElement respects newline characters and will
  * wrap text when width is constrained. If only a single
- * line of text is needed, you should use LabelElement.
+ * line of text is needed, LabelElement is more efficient.
  * 
  * @constructor TextElement 
  * Creates new TextElement instance.
@@ -23,7 +23,6 @@ function TextElement()
 	TextElement.base.prototype.constructor.call(this);
 	
 	this._textField = new TextFieldElement();
-	this._textField.setStyle("Multiline", true);
 	this._textField.setStyle("Cursor", null);
 	this._textField.setStyle("TabStop", -1);
 	this._addChild(this._textField);
@@ -50,6 +49,18 @@ TextElement._StyleTypes.Text = 				{inheritable:false};		// "any string" || null
  */
 TextElement._StyleTypes.Selectable = 			{inheritable:false};		// true || false
 
+/**
+ * @style Multiline boolean
+ * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
+ */
+TextElement._StyleTypes.Multiline = 				{inheritable:false};		// true || false
+
+/**
+ * @style WordWrap boolean
+ * When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary. 
+ */
+TextElement._StyleTypes.WordWrap = 				{inheritable:false};		// true || false
+
 
 ////////////Default Styles////////////////////////////
 
@@ -64,6 +75,8 @@ TextElement.StyleDefault.setStyle("PaddingRight", 					2);
 //TextElement specific styles
 TextElement.StyleDefault.setStyle("Text", 							null);
 TextElement.StyleDefault.setStyle("Selectable", 					false);
+TextElement.StyleDefault.setStyle("Multiline", 						true);
+TextElement.StyleDefault.setStyle("WordWrap", 						true);
 
 
 /////////////Internal Functions///////////////////
@@ -79,6 +92,12 @@ TextElement.prototype._doStylesUpdated =
 		
 		if ("Selectable" in stylesMap)
 			this._textField.setStyle("Selectable", this.getStyle("Selectable"));
+		
+		if ("Multiline" in stylesMap)
+			this._textField.setStyle("Multiline", this.getStyle("Multiline"));
+		
+		if ("WordWrap" in stylesMap)
+			this._textField.setStyle("WordWrap", this.getStyle("WordWrap"));
 		
 		//Proxy padding to TextField for proper mouse handling
 		if ("Padding" in stylesMap ||

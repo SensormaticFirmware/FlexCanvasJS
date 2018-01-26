@@ -1,0 +1,106 @@
+
+function AddStyleDataRenderer()
+{
+	AddStyleDataRenderer.base.prototype.constructor.call(this);
+	
+	////Add children
+	
+	//Used only for header (could optimize - add / remove on list data change)
+	this._divider = new CanvasElement();
+	this._divider.setStyle("BackgroundColor", "#000000");
+	
+	//Used only for selectable style (could optimize - add / remove on list data change)
+	this._checkboxSelected = new CheckboxElement();
+	
+	this._addChild(this._divider);
+	this._addChild(this._checkboxSelected);
+	
+	//Event handling
+	var _self = this;
+	
+	//Private handler, need function for each instance, proxy to prototype.
+	this._onAddStyleDataRendererClickInstance = 
+		function (event)
+		{
+			_self._onAddStyleDataRendererClick(event);
+		};
+	
+	this.addEventListener("click", this._onAddStyleDataRendererClickInstance)
+}
+
+//Inherit from DataRendererLabelElement
+AddStyleDataRenderer.prototype = Object.create(DataRendererLabelElement.prototype);
+AddStyleDataRenderer.prototype.constructor = AddStyleDataRenderer;
+AddStyleDataRenderer.base = DataRendererLabelElement;
+
+AddStyleDataRenderer.prototype._onAddStyleDataRendererClick =
+	function (event)
+	{
+		//Close the dropdown unless we clicked the checkbox itself. (exclude headers)
+		if (event.getTarget() != this._checkboxSelected && this._itemData.styleName != "")
+		{
+			//This is kind of hacky (we're dispatching a changed event from the list to force the dropdown to close)
+			//We need a reference from the popup list back to the dropdown (owner rather than parent).
+			this._listData._parentList._dispatchEvent(new ElementEvent("changed", false));
+		}
+	};
+
+//@override
+AddStyleDataRenderer.prototype._setListData = 
+	function (listData, itemData)
+	{
+		AddStyleDataRenderer.base.prototype._setListData.call(this, listData, itemData);
+		
+		////Adjust our state based on list supplied data////
+		
+		if (this._itemData.styleName == "") //Header
+		{
+			this.setStyle("PaddingTop", 2);
+			this.setStyle("PaddingBottom", 1);
+			this.setStyle("PaddingLeft", 4);
+			this.setStyle("PaddingRight", 10);
+			this.setStyle("TextStyle", "bold");
+			this.setStyle("Selectable", false);
+			this._divider.setStyle("Visible", true);
+			this._checkboxSelected.setStyle("Visible", false);
+		}
+		else //Selectable style
+		{
+			this.setStyle("PaddingTop", 4);
+			this.setStyle("PaddingBottom", 4);
+			this.setStyle("PaddingLeft", 14);
+			this.setStyle("PaddingRight", 10);
+			this.setStyle("TextStyle", "normal");
+			this.setStyle("Selectable", true);
+			this._divider.setStyle("Visible", false);
+			this._checkboxSelected.setStyle("Visible", true);
+	
+			//Style is defined
+			if (this._itemData.styleName in this._itemData.styleDefinition._styleMap)
+				this._checkboxSelected.setSelected(true);
+			else //Style not defined
+				this._checkboxSelected.setSelected(false);
+		}
+	};
+	
+//@override	
+AddStyleDataRenderer.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		AddStyleDataRenderer.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		//Convienence
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY();
+		var w = paddingMetrics.getWidth();
+		var h = paddingMetrics.getHeight();
+		
+		////Size and position child elements////////////
+		
+		this._divider._setActualPosition(x, this._height - 1);
+		this._divider._setActualSize(w, 1);
+		
+		this._checkboxSelected._setActualSize(this._checkboxSelected._getStyledOrMeasuredWidth(), this._checkboxSelected._getStyledOrMeasuredHeight());
+		this._checkboxSelected._setActualPosition(x + w - this._checkboxSelected._width, Math.round(y + (h / 2) - (this._checkboxSelected._height / 2)));
+		
+	};	

@@ -26,6 +26,19 @@ TextFieldLineElement.prototype = Object.create(CanvasElement.prototype);
 TextFieldLineElement.prototype.constructor = TextFieldLineElement;
 TextFieldLineElement.base = CanvasElement;	
 
+//Optimize - turn off inheriting for rendering styles. We'll pull styles from parent so
+//we can utilize the parents cache rather than each line having to lookup and cache styles.
+//Parent also responsible for invalidating our render when styles changes.
+TextFieldLineElement._StyleTypes = Object.create(null);
+TextFieldLineElement._StyleTypes.TextStyle =						{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextFont =							{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextSize =							{inheritable:false};		
+TextFieldLineElement._StyleTypes.TextColor =						{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextFillType =						{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextHighlightedColor = 			{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:false};			
+
+
 TextFieldLineElement.prototype.setParentLineMetrics = 
 	function (parentTextField, charStartIndex, charEndIndex)
 	{
@@ -78,29 +91,6 @@ TextFieldLineElement.prototype.getLineWidth =
 	};	
 	
 //@Override
-TextFieldLineElement.prototype._doStylesUpdated =
-	function (stylesMap)
-	{
-		TextFieldLineElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-	
-		if ("TextStyle" in stylesMap ||
-			"TextFont" in stylesMap ||
-			"TextSize" in stylesMap ||
-			"TextColor" in stylesMap ||
-			"TextFillType" in stylesMap)
-		{
-			this._invalidateRender();
-		}
-		else if ("TextHighlightedColor" in stylesMap ||
-				"TextHighlightedBackgroundColor" in stylesMap)
-		{
-			//Only re-render if in fact we have a highlighted selection.
-			if (this._highlightMinIndex != this._highlightMaxIndex)
-				this._invalidateRender();
-		}
-	};		
-	
-//@Override
 TextFieldLineElement.prototype._doRender =
 	function()
 	{
@@ -113,11 +103,11 @@ TextFieldLineElement.prototype._doRender =
 		var ctx = this._getGraphicsCtx();
 		
 		//Get styles
-		var textFillType = this.getStyle("TextFillType");
-		var textColor = this.getStyle("TextColor");
-		var highlightTextColor = this.getStyle("TextHighlightedColor");
-		var backgroundHighlightTextColor = this.getStyle("TextHighlightedBackgroundColor");
-		var fontString = this._getFontString();
+		var textFillType = this._parentTextField.getStyle("TextFillType");
+		var textColor = this._parentTextField.getStyle("TextColor");
+		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
+		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
+		var fontString = this._parentTextField._getFontString();
 		
 		var x = paddingMetrics.getX();
 		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
@@ -311,10 +301,16 @@ TextFieldElement._StyleTypes.MaxChars = 				{inheritable:false};		// number
 /**
  * @style Multiline boolean
  * 
- * When true, text will be rendered on multiple lines when width is constrained rather than horizontal scrolling.
+ * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
  */
 TextFieldElement._StyleTypes.Multiline = 				{inheritable:false};		// true || false
 
+/**
+ * @style WordWrap boolean
+ * 
+ * When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary. 
+ */
+TextFieldElement._StyleTypes.WordWrap = 				{inheritable:false};		// true || false
 
 
 ////////////Default Styles////////////////////////////
@@ -324,6 +320,7 @@ TextFieldElement.StyleDefault = new StyleDefinition();
 TextFieldElement.StyleDefault.setStyle("Selectable", 					false);
 TextFieldElement.StyleDefault.setStyle("MaxChars", 						0);
 TextFieldElement.StyleDefault.setStyle("Multiline", 					false);
+TextFieldElement.StyleDefault.setStyle("WordWrap", 						false);
 
 TextFieldElement.StyleDefault.setStyle("Enabled", 						false);
 TextFieldElement.StyleDefault.setStyle("TabStop",						0);
@@ -379,7 +376,7 @@ TextFieldElement.prototype.setText =
 			this.setSelection(0, 0);
 			
 			//Reset scroll position
-			if (this._textLinesContainer._getNumChildren() > 0 && this.getStyle("Multiline") == false)
+			if (this._textLinesContainer._getNumChildren() > 0 && this.getStyle("Multiline") == false && this.getStyle("WordWrap") == false)
 				this._textLinesContainer._getChildAt(0)._setActualPosition(0, 0);
 			
 			this._invalidateMeasure();
@@ -1220,6 +1217,28 @@ TextFieldElement.prototype._doStylesUpdated =
 	{
 		TextFieldElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
+		////Update line renderers////
+		if ("TextStyle" in stylesMap ||
+			"TextFont" in stylesMap ||
+			"TextSize" in stylesMap ||
+			"TextColor" in stylesMap ||
+			"TextFillType" in stylesMap)
+		{
+			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
+				this._textLinesContainer._getChildAt(i)._invalidateRender();
+		}
+		else if ("TextHighlightedColor" in stylesMap ||
+				"TextHighlightedBackgroundColor" in stylesMap)
+		{
+			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
+			{
+				//Only re-render if in fact we have a highlighted selection.
+				if (this._textLinesContainer._getChildAt(i)._highlightMinIndex != this._textLinesContainer._getChildAt(i)._highlightMaxIndex)
+					this._textLinesContainer._getChildAt(i)._invalidateRender();
+			}
+		}
+		
+		//Update ourself
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap)
@@ -1230,14 +1249,15 @@ TextFieldElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		}
 		else if ("Multiline" in stylesMap ||
+			"WordWrap" in stylesMap ||
 			"TextLinePaddingTop" in stylesMap ||
 			"TextLinePaddingBottom" in stylesMap)
 		{
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("TextAlign" in stylesMap ||
-			"TextBaseline" in stylesMap || 
+		else if ("TextHorizontalAlign" in stylesMap ||
+			"TextVerticalAlign" in stylesMap || 
 			"TextLineSpacing" in stylesMap)
 		{
 			this._invalidateLayout();
@@ -1348,25 +1368,61 @@ TextFieldElement.prototype._doMeasure =
 	{
 		this._createCharMetrics();
 	
-		var measuredSize = {width:0, height:0};
-		var singleLineTextWidth = this._charMetrics[this._text.length].x;
-		
 		var linePadTop = this.getStyle("TextLinePaddingTop");
 		var linePadBottom = this.getStyle("TextLinePaddingBottom");
 		var textSize = this.getStyle("TextSize");
+
+		var textWidth = this._charMetrics[this._text.length].x;
+		var textHeight = textSize + linePadTop + linePadBottom;		
+		
+		//If using word wrap, height is dependent on actual width so layout
+		//must run and do the actual measurment...
+		if (this.getStyle("WordWrap") == true)
+		{	
+			//We need the parent to know it can contract us.
+			textWidth = this.getStyle("MinWidth") - padWidth; //padWidth added back at end
+			
+			this._invalidateLayout();
+		}
+		else if (this.getStyle("Multiline") == true)
+		{
+			var widestLineSize = -1;
+			var lineStartIndex = 0;
+			var numLines = 1;
+			for (var i = 0; i < this._spaceSpans.length; i++)
+			{
+				//Only care about newline characters
+				if (this._spaceSpans[i].type != "nline")
+					continue;
+				
+				if (this._charMetrics[this._spaceSpans[i].start].x - this._charMetrics[lineStartIndex].x > widestLineSize)
+					widestLineSize = this._charMetrics[this._spaceSpans[i].start].x - this._charMetrics[lineStartIndex].x;
+				
+				lineStartIndex = this._spaceSpans[i].start + 1;
+				numLines++;
+			}
+			
+			if (numLines > 1)
+			{
+				//Measure last line
+				if (lineStartIndex < this._charMetrics.length - 1)
+				{
+					if (this._charMetrics[lineStartIndex].x - this._charMetrics[this._charMetrics.length - 1].x > widestLineSize)
+						widestLineSize = this._charMetrics[lineStartIndex].x - this._charMetrics[this._charMetrics.length - 1].x;
+				}
+					
+				textWidth = widestLineSize;
+					
+				textHeight = textHeight * numLines;
+				textHeight = textHeight + (this.getStyle("TextLineSpacing") * (numLines - 1));
+			}
+		}
 		
 		//Always add 1 for text caret 
 		//TODO: This should be the text caret's width only when editable
-		measuredSize.width = 1 + singleLineTextWidth + padWidth;
-		measuredSize.height = textSize + linePadTop + linePadBottom + padHeight;
-
-		//If using multi-line, height is dependent on actual width so layout
-		//must run and do the actual measurment...
-		if (this.getStyle("Multiline") == true)
-		{	
-			measuredSize.width = this.getStyle("MinWidth"); //We need the parent to know it can contract us.
-			this._invalidateLayout();
-		}
+		var measuredSize = {width:0, height:0};
+		measuredSize.width = 1 + textWidth + padWidth;
+		measuredSize.height = textHeight + padHeight;
 		
 		return measuredSize;
 	};	
@@ -1390,8 +1446,9 @@ TextFieldElement.prototype._doLayout =
 		this._textLinesContainer._setActualSize(availableWidth, h);
 		
 		var isMultiline = this.getStyle("Multiline");
-		var textAlign = this.getStyle("TextAlign");
-		var textBaseline = this.getStyle("TextBaseline");
+		var isWordWrap = this.getStyle("WordWrap");
+		var textAlign = this.getStyle("TextHorizontalAlign");
+		var textBaseline = this.getStyle("TextVerticalAlign");
 		var textSize = this.getStyle("TextSize");
 		var lineSpacing = this.getStyle("TextLineSpacing");
 		var linePaddingTop = this.getStyle("TextLinePaddingTop");
@@ -1412,7 +1469,7 @@ TextFieldElement.prototype._doLayout =
 		{
 			newLineData = {charMetricsStartIndex:-1, charMetricsEndIndex:-1};
 			
-			if (isMultiline == false)
+			if (isMultiline == false && isWordWrap == false)
 			{
 				newLineData.charMetricsStartIndex = 0; 
 				newLineData.charMetricsEndIndex = this._charMetrics.length - 1;
@@ -1426,6 +1483,10 @@ TextFieldElement.prototype._doLayout =
 				
 				for (var i = spaceSpanIndex; i < this._spaceSpans.length; i++)
 				{
+					//Ignore spaces if wordwrap is off
+					if (this._spaceSpans.type == "space" && isWordWrap == false)
+						continue;
+					
 					if (textAlign == "left")
 						lineEndCharIndex = this._spaceSpans[i].end;
 					else
@@ -1439,7 +1500,8 @@ TextFieldElement.prototype._doLayout =
 						spaceSpanIndex++;
 						lineStartCharIndex = lineEndCharIndex + 1;
 						
-						if (this._spaceSpans[i].type == "nline")
+						//Handle newline as space if multiline is off
+						if (this._spaceSpans[i].type == "nline" && isMultiline == true)
 						{
 							newlineFound = true;
 							break;
@@ -1451,7 +1513,7 @@ TextFieldElement.prototype._doLayout =
 				
 				//Last line, no more spaces for breaks.
 				if (newLineData.charMetricsEndIndex == -1 || 
-					(this._charMetrics[ this._charMetrics.length - 1].x - this._charMetrics[newLineData.charMetricsStartIndex].x <= availableWidth && newlineFound == false))
+					(this._charMetrics[this._charMetrics.length - 1].x - this._charMetrics[newLineData.charMetricsStartIndex].x <= availableWidth && newlineFound == false))
 				{
 					newLineData.charMetricsEndIndex = this._charMetrics.length - 1;
 					lineStartCharIndex = this._charMetrics.length;
@@ -1464,7 +1526,7 @@ TextFieldElement.prototype._doLayout =
 		var totalTextHeight = (lines.length * lineHeight) + ((lines.length - 1) * lineSpacing); 
 		
 		//Update the measured size now that we know the height. (May cause another layout pass)
-		if (isMultiline == true)
+		if (isWordWrap == true)
 			this._setMeasuredSize(this._measuredWidth, totalTextHeight + this._getPaddingSize().height);
 			
 		var textYPosition;
@@ -1476,57 +1538,57 @@ TextFieldElement.prototype._doLayout =
 			textYPosition = Math.round((h / 2) - (totalTextHeight / 2));
 		 
 		//Update actual line data
-		var totalNewOldLines = Math.max(lines.length, this._textLinesContainer._getNumChildren());
+		
+		//Purge excess
+		while (this._textLinesContainer._getNumChildren() > lines.length)
+			this._textLinesContainer._removeChildAt(this._textLinesContainer._getNumChildren() - 1);
+		
+		//Update Add
 		var textFieldLine = null;
 		var lineWidth = 0;
 		var lineXPosition;
-		for (var i = 0; i < totalNewOldLines; i++)
+		for (var i = 0; i < lines.length; i++)
 		{
-			//Line removed
-			if (lines[i] == null)
-				this._textLinesContainer._removeChildAt(i);
-			else
-			{
+			if (i < this._textLinesContainer._getNumChildren()) //Update line
 				textFieldLine = this._textLinesContainer._getChildAt(i);
-				if (textFieldLine == null) //Line added
-				{
-					textFieldLine = new TextFieldLineElement();
-					this._textLinesContainer._addChild(textFieldLine);
-				}
-				
-				//Update line
-				textFieldLine.setParentLineMetrics(this, lines[i].charMetricsStartIndex, lines[i].charMetricsEndIndex);
-				textFieldLine.setParentSelection(this._textHighlightStartIndex, this._caretIndex);
-				
-				textFieldLine.setStyle("PaddingTop", linePaddingTop);
-				textFieldLine.setStyle("PaddingBottom", linePaddingBottom);
-				
-				lineWidth = textFieldLine.getLineWidth();
-				textFieldLine._setActualSize(lineWidth, lineHeight);
-				
-				if (lineWidth < availableWidth || isMultiline == true) //align
-				{
-					if (textAlign == "right")
-						lineXPosition = availableWidth - lineWidth;
-					else if (textAlign == "center")
-						lineXPosition = Math.round((availableWidth / 2) - (lineWidth / 2));
-					else // "left"
-						lineXPosition = 0;
-				}
-				else //fill excess (over-scroll or resize)
-				{
-					if (textFieldLine._x > 0)
-						lineXPosition = 0;					
-					else if (textFieldLine._x + lineWidth < availableWidth)
-						lineXPosition = availableWidth - lineWidth;
-					else
-						lineXPosition = textFieldLine._x;
-				}
-				
-				textFieldLine._setActualPosition(lineXPosition, textYPosition);
-				
-				textYPosition += (lineHeight + lineSpacing);
+			else //Line added
+			{
+				textFieldLine = new TextFieldLineElement();
+				this._textLinesContainer._addChild(textFieldLine);
 			}
+			
+			//Update line
+			textFieldLine.setParentLineMetrics(this, lines[i].charMetricsStartIndex, lines[i].charMetricsEndIndex);
+			textFieldLine.setParentSelection(this._textHighlightStartIndex, this._caretIndex);
+			
+			textFieldLine.setStyle("PaddingTop", linePaddingTop);
+			textFieldLine.setStyle("PaddingBottom", linePaddingBottom);
+			
+			lineWidth = textFieldLine.getLineWidth();
+			textFieldLine._setActualSize(lineWidth, lineHeight);
+			
+			if (lineWidth < availableWidth || isMultiline == true) //align
+			{
+				if (textAlign == "right")
+					lineXPosition = availableWidth - lineWidth;
+				else if (textAlign == "center")
+					lineXPosition = Math.round((availableWidth / 2) - (lineWidth / 2));
+				else // "left"
+					lineXPosition = 0;
+			}
+			else //fill excess (over-scroll or resize)
+			{
+				if (textFieldLine._x > 0)
+					lineXPosition = 0;					
+				else if (textFieldLine._x + lineWidth < availableWidth)
+					lineXPosition = availableWidth - lineWidth;
+				else
+					lineXPosition = textFieldLine._x;
+			}
+			
+			textFieldLine._setActualPosition(lineXPosition, textYPosition);
+			
+			textYPosition += (lineHeight + lineSpacing);
 		}
 		
 		

@@ -62,7 +62,7 @@ RadioButtonSkinElement.prototype._doStylesUpdated =
 	{
 		RadioButtonSkinElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		if ("SkinState" in stylesMap || "CheckColor" in stylesMap)
+		if ("SkinState" in stylesMap || "CheckColor" in stylesMap || "CheckSize" in stylesMap)
 			this._invalidateRender();
 	};
 

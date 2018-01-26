@@ -173,7 +173,7 @@ The maximum number of characters allowed for this TextField. When 0 unlimited ch
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-When true, text will be rendered on multiple lines when width is constrained rather than horizontal scrolling.<br>
+When true, newline characters are respected and text will be rendered on multiple lines if necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -188,6 +188,20 @@ When true, text will be rendered on multiple lines when width is constrained rat
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 When true, the text can be highlighted and copied.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">WordWrap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -653,7 +667,7 @@ When false disables mouse events for the element.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-When true, text will be rendered on multiple lines when width is constrained rather than horizontal scrolling.<br>
+When true, newline characters are respected and text will be rendered on multiple lines if necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -940,34 +954,6 @@ Numbers higher than 0 indicate a specific order to be used (not yet implemented)
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">TextAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Inheritable] <a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Determines alignment when rendering text. Available values are "left", "center", and "right".<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">TextBaseline</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Inheritable] <a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">TextCaretColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1039,6 +1025,20 @@ Hex color value to be used when drawing highlighted text. Format like "#FF0000" 
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">TextHorizontalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Inheritable] <a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Determines alignment when rendering text. Available values are "left", "center", and "right".<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">TextLineSpacing</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1076,6 +1076,20 @@ Determines the size in pixels to render text.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Determines the style to render text. Available values are "normal", "bold", "italic", and "bold italic".<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">TextVerticalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Inheritable] <a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1136,6 +1150,20 @@ When false the element will not be rendered.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The Width the element should be rendered relative to its parent container. This only<br>
 works if the element is a child of a Container element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">WordWrap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -2057,7 +2085,8 @@ Returns the associated style value if found, otherwise undefined.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Gets the style data for the supplied style name, this includes<br>
-additional info than getStyle() such as the style priority.<br>
+additional info than getStyle() such as the style priority. You should<br>
+not modify the returned StyleData.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -4497,10 +4526,8 @@ The CanvasElement to move this element relative too.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Sets the default style definition. Use this when you need to supply a default definition<br>
-that differs from the class based definition. For example, you're component uses a Button,<br>
-but you need to supply styles to the button (or its skins) that differ from a Button's<br>
-class defaults. Default styles do not track changes at runtime so this should always be<br>
-called *before* the element is added to its parent and is included in the display chain.<br>
+to a sub component that differs from the class based definition but also need to allow<br>
+the implementor to supply a style definition to the sub component.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>

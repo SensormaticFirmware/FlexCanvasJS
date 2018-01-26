@@ -172,7 +172,7 @@ ArrowShape.prototype.drawShape =
 			if (rectWidthPercent == null)
 				baseWidth = 0;
 			else
-				baseWidth = Math.round(w * (rectWidthPercent / 100));
+				baseWidth = Math.round(width * (rectWidthPercent / 100));
 		}
 		if (baseHeight == null)
 		{
@@ -180,7 +180,7 @@ ArrowShape.prototype.drawShape =
 			if (rectHeightPercent == null)
 				baseHeight = 0;
 			else
-				baseHeight = Math.round(h * (rectHeightPercent / 100));
+				baseHeight = Math.round(height * (rectHeightPercent / 100));
 		}
 		
 		if (baseWidth == 0 || baseHeight == 0)

@@ -36,6 +36,14 @@ CheckboxSkinElement._StyleTypes = Object.create(null);
  */
 CheckboxSkinElement._StyleTypes.CheckColor =				{inheritable:false};		//"#000000"
 
+/**
+ * @style CheckSize Number
+ * 
+ * Value between 0 and 1 used to determine the size that the "selected" indicator 
+ * should be rendered relative to this element's size.
+ */
+CheckboxSkinElement._StyleTypes.CheckSize = 				{inheritable:false};
+
 
 ////////Default Styles////////////////
 
@@ -43,6 +51,9 @@ CheckboxSkinElement.StyleDefault = new StyleDefinition();
 
 //CheckboxSkinElement specific styles
 CheckboxSkinElement.StyleDefault.setStyle("CheckColor", 						"#000000");
+CheckboxSkinElement.StyleDefault.setStyle("CheckSize", 							.80);
+
+
 
 
 /////////Protected Functions////////////////////////
@@ -53,7 +64,7 @@ CheckboxSkinElement.prototype._doStylesUpdated =
 	{
 		CheckboxSkinElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		if ("SkinState" in stylesMap || "CheckColor" in stylesMap)
+		if ("SkinState" in stylesMap || "CheckColor" in stylesMap || "CheckSize" in stylesMap)
 			this._invalidateRender();
 	};
 
@@ -81,10 +92,12 @@ CheckboxSkinElement.prototype._doRender =
 			var borderThickness = this._getBorderThickness();
 			var checkColor = this.getStyle("CheckColor");
 			
-			var x = borderThickness;
-			var y = borderThickness;
-			var width = this._width - (borderThickness * 2);
-			var height = this._height - (borderThickness * 2);
+			var checkSize = this.getStyle("CheckSize");
+			var width = this._width * checkSize;
+			var height = this._height * checkSize;
+			
+			var x = 0 + ((this._width - width) / 2);
+			var y = 0 + ((this._height - height) / 2);
 			
 			if (currentState.indexOf("selected") == 0) //Draw check
 			{
