@@ -647,6 +647,9 @@ ScrollBarElement.prototype._doStylesUpdated =
 		
 		if ("ScrollTweenDuration" in stylesMap && this.getStyle("ScrollTweenDuration") == 0)
 			this.endScrollTween();
+		
+		if ("Enabled" in stylesMap)
+			this._invalidateLayout();
 	};
 	
 	
@@ -702,7 +705,7 @@ ScrollBarElement.prototype._doLayout =
 		this._scrollValue = Math.max(this._scrollValue, 0);
 		
 		//Disable / Enable components
-		if (this._scrollViewSize >= this._scrollPageSize)
+		if (this._scrollViewSize >= this._scrollPageSize || this.getStyle("Enabled") == false)
 		{
 			this._buttonIncrement.setStyle("Enabled", false);
 			this._buttonDecrement.setStyle("Enabled", false);
