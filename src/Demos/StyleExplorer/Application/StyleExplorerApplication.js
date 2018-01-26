@@ -27,19 +27,35 @@ function StyleExplorerApplication() //extends CanvasManager
 					this._textTitle.setStyle("PercentWidth", 100);
 					this._textTitle.addStyleDefinition(textTitleStyle);
 					
-					this._languageSelectContainer = new ListContainerElement();
-					this._languageSelectContainer.setStyle("LayoutDirection", "horizontal");
-					this._languageSelectContainer.setStyle("LayoutVerticalAlign", "middle");
-					this._languageSelectContainer.setStyle("LayoutGap", 6);
+					this._settingsSelectContainer = new ListContainerElement();
+					this._settingsSelectContainer.setStyle("LayoutDirection", "horizontal");
+					this._settingsSelectContainer.setStyle("LayoutVerticalAlign", "middle");
+					this._settingsSelectContainer.setStyle("LayoutGap", 2);
 					
 						this._labelLanguage = new LabelElement();
+						this._labelLanguage.setStyle("PaddingLeft", 20);
 						this._dropdownLocale = new DropdownElement();
 						
-					this._languageSelectContainer.addElement(this._labelLanguage);
-					this._languageSelectContainer.addElement(this._dropdownLocale);
+						this._labelFontSize = new LabelElement();
+						this._labelFontSize.setStyle("PaddingLeft", 20);
+						
+						this._buttonFontSmaller = new ButtonElement();
+						this._buttonFontSmaller.setStyleDefinitions(fontSizeButtonStyle);
+						this._buttonFontSmaller.setStyle("ArrowDirection", "down");
+						this._buttonFontSmaller.setStyle("Enabled", false);
+					
+						this._buttonFontLarger = new ButtonElement();
+						this._buttonFontLarger.setStyleDefinitions(fontSizeButtonStyle);
+						this._buttonFontLarger.setStyle("ArrowDirection", "up");
+					
+					this._settingsSelectContainer.addElement(this._labelLanguage);
+					this._settingsSelectContainer.addElement(this._dropdownLocale);
+					this._settingsSelectContainer.addElement(this._labelFontSize);
+					this._settingsSelectContainer.addElement(this._buttonFontSmaller);
+					this._settingsSelectContainer.addElement(this._buttonFontLarger);					
 					
 				this._headerContainer.addElement(this._textTitle);
-				this._headerContainer.addElement(this._languageSelectContainer);
+				this._headerContainer.addElement(this._settingsSelectContainer);
 				
 				this._dividerHeader = new CanvasElement();
 				this._dividerHeader.setStyleDefinitions(hDividerLineStyle);
@@ -289,6 +305,14 @@ function StyleExplorerApplication() //extends CanvasManager
 		{
 			_self._onEnterFrameStyleCodeUpdate(event);
 		};
+	this._onButtonFontClickInstance = 
+		function (event)
+		{
+			if (event.getTarget() == _self._buttonFontSmaller)
+				_self._onButtonFontSmallerClick(event);
+			else
+				_self._onButtonFontLargerClick(event);
+		};
 		
 	//Add event listeners	
 	this.addEventListener("localechanged", this._onLocaleChangedInstance);
@@ -296,11 +320,13 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._dropdownLocale.addEventListener("changed", this._onDropdownLocaleChangedInstance);
 	this._dataListControls.addEventListener("changed", this._onDataListControlsChangedInstance);
 	this._sandboxHeaderRadioButtonGroup.addEventListener("changed", this._onSandboxHeaderRadioButtonGroupChangedInstance);
-	
+	this._buttonFontSmaller.addEventListener("click", this._onButtonFontClickInstance);
+	this._buttonFontLarger.addEventListener("click", this._onButtonFontClickInstance);
 	
 	/////////////////FUNCTIONAL///////////////////////////////
 	
 	this._currentListRenderer = null;
+	this._currentFontSize = 12;
 	
 	//////Build controls and style data//////
 	this._dataListControlsCollection = new ListCollection();
@@ -398,6 +424,7 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:textInputControlStyleType});
 	//LabelElement
 	var labelDef = new StyleDefinition();
+	labelDef.setStyle("Text", "My Text");
 	
 	var labelControl = new LabelElement();
 	labelControl.setStyleDefinitions(labelDef);
@@ -490,6 +517,7 @@ StyleExplorerApplication.prototype._onLocaleChanged =
 		var currentLocale = this.getManager().getLocale();
 		
 		//Update text per current locale
+		this._labelFontSize.setStyle("Text", 				localeStrings[currentLocale]["Text Size"]);
 		this._textTitle.setStyle("Text", 					localeStrings["all"]["FlexCanvasJS"] + " " + localeStrings["all"]["Style Explorer"]);
 		this._labelLanguage.setStyle("Text", 				localeStrings[currentLocale]["Language"]);
 		this._labelPoweredBy.setStyle("Text", 				localeStrings[currentLocale]["Powered By"] + " ");
@@ -501,6 +529,30 @@ StyleExplorerApplication.prototype._onLocaleChanged =
 		this._buttonCopyCode.setStyle("Text", 				localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
 	};
 
+StyleExplorerApplication.prototype._onButtonFontLargerClick =
+	function (event)
+	{
+		var currentSize = this.getStyle("TextSize");
+		this.setStyle("TextSize", currentSize + 2);
+		
+		if (currentSize + 2 == 16)
+			this._buttonFontLarger.setStyle("Enabled", false);
+		
+		this._buttonFontSmaller.setStyle("Enabled", true);
+	};	
+	
+StyleExplorerApplication.prototype._onButtonFontSmallerClick =
+	function (event)
+	{
+		var currentSize = this.getStyle("TextSize");
+		this.setStyle("TextSize", currentSize - 2);
+		
+		if (currentSize - 2 == 12)
+			this._buttonFontSmaller.setStyle("Enabled", false);
+		
+		this._buttonFontLarger.setStyle("Enabled", true);
+	};
+	
 StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
 	function (event)
 	{

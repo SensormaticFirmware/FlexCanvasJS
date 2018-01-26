@@ -20,6 +20,7 @@ localeStrings["en-us"]["Add"] = 					"Add";
 localeStrings["en-us"]["Styles"] = 					"Styles";
 localeStrings["en-us"]["Style Code"] = 				"Style Code";
 localeStrings["en-us"]["Copy"] = 					"Copy";
+localeStrings["en-us"]["Text Size"] = 				"Text Size"; 
 
 
 //es-es////////
@@ -33,6 +34,7 @@ localeStrings["es-es"]["Add"] = 					"Añadir";
 localeStrings["es-es"]["Styles"] = 					"Estilos";
 localeStrings["es-es"]["Style Code"] = 				"Código De Estilo";
 localeStrings["es-es"]["Copy"] = 					"Copiar";
+localeStrings["es-es"]["Text Size"] = 				"Tamano Del Texto";
 
 
 //////IMAGES///////////////////////
@@ -105,6 +107,13 @@ addStyleDropdownListStyle.setStyle("Selectable", false); //Disable the list's no
 
 var addStyleDropdownStyle = new StyleDefinition();
 addStyleDropdownStyle.setStyle("PopupDataListStyle", addStyleDropdownListStyle);
+
+////Font size buttons
+var fontSizeButtonStyle = new StyleDefinition();
+fontSizeButtonStyle.setStyle("SkinClass", ScrollButtonSkinElement);
+fontSizeButtonStyle.setStyle("Width", 14);
+fontSizeButtonStyle.setStyle("PercentHeight", 100);
+
 
 
 //////APPLICATION////////////////
