@@ -95,9 +95,9 @@ function CanvasManager()
 				return;
 			}
 			
-			window.requestAnimationFrame(_self._onCanvasFrame);	
-			
 			_self.updateNow();
+			
+			window.requestAnimationFrame(_self._onCanvasFrame);	
 		};
 	
 	this._canvasResizeEventHandler = 
@@ -578,15 +578,15 @@ CanvasManager.prototype.setCanvas =
 //			canvas.style.mozUserSelect = "none";
 //			canvas.setAttribute("unselectable", "on"); // For IE and Opera
 
+			if (navigator.userAgent.indexOf("Firefox") > 0)
+				CanvasElement._browserType = "Firefox";
+			
 			//Prevent double render frames if someone changes our associated canvas.
 			if (this._canvasRenderFramePending == false)
 			{
 				this._canvasRenderFramePending = true;
 				window.requestAnimationFrame(this._onCanvasFrame);	
 			}
-			
-			if (navigator.userAgent.indexOf("Firefox") > 0)
-				CanvasElement._browserType = "Firefox";
 		}
 		
 		if (addedOrRemoved == true)
