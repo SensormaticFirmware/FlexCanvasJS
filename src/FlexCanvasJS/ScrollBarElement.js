@@ -721,7 +721,7 @@ ScrollBarElement.prototype._doLayout =
 		//TODO: Handle rotation of tab??
 		var tabWidth = this._buttonTab.getStyle("Width");
 		var tabMinWidth = this._buttonTab.getStyle("MinWidth");
-		var tabMaxWidth = this._buttonTab.getStyle("MinWidth");
+		var tabMaxWidth = this._buttonTab.getStyle("MaxWidth");
 		var tabPWidth = this._buttonTab.getStyle("PercentWidth");
 		
 		if (tabMinWidth == null)
@@ -741,7 +741,7 @@ ScrollBarElement.prototype._doLayout =
 		
 		var trackWidth = this._buttonTrack.getStyle("Width");
 		var trackMinWidth = this._buttonTrack.getStyle("MinWidth");
-		var trackMaxWidth = this._buttonTrack.getStyle("MinWidth");
+		var trackMaxWidth = this._buttonTrack.getStyle("MaxWidth");
 		var trackPWidth = this._buttonTrack.getStyle("PercentWidth");		
 		
 		if (trackMinWidth == null)
@@ -830,8 +830,6 @@ ScrollBarElement.prototype._doLayout =
 		{
 			if (tabWidth == null)
 			{
-				var tabMinWidth = this._buttonTab.getStyle("MinWidth");
-				
 				if (this._scrollPageSize > 0)
 					tabWidth = Math.round(this._trackAndTabContainer._width * (this._scrollViewSize / this._scrollPageSize));
 				else
