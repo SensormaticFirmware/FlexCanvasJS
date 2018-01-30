@@ -103,49 +103,49 @@ DataGridElement._StyleTypes = Object.create(null);
  * 
  * @seealso DataGridHeaderElement
  */
-DataGridElement._StyleTypes.HeaderClass = 						{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.HeaderClass = 						StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HeaderStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the header element.
  */
-DataGridElement._StyleTypes.HeaderStyle = 						{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.HeaderStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style GridLinesPriority String
  * 
  * Determines which set of grid lines will be rendered first. Allowable values are "vertical" or "horizontal".
  */
-DataGridElement._StyleTypes.GridLinesPriority = 				{inheritable:false};		// "vertical" || "horizontal" (Which lines are drawn first / below)
+DataGridElement._StyleTypes.GridLinesPriority = 				StyleableBase.EStyleType.NORMAL;		// "vertical" || "horizontal" (Which lines are drawn first / below)
 
 /**
  * @style VerticalGridLinesClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataGrid vertical grid lines. Default is CanvasElement.
  */
-DataGridElement._StyleTypes.VerticalGridLinesClass = 			{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.VerticalGridLinesClass = 			StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style VerticalGridLinesStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the vertical grid line elements.
  */
-DataGridElement._StyleTypes.VerticalGridLinesStyle = 			{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.VerticalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style HorizontalGridLinesClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataGrid horizontal grid lines. Default is null.
  */
-DataGridElement._StyleTypes.HorizontalGridLinesClass = 			{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.HorizontalGridLinesClass = 			StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HorizontalGridLinesStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the horizontal grid line elements.
  */
-DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 
 ////////////Default Styles/////////////////////////////////////////
@@ -428,7 +428,6 @@ DataGridElement.prototype._doStylesUpdated =
 			if (headerClass != null && this._gridHeader == null)
 			{
 				this._gridHeader = new (headerClass)();
-				this._gridHeader._setStyleDefinitionDefault(this._getDefaultStyle("HeaderStyle"));
 				
 				this._gridHeader._setListData(
 					new DataListData(this, -1),
@@ -441,7 +440,7 @@ DataGridElement.prototype._doStylesUpdated =
 		}
 		
 		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
-			this._gridHeader.setStyleDefinitions(this.getStyle("HeaderStyle"));
+			this._applySubStylesToElement("HeaderStyle", this._gridHeader);
 		
 		if ("GridLinesPriority" in stylesMap ||
 			"VerticalGridLinesClass" in stylesMap ||
@@ -458,10 +457,7 @@ DataGridElement.prototype._createRenderer =
 	function (itemIndex)
 	{
 		var newRenderer = new (this.getStyle("ListItemClass"))();
-		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
-		//newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
-		
+		this._applySubStylesToElement("ListItemStyle", newRenderer);
 		this._updateRendererData(newRenderer, itemIndex);
 		
 		return newRenderer;
@@ -484,7 +480,7 @@ DataGridElement.prototype._createHeaderItemRenderer =
 		
 		var headerItemClass = columnDefinition.getStyle("HeaderItemClass");
 		var newRenderer = new (headerItemClass)();
-		newRenderer._setStyleDefinitionDefault(columnDefinition._getDefaultStyle("HeaderItemStyle"));
+		columnDefinition._applySubStylesToElement("HeaderItemStyle", newRenderer);
 		
 		this._updateHeaderItemRendererData(newRenderer, columnIndex);		
 		
@@ -515,7 +511,7 @@ DataGridElement.prototype._updateHeaderItemRendererData =
 		else
 			listData = new DataGridItemData(this, -1, columnIndex);
 		
-		renderer.setStyleDefinitions(columnDefinition.getStyle("HeaderItemStyle"));
+		columnDefinition._applySubStylesToElement("HeaderItemStyle", renderer);
 		
 		renderer._setListData(
 			listData,
@@ -574,7 +570,7 @@ DataGridElement.prototype._createRowItemRenderer =
 	
 		var rowItemClass = columnDefinition.getStyle("RowItemClass");
 		var newRenderer = new (rowItemClass)();
-		newRenderer._setStyleDefinitionDefault(columnDefinition._getDefaultStyle("RowItemStyle"));
+		columnDefinition._applySubStylesToElement("RowItemStyle", newRenderer);
 		
 		this._updateRowItemRendererData(newRenderer, itemIndex, columnIndex);		
 		
@@ -608,7 +604,7 @@ DataGridElement.prototype._updateRowItemRendererData =
 		else
 			listData = new DataGridItemData(this, itemIndex, columnIndex);
 		
-		renderer.setStyleDefinitions(columnDefinition.getStyle("RowItemStyle"));
+		columnDefinition._applySubStylesToElement("RowItemStyle", renderer);
 	
 		renderer._setListData(
 			listData,
@@ -664,14 +660,12 @@ DataGridElement.prototype._createGridLine =
 		if (direction == "vertical")
 		{
 			line = new (this.getStyle("VerticalGridLinesClass"))();
-			line._setStyleDefinitionDefault(this._getDefaultStyle("VerticalGridLinesStyle"));
-			line.setStyleDefinitions(this.getStyle("VerticalGridLinesStyle"));
+			this._applySubStylesToElement("VerticalGridLinesStyle", line);
 		}
 		else
 		{
 			line = new (this.getStyle("HorizontalGridLinesClass"))();
-			line._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalGridLinesStyle"));
-			line.setStyleDefinitions(this.getStyle("HorizontalGridLinesStyle"));
+			this._applySubStylesToElement("HorizontalGridLinesStyle", line);
 		}
 		
 		return line;
@@ -765,9 +759,7 @@ DataGridElement.prototype._doLayout =
 		var horizontalComplete = false;
 		var linePriority = this.getStyle("GridLinesPriority");
 		var verticalClass = this.getStyle("VerticalGridLinesClass");
-		var verticalStyle = this.getStyle("VerticalGridLinesStyle");
 		var horizontalClass = this.getStyle("HorizontalGridLinesClass");
-		var horizontalStyle = this.getStyle("HorizontalGridLinesStyle");
 		
 		while (verticalComplete == false || horizontalComplete == false)
 		{
@@ -795,7 +787,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinitions(horizontalStyle);
+							this._applySubStylesToElement("HorizontalGridLinesStyle", gridLine);
 						
 						gridLine._setActualSize(this._gridLineContainer._width, gridLine.getStyle("Height"));
 						gridLine._setActualPosition(0, rowRenderer._y - (gridLine._height / 2));
@@ -829,7 +821,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinitions(verticalStyle);
+							this._applySubStylesToElement("VerticalGridLinesStyle", gridLine);
 						
 						gridLine._setActualSize(gridLine.getStyle("Width"), this._gridLineContainer._height);
 						gridLine._setActualPosition(linePosition - (gridLine._width / 2), 0);

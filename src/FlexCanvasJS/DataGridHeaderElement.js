@@ -47,7 +47,7 @@ DataGridHeaderElement._StyleTypes = Object.create(null);
  * 
  * The CanvasElement constructor to be used for the draggable column divider (defaults to Button). 
  */
-DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		{inheritable:false}; 	// Element constructor()
+DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		StyleableBase.EStyleType.NORMAL; 	// Element constructor()
 
 /**
  * @style ColumnDividerStyle StyleDefinition
@@ -57,14 +57,14 @@ DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		{inheritable:false}; 	/
  * 
  * @seealso DataGridHeaderColumnDividerSkinElement
  */
-DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		{inheritable:false}; 	// StyleDefinition
+DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		StyleableBase.EStyleType.NORMAL; 	// StyleDefinition
 
 /**
  * @style DraggableColumns boolean
  * 
  * When true, column dividers are draggable.
  */
-DataGridHeaderElement._StyleTypes.DraggableColumns = 		{inheritable:false}; 	// StyleDefinition
+DataGridHeaderElement._StyleTypes.DraggableColumns = 		StyleableBase.EStyleType.NORMAL; 	// StyleDefinition
 
 
 ////////////Default Styles////////////////////
@@ -350,8 +350,7 @@ DataGridHeaderElement.prototype._setListData =
 			if (renderer == null)
 			{
 				renderer = new (dividerClass)();
-				renderer._setStyleDefinitionDefault(this._getDefaultStyle("ColumnDividerStyle"));
-				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
+				this._applySubStylesToElement("ColumnDividerStyle", renderer);
 				renderer.setStyle("Draggable", draggableColumns);
 				
 				if (draggableColumns == true)
@@ -360,7 +359,7 @@ DataGridHeaderElement.prototype._setListData =
 				this._itemRenderersContainer._addChildAt(renderer, i2);
 			}
 			else
-				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
+				this._applySubStylesToElement("ColumnDividerStyle", renderer);
 		}
 		
 		//Purge excess renderers.

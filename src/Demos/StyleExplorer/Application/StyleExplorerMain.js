@@ -83,6 +83,7 @@ hDividerLineStyle.setStyle("BackgroundColor", 				"#999999");
 //////Clear Style Button
 var clearStyleButtonStyle = new StyleDefinition();
 
+//Skin styles
 var clearStyleButtonUpSkinStyleDef = new StyleDefinition();
 clearStyleButtonUpSkinStyleDef.setStyle("BackgroundColor", "#FF7777");
 
@@ -95,7 +96,7 @@ clearStyleButtonDownSkinStyleDef.setStyle("BackgroundColor", "#DD3333");
 clearStyleButtonStyle.setStyle("UpSkinStyle", clearStyleButtonUpSkinStyleDef);
 clearStyleButtonStyle.setStyle("OverSkinStyle", clearStyleButtonOverSkinStyleDef);
 clearStyleButtonStyle.setStyle("DownSkinStyle", clearStyleButtonDownSkinStyleDef);
-clearStyleButtonStyle.setStyle("SkinClass", CloseButtonSkinElement);
+clearStyleButtonStyle.setStyle("SkinClass", CloseButtonSkinElement);	//Draws an "X" across the button.
 clearStyleButtonStyle.setStyle("Width", 15);
 clearStyleButtonStyle.setStyle("Height", 15);
 clearStyleButtonStyle.setStyle("BackgroundShape", new EllipseShape());
@@ -121,7 +122,7 @@ fontSizeButtonStyle.setStyle("PercentHeight", 100);
 //Globals go here...//
 
 //Root application
-var styleExplorer = null; //Best not to initialize here, avoid dependencies.
+var styleExplorer = null; //Best not to initialize here, avoid file ordering dependencies.
 
 //Run application
 function init()

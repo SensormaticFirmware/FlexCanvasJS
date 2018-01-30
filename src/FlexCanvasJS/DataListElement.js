@@ -132,7 +132,7 @@ DataListElement._StyleTypes = Object.create(null);
  * 
  * Determines the layout direction of this DataList. Allowable values are "horizontal" or "vertical".
  */
-DataListElement._StyleTypes.ListDirection = 					{inheritable:false};		// "horizontal" || "vertical
+DataListElement._StyleTypes.ListDirection = 					StyleableBase.EStyleType.NORMAL;		// "horizontal" || "vertical
 
 /**
  * @style ListAlign String
@@ -140,21 +140,21 @@ DataListElement._StyleTypes.ListDirection = 					{inheritable:false};		// "horiz
  * Determines the alignment of content when there is not enough data in the ListCollection to fill the DataList.
  * Allowable values are "left", "center", "right" for horizontal layout, and "top", "middle", "bottom" for vertical layout. 
  */
-DataListElement._StyleTypes.ListAlign = 						{inheritable:false};		// "left" || "center" || "right" / "top" || "middle" || "bottom"
+DataListElement._StyleTypes.ListAlign = 						StyleableBase.EStyleType.NORMAL;		// "left" || "center" || "right" / "top" || "middle" || "bottom"
 
 /**
  * @style Selectable boolean
  * 
  * When true, list items can be selected and the DataList will dispatch "changed" events.
  */
-DataListElement._StyleTypes.Selectable = 						{inheritable:false};		// true || false
+DataListElement._StyleTypes.Selectable = 						StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style ScrollBarDisplay String
  * 
  * Determines the behavior of the scroll bar. Allowable values are "on", "off", and "auto".
  */
-DataListElement._StyleTypes.ScrollBarDisplay = 					{inheritable:false};		// "on" || "off" || "auto"
+DataListElement._StyleTypes.ScrollBarDisplay = 					StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
 
 /**
  * @style ScrollBarPlacement String
@@ -162,14 +162,14 @@ DataListElement._StyleTypes.ScrollBarDisplay = 					{inheritable:false};		// "on
  * Determines the placement of the scroll bar. 
  * Allowable values are "top" or "bottom" for horizontal layout and "left" or "right" for vertical layout.
  */
-DataListElement._StyleTypes.ScrollBarPlacement = 				{inheritable:false};		// "top" || "bottom" / "left || "right"
+DataListElement._StyleTypes.ScrollBarPlacement = 				StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" / "left || "right"
 
 /**
  * @style ScrollBarStyle StyleDefinition
  * 
  * The StyleDefinition to be applied to the scroll bar.
  */
-DataListElement._StyleTypes.ScrollBarStyle = 					{inheritable:false};		// StyleDefinition
+DataListElement._StyleTypes.ScrollBarStyle = 					StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 //Returns the string to use for the label per provided data.
 /**
@@ -178,21 +178,21 @@ DataListElement._StyleTypes.ScrollBarStyle = 					{inheritable:false};		// Style
  * A function that returns a text string per a supplied collection item.
  * function (itemData) { return "" }
  */
-DataListElement._StyleTypes.ItemLabelFunction = 				{inheritable:false}; 		// function (itemData) { return "" }
+DataListElement._StyleTypes.ItemLabelFunction = 				StyleableBase.EStyleType.NORMAL; 		// function (itemData) { return "" }
 
 /**
  * @style ListItemClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataRenderer.
  */
-DataListElement._StyleTypes.ListItemClass = 					{inheritable:false};		//DataRendererBaseElement constructor()
+DataListElement._StyleTypes.ListItemClass = 					StyleableBase.EStyleType.NORMAL;		//DataRendererBaseElement constructor()
 
 /**
  * @style ListItemStyle StyleDefinition
  * 
  * The StyleDefinition to be applied to the DataRenderer.
  */
-DataListElement._StyleTypes.ListItemStyle = 					{inheritable:false};		//StyleDefinition
+DataListElement._StyleTypes.ListItemStyle = 					StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 
 ///////////Default Styles////////////////////////////////////
@@ -768,10 +768,8 @@ DataListElement.prototype._doStylesUpdated =
 		}
 		else if ("ListItemStyle" in stylesMap)
 		{
-			var listItemStyle = this.getStyle("ListItemStyle");
-			
 			for (var i = 0; i < this._contentPane._children.length; i++)
-				this._contentPane._children[i].setStyleDefinitions(listItemStyle);
+				this._applySubStylesToElement("ListItemStyle", this._contentPane._children[i]);
 			
 			this._invalidateLayout();
 		}
@@ -785,7 +783,7 @@ DataListElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		
 		if ("ScrollBarStyle" in stylesMap && this._scrollBar != null)
-			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
+			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
 		
 		if ("ItemLabelFunction" in stylesMap)
 			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
@@ -842,10 +840,9 @@ DataListElement.prototype._createRenderer =
 	function (itemIndex)
 	{
 		var newRenderer = new (this.getStyle("ListItemClass"))();
-		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
 		newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
 		
+		this._applySubStylesToElement("ListItemStyle", newRenderer);
 		this._updateRendererData(newRenderer, itemIndex);
 		
 		newRenderer.addEventListener("click", this._onDataListRendererClickInstance);
@@ -1041,8 +1038,9 @@ DataListElement.prototype._doLayout =
 		if (needsScrollBar == true && this._scrollBar == null)
 		{
 			this._scrollBar = new ScrollBarElement();
-			this._scrollBar._setStyleDefinitionDefault(this._getDefaultStyle("ScrollBarStyle"));
-			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
+			
+			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
+			
 			this._scrollBar.setStyle("LayoutDirection", listDirection);
 			this._scrollBar.setScrollLineSize(1);
 			

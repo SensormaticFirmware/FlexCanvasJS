@@ -53,14 +53,14 @@ RadioButtonElement._StyleTypes = Object.create(null);
  * Determines if the label should be placed to the left or right of the skin. 
  * Allowable values are "left" or "right".
  */
-RadioButtonElement._StyleTypes.LabelPlacement =						{inheritable:false};		// "left" || "right"
+RadioButtonElement._StyleTypes.LabelPlacement =						StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 /**
  * @style LabelGap Number
  * 
  * Determines distance in pixels the label should be placed from the skin.
  */
-RadioButtonElement._StyleTypes.LabelGap =							{inheritable:false};		// number
+RadioButtonElement._StyleTypes.LabelGap =							StyleableBase.EStyleType.NORMAL;		// number
 
 
 

@@ -58,7 +58,7 @@ ToggleButtonElement._StyleTypes = Object.create(null);
  * When false, the ToggleButton cannot be de-selected by the user and the "selectedOver" and "selectedDown" states are not used, 
  * as with the case for most tab or radio button type elements.
  */
-ToggleButtonElement._StyleTypes.AllowDeselect = 				{inheritable:false};		// true || false
+ToggleButtonElement._StyleTypes.AllowDeselect = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style SelectedUpSkinClass CanvasElement
@@ -66,14 +66,14 @@ ToggleButtonElement._StyleTypes.AllowDeselect = 				{inheritable:false};		// tru
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedUp" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedUpSkinClass = 			{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedUpSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedUpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedUp" state skin element.
  */
-ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedUpTextColor String
@@ -81,7 +81,7 @@ ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			{inheritable:false};		/
  * Hex color value to be used for the button label when the button is in the "selectedUp" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedUpTextColor = 			{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedUpTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedOverSkinClass CanvasElement
@@ -89,14 +89,14 @@ ToggleButtonElement._StyleTypes.SelectedUpTextColor = 			{inheritable:false};		/
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedOver" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedOverSkinClass = 		{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedOverSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedOverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedOver" state skin element. 
  */
-ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedOverTextColor String
@@ -104,7 +104,7 @@ ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the button label when the button is in the "selectedOver" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedOverTextColor = 		{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedOverTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedDownSkinClass CanvasElement
@@ -112,14 +112,14 @@ ToggleButtonElement._StyleTypes.SelectedOverTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedDown" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedDownSkinClass = 		{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedDownSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedDownSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedDown" state skin element. 
  */
-ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedDownTextColor String
@@ -127,7 +127,7 @@ ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the button label when the button is in the "selectedDown" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedDownTextColor = 		{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedDownTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedDisabledSkinClass CanvasElement
@@ -135,14 +135,14 @@ ToggleButtonElement._StyleTypes.SelectedDownTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedDisabled" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedDisabledSkinClass = 	{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedDisabledSkinClass = 	StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedDisabledSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedDisabled" state skin element. 
  */
-ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedDisabledTextColor String
@@ -150,7 +150,7 @@ ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	{inheritable:false}
  * Hex color value to be used for the button label when the button is in the "selectedDisabled" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedDisabledTextColor = 	{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedDisabledTextColor = 	StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 ////////////Default Styles/////////////////////////////
@@ -332,36 +332,20 @@ ToggleButtonElement.prototype._getSkinClass =
 	};	
 	
 //@override	
-ToggleButtonElement.prototype._getSkinStyleDefinitions = 
+ToggleButtonElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "selectedUp")
-			return this.getStyle("SelectedUpSkinStyle");
-		else if (state == "selectedOver")
-			return this.getStyle("SelectedOverSkinStyle");
-		else if (state == "selectedDown")
-			return this.getStyle("SelectedDownSkinStyle");
-		else if (state == "selectedDisabled")
-			return this.getStyle("SelectedDisabledSkinStyle");
+			return "SelectedUpSkinStyle";
+		if (state == "selectedOver")
+			return "SelectedOverSkinStyle";
+		if (state == "selectedDown")
+			return "SelectedDownSkinStyle";
+		if (state == "selectedDisabled")
+			return "SelectedDisabledSkinStyle";
 		
-		return ToggleButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};	
-	
-//@Override
-ToggleButtonElement.prototype._getSkinStyleDefinitionDefault =
-	function (state)
-	{
-		if (state == "selectedUp")
-			return this._getDefaultStyle("SelectedUpSkinStyle");
-		else if (state == "selectedOver")
-			return this._getDefaultStyle("SelectedOverSkinStyle");
-		else if (state == "selectedDown")
-			return this._getDefaultStyle("SelectedDownSkinStyle");
-		else if (state == "selectedDisabled")
-			return this._getDefaultStyle("SelectedDisabledSkinStyle");
-		
-		return ToggleButtonElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
-	};	
+		return ToggleButtonElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
+	};		
 	
 //@Override
 ToggleButtonElement.prototype._getTextColor = 
@@ -394,19 +378,26 @@ ToggleButtonElement.prototype._doStylesUpdated =
 	{
 		ToggleButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
-		//Always update these, they dont do anything if no changes
-		//and cheaper to call this than to check SkinClass inheritance.
-		this._updateSkinClass("selectedUp");
-		this._updateSkinStyleDefinitions("selectedUp");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "SelectedUpSkinClass" in stylesMap)
+			this._updateSkinClass("selectedUp");
+		if ("SelectedUpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedUp");
 		
-		this._updateSkinClass("selectedOver");
-		this._updateSkinStyleDefinitions("selectedOver");
+		if ("SkinClass" in stylesMap || "SelectedOverSkinClass" in stylesMap)
+			this._updateSkinClass("selectedOver");
+		if ("SelectedOverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedOver");
 		
-		this._updateSkinClass("selectedDown");
-		this._updateSkinStyleDefinitions("selectedDown");
+		if ("SkinClass" in stylesMap || "SelectedDownSkinClass" in stylesMap)
+			this._updateSkinClass("selectedDown");
+		if ("SelectedDownSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedDown");
 		
-		this._updateSkinClass("selectedDisabled");
-		this._updateSkinStyleDefinitions("selectedDisabled");
+		if ("SkinClass" in stylesMap || "SelectedDisabledSkinClass" in stylesMap)
+			this._updateSkinClass("selectedDisabled");
+		if ("SelectedDisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedDisabled");
 		
 		if ("AllowDeselect" in stylesMap)
 			this._updateState();

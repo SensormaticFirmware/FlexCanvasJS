@@ -71,7 +71,7 @@ ButtonElement._StyleTypes = Object.create(null);
  * 
  * Text string to be displayed as the button label.
  */
-ButtonElement._StyleTypes.Text = 						{inheritable:false};		// "any string" || null
+ButtonElement._StyleTypes.Text = 						StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style SkinClass CanvasElement
@@ -79,7 +79,7 @@ ButtonElement._StyleTypes.Text = 						{inheritable:false};		// "any string" || 
  * The CanvasElement constructor type to apply to all skin states. 
  * Specific states such as UpSkinClass will override SkinClass when they are equal priority.
  */
-ButtonElement._StyleTypes.SkinClass =					{inheritable:false};	//Element constructor()
+ButtonElement._StyleTypes.SkinClass =					StyleableBase.EStyleType.NORMAL;	//Element constructor()
 
 /**
  * @style UpSkinClass CanvasElement
@@ -87,14 +87,14 @@ ButtonElement._StyleTypes.SkinClass =					{inheritable:false};	//Element constru
  * The CanvasElement constructor to be used for the button skin when the button is in the "up" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.UpSkinClass = 				{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "up" state skin element.
  */
-ButtonElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style UpTextColor String
@@ -102,7 +102,7 @@ ButtonElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//StyleDefinit
  * Hex color value to be used for the button label when the button is in the "up" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.UpTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style OverSkinClass CanvasElement
@@ -110,14 +110,14 @@ ButtonElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
  * The CanvasElement constructor to be used for the button skin when the button is in the "over" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.OverSkinClass = 				{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.OverSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style OverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "over" state skin element.
  */
-ButtonElement._StyleTypes.OverSkinStyle = 				{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.OverSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style OverTextColor String
@@ -125,7 +125,7 @@ ButtonElement._StyleTypes.OverSkinStyle = 				{inheritable:false};		//StyleDefin
  * Hex color value to be used for the button label when the button is in the "over" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.OverTextColor = 				{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.OverTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style DownSkinClass CanvasElement
@@ -133,14 +133,14 @@ ButtonElement._StyleTypes.OverTextColor = 				{inheritable:false};		//"#000000"
  * The CanvasElement constructor to be used for the button skin when the button is in the "down" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.DownSkinClass = 				{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.DownSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style DownSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "down" state skin element.
  */
-ButtonElement._StyleTypes.DownSkinStyle = 				{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.DownSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style DownTextColor String
@@ -148,7 +148,7 @@ ButtonElement._StyleTypes.DownSkinStyle = 				{inheritable:false};		//StyleDefin
  * Hex color value to be used for the button label when the button is in the "down" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.DownTextColor = 				{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.DownTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style DisabledSkinClass CanvasElement
@@ -156,14 +156,14 @@ ButtonElement._StyleTypes.DownTextColor = 				{inheritable:false};		//"#000000"
  * The CanvasElement constructor to be used for the button skin when the button is in the "disabled" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.DisabledSkinClass = 			{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.DisabledSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style DisabledSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "disabled" state skin element.
  */
-ButtonElement._StyleTypes.DisabledSkinStyle = 			{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.DisabledSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style DisabledTextColor String
@@ -171,7 +171,7 @@ ButtonElement._StyleTypes.DisabledSkinStyle = 			{inheritable:false};		//StyleDe
  * Hex color value to be used for the button label when the button is in the "disabled" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.DisabledTextColor = 			{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.DisabledTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 //Change some of the text styles not to inherit, we'll set these to the label 
@@ -182,14 +182,14 @@ ButtonElement._StyleTypes.DisabledTextColor = 			{inheritable:false};		//"#00000
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-ButtonElement._StyleTypes.TextHorizontalAlign =					{inheritable:false};		// "left" || "center" || "right"
+ButtonElement._StyleTypes.TextHorizontalAlign =			StyleableBase.EStyleType.NORMAL;		// "left" || "center" || "right"
 
 /**
  * @style TextVerticalAlign String
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-ButtonElement._StyleTypes.TextVerticalAlign =				{inheritable:false};  		// "top" || "middle" || "bottom"
+ButtonElement._StyleTypes.TextVerticalAlign =			StyleableBase.EStyleType.NORMAL;  		// "top" || "middle" || "bottom"
 
 
 /////////Default Styles//////////////////////////////
@@ -391,38 +391,22 @@ ButtonElement.prototype._getSkinClass =
 		
 		return stateSkinClass.value;
 	};
-	
-//@override	
-ButtonElement.prototype._getSkinStyleDefinitions = 
-	function (state)
-	{
-		if (state == "up")
-			return this.getStyle("UpSkinStyle");
-		else if (state == "over")
-			return this.getStyle("OverSkinStyle");
-		else if (state == "down")
-			return this.getStyle("DownSkinStyle");
-		else if (state == "disabled")
-			return this.getStyle("DisabledSkinStyle");
-		
-		return ButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};
 
-//@override
-ButtonElement.prototype._getSkinStyleDefinitionDefault =
+//@override	
+ButtonElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "up")
-			return this._getDefaultStyle("UpSkinStyle");
-		else if (state == "over")
-			return this._getDefaultStyle("OverSkinStyle");
-		else if (state == "down")
-			return this._getDefaultStyle("DownSkinStyle");
-		else if (state == "disabled")
-			return this._getDefaultStyle("DisabledSkinStyle");
+			return "UpSkinStyle";
+		if (state == "over")
+			return "OverSkinStyle";
+		if (state == "down")
+			return "DownSkinStyle";
+		if (state == "disabled")
+			return "DisabledSkinStyle";
 		
-		return ButtonElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
-	};
+		return ButtonElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
+	};	
 	
 //@override
 ButtonElement.prototype._changeState = 
@@ -519,19 +503,26 @@ ButtonElement.prototype._doStylesUpdated =
 	{
 		ButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
-		//Always update these, they dont do anything if no changes
-		//and cheaper to call this than to check SkinClass inheritance.
-		this._updateSkinClass("up");
-		this._updateSkinStyleDefinitions("up");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("over");
-		this._updateSkinStyleDefinitions("over");
+		if ("SkinClass" in stylesMap || "OverSkinClass" in stylesMap)
+			this._updateSkinClass("over");
+		if ("OverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("over");
 		
-		this._updateSkinClass("down");
-		this._updateSkinStyleDefinitions("down");
+		if ("SkinClass" in stylesMap || "DownSkinClass" in stylesMap)
+			this._updateSkinClass("down");
+		if ("DownSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("down");
 		
-		this._updateSkinClass("disabled");
-		this._updateSkinStyleDefinitions("disabled");
+		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
+			this._updateSkinClass("disabled");
+		if ("DisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("disabled");
 		
 		//Create / Destroy and proxy text to label.
 		if ("Text" in stylesMap)

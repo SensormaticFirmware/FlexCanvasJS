@@ -35,14 +35,14 @@ DropdownArrowButtonSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the arrow. Format like "#FF0000" (red).
  */
-DropdownArrowButtonSkinElement._StyleTypes.ArrowColor =				{inheritable:false};		//"#000000"
+DropdownArrowButtonSkinElement._StyleTypes.ArrowColor =				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style LineColor String
  * 
  * Hex color value to be used for the divider line. Format like "#FF0000" (red).
  */
-DropdownArrowButtonSkinElement._StyleTypes.LineColor =				{inheritable:false};		//"#000000"
+DropdownArrowButtonSkinElement._StyleTypes.LineColor =				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 //////Default Styles///////////////////

@@ -16,25 +16,38 @@ CloseButtonSkinElement.base = CanvasElement;
 CloseButtonSkinElement.prototype._doRender = 
 	function()
 	{
+		//Base class renders our background & border based on our state.
 		CloseButtonSkinElement.base.prototype._doRender.call(this);
 		
+		//Get the CanvasRenderingContext2D context for this element.
 		var ctx = this._getGraphicsCtx();
 		
-		var borderThickness = this._getBorderThickness();
+		//Convienence
+		var x = this._x;
+		var y = this._y;
+		var w = this._width;
+		var h = this._height;
 		
-		var x = borderThickness;
-		var y = borderThickness;
-		var width = this._width - (borderThickness * 2);
-		var height = this._height - (borderThickness * 2);
+		//Draw an "X" across the button.
+		//This is not done in a scalable, or style-able manner, its just for our specific button.
+		var state = this.getStyle("SkinState");
+		var color = null;
+		
+		if (state == "up")
+			color = "#444444";
+		else if (state = "over")
+			color = "#222222";
+		else //down
+			color = "#000000";		
 		
 		ctx.beginPath();
 		
-		ctx.moveTo(x + 3.5, y + 3.5);
-		ctx.lineTo(x + width - 3.5, y + height - 3.5);
-		ctx.moveTo(x + width - 3.5, y + 3.5);
-		ctx.lineTo(x + 3.5, y + height - 3.5);
+		ctx.moveTo(x + 4.5, y + 4.5);
+		ctx.lineTo(x + w - 4.5, y + h - 4.5);
+		ctx.moveTo(x + w - 4.5, y + 4.5);
+		ctx.lineTo(x + 4.5, y + h - 4.5);
 		
-		ctx.strokeStyle = "#000000";
+		ctx.strokeStyle = color;
 		ctx.lineWidth = 2;
 		ctx.stroke();
 	};		

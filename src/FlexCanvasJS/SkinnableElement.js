@@ -80,35 +80,18 @@ SkinnableElement.prototype._getSkinClass =
 	};
 
 /**
- * @function _getSkinStyleDefinitions
- * Gets an array of StyleDefinitions to be applied to the skin class per the provided state.
- * Override this to return different StyleDefinitions for different states.
+ * @function _getSubStyleNameForSkinState
+ * Gets the style name of the sub style to be applied to the skin
+ * for the associated state. Override this to return the associated
+ * sub style name for the supplied state.
  * 
  * @param state String
- * The state for which to return an array of StyleDefinitions.
+ * The state for which to return a sub style name.
  * 
- * @returns Array
- * Return the appropriate array of StyleDefinitions for the provided state.
+ * @returns string
+ * Sub style name to apply to the skin of the associated state.
  */	
-SkinnableElement.prototype._getSkinStyleDefinitions = 
-	function (state)
-	{
-		return null;
-	};
-
-/**
- * @function _getSkinStyleDefinitionDefault
- * Gets the default StyleDefinition to be applied to the skin class per the provided state.
- * Override this to return different default StyleDefinitions for different states. Use 
- * _getDefaultStyle() to return the appropriate default style definition.
- * 
- * @param state String
- * The state for which to return a default StyleDefinition.
- * 
- * @returns StyleDefinition
- * Return the appropriate default StyleDefinition per _getDefaultStyle("MyStyleNameForMyState") for the provided state.
- */	
-SkinnableElement.prototype._getSkinStyleDefinitionDefault = 
+SkinnableElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		return null;
@@ -151,7 +134,10 @@ SkinnableElement.prototype._updateSkinStyleDefinitions =
 		if (skinElement == null)
 			return;
 	
-		skinElement.setStyleDefinitions(this._getSkinStyleDefinitions(state));
+		var subStyleName = this._getSubStyleNameForSkinState(state);
+		
+		if (subStyleName != null)
+			this._applySubStylesToElement(subStyleName, skinElement);
 	};
 	
 /**
@@ -213,12 +199,12 @@ SkinnableElement.prototype._createSkin =
 		
 		this._skins[state] = newSkin;
 		
-		newSkin._setStyleDefinitionDefault(this._getSkinStyleDefinitionDefault(state));
 		newSkin._setStyleProxy(new StyleProxy(this, this._getSkinStyleProxyMap()));
+		
+		this._updateSkinStyleDefinitions(state);
 		
 		newSkin.setStyle("MouseEnabled", false);
 		newSkin.setStyle("SkinState", state);
-		this._updateSkinStyleDefinitions(state);
 		
 		this._addChildAt(newSkin, 0);
 		

@@ -40,7 +40,7 @@ CursorDefinition._StyleTypes = Object.create(null);
  * 
  * The CanvasElement constructor or browser string type to use for the cursor.
  */
-CursorDefinition._StyleTypes.CursorClass = 						{inheritable:false};		// CanvasElement() constructor
+CursorDefinition._StyleTypes.CursorClass = 						StyleableBase.EStyleType.NORMAL;		// CanvasElement() constructor
 
 /**
  * @style CursorStyle StyleDefinition
@@ -48,21 +48,21 @@ CursorDefinition._StyleTypes.CursorClass = 						{inheritable:false};		// Canvas
  * The StyleDefinition to apply to the cursor class. (Including Width and Height, unless you've implemented
  * the doMeasure() function into a custom CanvasElement subclass).
  */
-CursorDefinition._StyleTypes.CursorStyle = 						{inheritable:false};		// StyleDefinition
+CursorDefinition._StyleTypes.CursorStyle = 						StyleableBase.EStyleType.NORMAL;		// StyleDefinition
 
 /**
  * @style CursorOffsetX Number
  * 
  * The X offset from the actual mouse position the cursor should be rendered.
  */
-CursorDefinition._StyleTypes.CursorOffsetX = 					{inheritable:false};		// number
+CursorDefinition._StyleTypes.CursorOffsetX = 					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style CursorOffsetY Number
  * 
  * The Y offset from the actual mouse position the cursor should be rendered.
  */
-CursorDefinition._StyleTypes.CursorOffsetY = 					{inheritable:false};		// number
+CursorDefinition._StyleTypes.CursorOffsetY = 					StyleableBase.EStyleType.NORMAL;		// number
 
 
 ///////////Default Styles/////////////////////////////
