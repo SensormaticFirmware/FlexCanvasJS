@@ -328,6 +328,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	this._currentListRenderer = null;
 	this._currentFontSize = 12;
+	this.setStyle("TextSize", this._currentFontSize);
 	
 	//////Build controls and style data//////
 	this._dataListControlsCollection = new ListCollection();
