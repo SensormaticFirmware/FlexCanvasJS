@@ -72,38 +72,38 @@ ViewportElement._StyleTypes = Object.create(null);
  * @style HorizontalScrollBarDisplay String
  * Determines the behavior of the horizontal scroll bar. Allowable values are "on", "off", or "auto".
  */
-ViewportElement._StyleTypes.HorizontalScrollBarDisplay = 		{inheritable:false};		// "on" || "off" || "auto"
+ViewportElement._StyleTypes.HorizontalScrollBarDisplay = 		StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
 
 /**
  * @style HorizontalScrollBarPlacement String
  * Determines the position of the horizontal scroll bar. Allowable values are "top" or "bottom".
  */
-ViewportElement._StyleTypes.HorizontalScrollBarPlacement = 		{inheritable:false};		// "top" || "bottom"
+ViewportElement._StyleTypes.HorizontalScrollBarPlacement = 		StyleableBase.EStyleType.NORMAL;		// "top" || "bottom"
 
 /**
  * @style VerticalScrollBarDisplay String
  * Determines the behavior of the vertical scroll bar. Allowable values are "on", "off", or "auto".
  */
-ViewportElement._StyleTypes.VerticalScrollBarDisplay = 			{inheritable:false};		// "on" || "off" || "auto"
+ViewportElement._StyleTypes.VerticalScrollBarDisplay = 			StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
 
 /**
  * @style VerticalScrollBarPlacement String
  * Determines the position of the vertical scroll bar. Allowable values are "left" or "right".
  */
-ViewportElement._StyleTypes.VerticalScrollBarPlacement = 		{inheritable:false};		// "left" || "right"
+ViewportElement._StyleTypes.VerticalScrollBarPlacement = 		StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 //ScrollBar styles.
 /**
  * @style HorizontalScrollBarStyle StyleDefinition
  * The StyleDefinition to be applied to the horizontal scroll bar.
  */
-ViewportElement._StyleTypes.HorizontalScrollBarStyle = 			{inheritable:false};		// StyleDefinition
+ViewportElement._StyleTypes.HorizontalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style VerticalScrollBarStyle StyleDefinition
  * The StyleDefinition to be applied to the vertical scroll bar.
  */
-ViewportElement._StyleTypes.VerticalScrollBarStyle = 			{inheritable:false};		// StyleDefinition
+ViewportElement._StyleTypes.VerticalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 
 ////////////Default Styles///////////////////////////////////////
@@ -274,10 +274,10 @@ ViewportElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		}
 		
-		if ("HorizontalScrollBarStyle" && this._horizontalScrollBar != null)
-			this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
-		if ("VerticalScrollBarStyle" && this._verticalScrollBar != null)
-			this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
+		if ("HorizontalScrollBarStyle" in stylesMap && this._horizontalScrollBar != null)
+			this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
+		if ("VerticalScrollBarStyle" in stylesMap && this._verticalScrollBar != null)
+			this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
 	};
 
 //@Override
@@ -361,8 +361,8 @@ ViewportElement.prototype._doLayout =
 			if (this._horizontalScrollBar == null)
 			{
 				this._horizontalScrollBar = new ScrollBarElement();
-				this._horizontalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalScrollBarStyle"));
-				this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
+				this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
+
 				this._horizontalScrollBar.setStyle("LayoutDirection", "horizontal");
 				this._horizontalScrollBar.setScrollLineSize(25);
 				
@@ -387,8 +387,8 @@ ViewportElement.prototype._doLayout =
 			if (this._verticalScrollBar == null)
 			{
 				this._verticalScrollBar = new ScrollBarElement();
-				this._verticalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("VerticalScrollBarStyle"));
-				this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
+				this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
+				
 				this._verticalScrollBar.setStyle("LayoutDirection", "vertical");
 				this._verticalScrollBar.setScrollLineSize(25);
 				

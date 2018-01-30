@@ -34,7 +34,7 @@ CheckboxSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the check icon. Format like "#FF0000" (red).
  */
-CheckboxSkinElement._StyleTypes.CheckColor =				{inheritable:false};		//"#000000"
+CheckboxSkinElement._StyleTypes.CheckColor =				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style CheckSize Number
@@ -42,7 +42,7 @@ CheckboxSkinElement._StyleTypes.CheckColor =				{inheritable:false};		//"#000000
  * Value between 0 and 1 used to determine the size that the "selected" indicator 
  * should be rendered relative to this element's size.
  */
-CheckboxSkinElement._StyleTypes.CheckSize = 				{inheritable:false};
+CheckboxSkinElement._StyleTypes.CheckSize = 				StyleableBase.EStyleType.NORMAL;
 
 
 ////////Default Styles////////////////

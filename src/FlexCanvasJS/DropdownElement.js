@@ -126,27 +126,27 @@ DropdownElement._StyleTypes = Object.create(null);
  * A function that returns a text string per a supplied collection item.
  * function (itemData) { return "" }
  */
-DropdownElement._StyleTypes.ItemLabelFunction = 			{inheritable:false}; 		// function (itemData) { return "" }
+DropdownElement._StyleTypes.ItemLabelFunction = 			StyleableBase.EStyleType.NORMAL; 		// function (itemData) { return "" }
 
 /**
  * @style PopupDataListClass DataListElement
  * 
  * The DataListElement or subclass constructor to be used for the pop up list. 
  */
-DropdownElement._StyleTypes.PopupDataListClass =			{inheritable:false};		// DataListElement constructor.
+DropdownElement._StyleTypes.PopupDataListClass =			StyleableBase.EStyleType.NORMAL;		// DataListElement constructor.
 
 /**
  * @style PopupDataListStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the pop up list element.
  */
-DropdownElement._StyleTypes.PopupDataListStyle = 			{inheritable:false}; 		// StyleDefinition
+DropdownElement._StyleTypes.PopupDataListStyle = 			StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
 /**
  * @style MaxPopupHeight Number
  * Maximum height in pixels of the pop up list element.
  */
-DropdownElement._StyleTypes.MaxPopupHeight = 				{inheritable:false}; 		// number
+DropdownElement._StyleTypes.MaxPopupHeight = 				StyleableBase.EStyleType.NORMAL; 		// number
 
 /**
  * @style ArrowButtonClass CanvasElement
@@ -154,28 +154,28 @@ DropdownElement._StyleTypes.MaxPopupHeight = 				{inheritable:false}; 		// numbe
  * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
  * Note that Dropdown proxies its SkinState style to the arrow button so the arrow will change states with the Dropdown.
  */
-DropdownElement._StyleTypes.ArrowButtonClass = 				{inheritable:false}; 		// CanvasElement constructor
+DropdownElement._StyleTypes.ArrowButtonClass = 				StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
 
 /**
  * @style ArrowButtonStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the arrow icon class.
  */
-DropdownElement._StyleTypes.ArrowButtonStyle = 				{inheritable:false}; 		// StyleDefinition
+DropdownElement._StyleTypes.ArrowButtonStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
 /**
  * @style OpenCloseTweenDuration Number
  * 
  * Duration in milliseconds the open and close animation should run.
  */
-DropdownElement._StyleTypes.OpenCloseTweenDuration = 		{inheritable:false}; 		// number (milliseconds)
+DropdownElement._StyleTypes.OpenCloseTweenDuration = 		StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
 
 /**
  * @style OpenCloseTweenEasingFunction Function
  * 
  * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
  */
-DropdownElement._StyleTypes.OpenCloseTweenEasingFunction = 	{inheritable:false}; 		// function (fraction) { return fraction} - see Tween.easing
+DropdownElement._StyleTypes.OpenCloseTweenEasingFunction = 	StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
 
 /**
  * @style PopupDataListClipTopOrBottom Number
@@ -183,7 +183,7 @@ DropdownElement._StyleTypes.OpenCloseTweenEasingFunction = 	{inheritable:false};
  * Size in pixels to clip off the pop up list. Clips top when opening down, bottom when opening up. 
  * Defaults to 1 to collapse pop up list and dropdown default borders.
  */
-DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	{inheritable:false}; 		// number
+DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyleType.NORMAL; 		// number
 
 
 ////////////Default Styles////////////////////
@@ -742,9 +742,9 @@ DropdownElement.prototype._createDataListPopup =
 		//TODO: Use PopupDataListClass style.
 	
 		var dataListPopup = new DataListElement();
-		dataListPopup._setStyleDefinitionDefault(this._getDefaultStyle("PopupDataListStyle"));
+		
 		dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
-		dataListPopup.setStyleDefinitions(this.getStyle("PopupDataListStyle"));
+		this._applySubStylesToElement("PopupDataListStyle", dataListPopup)
 		
 		dataListPopup.setListCollection(this._listCollection);
 		dataListPopup.setSelectedIndex(this._selectedIndex);
@@ -890,10 +890,9 @@ DropdownElement.prototype._createArrowButton =
 	function (arrowClass)
 	{
 		var newIcon = new (arrowClass)();
-		newIcon._setStyleDefinitionDefault(this._getDefaultStyle("ArrowButtonStyle"));
 		newIcon._setStyleProxy(new StyleProxy(this, DropdownElement._ArrowButtonProxyMap));
-		newIcon.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
-		
+		this._applySubStylesToElement("ArrowButtonStyle", newIcon);
+	
 		return newIcon;
 	};
 	
@@ -925,7 +924,7 @@ DropdownElement.prototype._updateArrowButton =
 				this._addChild(this._arrowButton);
 			}
 			else
-				this._arrowButton.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
+				this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
 		}
 	};
 	
@@ -943,7 +942,7 @@ DropdownElement.prototype._doStylesUpdated =
 		}
 		
 		if ("PopupDataListStyle" in stylesMap && this._dataListPopup != null)
-			this._dataListPopup.setStyleDefinitions(this.getStyle("PopupListStyle"));
+			this._applySubStylesToElement("PopupListStyle", this._dataListPopup);
 		
 		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
 			this._updateArrowButton();

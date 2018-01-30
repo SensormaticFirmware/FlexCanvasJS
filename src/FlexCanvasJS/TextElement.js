@@ -41,25 +41,25 @@ TextElement._StyleTypes = Object.create(null);
  * @style Text String
  * Text to be rendered by the TextElement.
  */
-TextElement._StyleTypes.Text = 				{inheritable:false};		// "any string" || null
+TextElement._StyleTypes.Text = 				StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style Selectable boolean
  * When true, text can be highlighted and copied.
  */
-TextElement._StyleTypes.Selectable = 			{inheritable:false};		// true || false
+TextElement._StyleTypes.Selectable = 			StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style Multiline boolean
  * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
  */
-TextElement._StyleTypes.Multiline = 				{inheritable:false};		// true || false
+TextElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style WordWrap boolean
  * When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary. 
  */
-TextElement._StyleTypes.WordWrap = 				{inheritable:false};		// true || false
+TextElement._StyleTypes.WordWrap = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 
 ////////////Default Styles////////////////////////////

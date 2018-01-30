@@ -56,7 +56,7 @@ DataRendererBaseElement._StyleTypes = Object.create(null);
  * The CanvasElement constructor type to apply to all skin states. 
  * Specific states such as UpSkinClass will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.SkinClass =					{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.SkinClass =					StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinClass CanvasElement
@@ -64,14 +64,14 @@ DataRendererBaseElement._StyleTypes.SkinClass =					{inheritable:false};		//Elem
  * The CanvasElement constructor to be used for the data renderer skin when in the "up" state. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.UpSkinClass = 				{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "up" state skin element.
  */
-DataRendererBaseElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style AltSkinClass CanvasElement
@@ -80,14 +80,14 @@ DataRendererBaseElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//St
  * This is used to create different styles for alternating rows. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.AltSkinClass = 				{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.AltSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style AltSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "alt" state skin element.
  */
-DataRendererBaseElement._StyleTypes.AltSkinStyle = 				{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.AltSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style OverSkinClass CanvasElement
@@ -95,14 +95,14 @@ DataRendererBaseElement._StyleTypes.AltSkinStyle = 				{inheritable:false};		//S
  * The CanvasElement constructor to be used for the data renderer skin when in the "over" state. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.OverSkinClass = 			{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.OverSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style OverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "over" state skin element.
  */
-DataRendererBaseElement._StyleTypes.OverSkinStyle = 			{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.OverSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedSkinClass CanvasElement
@@ -110,14 +110,14 @@ DataRendererBaseElement._StyleTypes.OverSkinStyle = 			{inheritable:false};		//S
  * The CanvasElement constructor to be used for the data renderer skin when in the "selected" state. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.SelectedSkinClass = 		{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.SelectedSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selected" state skin element.
  */
-DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 //Proxied from DataList (intended only for reading)
 /**
@@ -125,7 +125,7 @@ DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		{inheritable:false};		
  * 
  * When false, prevents "over" and "selected" states. Proxied from parent DataList.
  */
-DataRendererBaseElement._StyleTypes.Selectable = 				{inheritable:false};		// true || false
+DataRendererBaseElement._StyleTypes.Selectable = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 
 ///////////Default Styles///////////////////////////////////////////
@@ -213,35 +213,19 @@ DataRendererBaseElement.prototype._getSkinClass =
 	};
 		
 //@override	
-DataRendererBaseElement.prototype._getSkinStyleDefinitions = 
+DataRendererBaseElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "up")
-			return this.getStyle("UpSkinStyle");
-		else if (state == "alt")
-			return this.getStyle("AltSkinStyle");
-		else if (state == "over")
-			return this.getStyle("OverSkinStyle");
-		else if (state == "selected")
-			return this.getStyle("SelectedSkinStyle");
+			return "UpSkinStyle";
+		if (state == "alt")
+			return "AltSkinStyle";
+		if (state == "over")
+			return "OverSkinStyle";
+		if (state == "selected")
+			return "SelectedSkinStyle";
 		
-		return DataRendererBaseElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};
-
-//@Override
-DataRendererBaseElement.prototype._getSkinStyleDefinitionDefault =
-	function (state)
-	{
-		if (state == "up")
-			return this._getDefaultStyle("UpSkinStyle");
-		else if (state == "alt")
-			return this._getDefaultStyle("AltSkinStyle");
-		else if (state == "over")
-			return this._getDefaultStyle("OverSkinStyle");
-		else if (state == "selected")
-			return this._getDefaultStyle("SelectedSkinStyle");
-		
-		return DataRendererBaseElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
+		return DataRendererBaseElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
 	};	
 	
 /**
@@ -296,19 +280,27 @@ DataRendererBaseElement.prototype._doStylesUpdated =
 	{
 		DataRendererBaseElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		//Always update these, they dont do anything if no changes
-		//and cheaper to call this than to check SkinClass inheritance.
-		this._updateSkinClass("up");
-		this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("alt");
-		this._updateSkinStyleDefinitions("alt");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("over");
-		this._updateSkinStyleDefinitions("over");
+		if ("SkinClass" in stylesMap || "AltSkinClass" in stylesMap)
+			this._updateSkinClass("alt");
+		if ("OverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("alt");
 		
-		this._updateSkinClass("selected");
-		this._updateSkinStyleDefinitions("selected");
+		if ("SkinClass" in stylesMap || "OverSkinClass" in stylesMap)
+			this._updateSkinClass("over");
+		if ("OverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("over");
+		
+		if ("SkinClass" in stylesMap || "SelectedSkinClass" in stylesMap)
+			this._updateSkinClass("selected");
+		if ("SelectedSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selected");		
 		
 		if ("Selectable" in stylesMap)
 			this._updateState();

@@ -506,7 +506,7 @@ CanvasManager._StyleTypes = Object.create(null);
  * 
  * When true the canvas redraw region will be displayed.
  */
-CanvasManager._StyleTypes.ShowRedrawRegion = 								{inheritable:false};		
+CanvasManager._StyleTypes.ShowRedrawRegion = 								StyleableBase.EStyleType.NORMAL;		
 
 
 /////////////Default Styles///////////////////////////////

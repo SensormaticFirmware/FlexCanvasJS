@@ -40,14 +40,14 @@ DataGridHeaderItemRenderer._StyleTypes = Object.create(null);
  * Defaults to Button. HeaderItemRenderer proxies its SkinState style to the sort icons so
  * the sort icons will change state along with the HeaderItemRenderer.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			{inheritable:false};		// CanvasElement constructor
+DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			StyleableBase.EStyleType.NORMAL;		// CanvasElement constructor
 
 /**
  * @style SortAscIconStyle StyleDefinition
  * 
  * The StyleDefinition to apply ascending sort icon element.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			{inheritable:false};		// StyleDefinition
+DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style SortDescIconClass CanvasElement
@@ -56,28 +56,28 @@ DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			{inheritable:false};
  * Defaults to Button. HeaderItemRenderer proxies its SkinState style to the sort icons so
  * the sort icons will change state along with the HeaderItemRenderer.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			{inheritable:false};		// CanvasElement constructor
+DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			StyleableBase.EStyleType.NORMAL;		// CanvasElement constructor
 
 /**
  * @style SortDescIconStyle StyleDefinition
  * 
  * The StyleDefinition to apply descending sort icon element.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			{inheritable:false};		// StyleDefinition
+DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style IconGap Number
  * 
  * Distance in pixels between the sort icon and the header label.
  */
-DataGridHeaderItemRenderer._StyleTypes.IconGap =					{inheritable:false};		// number
+DataGridHeaderItemRenderer._StyleTypes.IconGap =					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style IconPlacement String
  * 
  * Determines placement of the sort icon. Allowable values are "left" or "right".
  */
-DataGridHeaderItemRenderer._StyleTypes.IconPlacement =				{inheritable:false};		// "left" || "right"
+DataGridHeaderItemRenderer._StyleTypes.IconPlacement =				StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 
 /////////Default Styles///////////////
@@ -171,22 +171,17 @@ DataGridHeaderItemRenderer.prototype._createSortIcon =
 		var iconStyle = null;
 		
 		if (isDecending == true)
-		{
 			iconClass = this.getStyle("SortDescIconClass");
-			iconDefaultStyle = this._getDefaultStyle("SortDescIconStyle");
-			iconStyle = this.getStyle("SortDescIconStyle");
-		}
 		else
-		{
 			iconClass = this.getStyle("SortAscIconClass");
-			iconDefaultStyle = this._getDefaultStyle("SortAscIconStyle");
-			iconStyle = this.getStyle("SortAscIconStyle");
-		}
 		
 		var newIcon = new (iconClass)();
-		newIcon._setStyleDefinitionDefault(iconDefaultStyle);
 		newIcon._setStyleProxy(new StyleProxy(this,DataGridHeaderItemRenderer._SortIconProxyMap));
-		newIcon.setStyleDefinitions(iconStyle);
+		
+		if (isDecending == true)
+			this._applySubStylesToElement("SortDescIconStyle", newIcon);
+		else
+			this._applySubStylesToElement("SortAscIconStyle", newIcon);
 		
 		return newIcon;
 	};
@@ -255,7 +250,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortAscIcon);
 				}
 				else
-					this._sortAscIcon.setStyleDefinitions(this.getStyle("SortAscIconStyle"));
+					this._applySubStylesToElement("SortAscIconStyle", this._sortAscIcon);
 				
 				if (this._sortDescIcon != null)
 					this._sortDescIcon.setStyle("Visible", false);
@@ -289,7 +284,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortDescIcon);
 				}
 				else
-					this._sortDescIcon.setStyleDefinitions(this.getStyle("SortDescIconStyle"));
+					this._applySubStylesToElement("SortDescIconStyle", this._sortDescIcon);
 				
 				if (this._sortAscIcon != null)
 					this._sortAscIcon.setStyle("Visible", false);

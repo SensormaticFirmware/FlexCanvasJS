@@ -40,13 +40,13 @@ LabelElement._StyleTypes = Object.create(null);
  * @style Text String
  * Text to be rendered by the Label.
  */
-LabelElement._StyleTypes.Text = 				{inheritable:false};		// "any string" || null
+LabelElement._StyleTypes.Text = 				StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style TruncateToFit String
  * String to use when truncating a label that does not fit the available area. Defaults to "...".
  */
-LabelElement._StyleTypes.TruncateToFit = 		{inheritable:false};		// null || "string" ("...")
+LabelElement._StyleTypes.TruncateToFit = 		StyleableBase.EStyleType.NORMAL;		// null || "string" ("...")
 
 
 ////////////Default Styles////////////////////////////

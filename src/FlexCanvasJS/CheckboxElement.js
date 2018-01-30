@@ -50,14 +50,14 @@ CheckboxElement._StyleTypes = Object.create(null);
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedUp" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedUpSkinClass = 			{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedUpSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedUpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedUp" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedUpTextColor String
@@ -65,7 +65,7 @@ CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			{inheritable:false};		/
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedUp" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedUpTextColor = 			{inheritable:false};		//"#000000"
+CheckboxElement._StyleTypes.HalfSelectedUpTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style HalfSelectedOverSkinClass CanvasElement
@@ -73,14 +73,14 @@ CheckboxElement._StyleTypes.HalfSelectedUpTextColor = 			{inheritable:false};		/
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedOver" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedOverSkinClass = 		{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedOverSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedOverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedOver" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedOverTextColor String
@@ -88,7 +88,7 @@ CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedOver" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedOverTextColor = 		{inheritable:false};		//"#000000"
+CheckboxElement._StyleTypes.HalfSelectedOverTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style HalfSelectedDownSkinClass CanvasElement
@@ -96,14 +96,14 @@ CheckboxElement._StyleTypes.HalfSelectedOverTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedDown" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedDownSkinClass = 		{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedDownSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedDownSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedDown" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedDownTextColor String
@@ -111,7 +111,7 @@ CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedDown" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedDownTextColor = 		{inheritable:false};		//"#000000"
+CheckboxElement._StyleTypes.HalfSelectedDownTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style HalfSelectedDisabledSkinClass CanvasElement
@@ -119,14 +119,14 @@ CheckboxElement._StyleTypes.HalfSelectedDownTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedDisabled" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedDisabledSkinClass = 	{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedDisabledSkinClass = 	StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedDisabledSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedDisabled" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedDisabledTextColor String
@@ -134,7 +134,7 @@ CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	{inheritable:false}
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedDisabled" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedDisabledTextColor = 	{inheritable:false};		//"#000000"	
+CheckboxElement._StyleTypes.HalfSelectedDisabledTextColor = 	StyleableBase.EStyleType.NORMAL;		//"#000000"	
 
 
 ////////////Default Styles//////////////////////
@@ -169,6 +169,7 @@ CheckboxElement.StyleDefault.setStyle("HalfSelectedDisabledTextColor", 			"#8888
 //Skin Defaults
 CheckboxElement.UpSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundShape",					null);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderType", 						"solid");
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#333333");
@@ -180,6 +181,7 @@ CheckboxElement.UpSkinStyleDefault.setStyle("CheckColor", 						"#000000");
 
 CheckboxElement.OverSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderColor", 					"#333333");
@@ -191,6 +193,7 @@ CheckboxElement.OverSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DownSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderColor", 					"#333333");
@@ -202,6 +205,7 @@ CheckboxElement.DownSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DisabledSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundShape",			null);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderType", 				"solid");
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 			1);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderColor", 				"#999999");
@@ -301,35 +305,19 @@ CheckboxElement.prototype._getSkinClass =
 	};
 	
 //@override	
-CheckboxElement.prototype._getSkinStyleDefinitions = 
+CheckboxElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "halfSelectedUp")
-			return this.getStyle("HalfSelectedUpSkinStyle");
-		else if (state == "halfSelectedOver")
-			return this.getStyle("HalfSelectedOverSkinStyle");
-		else if (state == "halfSelectedDown")
-			return this.getStyle("HalfSelectedDownSkinStyle");
-		else if (state == "halfSelectedDisabled")
-			return this.getStyle("HalfSelectedDisabledSkinStyle");
+			return "HalfSelectedUpSkinStyle";
+		if (state == "halfSelectedOver")
+			return "HalfSelectedOverSkinStyle";
+		if (state == "halfSelectedDown")
+			return "HalfSelectedDownSkinStyle";
+		if (state == "halfSelectedDisabled")
+			return "HalfSelectedDisabledSkinStyle";
 		
-		return CheckboxElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};
-
-//@override
-CheckboxElement.prototype._getSkinStyleDefinitionDefault =
-	function (state)
-	{
-		if (state == "halfSelectedUp")
-			return this._getDefaultStyle("HalfSelectedUpSkinStyle");
-		else if (state == "halfSelectedOver")
-			return this._getDefaultStyle("HalfSelectedOverSkinStyle");
-		else if (state == "halfSelectedDown")
-			return this._getDefaultStyle("HalfSelectedDownSkinStyle");
-		else if (state == "halfSelectedDisabled")
-			return this._getDefaultStyle("HalfSelectedDisabledSkinStyle");
-		
-		return CheckboxElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
+		return CheckboxElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
 	};	
 	
 //@override
@@ -362,20 +350,27 @@ CheckboxElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
 		CheckboxElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-	
-		//Always update these, they don't do anything if no changes, and
-		//this already maps our current state to our skin class.
-		this._updateSkinClass("halfSelectedUp");
-		this._updateSkinStyleDefinitions("halfSelectedUp");
+
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "HalfSelectedUpSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedUp");
+		if ("HalfSelectedUpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedUp");
 		
-		this._updateSkinClass("halfSelectedOver");
-		this._updateSkinStyleDefinitions("halfSelectedOver");
+		if ("SkinClass" in stylesMap || "HalfSelectedOverSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedOver");
+		if ("HalfSelectedOverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedOver");
 		
-		this._updateSkinClass("halfSelectedDown");
-		this._updateSkinStyleDefinitions("halfSelectedDown");
+		if ("SkinClass" in stylesMap || "HalfSelectedDownSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedDown");
+		if ("HalfSelectedDownSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedDown");
 		
-		this._updateSkinClass("HalfSelectedDisabled");
-		this._updateSkinStyleDefinitions("halfSelectedDisabled");
+		if ("SkinClass" in stylesMap || "HalfSelectedDisabledSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedDisabled");
+		if ("HalfSelectedDisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedDisabled");
 	};	
 	
 	

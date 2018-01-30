@@ -35,7 +35,7 @@ RoundedRectangleShape._StyleTypes = Object.create(null);
  * Radius size in pixels for the rectangle's corners. 
  * CornerRadius effects all corners of the rectangle.
  */
-RoundedRectangleShape._StyleTypes.CornerRadius = 					{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadius = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopLeft Number
@@ -43,7 +43,7 @@ RoundedRectangleShape._StyleTypes.CornerRadius = 					{inheritable:false};		// n
  * Radius size in pixels for the rectangle's top left corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopRight Number
@@ -51,7 +51,7 @@ RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};	
  * Radius size in pixels for the rectangle's top right corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomLeft Number
@@ -59,7 +59,7 @@ RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};
  * Radius size in pixels for the rectangle's bottom left corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomRight Number
@@ -67,7 +67,7 @@ RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			{inheritable:false
  * Radius size in pixels for the rectangle's bottom right corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusBottomRight = 		{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomRight = 		StyleableBase.EStyleType.NORMAL;		// number || null
 
 
 ////////////Style Defaults////////////////////////////

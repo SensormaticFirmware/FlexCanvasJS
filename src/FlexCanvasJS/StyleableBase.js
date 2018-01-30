@@ -150,12 +150,12 @@ StyleData.prototype.comparePriority =
  * Example:
  * 
  * StylableBaseSubclass._StyleTypes = Object.create(null);
- * StylableBaseSubclass._StyleTypes.Visible = 				{inheritable:false};		
- * StylableBaseSubclass._StyleTypes.BorderType = 			{inheritable:false};		
- * StylableBaseSubclass._StyleTypes.SkinStyle = 			{inheritable:false};		
- * StylableBaseSubclass._StyleTypes.TextStyle =				{inheritable:true};			
- * StylableBaseSubclass._StyleTypes.TextFont =				{inheritable:true};			
- * StylableBaseSubclass._StyleTypes.TextSize =				{inheritable:true};			
+ * StylableBaseSubclass._StyleTypes.Visible = 				StyleableBase.EStyleType.NORMAL;		
+ * StylableBaseSubclass._StyleTypes.BorderType = 			StyleableBase.EStyleType.NORMAL;		
+ * StylableBaseSubclass._StyleTypes.SkinStyle = 			StyleableBase.EStyleType.NORMAL;		
+ * StylableBaseSubclass._StyleTypes.TextStyle =				StyleableBase.EStyleType.INHERITABLE;			
+ * StylableBaseSubclass._StyleTypes.TextFont =				StyleableBase.EStyleType.INHERITABLE;			
+ * StylableBaseSubclass._StyleTypes.TextSize =				StyleableBase.EStyleType.INHERITABLE;			
  * 
  * StylableBaseSubclass.StyleDefault = new StyleDefinition();
  * StylableBaseSubclass.StyleDefault.setStyle("Visible", 				true);
@@ -180,11 +180,20 @@ StyleableBase.prototype.constructor = StyleableBase;
 StyleableBase.base = StyleDefinition;
 
 //Priority enum
-StyleableBase.StylePriorities = 
+StyleableBase.EStylePriorities = 
 	{
 		INSTANCE:0,
 		CLASS:1
 	};
+
+//StyleType enum
+StyleableBase.EStyleType = 
+	{
+		NORMAL:1,
+		INHERITABLE:2,
+		SUBSTYLE:3
+	};
+
 
 //////////////Public//////////////////////
 
@@ -252,12 +261,12 @@ StyleableBase.prototype.getStyleData =
 		styleData.value = StyleableBase.base.prototype.getStyle.call(this, styleName);
 		if (styleData.value !== undefined)
 		{
-			styleData.priority.push(StyleableBase.StylePriorities.INSTANCE);
+			styleData.priority.push(StyleableBase.EStylePriorities.INSTANCE);
 			return styleData;			
 		}
 		
 		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(StyleableBase.StylePriorities.CLASS);
+		styleData.priority.push(StyleableBase.EStylePriorities.CLASS);
 		
 		return styleData;
 	};
@@ -313,55 +322,96 @@ StyleableBase.prototype._flattenStyleTypes =
 	};
 	
 /**
- * @function _getDefaultStyle
+ * @function _getClassStyle
  * 
- * Gets default value for the supplied style. 
- * 
- * @param styleName String
- * String representing the default style to return.
- * 
- * @returns Any
- * Returns the associated default style value if found, otherwise undefined.
- */	
-StyleableBase.prototype._getDefaultStyle = 
-	function (styleName)
-	{
-		return this._getDefaultStyleData(styleName).value;
-	};	
-	
-/**
- * @function _getDefaultStyleData
- * 
- * Gets default StyleData for the supplied style. 
+ * Gets the default style value for the supplied style name specified on this
+ * classes StyleDefault map. Subclasses override base class values.
  *  
  * @param styleName String
  * String representing the default style to return.
  * 
- * @returns StyleData
- * Returns the associated default StyleData.
+ * @returns Any
+ * Returns the associated default style value or undefined if none specified.
  */	
-StyleableBase.prototype._getDefaultStyleData = 
-	function (styleName)
-	{
-		var styleData = new StyleData(styleName);
-		
-		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(StyleableBase.StylePriorities.CLASS);
-		
-		return styleData;
-	};
-	
-//@private	
 StyleableBase.prototype._getClassStyle = 
 	function (styleName)
 	{
 		this._flattenClassStyles();
 		
 		if (styleName in this.constructor.__StyleDefaultsFlatMap)
-			return this.constructor.__StyleDefaultsFlatMap[styleName];
+			return this.constructor.__StyleDefaultsFlatMap[styleName][this.constructor.__StyleDefaultsFlatMap[styleName].length - 1];
+		
+		return undefined
+	};	
+	
+/**
+ * @function _getInstanceStyle
+ * 
+ * Gets the assigned style value for the supplied style name specified.
+ *  
+ * @param styleName String
+ * String representing the style to return.
+ * 
+ * @returns Any
+ * Returns the associated style value or undefined if none specified.
+ */		
+StyleableBase.prototype._getInstanceStyle = 
+	function (styleName)
+	{
+		if (styleName in this._styleMap)
+			return this._styleMap[styleName];
 		
 		return undefined;
+	};
+	
+/**
+ * @function _applySubStylesToElement
+ * 
+ * Convienence function for setting sub styles of sub components.
+ * Applies appropriate sub styling from this Styleable to the 
+ * supplied elements definition and default definition style lists.
+ *  
+ * @param styleName String
+ * String representing the sub style to apply.
+ * 
+ * @param elementToApply CanvasElement
+ * The sub component element to apply sub styles.
+ */		
+StyleableBase.prototype._applySubStylesToElement = 
+	function (styleName, elementToApply)
+	{
+		elementToApply._setStyleDefinitions(this._getClassStyleList(styleName), true);
+		
+		var instanceStyle = this._getInstanceStyle(styleName);
+		if (instanceStyle !== undefined)
+			elementToApply._setStyleDefinitions([instanceStyle], false);
 	};	
+	
+/**
+ * @function _getClassStyleList
+ * 
+ * Gets the default style values for the supplied style name specified on this
+ * classes and base classes StyleDefault maps. This is used for sub styles as all
+ * stub styles in the inheritance chain are applied to sub components.
+ *  
+ * @param styleName String
+ * String representing the default style list to return.
+ * 
+ * @returns Array
+ * Returns an array of all default styles on this class, and base classes
+ * for the supplied styleName.
+ */	
+StyleableBase.prototype._getClassStyleList = 
+	function (styleName)
+	{
+		this._flattenClassStyles();
+	
+		//Copy the array so our internal data cannot get fudged.
+		if (styleName in this.constructor.__StyleDefaultsFlatMap)
+			return this.constructor.__StyleDefaultsFlatMap[styleName].slice();
+	
+		return [];
+	};
 	
 //@private	
 StyleableBase.prototype._flattenClassStyles = 
@@ -382,10 +432,10 @@ StyleableBase.prototype._flattenClassStyles =
 			{
 				for (styleName in thisClass.StyleDefault._styleMap)
 				{
-					if (styleName in this.constructor.__StyleDefaultsFlatMap)
-						continue;
+					if (this.constructor.__StyleDefaultsFlatMap[styleName] == null)
+						this.constructor.__StyleDefaultsFlatMap[styleName] = [];
 					
-					this.constructor.__StyleDefaultsFlatMap[styleName] = thisClass.StyleDefault._styleMap[styleName];
+					this.constructor.__StyleDefaultsFlatMap[styleName].splice(0, 0, thisClass.StyleDefault._styleMap[styleName]);
 				}
 			}
 			

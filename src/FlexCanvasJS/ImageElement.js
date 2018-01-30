@@ -59,31 +59,31 @@ ImageElement._StyleTypes = Object.create(null);
  * @style ImageSource String
  * Image to render. This may be a String URL, or a reference to a DOM image or canvas.
  */
-ImageElement._StyleTypes.ImageSource = 					{inheritable:false};		// null || image || "url" 
+ImageElement._StyleTypes.ImageSource = 					StyleableBase.EStyleType.NORMAL;		// null || image || "url" 
 
 /**
  * @style ImageSourceClipX Number
  * X position in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipX = 			{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipX = 			StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageSourceClipY Number
  * Y position in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipY = 			{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipY = 			StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageSourceClipWidth Number
  * Width in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipWidth = 		{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipWidth = 		StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageSourceClipHeight Number
  * Height in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipHeight = 		{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipHeight = 		StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageScaleType String
@@ -94,21 +94,21 @@ ImageElement._StyleTypes.ImageSourceClipHeight = 		{inheritable:false};		// null
  * "tile" will not modify the original image but repeat it in both directions to fill the available area.
  * "tilefit" stretches the image but maintains the aspect ratio, any remaining space in the areas maximum width/height constraint is tiled with the stretched image.
  */
-ImageElement._StyleTypes.ImageScaleType = 				{inheritable:false};		// "none" || "fit" || "stretch" || "tile" || "tilefit"
+ImageElement._StyleTypes.ImageScaleType = 				StyleableBase.EStyleType.NORMAL;		// "none" || "fit" || "stretch" || "tile" || "tilefit"
 
 /**
  * @style ImageVerticalAlign String
  * Aligns the image vertically when using ImageScaleType "none" or "fit" and not all of the available space is consumed.
  * Allowable values are "top", "middle", "bottom".
  */
-ImageElement._StyleTypes.ImageVerticalAlign = 			{inheritable:false};		// "top" || "middle" || "bottom"
+ImageElement._StyleTypes.ImageVerticalAlign = 			StyleableBase.EStyleType.NORMAL;		// "top" || "middle" || "bottom"
 
 /**
  * @style ImageHorizontalAlign String
  * Aligns the image horizontally when using ImageScaleType "none" or "fit" and not all of the available space is consumed.
  * Allowable values are "left", "center", "right".
  */
-ImageElement._StyleTypes.ImageHorizontalAlign = 		{inheritable:false};		// "left" || "center" || "right"
+ImageElement._StyleTypes.ImageHorizontalAlign = 		StyleableBase.EStyleType.NORMAL;		// "left" || "center" || "right"
 
 
 ////////////Default Styles////////////////////////////

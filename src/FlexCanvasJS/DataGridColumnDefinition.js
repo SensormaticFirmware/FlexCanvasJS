@@ -45,55 +45,55 @@ DataGridColumnDefinition._StyleTypes = Object.create(null);
  * The percentage of available space the column should consume. Percentages
  * are allowed to add to more than 100 and will consume all of the available space. 
  */
-DataGridColumnDefinition._StyleTypes.PercentSize = 					{inheritable:false};		// number || null
+DataGridColumnDefinition._StyleTypes.PercentSize = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MinSize Number
  * 
  * Minimum number of pixels the column should consume.
  */
-DataGridColumnDefinition._StyleTypes.MinSize = 						{inheritable:false};		// number || null
+DataGridColumnDefinition._StyleTypes.MinSize = 						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style HeaderLabel String
  * Text label to be used for the column header.
  */
-DataGridColumnDefinition._StyleTypes.HeaderLabel = 					{inheritable:false};		// "string"
+DataGridColumnDefinition._StyleTypes.HeaderLabel = 					StyleableBase.EStyleType.NORMAL;		// "string"
 
 /**
  * @style HeaderItemClass CanvasElement
  * 
  * The DataRenderer CanvasElement constructor to be used for the column header. 
  */
-DataGridColumnDefinition._StyleTypes.HeaderItemClass = 				{inheritable:false};		// Element constructor()
+DataGridColumnDefinition._StyleTypes.HeaderItemClass = 				StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HeaderItemStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the HeaderItem DataRenderer.
  */
-DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				{inheritable:false};		// StyleDefinition
+DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style CollectionSort CollectionSort
  * 
  * CollectionSort to be used to sort the column.
  */
-DataGridColumnDefinition._StyleTypes.CollectionSort = 				{inheritable:false};		// CollectionSort() 
+DataGridColumnDefinition._StyleTypes.CollectionSort = 				StyleableBase.EStyleType.NORMAL;		// CollectionSort() 
 
 /**
  * @style RowItemClass CanvasElement
  * 
  * The DataRenderer CanvasElement constructor to be used for this columns rows. 
  */
-DataGridColumnDefinition._StyleTypes.RowItemClass = 				{inheritable:false};		// Element constructor()
+DataGridColumnDefinition._StyleTypes.RowItemClass = 				StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style RowItemStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the RowItem DataRenderer.
  */
-DataGridColumnDefinition._StyleTypes.RowItemStyle = 				{inheritable:false};		// StyleDefinition
+DataGridColumnDefinition._StyleTypes.RowItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style RowItemLabelFunction Function
@@ -101,7 +101,7 @@ DataGridColumnDefinition._StyleTypes.RowItemStyle = 				{inheritable:false};		//
  * A function that returns a text string per a supplied collection item and columnIndex. 
  * function (itemData, columnIndex) { return "" }
  */
-DataGridColumnDefinition._StyleTypes.RowItemLabelFunction = 		{inheritable:false};		// function (data, columnIndex) { return "" }
+DataGridColumnDefinition._StyleTypes.RowItemLabelFunction = 		StyleableBase.EStyleType.NORMAL;		// function (data, columnIndex) { return "" }
 
 
 /////////Default Styles///////////////////////////////

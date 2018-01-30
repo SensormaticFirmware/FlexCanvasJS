@@ -30,13 +30,13 @@ TextFieldLineElement.base = CanvasElement;
 //we can utilize the parents cache rather than each line having to lookup and cache styles.
 //Parent also responsible for invalidating our render when styles changes.
 TextFieldLineElement._StyleTypes = Object.create(null);
-TextFieldLineElement._StyleTypes.TextStyle =						{inheritable:false};		
-TextFieldLineElement._StyleTypes.TextFont =							{inheritable:false};		
-TextFieldLineElement._StyleTypes.TextSize =							{inheritable:false};		
-TextFieldLineElement._StyleTypes.TextColor =						{inheritable:false};			
-TextFieldLineElement._StyleTypes.TextFillType =						{inheritable:false};			
-TextFieldLineElement._StyleTypes.TextHighlightedColor = 			{inheritable:false};			
-TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextFont =							StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextSize =							StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextColor =						StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextFillType =						StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			
 
 
 TextFieldLineElement.prototype.setParentLineMetrics = 
@@ -289,28 +289,28 @@ TextFieldElement._StyleTypes = Object.create(null);
  * 
  * When true, the text can be highlighted and copied.
  */
-TextFieldElement._StyleTypes.Selectable = 				{inheritable:false};		// true || false
+TextFieldElement._StyleTypes.Selectable = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style MaxChars int
  * 
  * The maximum number of characters allowed for this TextField. When 0 unlimited characters are allowed.
  */
-TextFieldElement._StyleTypes.MaxChars = 				{inheritable:false};		// number
+TextFieldElement._StyleTypes.MaxChars = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style Multiline boolean
  * 
  * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
  */
-TextFieldElement._StyleTypes.Multiline = 				{inheritable:false};		// true || false
+TextFieldElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style WordWrap boolean
  * 
  * When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary. 
  */
-TextFieldElement._StyleTypes.WordWrap = 				{inheritable:false};		// true || false
+TextFieldElement._StyleTypes.WordWrap = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 
 ////////////Default Styles////////////////////////////
