@@ -454,6 +454,12 @@ function StyleExplorerApplication() //extends CanvasManager
 	var scrollBarControl = new ScrollBarElement();
 	scrollBarControl.setStyleDefinitions(scrollBarDef);
 	
+	//Set some arbitrary page / view size so bar is not disabled. 
+	//TODO: Should be UI configured, property rather than style (somewhere..)
+	scrollBarControl.setScrollPageSize(1000);
+	scrollBarControl.setScrollViewSize(150);
+	scrollBarControl.setScrollLineSize(50);
+	
 	var scrollBarControlStyleType = new ControlStyleType("", "ScrollBarStyle", "root", false, false, scrollBarControl, null, null, null);
 	scrollBarControlStyleType.styleListCodeString = "var ScrollBarStyle = new StyleDefinition();\n";
 	
