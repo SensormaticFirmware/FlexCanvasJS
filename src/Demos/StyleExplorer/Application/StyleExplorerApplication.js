@@ -326,6 +326,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	/////////////////FUNCTIONAL///////////////////////////////
 	
+	var i = 0;
+	
 	this._currentListRenderer = null;
 	this._currentFontSize = 12;
 	this.setStyle("TextSize", this._currentFontSize);
@@ -471,6 +473,34 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:scrollBarControlStyleType,
 											list:null});
 	
+	//DataListElement
+	var dataListDef = new StyleDefinition();
+	dataListDef.setStyle("LayoutDirection", "vertical");
+	dataListDef.setStyle("PercentHeight", 100);
+	dataListDef.setStyle("Width", 200);
+	dataListDef.setStyle("BackgroundColor", "#FAFAFA");
+	
+	var dataListControl = new DataListElement();
+	dataListControl.setStyleDefinitions(dataListDef);
+	
+	//Set some arbitrary data. 
+	var dataListCollection = new ListCollection();
+	for (i = 0; i < 100; i++)
+		dataListCollection.addItem("Data Item - " + i);
+	
+	dataListControl.setListCollection(dataListCollection);
+	
+	var dataListControlStyleType = new ControlStyleType("", "DataListStyle", "root", false, false, dataListControl, null, null, null);
+	dataListControlStyleType.styleListCodeString = "var DataListStyle = new StyleDefinition();\n";
+	
+	dataListControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"DataList", 
+											control:dataListControl, 
+											rootControlStyleType:dataListControlStyleType,
+											list:null});
+	
+	
 	
 	//Set static collection sort
 	if (StyleExplorerApplication.LabelSort == null)
@@ -518,7 +548,8 @@ StyleExplorerApplication.LabelSortFunction =
 	
 StyleExplorerApplication.LabelSort = null; //Set via constructor (avoid file ordering dependencies)
 
-//Internal
+
+/////Internal
 StyleExplorerApplication.prototype._onLocaleChanged = 
 	function (event)
 	{

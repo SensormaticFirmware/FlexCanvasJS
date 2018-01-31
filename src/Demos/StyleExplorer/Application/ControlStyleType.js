@@ -111,7 +111,6 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		if (styleDef instanceof StyleDefinition == true)
 		{
 //			CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
-
 			
 			if (this.styleType == "root") //Container styles (Root only)
 			{
@@ -183,7 +182,9 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ScrollButtonIncrementStyle" || 
 				this.styleName == "ScrollButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
-				this.styleName == "ButtonTabStyle")
+				this.styleName == "ButtonTabStyle" ||
+				this.styleName == "DataListStyle" ||
+				this.styleName == "ListItemStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"TextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Text", 		"TextStyle", 								"string", 	false, 	false, 	styleDef, this,	"normal",					[{label:"normal", value:"normal"}, {label:"bold", value:"bold"}, {label:"italic", value:"italic"}, {label:"bold italic", value:"bold italic"}]));
@@ -206,7 +207,9 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ScrollButtonIncrementStyle" || 
 				this.styleName == "ScrollButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
-				this.styleName == "ButtonTabStyle")
+				this.styleName == "ButtonTabStyle" ||
+				this.styleName == "ListItemStyle" ||
+				this.styleName == "DataListStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Layout", 		"Padding", 									"number", 	false, 	false, 	styleDef, this,	2,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingTop", 								"number", 	false, 	false, 	styleDef, this,	2,							null));
@@ -250,11 +253,23 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ScrollButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" || 
-				this.styleName == "TextInputStyle")
+				this.styleName == "TextInputStyle" ||
+				this.styleName == "ListItemStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"UpTextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"UpSkinStyle", 								"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				
+			}
+			
+			if (this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle" ||
+				this.styleName == "ScrollButtonIncrementStyle" || 
+				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonTrackStyle" || 
+				this.styleName == "ButtonTabStyle" || 
+				this.styleName == "TextInputStyle")
+			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"DisabledTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DisabledSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			}
@@ -266,12 +281,32 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ScrollButtonIncrementStyle" || 
 				this.styleName == "ScrollButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
-				this.styleName == "ButtonTabStyle")
+				this.styleName == "ButtonTabStyle" ||
+				this.styleName == "ListItemStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"OverSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DownSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				
 				this.styleList.addItem(new ControlStyleType("Text", 		"OverTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			}
+			
+			if (this.styleName == "ListItemStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AltSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Text", 		"AltTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Text", 		"SelectedTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			}
+			
+			if (this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle" ||
+				this.styleName == "ScrollButtonIncrementStyle" || 
+				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonTrackStyle" || 
+				this.styleName == "ButtonTabStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DownSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				this.styleList.addItem(new ControlStyleType("Text", 		"DownTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				
 			}
@@ -294,13 +329,28 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Functional", 	"TruncateToFit", 							"string", 	false, 	false, 	styleDef, this, "...",						null));
 			}
 			
-			if (this.styleName == "ScrollBarStyle")
+			if (this.styleName == "DataListStyle" ||
+				this.styleName == "ScrollBarStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutDirection", 							"string", 	false, 	false, 	styleDef, this,	"vertical",					[{label:"vertical", value:"vertical"}, {label:"horizontal", value:"horizontal"}]));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutGap", 								"number", 	false, 	false, 	styleDef, this,	-1,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutVerticalAlign", 						"string", 	false, 	false, 	styleDef, this,	"middle",					[{label:"top", value:"top"}, {label:"middle", value:"middle"}, {label:"bottom", value:"bottom"}]));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutHorizontalAlign", 					"string", 	false, 	false, 	styleDef, this,	"center",					[{label:"left", value:"left"}, {label:"center", value:"center"}, {label:"right", value:"right"}]));
+			}
+			
+			if (this.styleName == "DataListStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Layout", 		"ScrollBarPlacement", 						"string", 	false, 	false, 	styleDef, this,	"right",					[{label:"left", value:"left"}, {label:"right", value:"right"}, {label:"top", value:"top"}, {label:"bottom", value:"bottom"}]));
 				
+				this.styleList.addItem(new ControlStyleType("Functional", 	"Selectable", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+				this.styleList.addItem(new ControlStyleType("Functional", 	"ScrollBarDisplay", 						"string", 	false, 	false, 	styleDef, this,	"auto",						[{label:"auto", value:"auto"}, {label:"on", value:"on"}, {label:"off", value:"off"}]));
+				
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollBarStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ListItemStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			}
+			
+			if (this.styleName == "ScrollBarStyle")
+			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"ScrollTweenDuration", 						"number", 	false, 	false, 	styleDef, this,	180,						null));
 				
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollButtonIncrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));

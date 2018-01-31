@@ -20,7 +20,7 @@ localeStrings["en-us"]["Add"] = 					"Add";
 localeStrings["en-us"]["Styles"] = 					"Styles";
 localeStrings["en-us"]["Style Code"] = 				"Style Code";
 localeStrings["en-us"]["Copy"] = 					"Copy";
-localeStrings["en-us"]["Text Size"] = 				"Text Size"; 
+localeStrings["en-us"]["Text Size"] = 				"Text Size";
 
 
 //es-es////////
