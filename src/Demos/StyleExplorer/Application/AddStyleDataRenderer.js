@@ -25,7 +25,7 @@ function AddStyleDataRenderer()
 			_self._onAddStyleDataRendererClick(event);
 		};
 	
-	this.addEventListener("click", this._onAddStyleDataRendererClickInstance)
+	this.addEventListener("click", this._onAddStyleDataRendererClickInstance);
 }
 
 //Inherit from DataRendererLabelElement
@@ -100,7 +100,7 @@ AddStyleDataRenderer.prototype._doLayout =
 		this._divider._setActualPosition(x, this._height - 1);
 		this._divider._setActualSize(w, 1);
 		
-		this._checkboxSelected._setActualSize(this._checkboxSelected._getStyledOrMeasuredWidth(), this._checkboxSelected._getStyledOrMeasuredHeight());
+		this._checkboxSelected._setActualSize(this._labelElement._height, this._labelElement._height);
 		this._checkboxSelected._setActualPosition(x + w - this._checkboxSelected._width, Math.round(y + (h / 2) - (this._checkboxSelected._height / 2)));
 		
 	};	
