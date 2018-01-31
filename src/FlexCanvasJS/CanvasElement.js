@@ -2666,9 +2666,14 @@ CanvasElement.prototype._removeStyleDefinitionAt =
  * 
  * @param isDefault bool
  * When true, replaces the default definition list.
+ * 
+ * @param styleNamesChangedMap Object
+ * Optional - A empty map object - Object.create(null) to populate style changes
+ * due to swapping definitions while this element is attached to the display chain. 
+ * When specified (not null), does not automatically invoke style changed events.
  */	
 CanvasElement.prototype._setStyleDefinitions = 
-	function (styleDefinitions, isDefault)
+	function (styleDefinitions, isDefault, styleNamesChangedMap)
 	{
 		if (styleDefinitions == null)
 			styleDefinitions = [];
@@ -2698,17 +2703,21 @@ CanvasElement.prototype._setStyleDefinitions =
 			var newIndex = styleDefinitions.length - 1;
 			
 			var styleName = null;
-			var styleNamesMap = null;
+			var changed = false;
+			
+			var styleNamesMap = styleNamesChangedMap;
+			if (styleNamesMap == null)
+				styleNamesMap = Object.create(null);
 			
 			//Compare styles from the ends of the arrays
 			while (oldIndex >= 0 || newIndex >= 0)
 			{
 				//Detect change
-				if (styleNamesMap == null && (oldIndex < 0 || newIndex < 0 || styleDefinitions[newIndex] != styleDefArray[oldIndex]))
-					styleNamesMap = Object.create(null);
+				if (changed == false && (oldIndex < 0 || newIndex < 0 || styleDefinitions[newIndex] != styleDefArray[oldIndex]))
+					changed = true;
 				
 				//Change detected
-				if (styleNamesMap != null)
+				if (changed == true)
 				{
 					if (oldIndex >= 0)
 					{
@@ -2729,7 +2738,7 @@ CanvasElement.prototype._setStyleDefinitions =
 			}
 			
 			//Bail no changes
-			if (styleNamesMap == null)
+			if (changed == false)
 				return;
 			
 			//Clear the definition list
@@ -2747,8 +2756,11 @@ CanvasElement.prototype._setStyleDefinitions =
 			}
 			
 			//Spoof style changed events for normal style changed handling.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+			if (styleNamesChangedMap == null)
+			{
+				for (styleName in styleNamesMap)
+					this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+			}
 		}
 		else //Not attached to display chain, just swap the definitions
 		{
@@ -2965,8 +2977,15 @@ CanvasElement.prototype._getDefaultStyleList =
 CanvasElement.prototype._applySubStylesToElement = 
 	function (styleName, elementToApply)
 	{
-		elementToApply._setStyleDefinitions(this._getStyleList(styleName), false);
-		elementToApply._setStyleDefinitions(this._getDefaultStyleList(styleName), true);
+		var styleName = null;
+		var styleNamesChangedMap = Object.create(null);
+	
+		elementToApply._setStyleDefinitions(this._getStyleList(styleName), false, styleNamesChangedMap);
+		elementToApply._setStyleDefinitions(this._getDefaultStyleList(styleName), true, styleNamesChangedMap);
+		
+		//Spoof style changed events for normal style changed handling.
+		for (styleName in styleNamesChangedMap)
+			this._onExternalStyleChanged(new StyleChangedEvent(styleName));
 	};
 	
 /**

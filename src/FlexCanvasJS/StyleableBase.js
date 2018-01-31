@@ -341,7 +341,7 @@ StyleableBase.prototype._getClassStyle =
 		if (styleName in this.constructor.__StyleDefaultsFlatMap)
 			return this.constructor.__StyleDefaultsFlatMap[styleName][this.constructor.__StyleDefaultsFlatMap[styleName].length - 1];
 		
-		return undefined
+		return undefined;
 	};	
 	
 /**
