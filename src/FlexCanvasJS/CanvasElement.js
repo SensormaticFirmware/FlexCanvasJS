@@ -2977,15 +2977,15 @@ CanvasElement.prototype._getDefaultStyleList =
 CanvasElement.prototype._applySubStylesToElement = 
 	function (styleName, elementToApply)
 	{
-		var styleName = null;
+		var changedStyleName = null;
 		var styleNamesChangedMap = Object.create(null);
 	
 		elementToApply._setStyleDefinitions(this._getStyleList(styleName), false, styleNamesChangedMap);
 		elementToApply._setStyleDefinitions(this._getDefaultStyleList(styleName), true, styleNamesChangedMap);
 		
 		//Spoof style changed events for normal style changed handling.
-		for (styleName in styleNamesChangedMap)
-			this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		for (changedStyleName in styleNamesChangedMap)
+			this._onExternalStyleChanged(new StyleChangedEvent(changedStyleName));
 	};
 	
 /**

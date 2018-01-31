@@ -724,10 +724,10 @@ ScrollBarElement.prototype._doLayout =
 		}
 		else
 		{
-			this._buttonIncrement.setStyle("Enabled", true);
-			this._buttonDecrement.setStyle("Enabled", true);
-			this._buttonTrack.setStyle("Enabled", true);
-			this._buttonTab.setStyle("Visible", true);
+			this._buttonIncrement.clearStyle("Enabled");
+			this._buttonDecrement.clearStyle("Enabled");
+			this._buttonTrack.clearStyle("Enabled");
+			this._buttonTab.clearStyle("Visible");
 		}
 		
 		var availableTrackSize;
