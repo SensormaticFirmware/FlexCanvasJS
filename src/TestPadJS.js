@@ -13,12 +13,11 @@ function init()
 	dropdownLocaleCollection.addItem({key:"en-us", label:"English"});
 	dropdownLocaleCollection.addItem({key:"es-es", label:"Espanol"});
 	
-	dropdownLocale = new DropdownElement();
-	dropdownLocale.setListCollection(dropdownLocaleCollection);
-	dropdownLocale.setSelectedIndex(0);
+	dropdown.setListCollection(dropdownLocaleCollection);
+	dropdown.setSelectedIndex(0);
 	
 	//Add dropdown to CanvasManager
-	canvasManager.addElement(dropdownLocale);
+	canvasManager.addElement(dropdown);
 }
 
 
