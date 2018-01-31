@@ -1066,7 +1066,6 @@ DataListElement.prototype._doLayout =
 			
 			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
 			
-			this._scrollBar.setStyle("LayoutDirection", listDirection);
 			this._scrollBar.setScrollLineSize(1);
 			
 			this._scrollBar.addEventListener("changed", this._onDataListScrollBarChangedInstance);
@@ -1089,6 +1088,8 @@ DataListElement.prototype._doLayout =
 		//Size / Position the scroll bar and content pane.
 		if (this._scrollBar != null)
 		{
+			this._scrollBar.setStyle("LayoutDirection", listDirection);
+			
 			var scrollBarPlacement = this.getStyle("ScrollBarPlacement");
 			
 			if (listDirection == "horizontal")
