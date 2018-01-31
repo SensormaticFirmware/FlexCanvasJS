@@ -289,7 +289,7 @@ DataRendererBaseElement.prototype._doStylesUpdated =
 		
 		if ("SkinClass" in stylesMap || "AltSkinClass" in stylesMap)
 			this._updateSkinClass("alt");
-		if ("OverSkinStyle" in stylesMap)
+		if ("AltSkinStyle" in stylesMap)
 			this._updateSkinStyleDefinitions("alt");
 		
 		if ("SkinClass" in stylesMap || "OverSkinClass" in stylesMap)
