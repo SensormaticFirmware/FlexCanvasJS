@@ -613,8 +613,7 @@ ScrollBarElement.prototype._doStylesUpdated =
 		else if ("Enabled" in stylesMap)
 			this._invalidateLayout();
 		
-		var defaultStyleList = null;
-		var styleList = null;
+
 		var layoutDirection = this.getStyle("LayoutDirection");
 		
 		//We need to inject the default styles specific to LayoutDirection before other styling.

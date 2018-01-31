@@ -2985,7 +2985,7 @@ CanvasElement.prototype._applySubStylesToElement =
 		
 		//Spoof style changed events for normal style changed handling.
 		for (changedStyleName in styleNamesChangedMap)
-			this._onExternalStyleChanged(new StyleChangedEvent(changedStyleName));
+			elementToApply._onExternalStyleChanged(new StyleChangedEvent(changedStyleName));
 	};
 	
 /**
