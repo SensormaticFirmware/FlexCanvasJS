@@ -199,6 +199,14 @@ StyleItemRenderer.prototype._updateStyleValue =
 			parent = parent.parent;
 		}
 
+		//Trim out all the "Style" text except for at the end. (Reduce ridiculously long substyle names)
+		var sIndexOf = styleDefName.indexOf("Style");
+		while (sIndexOf != -1 && sIndexOf != styleDefName.length - 6)
+		{
+			styleDefName = (styleDefName.substring(0, sIndexOf) + styleDefName.substring(sIndexOf + 6));
+			sIndexOf = styleDefName.indexOf("Style");
+		}
+		
 		this._styleControlType.styleListCodeString = "";
 		this._styleControlType.styleItemCodeString = (styleDefName + ".setStyle(\"" + this._styleControlType.styleName + "\", ");
 		

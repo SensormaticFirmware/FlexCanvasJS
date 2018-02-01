@@ -137,8 +137,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			
 			//ListContainer Styles
 			if (this.styleType == "root" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle")
 			{
@@ -155,8 +155,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			}
 			
 			if (this.styleType == "root" || 
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
 				this.styleName.indexOf("SkinStyle") >= 0) 
@@ -179,8 +179,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
 				this.styleName == "DataListStyle" ||
@@ -204,8 +204,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
 				this.styleName == "ScrollBarStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
 				this.styleName == "ListItemStyle" ||
@@ -223,8 +223,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle")
 			{
@@ -237,8 +237,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
 				this.styleName == "ScrollBarStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle")
 			{
@@ -249,8 +249,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" || 
 				this.styleName == "TextInputStyle" ||
@@ -264,8 +264,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" || 
 				this.styleName == "TextInputStyle")
@@ -278,8 +278,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
 				this.styleName == "ListItemStyle")
@@ -301,8 +301,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
+				this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle")
 			{
@@ -353,8 +353,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"ScrollTweenDuration", 						"number", 	false, 	false, 	styleDef, this,	180,						null));
 				
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollButtonIncrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollButtonDecrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonIncrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonDecrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonTrackStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonTabStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			}
@@ -396,9 +396,9 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"CheckSize", 								"number", 	false, 	false, 	styleDef, this,	checkSize,					null));
 			}
 			
-			if (this.styleName == "ScrollButtonIncrementStyle" || 
-				this.styleName == "ScrollButtonDecrementStyle" ||
-				(this.styleName.indexOf("SkinStyle") >= 0 && (this.hasParentStyleName("ScrollButtonIncrementStyle") || this.hasParentStyleName("ScrollButtonDecrementStyle"))))	//skin
+			if (this.styleName == "ButtonIncrementStyle" || 
+				this.styleName == "ButtonDecrementStyle" ||
+				(this.styleName.indexOf("SkinStyle") >= 0 && (this.hasParentStyleName("ButtonIncrementStyle") || this.hasParentStyleName("ButtonDecrementStyle"))))	//skin
 			{
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowDirection", 							"string", 	false, 	false, 	styleDef, this,	"up",						[{label:"up", value:"up"}, {label:"down", value:"down"}, {label:"left", value:"left"}, {label:"right", value:"right"}]));
