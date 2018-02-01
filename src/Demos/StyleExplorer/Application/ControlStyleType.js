@@ -91,7 +91,7 @@ ControlStyleType.prototype.generateStylingCode =
 		
 		var stringResult = "";
 		for (var i = 0; i < result.length; i++)
-			stringResult += (result[i].value + "\n");
+			stringResult += (result[i].value + "\r\n");
 
 		return stringResult;
 	};	

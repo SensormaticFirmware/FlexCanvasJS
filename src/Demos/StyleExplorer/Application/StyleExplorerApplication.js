@@ -216,10 +216,10 @@ function StyleExplorerApplication() //extends CanvasManager
 								this._sandboxCopyCodeContainer.setStyle("PaddingLeft", 5);
 								this._sandboxCopyCodeContainer.setStyle("PaddingRight", 5);
 								
-									this._buttonCopyCode = new ButtonElement();
-									this._buttonCopyCode.setStyle("PercentWidth", 100);
+									this._toggleButtonCopyCode = new ToggleButtonElement();
+									this._toggleButtonCopyCode.setStyle("PercentWidth", 100);
 								
-								this._sandboxCopyCodeContainer.addElement(this._buttonCopyCode);
+								this._sandboxCopyCodeContainer.addElement(this._toggleButtonCopyCode);
 									
 							this._sandboxControlOuterContainer.addElement(this._sandboxControlAndCodeContainer);
 							this._sandboxControlOuterContainer.addElement(this._sandboxCopyCodeContainer);
@@ -314,6 +314,44 @@ function StyleExplorerApplication() //extends CanvasManager
 				_self._onButtonFontLargerClick(event);
 		};
 		
+	//////Handle code copy... (Multi-line text highlight / copy is not yet implemented)	
+	this._onToggleButtonCopyCodeEventHandlerInstance = 
+		function (event)
+		{
+			if (event.getType() == "changed")
+				_self._onToggleButtonCopyCodeChanged(event);
+			else if (event.getType() == "keydown")
+				_self._onToggleButtonCopyCodeKeydown(event);
+			else if (event.getType() == "focusout")
+				_self._onToggleButtonCopyCodeFocusout(event);
+		};	
+ 	this._onCopyCutCodeInstance = //Handles *browser* event (FF, Chrome, Webkit)
+ 		function (event)
+ 		{
+	 		window.removeEventListener("copy", _self._onCopyCutCodeInstance);
+			
+			try
+			{
+				if (event.clipboardData)
+					_self._onCopyCutCode(event.clipboardData);
+				
+				if (event.preventDefault)
+					event.preventDefault();
+				
+				return false;
+			}
+			catch (ex)
+			{
+				
+			}
+ 		};
+	this._onCopyCutCodeEnterFrameCleanupInstance = 
+		function (event)
+		{
+			_self.removeEventListener("enterframe", _self._onCopyCutCodeEnterFrameCleanupInstance);
+			window.removeEventListener("copy", _self._onCopyCutCodeInstance);
+		};	
+		
 	//Add event listeners	
 	this.addEventListener("localechanged", this._onLocaleChangedInstance);
 	this.addEventListener("stylingchanged", this._onStylingChangedInstance); //Custom event
@@ -323,6 +361,10 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._buttonFontSmaller.addEventListener("click", this._onButtonFontClickInstance);
 	this._buttonFontLarger.addEventListener("click", this._onButtonFontClickInstance);
 	
+	//Handle code copy... (Multi-line text highlight / copy is not yet implemented)
+	this._toggleButtonCopyCode.addEventListener("changed", this._onToggleButtonCopyCodeEventHandlerInstance);
+	this._toggleButtonCopyCode.addEventListener("keydown", this._onToggleButtonCopyCodeEventHandlerInstance);
+	this._toggleButtonCopyCode.addEventListener("focusout", this._onToggleButtonCopyCodeEventHandlerInstance);
 	
 	/////////////////FUNCTIONAL///////////////////////////////
 	
@@ -331,6 +373,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._currentListRenderer = null;
 	this._currentFontSize = 12;
 	this.setStyle("TextSize", this._currentFontSize);
+	
 	
 	//////Build controls and style data//////
 	this._dataListControlsCollection = new ListCollection();
@@ -343,7 +386,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	buttonControl.setStyleDefinitions(buttonDef);
 	
 	var buttonControlStyleType = new ControlStyleType("", "ButtonStyle", "root", false, false, buttonControl, null, null, null);
-	buttonControlStyleType.styleListCodeString = "var ButtonStyle = new StyleDefinition();\n";
+	buttonControlStyleType.styleListCodeString = "var ButtonStyle = new StyleDefinition();\r\n";
 	
 	buttonControlStyleType.buildControlStyleTypeLists();
 	
@@ -361,7 +404,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	canvasElementControl.setStyleDefinitions(canvasElementDef);
 	
 	var canvasElementControlStyleType = new ControlStyleType("", "CanvasElementStyle", "root", false, false, canvasElementControl, null, null, null);
-	canvasElementControlStyleType.styleListCodeString = "var CanvasElementStyle = new StyleDefinition();\n";
+	canvasElementControlStyleType.styleListCodeString = "var CanvasElementStyle = new StyleDefinition();\r\n";
 	
 	canvasElementControlStyleType.buildControlStyleTypeLists();
 	
@@ -377,7 +420,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	toggleButtonControl.setStyleDefinitions(toggleButtonDef);
 	
 	var toggleButtonControlStyleType = new ControlStyleType("", "ToggleButtonStyle", "root", false, false, toggleButtonControl, null, null, null);
-	toggleButtonControlStyleType.styleListCodeString = "var ToggleButtonStyle = new StyleDefinition();\n";
+	toggleButtonControlStyleType.styleListCodeString = "var ToggleButtonStyle = new StyleDefinition();\r\n";
 	
 	toggleButtonControlStyleType.buildControlStyleTypeLists();
 	
@@ -393,7 +436,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	radioButtonControl.setStyleDefinitions(radioButtonDef);
 	
 	var radioButtonControlStyleType = new ControlStyleType("", "RadioButtonStyle", "root", false, false, radioButtonControl, null, null, null);
-	radioButtonControlStyleType.styleListCodeString = "var RadioButtonStyle = new StyleDefinition();\n";
+	radioButtonControlStyleType.styleListCodeString = "var RadioButtonStyle = new StyleDefinition();\r\n";
 	
 	radioButtonControlStyleType.buildControlStyleTypeLists();
 	
@@ -409,7 +452,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	checkboxControl.setStyleDefinitions(checkboxDef);
 	
 	var checkboxControlStyleType = new ControlStyleType("", "CheckboxStyle", "root", false, false, checkboxControl, null, null, null);
-	checkboxControlStyleType.styleListCodeString = "var CheckboxStyle = new StyleDefinition();\n";
+	checkboxControlStyleType.styleListCodeString = "var CheckboxStyle = new StyleDefinition();\r\n";
 	
 	checkboxControlStyleType.buildControlStyleTypeLists();
 	
@@ -424,7 +467,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	textInputControl.setStyleDefinitions(textInputDef);
 	
 	var textInputControlStyleType = new ControlStyleType("", "TextInputStyle", "root", false, false, textInputControl, null, null, null);
-	textInputControlStyleType.styleListCodeString = "var TextInputStyle = new StyleDefinition();\n";
+	textInputControlStyleType.styleListCodeString = "var TextInputStyle = new StyleDefinition();\r\n";
 	
 	textInputControlStyleType.buildControlStyleTypeLists();
 	
@@ -440,7 +483,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	labelControl.setStyleDefinitions(labelDef);
 	
 	var labelControlStyleType = new ControlStyleType("", "LabelStyle", "root", false, false, labelControl, null, null, null);
-	labelControlStyleType.styleListCodeString = "var LabelStyle = new StyleDefinition();\n";
+	labelControlStyleType.styleListCodeString = "var LabelStyle = new StyleDefinition();\r\n";
 	
 	labelControlStyleType.buildControlStyleTypeLists();
 	
@@ -464,7 +507,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	scrollBarControl.setScrollLineSize(50);
 	
 	var scrollBarControlStyleType = new ControlStyleType("", "ScrollBarStyle", "root", false, false, scrollBarControl, null, null, null);
-	scrollBarControlStyleType.styleListCodeString = "var ScrollBarStyle = new StyleDefinition();\n";
+	scrollBarControlStyleType.styleListCodeString = "var ScrollBarStyle = new StyleDefinition();\r\n";
 	
 	scrollBarControlStyleType.buildControlStyleTypeLists();
 	
@@ -491,7 +534,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	dataListControl.setListCollection(dataListCollection);
 	
 	var dataListControlStyleType = new ControlStyleType("", "DataListStyle", "root", false, false, dataListControl, null, null, null);
-	dataListControlStyleType.styleListCodeString = "var DataListStyle = new StyleDefinition();\n";
+	dataListControlStyleType.styleListCodeString = "var DataListStyle = new StyleDefinition();\r\n";
 	
 	dataListControlStyleType.buildControlStyleTypeLists();
 	
@@ -573,7 +616,7 @@ StyleExplorerApplication.prototype._onLocaleChanged =
 		this._labelSelectStyle.setStyle("Text", 			localeStrings[currentLocale]["Select Styles"]);
 		this._radioButtonSandbox.setStyle("Text", 			localeStrings[currentLocale]["Sandbox"] + " (AnchorContainer)");
 		this._radioButtonStyleCode.setStyle("Text", 		localeStrings[currentLocale]["Style Code"]);
-		this._buttonCopyCode.setStyle("Text", 				localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
+		this._toggleButtonCopyCode.setStyle("Text", 		localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
 	};
 
 StyleExplorerApplication.prototype._onButtonFontLargerClick =
@@ -692,4 +735,56 @@ StyleExplorerApplication.prototype._onEnterFrameStyleCodeUpdate =
 		this._textSandboxStyleCode.setStyle("Text", this._dataListControls.getSelectedItem().rootControlStyleType.generateStylingCode());
 	};
 	
+	
+///////Handle code copy... (Multi-line text highlight / copy is not yet implemented)
+StyleExplorerApplication.prototype._onToggleButtonCopyCodeChanged = 
+	function (event)
+	{
+		this._toggleButtonCopyCode.setStyle("Text", localeStrings[this.getManager().getLocale()]["Press Ctrl C"]);
+	};
+	
+StyleExplorerApplication.prototype._onToggleButtonCopyCodeKeydown = 
+	function (elementKeyboardEvent)
+	{
+		var keyString = elementKeyboardEvent.getKey();
+		
+		if (keyString == "c" && elementKeyboardEvent.getCtrl() == true)
+		{
+			//IE
+			if (window.clipboardData)
+			{
+				this._onCopyCutCode(window.clipboardData);
+				elementKeyboardEvent.preventDefault();
+			} 
+			else //FF, Chrome, Webkit (Allow keyboard event to invoke the copy / paste listener)
+			{
+				window.addEventListener("copy", this._onCopyCutCodeInstance);
+				
+				//This is just to make sure we clean up the window "copy" listener.
+				//If the keyboard event gets canceled up stream the "copy" event wont fire and we 
+				//still need to remove the listener.
+				this.addEventListener("enterframe", this._onCopyCutCodeEnterFrameCleanupInstance);
+			}
+		}
+	};	
+	
+StyleExplorerApplication.prototype._onToggleButtonCopyCodeFocusout = 
+	function (event)
+	{
+		var locale = this.getManager().getLocale();
+	
+		this._toggleButtonCopyCode.setSelected(false);
+		this._toggleButtonCopyCode.setStyle("Text", localeStrings[locale]["Copy"] + " " + localeStrings[locale]["Style Code"]);
+	};	
+	
+StyleExplorerApplication.prototype._onCopyCutCode = 
+	function (clipboardData)
+	{
+		clipboardData.setData("Text", this._textSandboxStyleCode.getStyle("Text"));
+		
+		var locale = this.getManager().getLocale();
+		
+		this._toggleButtonCopyCode.setSelected(false);
+		this._toggleButtonCopyCode.setStyle("Text", localeStrings[locale]["Copy"] + " " + localeStrings[locale]["Style Code"]);
+	};	
 	

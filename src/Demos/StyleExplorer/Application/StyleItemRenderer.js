@@ -211,7 +211,7 @@ StyleItemRenderer.prototype._updateStyleValue =
 			}
 			else if (this._styleControlType.styleType == "class")
 			{
-				this._styleControlType.styleListCodeString = "var " + styleDefName + this._styleControlType.styleName + " = new " + value.toString().match(/function ([A-Z]{1}[a-zA-Z]*)/)[1] + "();\n";
+				this._styleControlType.styleListCodeString = "var " + styleDefName + this._styleControlType.styleName + " = new " + value.toString().match(/function ([A-Z]{1}[a-zA-Z]*)/)[1] + "();\r\n";
 				this._styleControlType.styleItemCodeString += (styleDefName + this._styleControlType.styleName + ");"); 
 				
 				var existingInstance = undefined;
@@ -239,7 +239,7 @@ StyleItemRenderer.prototype._updateStyleValue =
 		else
 			this._styleControlType.styleItemCodeString += "null);"; 
 		
-		this._styleControlType.styleItemCodeString += "\n";
+		this._styleControlType.styleItemCodeString += "\r\n";
 		
 		this._styleControlType.styleDefinition.setStyle(this._styleControlType.styleName, value);
 		

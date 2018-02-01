@@ -21,6 +21,7 @@ localeStrings["en-us"]["Styles"] = 					"Styles";
 localeStrings["en-us"]["Style Code"] = 				"Style Code";
 localeStrings["en-us"]["Copy"] = 					"Copy";
 localeStrings["en-us"]["Text Size"] = 				"Text Size";
+localeStrings["en-us"]["Press Ctrl C"] = 			"Press CTRL + C";
 
 
 //es-es////////
@@ -35,6 +36,7 @@ localeStrings["es-es"]["Styles"] = 					"Estilos";
 localeStrings["es-es"]["Style Code"] = 				"Código De Estilo";
 localeStrings["es-es"]["Copy"] = 					"Copiar";
 localeStrings["es-es"]["Text Size"] = 				"Tamano Del Texto";
+localeStrings["es-es"]["Press Ctrl C"] = 			"Presione CTRL + C";
 
 
 //////IMAGES///////////////////////
@@ -80,6 +82,7 @@ hDividerLineStyle.setStyle("Height", 						1);
 hDividerLineStyle.setStyle("PercentWidth", 					100);
 hDividerLineStyle.setStyle("BackgroundColor", 				"#999999");
 
+
 //////Clear Style Button
 var clearStyleButtonStyle = new StyleDefinition();
 
@@ -100,6 +103,7 @@ clearStyleButtonStyle.setStyle("SkinClass", CloseButtonSkinElement);	//Draws an 
 clearStyleButtonStyle.setStyle("Width", 15);
 clearStyleButtonStyle.setStyle("Height", 15);
 clearStyleButtonStyle.setStyle("BackgroundShape", new EllipseShape());
+
 
 //////Add Style Dropdown
 var addStyleDropdownListStyle = new StyleDefinition();
