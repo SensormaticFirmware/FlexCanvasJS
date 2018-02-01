@@ -6604,7 +6604,7 @@ CanvasElement.prototype._applySubStylesToElement =
 		
 		//Spoof style changed events for normal style changed handling.
 		for (changedStyleName in styleNamesChangedMap)
-			this._onExternalStyleChanged(new StyleChangedEvent(changedStyleName));
+			elementToApply._onExternalStyleChanged(new StyleChangedEvent(changedStyleName));
 	};
 	
 /**
@@ -13688,7 +13688,7 @@ DataRendererBaseElement.prototype._doStylesUpdated =
 		
 		if ("SkinClass" in stylesMap || "AltSkinClass" in stylesMap)
 			this._updateSkinClass("alt");
-		if ("OverSkinStyle" in stylesMap)
+		if ("AltSkinStyle" in stylesMap)
 			this._updateSkinStyleDefinitions("alt");
 		
 		if ("SkinClass" in stylesMap || "OverSkinClass" in stylesMap)
@@ -14035,19 +14035,35 @@ DataListElement.DefaultItemLabelFunction =
 DataListElement._StyleTypes = Object.create(null);
 
 /**
- * @style ListDirection String
+ * @style LayoutDirection String
  * 
  * Determines the layout direction of this DataList. Allowable values are "horizontal" or "vertical".
  */
-DataListElement._StyleTypes.ListDirection = 					StyleableBase.EStyleType.NORMAL;		// "horizontal" || "vertical
+DataListElement._StyleTypes.LayoutDirection = 					StyleableBase.EStyleType.NORMAL;		// "horizontal" || "vertical
 
 /**
- * @style ListAlign String
+ * @style LayoutGap Number
  * 
- * Determines the alignment of content when there is not enough data in the ListCollection to fill the DataList.
- * Allowable values are "left", "center", "right" for horizontal layout, and "top", "middle", "bottom" for vertical layout. 
+ * Space in pixels to leave between child elements. 
+ * (Not yet implemented)
  */
-DataListElement._StyleTypes.ListAlign = 						StyleableBase.EStyleType.NORMAL;		// "left" || "center" || "right" / "top" || "middle" || "bottom"
+DataListElement._StyleTypes.LayoutGap = 						StyleableBase.EStyleType.NORMAL;		// number
+
+/**
+ * @style LayoutVerticalAlign String
+ * 
+ * Child vertical alignment to be used when children do not fill all available space. Allowable values are "top", "bottom", or "middle". 
+ * (Only partially implemented, depending on LayoutDirection)
+ */
+DataListElement._StyleTypes.LayoutVerticalAlign = 				StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" || "middle" 
+
+/**
+ * @style LayoutHorizontalAlign String
+ * 
+ * Child horizontal alignment to be used when children do not fill all available space. Allowable values are "left", "right", or "center". 
+ * (Only partially implemented, depending on LayoutDirection)
+ */
+DataListElement._StyleTypes.LayoutHorizontalAlign = 			StyleableBase.EStyleType.NORMAL;		//"left" || "right" || "center"
 
 /**
  * @style Selectable boolean
@@ -14106,8 +14122,10 @@ DataListElement._StyleTypes.ListItemStyle = 					StyleableBase.EStyleType.SUBSTY
 
 DataListElement.StyleDefault = new StyleDefinition();
 
-DataListElement.StyleDefault.setStyle("ListDirection", 				"vertical");								// "horizontal" || "vertical
-DataListElement.StyleDefault.setStyle("ListAlign", 					"top");										// "left" || "center" || "right" / "top" || "middle" || "bottom"
+DataListElement.StyleDefault.setStyle("LayoutDirection", 			"vertical");								// "horizontal" || "vertical
+DataListElement.StyleDefault.setStyle("LayoutVerticalAlign", 		"top");										//"top" || "middle" || "bottom"
+DataListElement.StyleDefault.setStyle("LayoutHorizontalAlign", 		"left");									//"left" || "center" || "right"
+DataListElement.StyleDefault.setStyle("LayoutGap", 					0);											//number
 
 DataListElement.StyleDefault.setStyle("ItemLabelFunction", 			DataListElement.DefaultItemLabelFunction);	// function (data) { return "" }
 
@@ -14366,9 +14384,9 @@ DataListElement.prototype._getContentSize =
 	{
 		var paddingSize = this._getPaddingSize();
 	
-		if (this.getStyle("ListDirection") == "vertical")
+		if (this.getStyle("LayoutDirection") == "vertical")
 			return this._contentSize + paddingSize.height;
-		else //if (this.getStyle("ListDirection") == "horizontal")
+		else //if (this.getStyle("LayoutDirection") == "horizontal")
 			return this._contentSize + paddingSize.width;
 	};
 
@@ -14403,7 +14421,7 @@ DataListElement.prototype._onDataListMouseWheelEvent =
 			return;
 	
 		var delta = 0;
-		var listDirection = this.getStyle("ListDirection");
+		var listDirection = this.getStyle("LayoutDirection");
 		
 		var minScrolled = false;
 		var maxScrolled = false;
@@ -14681,26 +14699,25 @@ DataListElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		}
 		
-		if ("ListDirection" in stylesMap)
+		if ("LayoutDirection" in stylesMap)
 		{
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("ScrollBarPlacement" in stylesMap || "ScrollBarDisplay" in stylesMap ||  "ListAlign" in stylesMap)
+		else if ("ScrollBarPlacement" in stylesMap || 
+				"ScrollBarDisplay" in stylesMap ||  
+				"LayoutGap" in stylesMap ||
+				"LayoutHorizontalAlign" in stylesMap ||
+				"LayoutVerticalAlign" in stylesMap)
+		{
 			this._invalidateLayout();
+		}
 		
 		if ("ScrollBarStyle" in stylesMap && this._scrollBar != null)
 			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
 		
 		if ("ItemLabelFunction" in stylesMap)
 			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
-	};
-
-//@Override
-DataListElement.prototype._doMeasure = 
-	function(padWidth, padHeight)
-	{
-		return {width:16, height:16};
 	};
 
 /**
@@ -14791,7 +14808,15 @@ DataListElement.prototype._updateRendererData =
 			renderer._setListSelected(false);
 	};
 	
-//@Override	
+//@override
+DataListElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		//TODO: Sample text widths if label function is set.
+		return {width:16, height:16};
+	};	
+	
+//@override	
 DataListElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
@@ -14806,7 +14831,7 @@ DataListElement.prototype._doLayout =
 		var listItem = null;
 		var i;
 		
-		var listDirection = this.getStyle("ListDirection");
+		var listDirection = this.getStyle("LayoutDirection");
 		var itemIndex = Math.floor(this._scrollIndex);
 		
 		var collectionLength = 0;
@@ -14948,7 +14973,6 @@ DataListElement.prototype._doLayout =
 			
 			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
 			
-			this._scrollBar.setStyle("LayoutDirection", listDirection);
 			this._scrollBar.setScrollLineSize(1);
 			
 			this._scrollBar.addEventListener("changed", this._onDataListScrollBarChangedInstance);
@@ -14971,6 +14995,8 @@ DataListElement.prototype._doLayout =
 		//Size / Position the scroll bar and content pane.
 		if (this._scrollBar != null)
 		{
+			this._scrollBar.setStyle("LayoutDirection", listDirection);
+			
 			var scrollBarPlacement = this.getStyle("ScrollBarPlacement");
 			
 			if (listDirection == "horizontal")
@@ -15016,7 +15042,11 @@ DataListElement.prototype._doLayout =
 		var currentPosition = clipFirst * -1;
 		if (this._contentSize < availableSize)
 		{
-			var listAlign = this.getStyle("ListAlign");
+			var listAlign = null;
+			if (listDirection == "horizontal")
+				listAlign = this.getStyle("LayoutHorizontalAlign");
+			else //if (listDirection == "vertical")
+				listAlign = this.getStyle("LayoutVerticalAlign");
 			
 			if (listAlign == "top" || listAlign == "left")
 				currentPosition = 0;
@@ -16849,8 +16879,7 @@ ScrollBarElement.prototype._doStylesUpdated =
 		else if ("Enabled" in stylesMap)
 			this._invalidateLayout();
 		
-		var defaultStyleList = null;
-		var styleList = null;
+
 		var layoutDirection = this.getStyle("LayoutDirection");
 		
 		//We need to inject the default styles specific to LayoutDirection before other styling.
