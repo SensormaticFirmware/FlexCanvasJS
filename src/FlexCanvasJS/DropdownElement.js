@@ -230,8 +230,8 @@ DropdownElement.DataListStyleDefault.setStyle("PaddingRight",					1);
 ///////////////////////////////////
 
 DropdownElement.StyleDefault = new StyleDefinition();
-DropdownElement.StyleDefault.setStyle("PaddingTop",								4);
-DropdownElement.StyleDefault.setStyle("PaddingBottom",							4);
+DropdownElement.StyleDefault.setStyle("PaddingTop",								3);
+DropdownElement.StyleDefault.setStyle("PaddingBottom",							3);
 DropdownElement.StyleDefault.setStyle("PaddingRight",							4);
 DropdownElement.StyleDefault.setStyle("PaddingLeft",							4);
 
