@@ -110,7 +110,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		//This style selection does not support sub styles.
 		if (styleDef instanceof StyleDefinition == true)
 		{
-//			CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
+//			CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0); //Not needed till TextArea / Text controls complete.
 			
 			if (this.styleType == "root") //Container styles (Root only)
 			{

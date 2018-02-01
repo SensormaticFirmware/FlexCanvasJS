@@ -515,7 +515,6 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:scrollBarControl, 
 											rootControlStyleType:scrollBarControlStyleType,
 											list:null});
-	
 	//DataListElement
 	var dataListDef = new StyleDefinition();
 	dataListDef.setStyle("LayoutDirection", "vertical");
@@ -528,7 +527,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	//Set some arbitrary data. 
 	var dataListCollection = new ListCollection();
-	for (i = 0; i < 100; i++)
+	for (i = 1; i <= 100; i++)
 		dataListCollection.addItem("Data Item - " + i);
 	
 	dataListControl.setListCollection(dataListCollection);
@@ -542,7 +541,30 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:dataListControl, 
 											rootControlStyleType:dataListControlStyleType,
 											list:null});
+	//DropdownElement
+	var dropdownDef = new StyleDefinition();
+	dropdownDef.setStyle("Text", "My Text");
 	
+	var dropdownControl = new DropdownElement();
+	dropdownControl.setStyleDefinitions(dropdownDef);
+	
+	//Set some arbitrary data. 
+	var dropdownListCollection = new ListCollection();
+	for (i = 1; i <= 50; i++)
+		dropdownListCollection.addItem("Data Item - " + i);
+	
+	dropdownControl.setListCollection(dropdownListCollection);
+	
+	var dropdownControlStyleType = new ControlStyleType("", "DropdownStyle", "root", false, false, dropdownControl, null, null, null);
+	dropdownControlStyleType.styleListCodeString = "var DropdownStyle = new StyleDefinition();\r\n";
+	
+	dropdownControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"Dropdown", 
+											control:dropdownControl, 
+											rootControlStyleType:dropdownControlStyleType,
+											list:null});
+	////////////////////////////////////
 	
 	
 	//Set static collection sort
@@ -569,6 +591,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._dropdownLocale.setListCollection(this._dropdownLocaleCollection);
 	this._dropdownLocale.setSelectedIndex(0);
 	
+	//Setup Sandbox / Code views
 	this._onSandboxHeaderRadioButtonGroupChanged(null);
 }
 
