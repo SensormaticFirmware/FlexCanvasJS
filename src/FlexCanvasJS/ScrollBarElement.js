@@ -101,16 +101,16 @@ ScrollBarElement._StyleTypes.ScrollTweenDuration =			StyleableBase.EStyleType.NO
 
 //ScrollButton / Button styles.
 /**
- * @style ScrollButtonIncrementStyle StyleDefinition
+ * @style ButtonIncrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll increment Button.
  */
-ScrollBarElement._StyleTypes.ScrollButtonIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
- * @style ScrollButtonDecrementStyle StyleDefinition
+ * @style ButtonDecrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll decrement Button.
  */
-ScrollBarElement._StyleTypes.ScrollButtonDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTrackStyle StyleDefinition
@@ -233,8 +233,8 @@ ScrollBarElement.StyleDefault.setStyle("LayoutGap", 								-1); //Collapse bord
 ScrollBarElement.StyleDefault.setStyle("LayoutHorizontalAlign", 					"center");
 ScrollBarElement.StyleDefault.setStyle("LayoutVerticalAlign", 						"middle"); 
 ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 							ScrollBarElement.ButtonTrackStyleDefault);
-ScrollBarElement.StyleDefault.setStyle("ScrollButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault); 
-ScrollBarElement.StyleDefault.setStyle("ScrollButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault);
+ScrollBarElement.StyleDefault.setStyle("ButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault); 
+ScrollBarElement.StyleDefault.setStyle("ButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault);
 
 //Applied dynamically based on LayoutDirection
 //ScrollBarElement.StyleDefault.setStyle("ButtonTabStyle", 							ScrollBarElement.ButtonTabStyleDefault); 
@@ -617,9 +617,9 @@ ScrollBarElement.prototype._doStylesUpdated =
 		var layoutDirection = this.getStyle("LayoutDirection");
 		
 		//We need to inject the default styles specific to LayoutDirection before other styling.
-		if ("LayoutDirection" in stylesMap || "ScrollButtonDecrementStyle" in stylesMap)
+		if ("LayoutDirection" in stylesMap || "ButtonDecrementStyle" in stylesMap)
 		{
-			this._applySubStylesToElement("ScrollButtonDecrementStyle", this._buttonDecrement);
+			this._applySubStylesToElement("ButtonDecrementStyle", this._buttonDecrement);
 			
 			if (layoutDirection == "horizontal")
 				this._buttonDecrement._addStyleDefinitionAt(ScrollBarElement.HButtonScrollArrowDecStyleDefault, 0, true);
@@ -647,9 +647,9 @@ ScrollBarElement.prototype._doStylesUpdated =
 				this._buttonTab._addStyleDefinitionAt(ScrollBarElement.VButtonTabStyleDefault, 0, true);
 		}
 		
-		if ("LayoutDirection" in stylesMap || "ScrollButtonIncrementStyle" in stylesMap)
+		if ("LayoutDirection" in stylesMap || "ButtonIncrementStyle" in stylesMap)
 		{
-			this._applySubStylesToElement("ScrollButtonIncrementStyle", this._buttonIncrement);
+			this._applySubStylesToElement("ButtonIncrementStyle", this._buttonIncrement);
 			
 			if (layoutDirection == "horizontal")
 				this._buttonIncrement._addStyleDefinitionAt(ScrollBarElement.HButtonScrollArrowIncStyleDefault, 0, true);
