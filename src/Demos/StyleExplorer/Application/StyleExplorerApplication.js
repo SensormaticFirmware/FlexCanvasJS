@@ -516,12 +516,21 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:scrollBarControlStyleType,
 											list:null});
 	//DataListElement
+	var dataListScrollBarDef = new StyleDefinition();
+	dataListScrollBarDef.setStyle("PaddingTop", -1);
+	dataListScrollBarDef.setStyle("PaddingBottom", -1);
+	
 	var dataListDef = new StyleDefinition();
 	dataListDef.setStyle("LayoutDirection", "vertical");
 	dataListDef.setStyle("PercentHeight", 100);
 	dataListDef.setStyle("Width", 200);
 	dataListDef.setStyle("BackgroundColor", "#FAFAFA");
 	dataListDef.setStyle("BorderType", "solid");
+	dataListDef.setStyle("BorderThickness", 1);
+	dataListDef.setStyle("PaddingTop", 1);
+	dataListDef.setStyle("PaddingLeft", 1);
+	dataListDef.setStyle("PaddingBottom", 1);
+	dataListDef.setStyle("ScrollBarStyle", dataListScrollBarDef);
 	
 	var dataListControl = new DataListElement();
 	dataListControl.setStyleDefinitions(dataListDef);
@@ -567,7 +576,7 @@ function StyleExplorerApplication() //extends CanvasManager
 											list:null});
 	//ListContainerElement
 	var listContainerDef = new StyleDefinition();
-	listContainerDef.setStyle("PercentWidth", 50);
+	listContainerDef.setStyle("PercentWidth", 75);
 	listContainerDef.setStyle("PercentHeight", 50);
 	listContainerDef.setStyle("BackgroundColor", "#FAFAFA");
 	
