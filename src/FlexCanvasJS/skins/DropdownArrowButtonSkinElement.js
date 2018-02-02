@@ -85,31 +85,36 @@ DropdownArrowButtonSkinElement.prototype._doRender =
 		var width = paddingMetrics.getWidth();
 		var height = paddingMetrics.getHeight();
 		
-		ctx.beginPath();
-		
-		ctx.moveTo(x + (width / 2), y + (height * .60));
-		ctx.lineTo(x + (width * .70), y + (height * .40));
-		ctx.lineTo(x + (width * .30), y + (height * .40));
-		
-		ctx.closePath();
-		
-		ctx.fillStyle = arrowColor;
-		ctx.fill();
-		
+		if (arrowColor != null)
+		{
+			ctx.beginPath();
+			
+			ctx.moveTo(x + (width / 2), y + (height * .60));
+			ctx.lineTo(x + (width * .70), y + (height * .40));
+			ctx.lineTo(x + (width * .30), y + (height * .40));
+			
+			ctx.closePath();
+			
+			ctx.fillStyle = arrowColor;
+			ctx.fill();
+		}
 
-		var lineHeight = height * .65;
-		
-		ctx.beginPath();
-
-		ctx.moveTo(x, y + (height / 2) - (lineHeight / 2));
-		ctx.lineTo(x, y + (height / 2) + (lineHeight / 2));
-		ctx.lineTo(x + 1, y + (height / 2) + (lineHeight / 2));
-		ctx.lineTo(x + 1, y + (height / 2) - (lineHeight / 2));
-		
-		ctx.closePath();
-		
-		ctx.fillStyle = lineColor;
-		ctx.fill();
+		if (lineColor != null)
+		{
+			var lineHeight = height * .65;
+			
+			ctx.beginPath();
+	
+			ctx.moveTo(x, y + (height / 2) - (lineHeight / 2));
+			ctx.lineTo(x, y + (height / 2) + (lineHeight / 2));
+			ctx.lineTo(x + 1, y + (height / 2) + (lineHeight / 2));
+			ctx.lineTo(x + 1, y + (height / 2) - (lineHeight / 2));
+			
+			ctx.closePath();
+			
+			ctx.fillStyle = lineColor;
+			ctx.fill();
+		}
 	};	
 	
 	
