@@ -16,6 +16,7 @@ function StyleItemRenderer()
 	
 			this._labelStyleName = new LabelElement();
 			this._labelStyleName.setStyle("PercentWidth", 100);
+			this._labelStyleName.setStyle("PaddingRight", 20);
 			
 			this._buttonClearStyle = new ButtonElement();
 			this._buttonClearStyle.setStyleDefinitions(clearStyleButtonStyle);

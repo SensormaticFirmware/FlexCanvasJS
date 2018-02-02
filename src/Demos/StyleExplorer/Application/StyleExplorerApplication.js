@@ -100,7 +100,7 @@ function StyleExplorerApplication() //extends CanvasManager
 					
 					this._styleSelectOuterContainer = new AnchorContainerElement();
 					this._styleSelectOuterContainer.setStyle("PercentHeight", 100);
-					this._styleSelectOuterContainer.setStyle("Width", 450);
+					this._styleSelectOuterContainer.setStyle("MinWidth", 450);
 					
 						this._styleSelectPanelBackground = new CanvasElement();
 						this._styleSelectPanelBackground.setStyleDefinitions(panelBackgroundStyle);
@@ -521,13 +521,14 @@ function StyleExplorerApplication() //extends CanvasManager
 	dataListDef.setStyle("PercentHeight", 100);
 	dataListDef.setStyle("Width", 200);
 	dataListDef.setStyle("BackgroundColor", "#FAFAFA");
+	dataListDef.setStyle("BorderType", "solid");
 	
 	var dataListControl = new DataListElement();
 	dataListControl.setStyleDefinitions(dataListDef);
 	
 	//Set some arbitrary data. 
 	var dataListCollection = new ListCollection();
-	for (i = 1; i <= 100; i++)
+	for (i = 1; i <= 500; i++)
 		dataListCollection.addItem("Data Item - " + i);
 	
 	dataListControl.setListCollection(dataListCollection);
