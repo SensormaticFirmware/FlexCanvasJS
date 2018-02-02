@@ -3897,8 +3897,7 @@ CanvasElement.EStylePriorities =
 	PROXY:2,
 	INHERITED:3,
 	DEFAULT_DEFINITION:4,
-	DEFAULT_PROXY:5,
-	CLASS:6
+	CLASS:5
 };
 
 ////////////Events/////////////////////////////////////
@@ -5002,44 +5001,6 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push((this._styleDefinitionDefaults.length - 1) - ctr); //StyleDefinition depth
 				
 				return styleData;
-			}
-		}
-		
-		//Proxy not allowed for sub styles.
-		if (thisStyleType != StyleableBase.EStyleType.SUBSTYLE)
-		{
-			//Check default proxy
-			proxy = this._styleProxy;
-			ctr = 0;
-			while (proxy != null)
-			{
-				styleType = proxy._proxyElement._getStyleType(styleName);
-				
-				//Proxy not allowed for sub styles.
-				if (styleType == StyleableBase.EStyleType.SUBSTYLE)
-					break;
-				
-				if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
-					(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
-					break;
-				
-				//Check default definitions
-				for (ctr2 = proxy._proxyElement._styleDefinitionDefaults.length - 1; ctr2 >= 0; ctr2--)
-				{
-					styleData.value = proxy._proxyElement._styleDefinitionDefaults[ctr2].getStyle(styleName);
-					
-					if (styleData.value !== undefined)
-					{
-						styleData.priority.push(CanvasElement.EStylePriorities.DEFAULT_PROXY);	
-						styleData.priority.push(ctr);	//proxy depth
-						styleData.priority.push((proxy._proxyElement._styleDefinitionDefaults.length - 1) - ctr2); //Definition depth	
-						
-						return styleData;
-					}
-				}
-				
-				ctr++;
-				proxy = proxy._proxyElement._styleProxy;
 			}
 		}
 		
@@ -11473,7 +11434,7 @@ DropdownArrowButtonSkinElement._StyleTypes.LineColor =				StyleableBase.EStyleTy
 DropdownArrowButtonSkinElement.StyleDefault = new StyleDefinition();
 
 DropdownArrowButtonSkinElement.StyleDefault.setStyle("ArrowColor", 				"#000000"); 		
-DropdownArrowButtonSkinElement.StyleDefault.setStyle("LineColor", 				"#000000"); 
+DropdownArrowButtonSkinElement.StyleDefault.setStyle("LineColor", 				"#000000");
 
 
 /////////Internal Functions////////////////////////
@@ -11508,31 +11469,36 @@ DropdownArrowButtonSkinElement.prototype._doRender =
 		var width = paddingMetrics.getWidth();
 		var height = paddingMetrics.getHeight();
 		
-		ctx.beginPath();
-		
-		ctx.moveTo(x + (width / 2), y + (height * .60));
-		ctx.lineTo(x + (width * .70), y + (height * .40));
-		ctx.lineTo(x + (width * .30), y + (height * .40));
-		
-		ctx.closePath();
-		
-		ctx.fillStyle = arrowColor;
-		ctx.fill();
-		
+		if (arrowColor != null)
+		{
+			ctx.beginPath();
+			
+			ctx.moveTo(x + (width / 2), y + (height * .60));
+			ctx.lineTo(x + (width * .70), y + (height * .40));
+			ctx.lineTo(x + (width * .30), y + (height * .40));
+			
+			ctx.closePath();
+			
+			ctx.fillStyle = arrowColor;
+			ctx.fill();
+		}
 
-		var lineHeight = height * .65;
-		
-		ctx.beginPath();
-
-		ctx.moveTo(x, y + (height / 2) - (lineHeight / 2));
-		ctx.lineTo(x, y + (height / 2) + (lineHeight / 2));
-		ctx.lineTo(x + 1, y + (height / 2) + (lineHeight / 2));
-		ctx.lineTo(x + 1, y + (height / 2) - (lineHeight / 2));
-		
-		ctx.closePath();
-		
-		ctx.fillStyle = lineColor;
-		ctx.fill();
+		if (lineColor != null)
+		{
+			var lineHeight = height * .65;
+			
+			ctx.beginPath();
+	
+			ctx.moveTo(x, y + (height / 2) - (lineHeight / 2));
+			ctx.lineTo(x, y + (height / 2) + (lineHeight / 2));
+			ctx.lineTo(x + 1, y + (height / 2) + (lineHeight / 2));
+			ctx.lineTo(x + 1, y + (height / 2) - (lineHeight / 2));
+			
+			ctx.closePath();
+			
+			ctx.fillStyle = lineColor;
+			ctx.fill();
+		}
 	};	
 	
 	
@@ -13964,26 +13930,29 @@ function DataListElement()
 		{
 			_self._onDataListCollectionChanged(collectionChangedEvent);
 		};
-		
 	this._onDataListScrollBarChangedInstance = 
 		function (elementEvent)
 		{
 			_self._onDataListScrollBarChanged(elementEvent);
 		};
-		
 	this._onDataListMouseWheelEventInstance = 
 		function (elementMouseWheelEvent)
 		{
 			_self._onDataListMouseWheelEvent(elementMouseWheelEvent);
 		};
-	
 	this._onDataListRendererClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataListRendererClick(elementMouseEvent);
 		};
+	this._onContentPaneMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onContentPaneMeasureComplete(event);
+		};	
 		
 	this.addEventListener("wheel", this._onDataListMouseWheelEventInstance);	
+	this._contentPane.addEventListener("measurecomplete", this._onContentPaneMeasureCompleteInstance);
 }
 
 //Inherit from SkinnableElement
@@ -14390,6 +14359,14 @@ DataListElement.prototype._getContentSize =
 			return this._contentSize + paddingSize.width;
 	};
 
+//@private
+DataListElement.prototype._onContentPaneMeasureComplete = 
+	function (event)
+	{
+		this._invalidateMeasure();
+		this._invalidateLayout();
+	};
+	
 /**
  * @function _getNumRenderers
  * Gets the number of DataRenderers that are currently being rendered.
@@ -15876,7 +15853,7 @@ ListContainerElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("LayoutAlign" in stylesMap)
+		else if ("LayoutVerticalAlign" in stylesMap || "LayoutHorizontalAlign" in stylesMap)
 			this._invalidateLayout();
 	};
 
@@ -16367,16 +16344,16 @@ ScrollBarElement._StyleTypes.ScrollTweenDuration =			StyleableBase.EStyleType.NO
 
 //ScrollButton / Button styles.
 /**
- * @style ScrollButtonIncrementStyle StyleDefinition
+ * @style ButtonIncrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll increment Button.
  */
-ScrollBarElement._StyleTypes.ScrollButtonIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
- * @style ScrollButtonDecrementStyle StyleDefinition
+ * @style ButtonDecrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll decrement Button.
  */
-ScrollBarElement._StyleTypes.ScrollButtonDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTrackStyle StyleDefinition
@@ -16423,70 +16400,97 @@ ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ScrollBa
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledTrackSkinStyleDefault); 
 
-//track button - Applied dynamically based on LayoutDirection (vertical)
+////Dynamically added based on LayoutDirection
+
+//track button
 ScrollBarElement.VButtonTrackStyleDefault = new StyleDefinition();
 ScrollBarElement.VButtonTrackStyleDefault.setStyle("PercentWidth", 					100);
 
-//track button - Applied dynamically based on LayoutDirection (horizontal)
+//track button
 ScrollBarElement.HButtonTrackStyleDefault = new StyleDefinition();
 ScrollBarElement.HButtonTrackStyleDefault.setStyle("PercentHeight", 				100);
 
 
 //////ARROWS
 
-//disabled skin of arrow buttons (other states using Button defaults)
+//disabled skin of arrow buttons
 ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault = new StyleDefinition();
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BorderType", 					"solid");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BorderThickness", 				1);
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BorderColor", 					"#999999");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BackgroundColor", 				"#ECECEC");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 					"#777777");
+ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 			"#777777");
+
+//up / over / down skin of arrow buttons
+ScrollBarElement.ButtonScrollArraySkinStyleDefault = new StyleDefinition();
+ScrollBarElement.ButtonScrollArraySkinStyleDefault.setStyle("ArrowColor", 					"#000000");
 
 //arrow buttons common
 ScrollBarElement.ButtonScrollArrowStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("SkinClass", 				ScrollButtonSkinElement);	
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("ArrowColor", 				"#000000"); 
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinWidth", 				15);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinHeight", 				15);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DisabledSkinStyle", 		ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("SkinClass", 						ScrollButtonSkinElement);	
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinHeight", 						15);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("UpSkinStyle", 						ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault);
 
-//arrow button (vertical increment) - Applied dynamically based on LayoutDirection (vertical)
+////Dynamically added based on LayoutDirection
+
+//arrow button (vertical increment)
+ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault.setStyle("ArrowDirection", 			"down");
+
 ScrollBarElement.VButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"down");
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("PercentWidth", 		100);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("PercentWidth", 				100);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
 
-//arrow button (vertical decrement) - Applied dynamically based on LayoutDirection (vertical)
+//arrow button (vertical decrement)
+ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault.setStyle("ArrowDirection", 			"up");
+
 ScrollBarElement.VButtonScrollArrowDecStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"up"); 
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("PercentWidth", 		100);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("PercentWidth", 				100);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
 
-//arrow button (horizontal increment) - Applied dynamically based on LayoutDirection (horizontal)
+//arrow button (horizontal increment)
+ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault.setStyle("ArrowDirection", 			"right");
+
 ScrollBarElement.HButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"right");
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("PercentHeight", 		100);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("PercentHeight", 				100);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
 
-//arrow button (horizontal decrement) - Applied dynamically based on LayoutDirection (horizontal)
+//arrow button (horizontal decrement)
+ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault.setStyle("ArrowDirection", 			"left");
+
 ScrollBarElement.HButtonScrollArrowDecStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"left"); 
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("PercentHeight", 		100);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("PercentHeight", 				100);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
 
 
 //////TAB
 
 //Applied dynamically based on LayoutDirection (vertical)
 ScrollBarElement.VButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 		15);
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 		30);
-ScrollBarElement.VButtonTabStyleDefault.setStyle("PercentWidth", 	100);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 						30);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("PercentWidth", 					100);
 
 //Applied dynamically based on LayoutDirection (horizontal)
 ScrollBarElement.HButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 		30);
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 		15);
-ScrollBarElement.HButtonTabStyleDefault.setStyle("PercentHeight", 	100);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 						30);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 						15);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("PercentHeight", 					100);
 
 
 //////ROOT SCROLLBAR
@@ -16499,8 +16503,8 @@ ScrollBarElement.StyleDefault.setStyle("LayoutGap", 								-1); //Collapse bord
 ScrollBarElement.StyleDefault.setStyle("LayoutHorizontalAlign", 					"center");
 ScrollBarElement.StyleDefault.setStyle("LayoutVerticalAlign", 						"middle"); 
 ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 							ScrollBarElement.ButtonTrackStyleDefault);
-ScrollBarElement.StyleDefault.setStyle("ScrollButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault); 
-ScrollBarElement.StyleDefault.setStyle("ScrollButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault);
+ScrollBarElement.StyleDefault.setStyle("ButtonIncrementStyle", 						ScrollBarElement.ButtonScrollArrowStyleDefault); 
+ScrollBarElement.StyleDefault.setStyle("ButtonDecrementStyle", 						ScrollBarElement.ButtonScrollArrowStyleDefault);
 
 //Applied dynamically based on LayoutDirection
 //ScrollBarElement.StyleDefault.setStyle("ButtonTabStyle", 							ScrollBarElement.ButtonTabStyleDefault); 
@@ -16883,9 +16887,9 @@ ScrollBarElement.prototype._doStylesUpdated =
 		var layoutDirection = this.getStyle("LayoutDirection");
 		
 		//We need to inject the default styles specific to LayoutDirection before other styling.
-		if ("LayoutDirection" in stylesMap || "ScrollButtonDecrementStyle" in stylesMap)
+		if ("LayoutDirection" in stylesMap || "ButtonDecrementStyle" in stylesMap)
 		{
-			this._applySubStylesToElement("ScrollButtonDecrementStyle", this._buttonDecrement);
+			this._applySubStylesToElement("ButtonDecrementStyle", this._buttonDecrement);
 			
 			if (layoutDirection == "horizontal")
 				this._buttonDecrement._addStyleDefinitionAt(ScrollBarElement.HButtonScrollArrowDecStyleDefault, 0, true);
@@ -16913,9 +16917,9 @@ ScrollBarElement.prototype._doStylesUpdated =
 				this._buttonTab._addStyleDefinitionAt(ScrollBarElement.VButtonTabStyleDefault, 0, true);
 		}
 		
-		if ("LayoutDirection" in stylesMap || "ScrollButtonIncrementStyle" in stylesMap)
+		if ("LayoutDirection" in stylesMap || "ButtonIncrementStyle" in stylesMap)
 		{
-			this._applySubStylesToElement("ScrollButtonIncrementStyle", this._buttonIncrement);
+			this._applySubStylesToElement("ButtonIncrementStyle", this._buttonIncrement);
 			
 			if (layoutDirection == "horizontal")
 				this._buttonIncrement._addStyleDefinitionAt(ScrollBarElement.HButtonScrollArrowIncStyleDefault, 0, true);
@@ -18611,20 +18615,21 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyle
 ////////////Default Styles////////////////////
 
 
+DropdownElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundColor", 			null);
+
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
-DropdownElement.ArrowButtonStyleDefault.setStyle("BorderType", 					"none");
-DropdownElement.ArrowButtonStyleDefault.setStyle("BackgroundColor", 			null);
 DropdownElement.ArrowButtonStyleDefault.setStyle("SkinClass", 					DropdownArrowButtonSkinElement);
 
 //Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Dropdown (unless you turn mouse back on)
 DropdownElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 				false);
 
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			null);
+DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			DropdownElement.ArrowButtonSkinStyleDefault);
 ///////////////////////////////
 
 /////Dropdown DataList Style//////
@@ -18652,8 +18657,8 @@ DropdownElement.DataListStyleDefault.setStyle("PaddingRight",					1);
 ///////////////////////////////////
 
 DropdownElement.StyleDefault = new StyleDefinition();
-DropdownElement.StyleDefault.setStyle("PaddingTop",								4);
-DropdownElement.StyleDefault.setStyle("PaddingBottom",							4);
+DropdownElement.StyleDefault.setStyle("PaddingTop",								3);
+DropdownElement.StyleDefault.setStyle("PaddingBottom",							3);
 DropdownElement.StyleDefault.setStyle("PaddingRight",							4);
 DropdownElement.StyleDefault.setStyle("PaddingLeft",							4);
 
@@ -19166,7 +19171,7 @@ DropdownElement.prototype._createDataListPopup =
 		var dataListPopup = new DataListElement();
 		
 		dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
-		this._applySubStylesToElement("PopupDataListStyle", dataListPopup)
+		this._applySubStylesToElement("PopupDataListStyle", dataListPopup);
 		
 		dataListPopup.setListCollection(this._listCollection);
 		dataListPopup.setSelectedIndex(this._selectedIndex);
@@ -19364,7 +19369,7 @@ DropdownElement.prototype._doStylesUpdated =
 		}
 		
 		if ("PopupDataListStyle" in stylesMap && this._dataListPopup != null)
-			this._applySubStylesToElement("PopupListStyle", this._dataListPopup);
+			this._applySubStylesToElement("PopupDataListStyle", this._dataListPopup);
 		
 		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
 			this._updateArrowButton();
