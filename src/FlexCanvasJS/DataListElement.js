@@ -57,26 +57,29 @@ function DataListElement()
 		{
 			_self._onDataListCollectionChanged(collectionChangedEvent);
 		};
-		
 	this._onDataListScrollBarChangedInstance = 
 		function (elementEvent)
 		{
 			_self._onDataListScrollBarChanged(elementEvent);
 		};
-		
 	this._onDataListMouseWheelEventInstance = 
 		function (elementMouseWheelEvent)
 		{
 			_self._onDataListMouseWheelEvent(elementMouseWheelEvent);
 		};
-	
 	this._onDataListRendererClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataListRendererClick(elementMouseEvent);
 		};
+	this._onContentPaneMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onContentPaneMeasureComplete(event);
+		};	
 		
 	this.addEventListener("wheel", this._onDataListMouseWheelEventInstance);	
+	this._contentPane.addEventListener("measurecomplete", this._onContentPaneMeasureCompleteInstance);
 }
 
 //Inherit from SkinnableElement
@@ -483,6 +486,14 @@ DataListElement.prototype._getContentSize =
 			return this._contentSize + paddingSize.width;
 	};
 
+//@private
+DataListElement.prototype._onContentPaneMeasureComplete = 
+	function (event)
+	{
+		this._invalidateMeasure();
+		this._invalidateLayout();
+	};
+	
 /**
  * @function _getNumRenderers
  * Gets the number of DataRenderers that are currently being rendered.
