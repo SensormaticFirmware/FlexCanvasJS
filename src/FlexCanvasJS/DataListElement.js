@@ -795,7 +795,8 @@ DataListElement.prototype._doStylesUpdated =
 				this._invalidateLayout();
 			}
 		}
-		else if ("ListItemStyle" in stylesMap)
+		
+		if ("ListItemStyle" in stylesMap)
 		{
 			for (var i = 0; i < this._contentPane._children.length; i++)
 				this._applySubStylesToElement("ListItemStyle", this._contentPane._children[i]);

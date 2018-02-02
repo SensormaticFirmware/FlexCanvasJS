@@ -100,7 +100,6 @@ function StyleExplorerApplication() //extends CanvasManager
 					
 					this._styleSelectOuterContainer = new AnchorContainerElement();
 					this._styleSelectOuterContainer.setStyle("PercentHeight", 100);
-					this._styleSelectOuterContainer.setStyle("MinWidth", 450);
 					
 						this._styleSelectPanelBackground = new CanvasElement();
 						this._styleSelectPanelBackground.setStyleDefinitions(panelBackgroundStyle);
@@ -121,6 +120,7 @@ function StyleExplorerApplication() //extends CanvasManager
 							this._stylesControlViewport = new ViewportElement();
 							this._stylesControlViewport.setStyle("PercentWidth", 100);
 							this._stylesControlViewport.setStyle("PercentHeight", 100);
+							this._stylesControlViewport.setStyle("MinWidth", 450);
 							
 								this._stylesControlContainer = new ListContainerElement();
 								this._stylesControlContainer.setStyle("PaddingRight", 5);
@@ -213,6 +213,7 @@ function StyleExplorerApplication() //extends CanvasManager
 								
 								this._sandboxCopyCodeContainer = new ListContainerElement();
 								this._sandboxCopyCodeContainer.setStyle("PercentWidth", 100);
+								this._sandboxCopyCodeContainer.setStyle("MinWidth", 200);	
 								this._sandboxCopyCodeContainer.setStyle("PaddingLeft", 5);
 								this._sandboxCopyCodeContainer.setStyle("PaddingRight", 5);
 								
@@ -579,10 +580,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var listContainerDef = new StyleDefinition();
 	listContainerDef.setStyle("PercentWidth", 75);
 	listContainerDef.setStyle("PercentHeight", 50);
-	listContainerDef.setStyle("BackgroundColor", "#FAFAFA");
-	listContainerDef.setStyle("BorderThickness", 1);
-	listContainerDef.setStyle("BorderType", "solid");
-	listContainerDef.setStyle("Padding", 1);
+	listContainerDef.setStyle("BackgroundColor", "#FFFFFF");
 	
 	var listContainerControl = new ListContainerElement();
 	listContainerControl.setStyleDefinitions(listContainerDef);
