@@ -4157,21 +4157,22 @@ CanvasElement.prototype._getAutoGradientLinear =
 		
 		var gradientMetrics = this._getAutoGradientMetrics();
 		
-		var fillGradient = context.createLinearGradient(
-									gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
-									gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
 		try
 		{
+			var fillGradient = context.createLinearGradient(
+					gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
+					gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
+			
 			fillGradient.addColorStop(0, lighterFill);
 			fillGradient.addColorStop(1, darkerFill);
+			
+			return fillGradient;
 		}
 		catch (ex)
 		{
 			//Swallow, invalid color
 			return null;
 		}
-		
-		return fillGradient;
 	};	
 	
 /**
@@ -4202,16 +4203,24 @@ CanvasElement.prototype._getAutoGradientRadial =
 		var gradientPoint = {x:gradientMetrics.startPoint.x + (xSpan * .42), 
 							y:gradientMetrics.startPoint.y + (ySpan * .42)};
 		
-		var fillGradient = context.createRadialGradient(
-				gradientPoint.x, gradientPoint.y, 
-				(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
-				gradientPoint.x, gradientPoint.y, 
-				0);
-		
-		fillGradient.addColorStop(0, darkerFill);
-		fillGradient.addColorStop(1, lighterFill);
-		
-		return fillGradient;
+		try
+		{
+			var fillGradient = context.createRadialGradient(
+					gradientPoint.x, gradientPoint.y, 
+					(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
+					gradientPoint.x, gradientPoint.y, 
+					0);
+			
+			fillGradient.addColorStop(0, darkerFill);
+			fillGradient.addColorStop(1, lighterFill);
+			
+			return fillGradient;
+		}
+		catch (ex)
+		{
+			//Swallow, invalid color
+			return null;
+		}
 	};	
 
 /**
