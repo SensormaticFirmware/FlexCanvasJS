@@ -201,9 +201,9 @@ StyleItemRenderer.prototype._updateStyleValue =
 
 		//Trim out all the "Style" text except for at the end. (Reduce ridiculously long substyle names)
 		var sIndexOf = styleDefName.indexOf("Style");
-		while (sIndexOf != -1 && sIndexOf != styleDefName.length - 6)
+		while (sIndexOf != -1 && sIndexOf != styleDefName.length - 5)
 		{
-			styleDefName = (styleDefName.substring(0, sIndexOf) + styleDefName.substring(sIndexOf + 6));
+			styleDefName = (styleDefName.substring(0, sIndexOf) + styleDefName.substring(sIndexOf + 5));
 			sIndexOf = styleDefName.indexOf("Style");
 		}
 		
@@ -219,8 +219,18 @@ StyleItemRenderer.prototype._updateStyleValue =
 			}
 			else if (this._styleControlType.styleType == "class")
 			{
-				this._styleControlType.styleListCodeString = "var " + styleDefName + this._styleControlType.styleName + " = new " + value.toString().match(/function ([A-Z]{1}[a-zA-Z]*)/)[1] + "();\r\n";
-				this._styleControlType.styleItemCodeString += (styleDefName + this._styleControlType.styleName + ");"); 
+				var subStyleName = styleDefName + this._styleControlType.styleName;
+				
+				//Trim sub style name of excessive "Style" text.
+				sIndexOf = subStyleName.indexOf("Style");
+				while (sIndexOf != -1 && sIndexOf != subStyleName.length - 5)
+				{
+					subStyleName = (subStyleName.substring(0, sIndexOf) + subStyleName.substring(sIndexOf + 5));
+					sIndexOf = subStyleName.indexOf("Style");
+				}
+				
+				this._styleControlType.styleListCodeString = "var " + subStyleName + " = new " + value.toString().match(/function ([A-Z]{1}[a-zA-Z]*)/)[1] + "();\r\n";
+				this._styleControlType.styleItemCodeString += (subStyleName + ");"); 
 				
 				var existingInstance = undefined;
 				if (this._styleControlType.styleName in this._styleControlType.styleDefinition._styleMap)
