@@ -299,19 +299,20 @@ ViewportElement.prototype._doMeasure =
 			elementW = this._viewElement._getStyledOrMeasuredWidth();
 			elementH = this._viewElement._getStyledOrMeasuredHeight();
 		}
-		
-		if (this._verticalScrollBar != null)
+		else
 		{
-			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
-			vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
+			if (this._verticalScrollBar != null)
+			{
+				vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
+				vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
+			}
+			if (this._horizontalScrollBar != null)
+			{
+				hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
+				hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
+			}
 		}
 		
-		if (this._horizontalScrollBar != null)
-		{
-			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
-			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
-		}
-	
 		return {width: Math.max(vBarWidth, hBarWidth) + padWidth + elementW, height: Math.max(vBarHeight, hBarHeight) + padHeight + elementH};
 	};
 	
