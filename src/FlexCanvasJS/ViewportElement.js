@@ -69,6 +69,22 @@ ViewportElement.base = CanvasElement;
 ViewportElement._StyleTypes = Object.create(null);
 
 /**
+ * @style MeasureContentWidth boolean
+ * When true, the viewport's measured width will use its content element's measured width. 
+ * Use this when you want the viewport to expand its width when possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+ViewportElement._StyleTypes.MeasureContentWidth = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style MeasureContentHeight boolean
+ * When true, the viewport's measured height will use its content element's measured height.
+ * Use this when you want the viewport to expand when its height possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+ViewportElement._StyleTypes.MeasureContentHeight = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
  * @style HorizontalScrollBarDisplay String
  * Determines the behavior of the horizontal scroll bar. Allowable values are "on", "off", or "auto".
  */
@@ -118,6 +134,9 @@ ViewportElement.StyleDefault.setStyle("VerticalScrollBarPlacement", 					"right"
 
 ViewportElement.StyleDefault.setStyle("HorizontalScrollBarStyle", 						null);
 ViewportElement.StyleDefault.setStyle("VerticalScrollBarStyle", 						null);
+
+ViewportElement.StyleDefault.setStyle("MeasureContentWidth", 							false);
+ViewportElement.StyleDefault.setStyle("MeasureContentHeight", 							false);
 
 
 
@@ -269,10 +288,19 @@ ViewportElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 			this._invalidateMeasure();
 		}
-		else if ("HorizontalScrollBarPlacement" in stylesMap ||
+		else 
+		{	
+			if ("HorizontalScrollBarPlacement" in stylesMap ||
 				"VerticalScrollBarPlacement" in stylesMap)
-		{
-			this._invalidateLayout();
+			{
+				this._invalidateLayout();
+			}
+			
+			if ("MeasureContentWidth" in stylesMap || 
+				"MeasureContentHeight" in stylesMap)
+			{
+				this._invalidateMeasure();
+			}
 		}
 		
 		if ("HorizontalScrollBarStyle" in stylesMap && this._horizontalScrollBar != null)
@@ -291,29 +319,38 @@ ViewportElement.prototype._doMeasure =
 		var hBarWidth = 0;
 		var hBarHeight = 0;
 		
-		var elementW = 0;
-		var elementH = 0;
+		var w = 0;
+		var h = 0;
 		
 		if (this._viewElement != null)
 		{
-			elementW = this._viewElement._getStyledOrMeasuredWidth();
-			elementH = this._viewElement._getStyledOrMeasuredHeight();
-		}
-		else
-		{
-			if (this._verticalScrollBar != null)
-			{
-				vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
-				vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
-			}
-			if (this._horizontalScrollBar != null)
-			{
-				hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
-				hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
-			}
+			if (this.getStyle("MeasureContentWidth") == true)
+				w = this._viewElement._getStyledOrMeasuredWidth();
+			
+			if (this.getStyle("MeasureContentHeight") == true)
+				h = this._viewElement._getStyledOrMeasuredHeight();
 		}
 		
-		return {width: Math.max(vBarWidth, hBarWidth) + padWidth + elementW, height: Math.max(vBarHeight, hBarHeight) + padHeight + elementH};
+		if (this._verticalScrollBar != null)
+		{
+			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
+			vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
+		}
+		if (this._horizontalScrollBar != null)
+		{
+			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
+			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
+		}
+		
+		if (w == 0)
+			w = hBarWidth;
+		if (h == 0)
+			h = vBarHeight;
+		
+		w += vBarWidth;
+		h += hBarHeight;
+		
+		return {width:w + padWidth, height:h + padHeight};
 	};
 	
 //@Override	
