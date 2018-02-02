@@ -409,8 +409,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"ScrollTweenDuration", 						"number", 	false, 	false, 	styleDef, this,	180,						null));
 				
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonIncrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonDecrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonIncrementStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonDecrementStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonTrackStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonTabStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			}
@@ -456,15 +456,15 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				(this.styleName.indexOf("SkinStyle") >= 0 && this.hasParentStyleName("ArrowButtonStyle")))
 			{
 				//Proxied Dropdown to ArrowButton to ArrowButton skins
-				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-				this.styleList.addItem(new ControlStyleType("Rendering", 	"LineColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowColor", 								"color", 	true, 	false, 	styleDef, this,	"#000000",					null));
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"LineColor", 								"color", 	true, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
 			if (this.styleName == "ButtonIncrementStyle" || 
 				this.styleName == "ButtonDecrementStyle" ||
 				(this.styleName.indexOf("SkinStyle") >= 0 && (this.hasParentStyleName("ButtonIncrementStyle") || this.hasParentStyleName("ButtonDecrementStyle"))))	//skin
 			{
-				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowColor", 								"color", 	true, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowDirection", 							"string", 	false, 	false, 	styleDef, this,	"up",						[{label:"up", value:"up"}, {label:"down", value:"down"}, {label:"left", value:"left"}, {label:"right", value:"right"}]));
 			}
 			
