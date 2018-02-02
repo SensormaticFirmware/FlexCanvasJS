@@ -212,7 +212,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ListItemStyle" ||
 				this.styleName == "DataListStyle" ||
 				this.styleName == "DropdownStyle" ||
-				this.styleName == "PopupDataListStyle")
+				this.styleName == "PopupDataListStyle" ||
+				this.styleName == "ListContainerStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Layout", 		"Padding", 									"number", 	false, 	false, 	styleDef, this,	2,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingTop", 								"number", 	false, 	false, 	styleDef, this,	2,							null));

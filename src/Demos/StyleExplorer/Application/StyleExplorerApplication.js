@@ -218,6 +218,7 @@ function StyleExplorerApplication() //extends CanvasManager
 								
 									this._toggleButtonCopyCode = new ToggleButtonElement();
 									this._toggleButtonCopyCode.setStyle("PercentWidth", 100);
+									this._toggleButtonCopyCode.setStyle("AllowDeselect", false);
 								
 								this._sandboxCopyCodeContainer.addElement(this._toggleButtonCopyCode);
 									
@@ -579,6 +580,9 @@ function StyleExplorerApplication() //extends CanvasManager
 	listContainerDef.setStyle("PercentWidth", 75);
 	listContainerDef.setStyle("PercentHeight", 50);
 	listContainerDef.setStyle("BackgroundColor", "#FAFAFA");
+	listContainerDef.setStyle("BorderThickness", 1);
+	listContainerDef.setStyle("BorderType", "solid");
+	listContainerDef.setStyle("Padding", 1);
 	
 	var listContainerControl = new ListContainerElement();
 	listContainerControl.setStyleDefinitions(listContainerDef);
