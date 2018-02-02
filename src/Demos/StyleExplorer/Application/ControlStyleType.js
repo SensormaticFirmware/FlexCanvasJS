@@ -130,7 +130,6 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetX", 							"number", 	false, 	false, 	styleDef, this,	0,							null));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetY", 							"number", 	false, 	false, 	styleDef, this,	0, 							null));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-				this.styleList.addItem(new ControlStyleType("Rendering", 	"BackgroundShape", 							"class", 	true, 	true,	styleDef, this, RoundedRectangleShape,		[{label:"RoundedRectangle", value:RoundedRectangleShape}, {label:"Arrow", value:ArrowShape}, {label:"Ellipse", value:EllipseShape}]));
 				
 				this.styleList.addItem(new ControlStyleType("Functional", 	"Draggable", 								"bool", 	false, 	false, 	styleDef, this, false,						[{label:"true", value:true}, {label:"false", value:false}]));
 			}
@@ -159,11 +158,15 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
+				this.styleName == "ArrowButtonStyle" ||
+				this.styleName == "PopupDataListStyle" ||
 				this.styleName.indexOf("SkinStyle") >= 0) 
 			{
-				this.styleList.addItem(new ControlStyleType("Functional", 	"Visible", 									"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+				if (this.styleName != "PopupDataListStyle")
+					this.styleList.addItem(new ControlStyleType("Functional", 	"Visible", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 				
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"Alpha", 									"number", 	false, 	false, 	styleDef, this,	.5,							null));
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"BackgroundShape", 							"class", 	true, 	true,	styleDef, this, RoundedRectangleShape,		[{label:"RoundedRectangle", value:RoundedRectangleShape}, {label:"Arrow", value:ArrowShape}, {label:"Ellipse", value:EllipseShape}]));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"BackgroundColor", 							"color", 	true, 	false,	styleDef, this, "#FFFFFF",					null));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"BorderType", 								"string", 	true, 	false, 	styleDef, this,	"solid",					[{label:"solid", value:"solid"}, {label:"inset", value:"inset"}, {label:"outset", value:"outset"}]));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"BorderColor", 								"color", 	true, 	false,	styleDef, this, "#000000",					null));
@@ -179,12 +182,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ButtonIncrementStyle" || 
-				this.styleName == "ButtonDecrementStyle" ||
-				this.styleName == "ButtonTrackStyle" || 
-				this.styleName == "ButtonTabStyle" ||
 				this.styleName == "DataListStyle" ||
-				this.styleName == "ListItemStyle")
+				this.styleName == "ListItemStyle" ||
+				this.styleName == "DropdownStyle" ||
+				this.styleName == "PopupDataListStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"TextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Text", 		"TextStyle", 								"string", 	false, 	false, 	styleDef, this,	"normal",					[{label:"normal", value:"normal"}, {label:"bold", value:"bold"}, {label:"italic", value:"italic"}, {label:"bold italic", value:"bold italic"}]));
@@ -209,7 +210,9 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
 				this.styleName == "ListItemStyle" ||
-				this.styleName == "DataListStyle")
+				this.styleName == "DataListStyle" ||
+				this.styleName == "DropdownStyle" ||
+				this.styleName == "PopupDataListStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Layout", 		"Padding", 									"number", 	false, 	false, 	styleDef, this,	2,							null));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingTop", 								"number", 	false, 	false, 	styleDef, this,	2,							null));
@@ -223,10 +226,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ButtonIncrementStyle" || 
-				this.styleName == "ButtonDecrementStyle" ||
-				this.styleName == "ButtonTrackStyle" || 
-				this.styleName == "ButtonTabStyle")
+				this.styleName == "DropdownStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"Text", 									"string", 	true, 	false, 	styleDef, this, "My Text",					null));
 			}
@@ -240,7 +240,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonIncrementStyle" || 
 				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
-				this.styleName == "ButtonTabStyle")
+				this.styleName == "ButtonTabStyle" ||
+				this.styleName == "DropdownStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"Enabled", 									"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 			}
@@ -254,10 +255,22 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" || 
 				this.styleName == "TextInputStyle" ||
-				this.styleName == "ListItemStyle")
+				this.styleName == "ListItemStyle" ||
+				this.styleName == "DropdownStyle" ||
+				this.styleName == "ArrowButtonStyle")
 			{
-				this.styleList.addItem(new ControlStyleType("Text", 		"UpTextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"UpSkinStyle", 								"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			}
+			
+			if (this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle" ||
+				this.styleName == "TextInputStyle" ||
+				this.styleName == "ListItemStyle" ||
+				this.styleName == "DropdownStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Text", 		"UpTextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",				null));
 			}
 			
 			if (this.styleName == "ButtonStyle" || 
@@ -268,10 +281,21 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" || 
-				this.styleName == "TextInputStyle")
+				this.styleName == "TextInputStyle" ||
+				this.styleName == "DropdownStyle" ||
+				this.styleName == "ArrowButtonStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DisabledSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			}
+			
+			if (this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle" ||
+				this.styleName == "TextInputStyle" ||
+				this.styleName == "DropdownStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"DisabledTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DisabledSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			}
 			
 			if (this.styleName == "ButtonStyle" || 
@@ -282,19 +306,21 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
-				this.styleName == "ListItemStyle")
+				this.styleName == "ListItemStyle" ||
+				this.styleName == "DropdownStyle" ||
+				this.styleName == "ArrowButtonStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"OverSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Text", 		"OverTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
-			if (this.styleName == "ListItemStyle")
+			if (this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle" ||
+				this.styleName == "ListItemStyle" ||
+				this.styleName == "DropdownStyle")
 			{
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AltSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Text", 		"AltTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-
-				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Text", 		"SelectedTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+				this.styleList.addItem(new ControlStyleType("Text", 		"OverTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
 			if (this.styleName == "ButtonStyle" || 
@@ -304,11 +330,40 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonIncrementStyle" || 
 				this.styleName == "ButtonDecrementStyle" ||
 				this.styleName == "ButtonTrackStyle" || 
-				this.styleName == "ButtonTabStyle")
+				this.styleName == "ButtonTabStyle" ||
+				this.styleName == "DropdownStyle" ||
+				this.styleName == "ArrowButtonStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"DownSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			}
+			
+			if (this.styleName == "ButtonStyle" || 
+				this.styleName == "ToggleButtonStyle" ||
+				this.styleName == "RadioButtonStyle" ||
+				this.styleName == "CheckboxStyle" ||
+				this.styleName == "DropdownStyle")
+			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"DownTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			}
+			
+			if (this.styleName == "DropdownStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Functional", 	"MaxPopupHeight", 							"number", 	false, 	false, 	styleDef, this,	200,						null));
+				this.styleList.addItem(new ControlStyleType("Functional", 	"OpenCloseTweenDuration", 					"number", 	false, 	false, 	styleDef, this,	300,						null));
 				
+				this.styleList.addItem(new ControlStyleType("Layout", 		"PopupDataListClipTopOrBottom", 			"number", 	false, 	false, 	styleDef, this,	1,							null));
+				
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"PopupDataListStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ArrowButtonStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			}
+			
+			if (this.styleName == "ListItemStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AltSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Text", 		"AltTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+
+				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+				this.styleList.addItem(new ControlStyleType("Text", 		"SelectedTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
 			if (this.styleName == "TextInputStyle")
@@ -338,7 +393,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutHorizontalAlign", 					"string", 	false, 	false, 	styleDef, this,	"center",					[{label:"left", value:"left"}, {label:"center", value:"center"}, {label:"right", value:"right"}]));
 			}
 			
-			if (this.styleName == "DataListStyle")
+			if (this.styleName == "DataListStyle" ||
+				this.styleName == "PopupDataListStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Layout", 		"ScrollBarPlacement", 						"string", 	false, 	false, 	styleDef, this,	"right",					[{label:"left", value:"left"}, {label:"right", value:"right"}, {label:"top", value:"top"}, {label:"bottom", value:"bottom"}]));
 				
@@ -383,7 +439,6 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LabelGap", 								"number", 	false, 	false, 	styleDef, this,	5,							null));
 			}
 			
-			//Skin styles specific to Checkbox / RadioButton
 			if (this.styleName == "RadioButtonStyle" ||		//root
 				this.styleName == "CheckboxStyle" ||		//root
 				(this.styleName.indexOf("SkinStyle") >= 0 && (this.hasParentStyleName("RadioButtonStyle") || this.hasParentStyleName("CheckboxStyle"))))	//skin
@@ -394,6 +449,15 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"CheckColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 				this.styleList.addItem(new ControlStyleType("Rendering", 	"CheckSize", 								"number", 	false, 	false, 	styleDef, this,	checkSize,					null));
+			}
+			
+			if (this.styleName == "DropdownStyle" ||		//root
+				this.styleName == "ArrowButtonStyle" || 	//sub button
+				(this.styleName.indexOf("SkinStyle") >= 0 && this.hasParentStyleName("ArrowButtonStyle")))
+			{
+				//Proxied Dropdown to ArrowButton to ArrowButton skins
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"ArrowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"LineColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
 			if (this.styleName == "ButtonIncrementStyle" || 
