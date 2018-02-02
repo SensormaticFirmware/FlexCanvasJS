@@ -157,70 +157,97 @@ ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ScrollBa
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);
 ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledTrackSkinStyleDefault); 
 
-//track button - Applied dynamically based on LayoutDirection (vertical)
+////Dynamically added based on LayoutDirection
+
+//track button
 ScrollBarElement.VButtonTrackStyleDefault = new StyleDefinition();
 ScrollBarElement.VButtonTrackStyleDefault.setStyle("PercentWidth", 					100);
 
-//track button - Applied dynamically based on LayoutDirection (horizontal)
+//track button
 ScrollBarElement.HButtonTrackStyleDefault = new StyleDefinition();
 ScrollBarElement.HButtonTrackStyleDefault.setStyle("PercentHeight", 				100);
 
 
 //////ARROWS
 
-//disabled skin of arrow buttons (other states using Button defaults)
+//disabled skin of arrow buttons
 ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault = new StyleDefinition();
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BorderType", 					"solid");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BorderThickness", 				1);
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BorderColor", 					"#999999");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("BackgroundColor", 				"#ECECEC");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
-ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 					"#777777");
+ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 			"#777777");
+
+//up / over / down skin of arrow buttons
+ScrollBarElement.ButtonScrollArraySkinStyleDefault = new StyleDefinition();
+ScrollBarElement.ButtonScrollArraySkinStyleDefault.setStyle("ArrowColor", 					"#000000");
 
 //arrow buttons common
 ScrollBarElement.ButtonScrollArrowStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("SkinClass", 				ScrollButtonSkinElement);	
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("ArrowColor", 				"#000000"); 
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinWidth", 				15);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinHeight", 				15);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DisabledSkinStyle", 		ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("SkinClass", 						ScrollButtonSkinElement);	
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinHeight", 						15);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("UpSkinStyle", 						ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault);
 
-//arrow button (vertical increment) - Applied dynamically based on LayoutDirection (vertical)
+////Dynamically added based on LayoutDirection
+
+//arrow button (vertical increment)
+ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault.setStyle("ArrowDirection", 			"down");
+
 ScrollBarElement.VButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"down");
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("PercentWidth", 		100);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("PercentWidth", 				100);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
 
-//arrow button (vertical decrement) - Applied dynamically based on LayoutDirection (vertical)
+//arrow button (vertical decrement)
+ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault.setStyle("ArrowDirection", 			"up");
+
 ScrollBarElement.VButtonScrollArrowDecStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"up"); 
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("PercentWidth", 		100);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("PercentWidth", 				100);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
 
-//arrow button (horizontal increment) - Applied dynamically based on LayoutDirection (horizontal)
+//arrow button (horizontal increment)
+ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault.setStyle("ArrowDirection", 			"right");
+
 ScrollBarElement.HButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"right");
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("PercentHeight", 		100);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("PercentHeight", 				100);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
 
-//arrow button (horizontal decrement) - Applied dynamically based on LayoutDirection (horizontal)
+//arrow button (horizontal decrement)
+ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault.setStyle("ArrowDirection", 			"left");
+
 ScrollBarElement.HButtonScrollArrowDecStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"left"); 
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("PercentHeight", 		100);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("PercentHeight", 				100);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
 
 
 //////TAB
 
 //Applied dynamically based on LayoutDirection (vertical)
 ScrollBarElement.VButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 		15);
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 		30);
-ScrollBarElement.VButtonTabStyleDefault.setStyle("PercentWidth", 	100);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 						30);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("PercentWidth", 					100);
 
 //Applied dynamically based on LayoutDirection (horizontal)
 ScrollBarElement.HButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 		30);
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 		15);
-ScrollBarElement.HButtonTabStyleDefault.setStyle("PercentHeight", 	100);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 						30);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 						15);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("PercentHeight", 					100);
 
 
 //////ROOT SCROLLBAR
@@ -233,8 +260,8 @@ ScrollBarElement.StyleDefault.setStyle("LayoutGap", 								-1); //Collapse bord
 ScrollBarElement.StyleDefault.setStyle("LayoutHorizontalAlign", 					"center");
 ScrollBarElement.StyleDefault.setStyle("LayoutVerticalAlign", 						"middle"); 
 ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 							ScrollBarElement.ButtonTrackStyleDefault);
-ScrollBarElement.StyleDefault.setStyle("ButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault); 
-ScrollBarElement.StyleDefault.setStyle("ButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowStyleDefault);
+ScrollBarElement.StyleDefault.setStyle("ButtonIncrementStyle", 						ScrollBarElement.ButtonScrollArrowStyleDefault); 
+ScrollBarElement.StyleDefault.setStyle("ButtonDecrementStyle", 						ScrollBarElement.ButtonScrollArrowStyleDefault);
 
 //Applied dynamically based on LayoutDirection
 //ScrollBarElement.StyleDefault.setStyle("ButtonTabStyle", 							ScrollBarElement.ButtonTabStyleDefault); 

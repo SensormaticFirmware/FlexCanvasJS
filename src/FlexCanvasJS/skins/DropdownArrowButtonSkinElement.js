@@ -50,7 +50,7 @@ DropdownArrowButtonSkinElement._StyleTypes.LineColor =				StyleableBase.EStyleTy
 DropdownArrowButtonSkinElement.StyleDefault = new StyleDefinition();
 
 DropdownArrowButtonSkinElement.StyleDefault.setStyle("ArrowColor", 				"#000000"); 		
-DropdownArrowButtonSkinElement.StyleDefault.setStyle("LineColor", 				"#000000"); 
+DropdownArrowButtonSkinElement.StyleDefault.setStyle("LineColor", 				"#000000");
 
 
 /////////Internal Functions////////////////////////

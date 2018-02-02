@@ -189,20 +189,21 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyle
 ////////////Default Styles////////////////////
 
 
+DropdownElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundColor", 			null);
+
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
-DropdownElement.ArrowButtonStyleDefault.setStyle("BorderType", 					"none");
-DropdownElement.ArrowButtonStyleDefault.setStyle("BackgroundColor", 			null);
 DropdownElement.ArrowButtonStyleDefault.setStyle("SkinClass", 					DropdownArrowButtonSkinElement);
 
 //Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Dropdown (unless you turn mouse back on)
 DropdownElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 				false);
 
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			null);
+DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			DropdownElement.ArrowButtonSkinStyleDefault);
 ///////////////////////////////
 
 /////Dropdown DataList Style//////

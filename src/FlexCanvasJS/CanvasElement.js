@@ -278,8 +278,7 @@ CanvasElement.EStylePriorities =
 	PROXY:2,
 	INHERITED:3,
 	DEFAULT_DEFINITION:4,
-	DEFAULT_PROXY:5,
-	CLASS:6
+	CLASS:5
 };
 
 ////////////Events/////////////////////////////////////
@@ -1168,6 +1167,11 @@ CanvasElement.prototype.getStyle =
 CanvasElement.prototype.getStyleData = 
 	function (styleName)
 	{
+		if (styleName == "BorderType" && this._parent instanceof ButtonElement)
+		{
+			var xxx = 5;
+		}
+	
 		//Create cache if does not exist.
 		var styleCache = this._stylesCache[styleName];
 		if (styleCache == null)
@@ -1383,44 +1387,6 @@ CanvasElement.prototype.getStyleData =
 				styleData.priority.push((this._styleDefinitionDefaults.length - 1) - ctr); //StyleDefinition depth
 				
 				return styleData;
-			}
-		}
-		
-		//Proxy not allowed for sub styles.
-		if (thisStyleType != StyleableBase.EStyleType.SUBSTYLE)
-		{
-			//Check default proxy
-			proxy = this._styleProxy;
-			ctr = 0;
-			while (proxy != null)
-			{
-				styleType = proxy._proxyElement._getStyleType(styleName);
-				
-				//Proxy not allowed for sub styles.
-				if (styleType == StyleableBase.EStyleType.SUBSTYLE)
-					break;
-				
-				if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
-					(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
-					break;
-				
-				//Check default definitions
-				for (ctr2 = proxy._proxyElement._styleDefinitionDefaults.length - 1; ctr2 >= 0; ctr2--)
-				{
-					styleData.value = proxy._proxyElement._styleDefinitionDefaults[ctr2].getStyle(styleName);
-					
-					if (styleData.value !== undefined)
-					{
-						styleData.priority.push(CanvasElement.EStylePriorities.DEFAULT_PROXY);	
-						styleData.priority.push(ctr);	//proxy depth
-						styleData.priority.push((proxy._proxyElement._styleDefinitionDefaults.length - 1) - ctr2); //Definition depth	
-						
-						return styleData;
-					}
-				}
-				
-				ctr++;
-				proxy = proxy._proxyElement._styleProxy;
 			}
 		}
 		
