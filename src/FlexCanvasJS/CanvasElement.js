@@ -1167,11 +1167,6 @@ CanvasElement.prototype.getStyle =
 CanvasElement.prototype.getStyleData = 
 	function (styleName)
 	{
-		if (styleName == "BorderType" && this._parent instanceof ButtonElement)
-		{
-			var xxx = 5;
-		}
-	
 		//Create cache if does not exist.
 		var styleCache = this._stylesCache[styleName];
 		if (styleCache == null)

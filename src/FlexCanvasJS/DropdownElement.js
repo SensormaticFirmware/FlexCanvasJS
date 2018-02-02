@@ -745,7 +745,7 @@ DropdownElement.prototype._createDataListPopup =
 		var dataListPopup = new DataListElement();
 		
 		dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
-		this._applySubStylesToElement("PopupDataListStyle", dataListPopup)
+		this._applySubStylesToElement("PopupDataListStyle", dataListPopup);
 		
 		dataListPopup.setListCollection(this._listCollection);
 		dataListPopup.setSelectedIndex(this._selectedIndex);
@@ -943,7 +943,7 @@ DropdownElement.prototype._doStylesUpdated =
 		}
 		
 		if ("PopupDataListStyle" in stylesMap && this._dataListPopup != null)
-			this._applySubStylesToElement("PopupListStyle", this._dataListPopup);
+			this._applySubStylesToElement("PopupDataListStyle", this._dataListPopup);
 		
 		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
 			this._updateArrowButton();
