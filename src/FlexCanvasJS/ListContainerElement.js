@@ -90,7 +90,7 @@ ListContainerElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("LayoutAlign" in stylesMap)
+		else if ("LayoutVerticalAlign" in stylesMap || "LayoutHorizontalAlign" in stylesMap)
 			this._invalidateLayout();
 	};
 
