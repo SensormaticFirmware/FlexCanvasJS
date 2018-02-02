@@ -385,7 +385,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			}
 			
 			if (this.styleName == "DataListStyle" ||
-				this.styleName == "ScrollBarStyle")
+				this.styleName == "ScrollBarStyle" ||
+				this.styleName == "ListContainerStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutDirection", 							"string", 	false, 	false, 	styleDef, this,	"vertical",					[{label:"vertical", value:"vertical"}, {label:"horizontal", value:"horizontal"}]));
 				this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutGap", 								"number", 	false, 	false, 	styleDef, this,	-1,							null));

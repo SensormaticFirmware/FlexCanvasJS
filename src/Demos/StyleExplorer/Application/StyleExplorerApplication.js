@@ -564,6 +564,42 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:dropdownControl, 
 											rootControlStyleType:dropdownControlStyleType,
 											list:null});
+	//ListContainerElement
+	var listContainerDef = new StyleDefinition();
+	listContainerDef.setStyle("PercentWidth", 50);
+	listContainerDef.setStyle("PercentHeight", 50);
+	listContainerDef.setStyle("BackgroundColor", "#FAFAFA");
+	
+	var listContainerControl = new ListContainerElement();
+	listContainerControl.setStyleDefinitions(listContainerDef);
+	
+	//Set some arbitrary controls.
+	var listContainerButton1 = new ButtonElement();
+	listContainerButton1.setStyle("Text", "Measured X Measured");
+	
+	var listContainerButton2 = new ButtonElement();
+	listContainerButton2.setStyle("Text", "25% X 25%");
+	listContainerButton2.setStyle("PercentWidth", 25);
+	listContainerButton2.setStyle("PercentHeight", 25);
+	
+	var listContainerButton3 = new ButtonElement();
+	listContainerButton3.setStyle("Text", "50% X 50%");
+	listContainerButton3.setStyle("PercentWidth", 50);
+	listContainerButton3.setStyle("PercentHeight", 50);
+	
+	listContainerControl.addElement(listContainerButton1);
+	listContainerControl.addElement(listContainerButton2);
+	listContainerControl.addElement(listContainerButton3);
+	
+	var listContainerControlStyleType = new ControlStyleType("", "ListContainerStyle", "root", false, false, listContainerControl, null, null, null);
+	listContainerControlStyleType.styleListCodeString = "var ListContainerStyle = new StyleDefinition();\r\n";
+	
+	listContainerControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"ListContainer", 
+											control:listContainerControl, 
+											rootControlStyleType:listContainerControlStyleType,
+											list:null});
 	////////////////////////////////////
 	
 	

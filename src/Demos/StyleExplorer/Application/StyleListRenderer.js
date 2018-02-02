@@ -68,7 +68,7 @@ StyleListRenderer.prototype._onLocaleChanged =
 			return;
 	
 		var currentLocale = this.getManager().getLocale();
-		this._dropdownAdd.setStyle("Text", localeStrings[currentLocale]["Add"] + " " + this._styleControlType.styleName + " " + localeStrings[currentLocale]["Styles"]);
+		this._dropdownAdd.setStyle("Text", localeStrings[currentLocale]["Add"] + " " + this._styleControlType.styleName);
 	};
 
 StyleListRenderer.prototype._onDropdownAddListItemClick = 
