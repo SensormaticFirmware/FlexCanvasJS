@@ -147,6 +147,7 @@ ViewportElement.prototype.setElement =
 			this._viewPortContainer._addChild(this._viewElement);
 		}
 		
+		this._invalidateMeasure();
 		this._invalidateLayout();
 	};
 
@@ -290,18 +291,28 @@ ViewportElement.prototype._doMeasure =
 		var hBarWidth = 0;
 		var hBarHeight = 0;
 		
+		var elementW = 0;
+		var elementH = 0;
+		
+		if (this._viewElement != null)
+		{
+			elementW = this._viewElement._getStyledOrMeasuredWidth();
+			elementH = this._viewElement._getStyledOrMeasuredHeight();
+		}
+		
 		if (this._verticalScrollBar != null)
 		{
 			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
 			vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
 		}
+		
 		if (this._horizontalScrollBar != null)
 		{
 			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
 			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		}
 	
-		return {width: Math.max(vBarWidth, hBarWidth) + padWidth, height: Math.max(vBarHeight, hBarHeight) + padHeight};
+		return {width: Math.max(vBarWidth, hBarWidth) + padWidth + elementW, height: Math.max(vBarHeight, hBarHeight) + padHeight + elementH};
 	};
 	
 //@Override	
