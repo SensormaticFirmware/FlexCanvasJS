@@ -68,7 +68,14 @@ StyleListRenderer.prototype._onLocaleChanged =
 			return;
 	
 		var currentLocale = this.getManager().getLocale();
-		this._dropdownAdd.setStyle("Text", localeStrings[currentLocale]["Add"] + " " + this._styleControlType.styleName);
+		
+		var dropdownText = localeStrings[currentLocale]["Add"] + " " + this._styleControlType.styleName;
+		
+		//Most substyles end with "Style", the ones that dont like "BackgroundShape" we add it to the end for consistency.
+		if (dropdownText.indexOf("Style") != dropdownText.length - 5)
+			dropdownText = dropdownText + "Style";
+		
+		this._dropdownAdd.setStyle("Text", dropdownText);
 	};
 
 StyleListRenderer.prototype._onDropdownAddListItemClick = 

@@ -121,6 +121,7 @@ function StyleExplorerApplication() //extends CanvasManager
 							this._stylesControlViewport.setStyle("PercentWidth", 100);
 							this._stylesControlViewport.setStyle("PercentHeight", 100);
 							this._stylesControlViewport.setStyle("MinWidth", 450);
+							this._stylesControlViewport.setStyle("MeasureContentWidth", true); //Allow horizontal expansion
 							
 								this._stylesControlContainer = new ListContainerElement();
 								this._stylesControlContainer.setStyle("PaddingRight", 5);
