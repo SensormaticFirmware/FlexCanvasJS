@@ -1,4 +1,6 @@
 
+//Root application.
+
 function StyleExplorerApplication() //extends CanvasManager
 {
 	//Call base constructor
@@ -10,6 +12,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	//Using indentation to help visualize nest level of elements.
 	
 	this.setStyleDefinitions(canvasManagerStyle); //Set root styles
+	this.setStyle("TextSize", 12);
 	
 		this._applicationViewport = new ViewportElement();
 		this._applicationViewport.setStyle("PercentWidth", 100);
@@ -123,8 +126,8 @@ function StyleExplorerApplication() //extends CanvasManager
 							this._stylesControlViewport.setStyle("MinWidth", 450);
 							this._stylesControlViewport.setStyle("MeasureContentWidth", true); //Allow horizontal expansion
 							
+								//Stores the root StyleListRenderer
 								this._stylesControlContainer = new ListContainerElement();
-								this._stylesControlContainer.setStyle("PaddingRight", 5);
 								
 							this._stylesControlViewport.setElement(this._stylesControlContainer);
 							
@@ -369,14 +372,22 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._toggleButtonCopyCode.addEventListener("keydown", this._onToggleButtonCopyCodeEventHandlerInstance);
 	this._toggleButtonCopyCode.addEventListener("focusout", this._onToggleButtonCopyCodeEventHandlerInstance);
 	
+	
 	/////////////////FUNCTIONAL///////////////////////////////
 	
 	var i = 0;
 	
+	//Select style list we're currently displaying.
 	this._currentListRenderer = null;
-	this._currentFontSize = 12;
-	this.setStyle("TextSize", this._currentFontSize);
 	
+	//Build locale Dropdown data
+	this._dropdownLocaleCollection = new ListCollection();
+	this._dropdownLocaleCollection.addItem({key:"en-us", label:"English"});
+	this._dropdownLocaleCollection.addItem({key:"es-es", label:"Español"});
+	
+	//Apply data to Dropdown.
+	this._dropdownLocale.setListCollection(this._dropdownLocaleCollection);
+	this._dropdownLocale.setSelectedIndex(0);
 	
 	//////Build controls and style data//////
 	this._dataListControlsCollection = new ListCollection();
@@ -504,7 +515,6 @@ function StyleExplorerApplication() //extends CanvasManager
 	scrollBarControl.setStyleDefinitions(scrollBarDef);
 	
 	//Set some arbitrary page / view size so bar is not disabled. 
-	//TODO: Should be UI configured, property rather than style (somewhere..)
 	scrollBarControl.setScrollPageSize(1000);
 	scrollBarControl.setScrollViewSize(150);
 	scrollBarControl.setScrollLineSize(50);
@@ -657,13 +667,8 @@ function StyleExplorerApplication() //extends CanvasManager
 											list:null});
 	////////////////////////////////////
 	
-	
-	//Set static collection sort
-	if (StyleExplorerApplication.LabelSort == null)
-		StyleExplorerApplication.LabelSort = new CollectionSort(StyleExplorerApplication.LabelSortFunction, false);
-	
-	//Apply sort
-	this._dataListControlsCollection.setCollectionSort(StyleExplorerApplication.LabelSort);
+	//Associate sort with controls collection
+	this._dataListControlsCollection.setCollectionSort(new CollectionSort(StyleExplorerApplication.LabelSortFunction));
 	
 	//Do sort
 	this._dataListControlsCollection.sort();
@@ -673,16 +678,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	//////
 	
-	//Build locale Dropdown data
-	this._dropdownLocaleCollection = new ListCollection();
-	this._dropdownLocaleCollection.addItem({key:"en-us", label:"English"});
-	this._dropdownLocaleCollection.addItem({key:"es-es", label:"Español"});
-	
-	//Apply data to Dropdown.
-	this._dropdownLocale.setListCollection(this._dropdownLocaleCollection);
-	this._dropdownLocale.setSelectedIndex(0);
-	
-	//Setup Sandbox / Code views
+	//Setup Sandbox / Code views (spoof event)
 	this._onSandboxHeaderRadioButtonGroupChanged(null);
 }
 
@@ -691,7 +687,7 @@ StyleExplorerApplication.prototype = Object.create(CanvasManager.prototype);
 StyleExplorerApplication.prototype.constructor = StyleExplorerApplication;
 StyleExplorerApplication.base = CanvasManager;
 
-//Static
+/////Static
 StyleExplorerApplication.LabelSortFunction = 
 	function (objA, objB)
 	{
@@ -702,21 +698,11 @@ StyleExplorerApplication.LabelSortFunction =
 		
 		return 0;
 	};
-	
-StyleExplorerApplication.LabelSort = null; //Set via constructor (avoid file ordering dependencies)
-
 
 /////Internal
 StyleExplorerApplication.prototype._onLocaleChanged = 
 	function (event)
 	{
-		//Bail if not attached to manager.
-		//This is not necessary here (it'll never happen), but its possible
-		//under other scenarios when an element is added and immediately removed
-		//before this event gets to fire. Best always to check.
-		if (this.getManager() == null) 
-			return;
-	
 		//Get locale from manager
 		var currentLocale = this.getManager().getLocale();
 		
@@ -757,6 +743,8 @@ StyleExplorerApplication.prototype._onButtonFontSmallerClick =
 		this._buttonFontLarger.setStyle("Enabled", true);
 	};
 	
+//Toggle visibility and layout of sandbox / style code. For best performance, 
+//always turn layout off with visibility unless you *want* the item to consume container space.
 StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
 	function (event)
 	{
@@ -804,7 +792,7 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 		//Add control to sandbox
 		this._sandboxControlContainer.addElement(controlData.control);
 		
-		//Create select style root list if does not exist.
+		//Create Select Style root StyleListRenderer if does not exist.
 		if (controlData.list == null)
 		{
 			controlData.list = new StyleListRenderer();
@@ -812,7 +800,7 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 			this._stylesControlContainer.addElement(controlData.list);
 		}
 		
-		//Hide old list
+		//Hide old list (its much more expensive to re-build the list than just hide/show it).
 		if (this._currentListRenderer != null)
 		{
 			this._currentListRenderer.setStyle("Visible", false);
@@ -828,6 +816,7 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 			this._currentListRenderer.setStyle("IncludeInLayout", true);
 		}
 		
+		//Update style code (spoof event).
 		this._onStylingChanged(null);
 	};
 	
@@ -896,9 +885,6 @@ StyleExplorerApplication.prototype._onCopyCutCode =
 	{
 		clipboardData.setData("Text", this._textSandboxStyleCode.getStyle("Text"));
 		
-		var locale = this.getManager().getLocale();
-		
-		this._toggleButtonCopyCode.setSelected(false);
-		this._toggleButtonCopyCode.setStyle("Text", localeStrings[locale]["Copy"] + " " + localeStrings[locale]["Style Code"]);
+		this._onToggleButtonCopyCodeFocusout(null);
 	};	
 	

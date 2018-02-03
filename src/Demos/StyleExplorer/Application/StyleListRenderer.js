@@ -1,4 +1,6 @@
 
+//Renders an Add Style dropdown and a list of StyleItemRenderer(s).
+
 function StyleListRenderer()
 {
 	StyleListRenderer.base.prototype.constructor.call(this);
@@ -36,6 +38,8 @@ function StyleListRenderer()
 		};
 		
 	this.addEventListener("localechanged", this._onLocaleChangedInstance);
+	
+	//Manually handling the dropdown listitemclick, because we're disabling the list's normal selection mechanism via styling.
 	this._dropdownAdd.addEventListener("listitemclick", this._onDropdownAddListItemClickInstance);
 	
 	
@@ -64,7 +68,9 @@ StyleListRenderer.addStyleDropdownLabelFunction =
 StyleListRenderer.prototype._onLocaleChanged = 
 	function (event)
 	{
-		if (this._styleControlType == null || this.getManager() == null)
+		//Sometimes manager is null cause we fire this when we set the controlStyleType
+		//which is sometimes prior to being attached to the display chain. Just bail.
+		if (this.getManager() == null)
 			return;
 	
 		var currentLocale = this.getManager().getLocale();
@@ -114,24 +120,28 @@ StyleListRenderer.prototype._onDropdownAddListItemClick =
 		}
 	};
 
+//Clear button clicked on StyleItemRenderer	
 StyleListRenderer.prototype._onItemRendererCleared = 
 	function (event)
 	{
 		this._clearItemRenderer(event.getTarget());		
-	}	;
+	};
 	
 StyleListRenderer.prototype._clearItemRenderer = 
 	function (itemRenderer)
 	{
-		var styleControlType = itemRenderer._styleControlType;
+		//This is one of the values in our this._styleControlType.styleList (which is bound to the Add Style dropdown)
+		var rendererStyleControlType = itemRenderer._styleControlType;
 		
-		styleControlType.styleDefinition.clearStyle(styleControlType.styleName);
-		styleControlType.styleListCodeString = "";
-		styleControlType.styleItemCodeString = "";
+		//Wipe out the style & code string cache
+		rendererStyleControlType.styleDefinition.clearStyle(rendererStyleControlType.styleName);
+		rendererStyleControlType.styleListCodeString = "";
+		rendererStyleControlType.styleItemCodeString = "";
 		
-		itemRenderer.removeEventListener("cleared", this._onItemRendererClearedInstance);
-		this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(styleControlType));
+		//Fire an indexUpdated event (Update the Add Style dropdown checked state for this style).
+		this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(rendererStyleControlType));
 		
+		//Purge StyleItemRenderer
 		this.removeElement(itemRenderer);
 		
 		//Dispatch an event from the manager to fire the styling code re-build.

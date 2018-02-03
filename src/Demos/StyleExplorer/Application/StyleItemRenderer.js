@@ -1,11 +1,14 @@
 
-function StyleItemRenderer()
+//Renders style editing row & substyle list if applicable.
+
+function StyleItemRenderer() //extends ListContainer
 {
 	StyleItemRenderer.base.prototype.constructor.call(this);
 	
 	////Layout
 	this.setStyle("PercentWidth", 100);
 	this.setStyle("LayoutGap", 4);
+	this.setStyle("LayoutDirection", "vertical");
 	
 		this._styleSelectBox = new ListContainerElement();
 		this._styleSelectBox.setStyle("LayoutDirection", "horizontal");
@@ -22,15 +25,16 @@ function StyleItemRenderer()
 			this._buttonClearStyle.setStyleDefinitions(clearStyleButtonStyle);
 			
 			this._styleNullCheckbox = null;		//null checkbox
-			this._styleChangeControl = null; 	//Dynamic
+			this._styleChangeControl = null; 	//Dynamic (Dropdown, TextInput, etc)
 			
 		this._styleSelectBox.addElement(this._labelStyleName);
 		this._styleSelectBox.addElement(this._buttonClearStyle);
 	
-		this._styleListRenderer = null; 	//Renders our list of substyles
-		
 	this.addElement(this._styleSelectBox);
 	
+		this._styleListRenderer = null; 	//Renders list of substyles
+	
+	//this.addElement(this._styleListRenderer); //Added dynamically
 	
 	////Event handlers
 	var _self = this;
@@ -57,6 +61,7 @@ function StyleItemRenderer()
 	
 	
 	////Functional
+	
 	this._styleControlType = null;
 	
 }
@@ -73,9 +78,9 @@ StyleItemRenderer.prototype.setStyleControlType =
 	
 		this._labelStyleName.setStyle("Text", styleControlType.styleName);
 		
-		//Remove elements and clean up listener.
+		//Remove existing elements (except label and clear button)
 		while (this._styleSelectBox.getNumElements() > 2)
-			this._styleSelectBox.removeElementAt(1).removeEventListener("changed", this._onValueChangedInstance);
+			this._styleSelectBox.removeElementAt(1);
 		
 		var currentValue = undefined;
 		if (styleControlType.styleName in styleControlType.styleDefinition._styleMap)
@@ -176,9 +181,10 @@ StyleItemRenderer.prototype._onValueChanged =
 	{
 		var value;
 		
+		//Only 1 available value
 		if (this._styleControlType.allowValues != null && this._styleControlType.allowValues.length == 1)
 			value = this._styleControlType.allowValues[0].value;
-		else
+		else //Get value from control
 		{
 			if (this._styleChangeControl instanceof TextInputElement)
 				value = this._styleChangeControl.getText();
@@ -262,9 +268,10 @@ StyleItemRenderer.prototype._updateStyleValue =
 		
 		this._styleControlType.styleDefinition.setStyle(this._styleControlType.styleName, value);
 		
-		if (value instanceof StyleDefinition)
+		if (value instanceof StyleDefinition) //Substyle
 		{
 			this._styleControlType.buildControlStyleTypeLists();
+			
 			if (this._styleControlType.styleList.getLength() > 0)
 			{
 				this._labelStyleName.setStyle("TextStyle", "bold");

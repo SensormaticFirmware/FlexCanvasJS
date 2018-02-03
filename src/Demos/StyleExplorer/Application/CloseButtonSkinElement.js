@@ -1,5 +1,8 @@
 
-function CloseButtonSkinElement()
+//Basic skin class. Used for the remove style button. 
+//Draws an X across the button.
+
+function CloseButtonSkinElement() //extends CanvasElement
 {
 	CloseButtonSkinElement.base.prototype.constructor.call(this);
 }
@@ -16,7 +19,7 @@ CloseButtonSkinElement.base = CanvasElement;
 CloseButtonSkinElement.prototype._doRender = 
 	function()
 	{
-		//Base class renders our background & border based on our state.
+		//Base renders our background & border based on our state.
 		CloseButtonSkinElement.base.prototype._doRender.call(this);
 		
 		//Get the CanvasRenderingContext2D context for this element.

@@ -1,7 +1,9 @@
 
+//Hierarchical data storage class. Used for the select styles tree. 
 
 function ControlStyleType(category, styleName, styleType, allowNull, initNull, styleDefinition, parent, initValue, allowValues)
 {
+	//Style data
 	this.category = category;
 	this.styleName = styleName;
 	this.styleType = styleType;
@@ -10,19 +12,22 @@ function ControlStyleType(category, styleName, styleType, allowNull, initNull, s
 	this.initValue = initValue;
 	this.allowValues = allowValues;
 	
-	this.styleDefinition = styleDefinition; //Definition, this value is stored (bound to control)
-	this.parent = parent;	
+	this.styleDefinition = styleDefinition; //set to sandbox controls.
+	this.parent = parent; //parent control or substyle.	
 	
-	//Populated by StyleItem renderers.
+	//Cache, populated by associated StyleItemRenderer.
 	this.styleListCodeString = "";
 	this.styleItemCodeString = "";
 	
+	//List of available styles for this control or substyle.
+	//This is set to the add style Dropdown.
 	this.styleList = new ListCollection(); 
 	
-	//Set static CollectionSort
+	//Set static CollectionSort for styleList
 	if (ControlStyleType.StyleCategoryNameSort == null)
 		ControlStyleType.StyleCategoryNameSort = new CollectionSort(ControlStyleType.StyleCategoryNameSortFunction, false);
 	
+	//Associate sort with styleList
 	this.styleList.setCollectionSort(ControlStyleType.StyleCategoryNameSort);
 }
 
@@ -48,6 +53,7 @@ ControlStyleType.StyleCategoryNameSortFunction =
 	
 ControlStyleType.StyleCategoryNameSort = null; //Set via constructor (avoid file ordering dependencies)
 
+//Recursive function to aggregate the style code.
 ControlStyleType._GenerateStylingCodeRecurse = 
 	function (resultArray, controlStyleType, parentData)
 	{
