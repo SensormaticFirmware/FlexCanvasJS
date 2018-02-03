@@ -112,9 +112,9 @@ StyleListRenderer.prototype._onDropdownAddListItemClick =
 		{
 			itemRenderer = new StyleItemRenderer();
 			itemRenderer.addEventListener("cleared", this._onItemRendererClearedInstance);
+			itemRenderer.setStyleControlType(styleControlType);
 			
 			this.addElementAt(itemRenderer, 1);
-			itemRenderer.setStyleControlType(styleControlType);
 			
 			this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(styleControlType));
 		}

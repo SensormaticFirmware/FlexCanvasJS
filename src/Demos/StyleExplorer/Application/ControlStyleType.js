@@ -103,12 +103,9 @@ ControlStyleType.prototype.generateStylingCode =
 	};	
 	
 ControlStyleType.prototype.buildControlStyleTypeLists = 
-	function ()
+	function (styleDef)
 	{
-		var styleDef;
-		if (this.styleType == "root")
-			styleDef = this.styleDefinition.getStyleDefinitionAt(0); //Root control definition
-		else
+		if (styleDef == null)
 			styleDef = this.styleDefinition.getStyle(this.styleName); //Sub style definition
 		
 		this.styleList.clear();
@@ -208,8 +205,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ButtonTrackStyle" || 
 				this.styleName == "ButtonTabStyle" ||
 				this.styleName == "HeaderStyle" ||
-				this.styleName == "ColumnDividerStyle" ||
-				this.styleName.indexOf("SkinStyle") >= 0) 
+				this.styleName == "ColumnDividerStyle") 
 			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"Visible", 									"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 			}
@@ -322,7 +318,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
 				this.styleName == "TextInputStyle" ||
-				this.styleName == "ListItemStyle" ||
+				(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
 				this.styleName == "DropdownStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"UpTextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",				null));
@@ -374,7 +370,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleName == "ToggleButtonStyle" ||
 				this.styleName == "RadioButtonStyle" ||
 				this.styleName == "CheckboxStyle" ||
-				this.styleName == "ListItemStyle" ||
+				(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
 				this.styleName == "DropdownStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Text", 		"OverTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
@@ -418,10 +414,13 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			if (this.styleName == "ListItemStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AltSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Text", 		"AltTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-				this.styleList.addItem(new ControlStyleType("Text", 		"SelectedTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+				
+				if (this.hasParentStyleName("DataListStyle"))
+					this.styleList.addItem(new ControlStyleType("Text", 	"AltTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+				
+				if (this.hasParentStyleName("DataListStyle"))
+					this.styleList.addItem(new ControlStyleType("Text", 	"SelectedTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
 			if (this.styleName == "TextInputStyle")
@@ -474,11 +473,23 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"HorizontalGridLinesStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			}
 			
+			if (this.styleName.indexOf("DataGridColumn") > -1)
+			{
+				this.styleList.addItem(new ControlStyleType("Container", 	"MinSize", 									"number", 	true, 	true, 	styleDef, this,	100, 						null));
+			}
+			
 			if (this.styleName == "HeaderStyle")
 			{
 				this.styleList.addItem(new ControlStyleType("Functional", 	"DraggableColumns", 						"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 				
 				this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ColumnDividerStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			}
+			
+			if (this.styleName == "ColumnDividerStyle" ||
+				(this.styleName.indexOf("SkinStyle") >= 0 && this.hasParentStyleName("ColumnDividerStyle")))
+			{
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"DividerLineColor", 						"color", 	true, 	false, 	styleDef, this,	"#000000",					null));
+				this.styleList.addItem(new ControlStyleType("Rendering", 	"DividerArrowColor", 						"color", 	true, 	false, 	styleDef, this,	"#000000",					null));
 			}
 			
 			if (this.styleName == "ScrollBarStyle")

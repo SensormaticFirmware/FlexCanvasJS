@@ -402,7 +402,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var buttonControlStyleType = new ControlStyleType("", "ButtonStyle", "root", false, false, buttonControl, null, null, null);
 	buttonControlStyleType.styleListCodeString = "var ButtonStyle = new StyleDefinition();\r\n";
 	
-	buttonControlStyleType.buildControlStyleTypeLists();
+	buttonControlStyleType.buildControlStyleTypeLists(buttonDef);
 	
 	this._dataListControlsCollection.addItem({label:"Button", 
 											control:buttonControl, 
@@ -420,7 +420,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var canvasElementControlStyleType = new ControlStyleType("", "CanvasElementStyle", "root", false, false, canvasElementControl, null, null, null);
 	canvasElementControlStyleType.styleListCodeString = "var CanvasElementStyle = new StyleDefinition();\r\n";
 	
-	canvasElementControlStyleType.buildControlStyleTypeLists();
+	canvasElementControlStyleType.buildControlStyleTypeLists(canvasElementDef);
 	
 	this._dataListControlsCollection.addItem({label:"CanvasElement", 
 											control:canvasElementControl, 
@@ -436,7 +436,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var toggleButtonControlStyleType = new ControlStyleType("", "ToggleButtonStyle", "root", false, false, toggleButtonControl, null, null, null);
 	toggleButtonControlStyleType.styleListCodeString = "var ToggleButtonStyle = new StyleDefinition();\r\n";
 	
-	toggleButtonControlStyleType.buildControlStyleTypeLists();
+	toggleButtonControlStyleType.buildControlStyleTypeLists(toggleButtonDef);
 	
 	this._dataListControlsCollection.addItem({label:"ToggleButton", 
 											control:toggleButtonControl, 
@@ -452,7 +452,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var radioButtonControlStyleType = new ControlStyleType("", "RadioButtonStyle", "root", false, false, radioButtonControl, null, null, null);
 	radioButtonControlStyleType.styleListCodeString = "var RadioButtonStyle = new StyleDefinition();\r\n";
 	
-	radioButtonControlStyleType.buildControlStyleTypeLists();
+	radioButtonControlStyleType.buildControlStyleTypeLists(radioButtonDef);
 	
 	this._dataListControlsCollection.addItem({label:"RadioButton", 
 											control:radioButtonControl, 
@@ -468,7 +468,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var checkboxControlStyleType = new ControlStyleType("", "CheckboxStyle", "root", false, false, checkboxControl, null, null, null);
 	checkboxControlStyleType.styleListCodeString = "var CheckboxStyle = new StyleDefinition();\r\n";
 	
-	checkboxControlStyleType.buildControlStyleTypeLists();
+	checkboxControlStyleType.buildControlStyleTypeLists(checkboxDef);
 	
 	this._dataListControlsCollection.addItem({label:"Checkbox", 
 											control:checkboxControl, 
@@ -483,7 +483,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var textInputControlStyleType = new ControlStyleType("", "TextInputStyle", "root", false, false, textInputControl, null, null, null);
 	textInputControlStyleType.styleListCodeString = "var TextInputStyle = new StyleDefinition();\r\n";
 	
-	textInputControlStyleType.buildControlStyleTypeLists();
+	textInputControlStyleType.buildControlStyleTypeLists(textInputDef);
 	
 	this._dataListControlsCollection.addItem({label:"TextInput", 
 											control:textInputControl, 
@@ -499,7 +499,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var labelControlStyleType = new ControlStyleType("", "LabelStyle", "root", false, false, labelControl, null, null, null);
 	labelControlStyleType.styleListCodeString = "var LabelStyle = new StyleDefinition();\r\n";
 	
-	labelControlStyleType.buildControlStyleTypeLists();
+	labelControlStyleType.buildControlStyleTypeLists(labelDef);
 	
 	this._dataListControlsCollection.addItem({label:"Label", 
 											control:labelControl, 
@@ -522,7 +522,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var scrollBarControlStyleType = new ControlStyleType("", "ScrollBarStyle", "root", false, false, scrollBarControl, null, null, null);
 	scrollBarControlStyleType.styleListCodeString = "var ScrollBarStyle = new StyleDefinition();\r\n";
 	
-	scrollBarControlStyleType.buildControlStyleTypeLists();
+	scrollBarControlStyleType.buildControlStyleTypeLists(scrollBarDef);
 	
 	this._dataListControlsCollection.addItem({label:"ScrollBar", 
 											control:scrollBarControl, 
@@ -558,7 +558,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var dataListControlStyleType = new ControlStyleType("", "DataListStyle", "root", false, false, dataListControl, null, null, null);
 	dataListControlStyleType.styleListCodeString = "var DataListStyle = new StyleDefinition();\r\n";
 	
-	dataListControlStyleType.buildControlStyleTypeLists();
+	dataListControlStyleType.buildControlStyleTypeLists(dataListDef);
 	
 	this._dataListControlsCollection.addItem({label:"DataList", 
 											control:dataListControl, 
@@ -581,7 +581,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var dropdownControlStyleType = new ControlStyleType("", "DropdownStyle", "root", false, false, dropdownControl, null, null, null);
 	dropdownControlStyleType.styleListCodeString = "var DropdownStyle = new StyleDefinition();\r\n";
 	
-	dropdownControlStyleType.buildControlStyleTypeLists();
+	dropdownControlStyleType.buildControlStyleTypeLists(dropdownDef);
 	
 	this._dataListControlsCollection.addItem({label:"Dropdown", 
 											control:dropdownControl, 
@@ -592,6 +592,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	listContainerDef.setStyle("PercentWidth", 75);
 	listContainerDef.setStyle("PercentHeight", 50);
 	listContainerDef.setStyle("BackgroundColor", "#FFFFFF");
+	listContainerDef.setStyle("LayoutDirection", "vertical");
 	
 	var listContainerControl = new ListContainerElement();
 	listContainerControl.setStyleDefinitions(listContainerDef);
@@ -617,7 +618,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var listContainerControlStyleType = new ControlStyleType("", "ListContainerStyle", "root", false, false, listContainerControl, null, null, null);
 	listContainerControlStyleType.styleListCodeString = "var ListContainerStyle = new StyleDefinition();\r\n";
 	
-	listContainerControlStyleType.buildControlStyleTypeLists();
+	listContainerControlStyleType.buildControlStyleTypeLists(listContainerDef);
 	
 	this._dataListControlsCollection.addItem({label:"ListContainer", 
 											control:listContainerControl, 
@@ -659,11 +660,23 @@ function StyleExplorerApplication() //extends CanvasManager
 	var dataGridControlStyleType = new ControlStyleType("", "DataGridStyle", "root", false, false, dataGridControl, null, null, null);
 	dataGridControlStyleType.styleListCodeString = "var DataGridStyle = new StyleDefinition();\r\n";
 	
-	dataGridControlStyleType.buildControlStyleTypeLists();
+	dataGridControlStyleType.buildControlStyleTypeLists(dataGridDef);
+	
+	var dataGridColumn1ControlStyleType = new ControlStyleType("", "DataGridColumn1Style", "class", false, false, dataGridControl, null, null, null);
+	dataGridColumn1ControlStyleType.styleListCodeString = "var DataGridColumn1Style = new DataGridColumnDefinition();\r\n";
+	dataGridColumn1ControlStyleType.buildControlStyleTypeLists(column1);
+	
+	var dataGridColumn2ControlStyleType = new ControlStyleType("", "DataGridColumn2Style", "class", false, false, dataGridControl, null, null, null);
+	dataGridColumn2ControlStyleType.styleListCodeString = "var DataGridColumn2Style = new DataGridColumnDefinition();\r\n";
+	dataGridColumn2ControlStyleType.buildControlStyleTypeLists(column2);
+	
+	var dataGridColumn3ControlStyleType = new ControlStyleType("", "DataGridColumn3Style", "class", false, false, dataGridControl, null, null, null);
+	dataGridColumn3ControlStyleType.styleListCodeString = "var DataGridColumn3Style = new DataGridColumnDefinition();\r\n";
+	dataGridColumn3ControlStyleType.buildControlStyleTypeLists(column3);
 	
 	this._dataListControlsCollection.addItem({label:"DataGrid", 
 											control:dataGridControl, 
-											rootControlStyleType:dataGridControlStyleType,
+											rootControlStyleType:[dataGridControlStyleType, dataGridColumn1ControlStyleType, dataGridColumn2ControlStyleType, dataGridColumn3ControlStyleType],
 											list:null});
 	////////////////////////////////////
 	
@@ -795,8 +808,32 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 		//Create Select Style root StyleListRenderer if does not exist.
 		if (controlData.list == null)
 		{
-			controlData.list = new StyleListRenderer();
-			controlData.list.setStyleControlType(controlData.rootControlStyleType);
+			if (Array.isArray(controlData.rootControlStyleType))
+			{
+				controlData.list = new ListContainerElement();
+				controlData.list.setStyle("PercentWidth", 100);
+				controlData.list.setStyle("LayoutGap", 4);
+				
+				for (var i = 0; i < controlData.rootControlStyleType.length; i++)
+				{
+					var subList = new StyleListRenderer();
+					subList.setStyleControlType(controlData.rootControlStyleType[i]);
+					controlData.list.addElement(subList);
+					
+					if (i < controlData.rootControlStyleType.length - 1)
+					{
+						var divider = new CanvasElement();
+						divider.setStyleDefinitions(hDividerLineStyle);
+						controlData.list.addElement(divider);
+					}
+				}
+			}
+			else
+			{
+				controlData.list = new StyleListRenderer();
+				controlData.list.setStyleControlType(controlData.rootControlStyleType);
+			}
+			
 			this._stylesControlContainer.addElement(controlData.list);
 		}
 		
@@ -835,7 +872,17 @@ StyleExplorerApplication.prototype._onEnterFrameStyleCodeUpdate =
 		this.removeEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance);
 		
 		//Update style code
-		this._textSandboxStyleCode.setStyle("Text", this._dataListControls.getSelectedItem().rootControlStyleType.generateStylingCode());
+		var rootControlStyleTypes = this._dataListControls.getSelectedItem().rootControlStyleType;
+		if (Array.isArray(rootControlStyleTypes))
+		{
+			var text = "";
+			for (var i = 0; i < rootControlStyleTypes.length; i++)
+				text += rootControlStyleTypes[i].generateStylingCode();
+		}
+		else
+			text = rootControlStyleTypes.generateStylingCode();
+			
+		this._textSandboxStyleCode.setStyle("Text", text);
 	};
 	
 	
