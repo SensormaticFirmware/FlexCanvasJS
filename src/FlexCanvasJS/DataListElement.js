@@ -1002,9 +1002,23 @@ DataListElement.prototype._doLayout =
 			
 			//Fix scroll index
 			if (listDirection == "horizontal")
-				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
+			{
+				itemSize = this._contentPane._children[0]._getStyledOrMeasuredWidth();
+				
+				if (itemSize != 0)
+					this._scrollIndex = itemIndex + (clipFirst / itemSize);
+				else
+					this._scrollIndex = itemIndex;
+			}
 			else // if (listDirection == "vertical")
-				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+			{
+				itemSize = this._contentPane._children[0]._getStyledOrMeasuredHeight();
+				
+				if (itemSize != 0)
+					this._scrollIndex = itemIndex + (clipFirst / itemSize);
+				else
+					this._scrollIndex = itemIndex;
+			}
 			
 			//Handle rounding errors
 			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
@@ -1020,7 +1034,6 @@ DataListElement.prototype._doLayout =
 				this._contentPane._addChild(newRenderer);
 				
 				//Wait for the new renderer to measure.
-				//Re-invalidate ourself, (content pane doesnt measure so wont do it for us).
 				this._invalidateLayout();
 				return;
 			}
@@ -1035,9 +1048,23 @@ DataListElement.prototype._doLayout =
 					clipFirst -= excessSize;
 					
 					if (listDirection == "horizontal")
-						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
+					{
+						itemSize = this._contentPane._children[0]._getStyledOrMeasuredWidth();
+						
+						if (itemSize != 0)
+							this._scrollIndex = itemIndex + (clipFirst / itemSize);
+						else
+							this._scrollIndex = itemIndex;
+					}
 					else // if (listDirection == "vertical")
-						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+					{
+						itemSize = this._contentPane._children[0]._getStyledOrMeasuredHeight();
+						
+						if (itemSize != 0)
+							this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+						else
+							this._scrollIndex = itemIndex;
+					}
 					
 					//Handle rounding errors
 					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
@@ -1190,13 +1217,19 @@ DataListElement.prototype._doLayout =
 			{
 				if (listDirection == "horizontal")
 				{
-					viewSize -= clipFirst / this._contentPane._children[0]._width;
-					viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._width;
+					if (this._contentPane._children[0]._width != 0)
+						viewSize -= clipFirst / this._contentPane._children[0]._width;
+					
+					if (this._contentPane._children[this._contentPane._children.length - 1]._width != 0)
+						viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._width;
 				}
 				else // if (listDirection == "vertical")
 				{
-					viewSize -= clipFirst / this._contentPane._children[0]._height;
-					viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._height;
+					if (this._contentPane._children[0]._height != 0)
+						viewSize -= clipFirst / this._contentPane._children[0]._height;
+					
+					if (this._contentPane._children[this._contentPane._children.length - 1]._height != 0)
+						viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._height;
 				}
 			}
 			

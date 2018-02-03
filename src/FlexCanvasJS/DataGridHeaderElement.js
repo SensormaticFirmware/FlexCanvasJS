@@ -368,7 +368,12 @@ DataGridHeaderElement.prototype._setListData =
 				renderer.setStyle("Draggable", draggableColumns);
 				
 				if (draggableColumns == true)
+				{
 					renderer.addEventListener("dragging", this._onColumnDividerDragInstance);
+					renderer.setStyle("Enabled", true);
+				}
+				else
+					renderer.setStyle("Enabled", false);
 				
 				this._itemRenderersContainer._addChildAt(renderer, i2);
 			}
