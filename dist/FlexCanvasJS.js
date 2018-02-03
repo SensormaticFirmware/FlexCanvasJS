@@ -7776,21 +7776,22 @@ CanvasElement.prototype._getAutoGradientLinear =
 		
 		var gradientMetrics = this._getAutoGradientMetrics();
 		
-		var fillGradient = context.createLinearGradient(
-									gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
-									gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
 		try
 		{
+			var fillGradient = context.createLinearGradient(
+					gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
+					gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
+			
 			fillGradient.addColorStop(0, lighterFill);
 			fillGradient.addColorStop(1, darkerFill);
+			
+			return fillGradient;
 		}
 		catch (ex)
 		{
 			//Swallow, invalid color
 			return null;
 		}
-		
-		return fillGradient;
 	};	
 	
 /**
@@ -7821,16 +7822,24 @@ CanvasElement.prototype._getAutoGradientRadial =
 		var gradientPoint = {x:gradientMetrics.startPoint.x + (xSpan * .42), 
 							y:gradientMetrics.startPoint.y + (ySpan * .42)};
 		
-		var fillGradient = context.createRadialGradient(
-				gradientPoint.x, gradientPoint.y, 
-				(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
-				gradientPoint.x, gradientPoint.y, 
-				0);
-		
-		fillGradient.addColorStop(0, darkerFill);
-		fillGradient.addColorStop(1, lighterFill);
-		
-		return fillGradient;
+		try
+		{
+			var fillGradient = context.createRadialGradient(
+					gradientPoint.x, gradientPoint.y, 
+					(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
+					gradientPoint.x, gradientPoint.y, 
+					0);
+			
+			fillGradient.addColorStop(0, darkerFill);
+			fillGradient.addColorStop(1, lighterFill);
+			
+			return fillGradient;
+		}
+		catch (ex)
+		{
+			//Swallow, invalid color
+			return null;
+		}
 	};	
 
 /**
@@ -8951,6 +8960,22 @@ ViewportElement.base = CanvasElement;
 ViewportElement._StyleTypes = Object.create(null);
 
 /**
+ * @style MeasureContentWidth boolean
+ * When true, the viewport's measured width will use its content element's measured width. 
+ * Use this when you want the viewport to expand its width when possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+ViewportElement._StyleTypes.MeasureContentWidth = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style MeasureContentHeight boolean
+ * When true, the viewport's measured height will use its content element's measured height.
+ * Use this when you want the viewport to expand when its height possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+ViewportElement._StyleTypes.MeasureContentHeight = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
  * @style HorizontalScrollBarDisplay String
  * Determines the behavior of the horizontal scroll bar. Allowable values are "on", "off", or "auto".
  */
@@ -9001,6 +9026,9 @@ ViewportElement.StyleDefault.setStyle("VerticalScrollBarPlacement", 					"right"
 ViewportElement.StyleDefault.setStyle("HorizontalScrollBarStyle", 						null);
 ViewportElement.StyleDefault.setStyle("VerticalScrollBarStyle", 						null);
 
+ViewportElement.StyleDefault.setStyle("MeasureContentWidth", 							false);
+ViewportElement.StyleDefault.setStyle("MeasureContentHeight", 							false);
+
 
 
 /////////////Public///////////////////////////////
@@ -9029,6 +9057,7 @@ ViewportElement.prototype.setElement =
 			this._viewPortContainer._addChild(this._viewElement);
 		}
 		
+		this._invalidateMeasure();
 		this._invalidateLayout();
 	};
 
@@ -9150,10 +9179,19 @@ ViewportElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 			this._invalidateMeasure();
 		}
-		else if ("HorizontalScrollBarPlacement" in stylesMap ||
+		else 
+		{	
+			if ("HorizontalScrollBarPlacement" in stylesMap ||
 				"VerticalScrollBarPlacement" in stylesMap)
-		{
-			this._invalidateLayout();
+			{
+				this._invalidateLayout();
+			}
+			
+			if ("MeasureContentWidth" in stylesMap || 
+				"MeasureContentHeight" in stylesMap)
+			{
+				this._invalidateMeasure();
+			}
 		}
 		
 		if ("HorizontalScrollBarStyle" in stylesMap && this._horizontalScrollBar != null)
@@ -9172,6 +9210,18 @@ ViewportElement.prototype._doMeasure =
 		var hBarWidth = 0;
 		var hBarHeight = 0;
 		
+		var w = 0;
+		var h = 0;
+		
+		if (this._viewElement != null)
+		{
+			if (this.getStyle("MeasureContentWidth") == true)
+				w = this._viewElement._getStyledOrMeasuredWidth();
+			
+			if (this.getStyle("MeasureContentHeight") == true)
+				h = this._viewElement._getStyledOrMeasuredHeight();
+		}
+		
 		if (this._verticalScrollBar != null)
 		{
 			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
@@ -9182,8 +9232,16 @@ ViewportElement.prototype._doMeasure =
 			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
 			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		}
-	
-		return {width: Math.max(vBarWidth, hBarWidth) + padWidth, height: Math.max(vBarHeight, hBarHeight) + padHeight};
+		
+		if (w == 0)
+			w = hBarWidth;
+		if (h == 0)
+			h = vBarHeight;
+		
+		w += vBarWidth;
+		h += hBarHeight;
+		
+		return {width:w + padWidth, height:h + padHeight};
 	};
 	
 //@Override	
@@ -9379,7 +9437,7 @@ ViewportElement.prototype._doLayout =
 		if (this._viewElement != null)
 		{
 			this._viewElement._setActualSize(Math.max(paneWidth, contentWidth), Math.max(paneHeight, contentHeight));
-			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1)
+			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1);
 		}
 	};
 	
@@ -14668,7 +14726,8 @@ DataListElement.prototype._doStylesUpdated =
 				this._invalidateLayout();
 			}
 		}
-		else if ("ListItemStyle" in stylesMap)
+		
+		if ("ListItemStyle" in stylesMap)
 		{
 			for (var i = 0; i < this._contentPane._children.length; i++)
 				this._applySubStylesToElement("ListItemStyle", this._contentPane._children[i]);
@@ -15120,7 +15179,10 @@ DataGridLabelItemRenderer.base = LabelElement;
 
 DataGridLabelItemRenderer.StyleDefault = new StyleDefinition();
 
-DataGridLabelItemRenderer.StyleDefault.setStyle("Padding", 				5);			// Override
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingTop", 				4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingBottom", 			4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingLeft", 				5);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingRight", 			5);			
 
 
 //////////////Internal//////////////////////////////////////////
@@ -15182,6 +15244,16 @@ function DataGridDataRenderer()
 	//Use a containing element for the renderers so we dont interfere with our skins.
 	this._itemRenderersContainer = new CanvasElement();
 	this._addChild(this._itemRenderersContainer);
+	
+	var _self = this;
+	
+	this._onItemRenderersContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self.__onItemRenderersContainerMeasureComplete(event);
+		};
+	
+	this._itemRenderersContainer.addEventListener("measurecomplete", this._onItemRenderersContainerMeasureCompleteInstance);
 }
 	
 //Inherit from DataRendererBaseElement
@@ -15206,6 +15278,13 @@ DataGridDataRenderer.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none")
 DataGridDataRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridDataRenderer.UpSkinStyleDefault);	// StyleDefinition
 DataGridDataRenderer.StyleDefault.setStyle("AltSkinStyle", 						DataGridDataRenderer.AltSkinStyleDefault);	// StyleDefinition
 
+
+//@private
+DataGridDataRenderer.prototype.__onItemRenderersContainerMeasureComplete =
+	function (event)
+	{
+		this._invalidateMeasure();
+	};
 
 //@Override
 DataGridDataRenderer.prototype._setListData = 
@@ -19591,55 +19670,64 @@ DataGridHeaderItemRenderer._StyleTypes.IconPlacement =				StyleableBase.EStyleTy
 
 /////////Default Styles///////////////
 
+//Make disabled skin look like "up" skin (just not click-able)
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#EBEBEB");
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BorderType", 				null);
+
+//Other up/over/down skins (kill border)
+DataGridHeaderItemRenderer.SkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SkinStyleDefault.setStyle("BorderType", 						null);
+
+
 DataGridHeaderItemRenderer.StyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("OverSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DownSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 					DataGridHeaderItemRenderer.DisabledSkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 					"#000000");
 
-//Override disabled styles, make them same as "up" state styles.
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 		ButtonElement.UpSkinStyleDefault);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 		null);
-
-DataGridHeaderItemRenderer.StyleDefault.setStyle("BorderType", 				"none");		
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextSize", 				12);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 	"left");
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",				3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",			3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",				8);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",			8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 				"left");
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",							4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",						4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",							8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",						8);
 
 /////Sort Icon default styles //////
 
 //Ascending Sort Icon
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault.setStyle("Direction", "up");
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault.setStyle("Direction", 				"up");
+
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundColor", 			"#444444");
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortAscIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundColor", 			"#444444");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 					DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 			false);
-
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 				null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 				false);
 
 //Descending Sort Icon
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault.setStyle("Direction", "down");
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault.setStyle("Direction", 			"down");
+
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundColor", 		"#444444");
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortDescIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundColor", 		"#444444");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
 DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 			false);
 
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
 ///////////////////////////////////
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",					ButtonElement);											// CanvasElement constructor
@@ -19676,8 +19764,6 @@ DataGridHeaderItemRenderer.prototype._createSortIcon =
 	function (isDecending)
 	{
 		var iconClass = null;
-		var iconDefaultStyle = null;
-		var iconStyle = null;
 		
 		if (isDecending == true)
 			iconClass = this.getStyle("SortDescIconClass");
@@ -19954,7 +20040,7 @@ DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		StyleableBase.EStyleTyp
  * 
  * @seealso DataGridHeaderColumnDividerSkinElement
  */
-DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		StyleableBase.EStyleType.NORMAL; 	// StyleDefinition
+DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		StyleableBase.EStyleType.SUBSTYLE; 	// StyleDefinition
 
 /**
  * @style DraggableColumns boolean
@@ -19967,30 +20053,44 @@ DataGridHeaderElement._StyleTypes.DraggableColumns = 		StyleableBase.EStyleType.
 ////////////Default Styles////////////////////
 
 DataGridHeaderElement.StyleDefault = new StyleDefinition();
-
-DataGridHeaderElement.StyleDefault.setStyle("BorderType", 				"solid");
-DataGridHeaderElement.StyleDefault.setStyle("BorderThickness", 			1);
-DataGridHeaderElement.StyleDefault.setStyle("PaddingBottom", 			1);
+DataGridHeaderElement.StyleDefault.setStyle("PaddingBottom", 				1);
+DataGridHeaderElement.StyleDefault.setStyle("BorderType", 					"solid");
+DataGridHeaderElement.StyleDefault.setStyle("BorderThickness", 				1);
+DataGridHeaderElement.StyleDefault.setStyle("BorderColor", 					"#000000");
 
 //Column Divider button style
-DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerSkinStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerLineColor", 		"#777777");
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerArrowColor", 		"#444444");
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BackgroundColor", 		null);
 
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); //
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DividerLineColor", 		"#777777");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DividerArrowColor", 		"#444444");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("BackgroundColor", 		null);
+DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); 
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("Width", 					11);
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("TabStop", 				-1);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("UpSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("OverSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DownSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DisabledSkinStyle", 		DataGridHeaderElement.ColumnDividerSkinStyleDefault);
 
+DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerClass", 					ButtonElement);
+DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerStyle", 					DataGridHeaderElement.ColumnDividerStyleDefault); 
 
-DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerClass", 			ButtonElement);
-DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerStyle", 			DataGridHeaderElement.ColumnDividerStyleDefault); 
-DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 			true);
+DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 					true);
 
 
 
 ////////Internal////////////////////////////////
+
+//@override, we dont need skinning for this element. 
+//We inherit from skinnable because it uses the same renderer used for rows for column logic.
+DataGridHeaderElement.prototype._getSkinClass = 
+	function ()
+	{
+		return null;
+	};
+
 
 /**
  * @function _onColumnDividerDrag
@@ -20299,7 +20399,12 @@ DataGridHeaderElement.prototype._doLayout =
 	};
 	
 	
-	
+//@override - render ourself. Not using skins.
+DataGridHeaderElement.prototype._doRender = 
+	function ()
+	{
+		SkinnableElement.base.prototype._doRender.call(this);
+	};		
 
 
 /**
@@ -20380,6 +20485,14 @@ function DataGridElement()
 		{
 			_self._onDataGridHeaderItemClick(elementMouseEvent);
 		};
+	this._onGridLineContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onGridLineContainerMeasureComplete(event);
+		};
+		
+	
+	this._gridLineContainer.addEventListener("measurecomplete", this._onGridLineContainerMeasureCompleteInstance);	
 }
 
 //Inherit from DataListElement
@@ -20488,7 +20601,7 @@ DataGridElement.StyleDefault.setStyle("GridLinesPriority", 				"vertical"); 				
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 
-DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		null); 									// Element constructor()
+DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("HorizontalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 DataGridElement.StyleDefault.setStyle("TabStop", 						0);
 
@@ -20614,6 +20727,13 @@ DataGridElement.prototype.getNumColumns =
 	
 	
 ///////////Internal////////////////////////////////
+	
+//@private
+DataGridElement.prototype._onGridLineContainerMeasureComplete = 
+	function (event)
+	{
+		this._invalidateLayout();
+	};
 	
 /**
  * @function _onDataGridColumnDefinitionChanged
