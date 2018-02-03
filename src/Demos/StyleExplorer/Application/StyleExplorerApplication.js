@@ -613,6 +613,48 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:listContainerControl, 
 											rootControlStyleType:listContainerControlStyleType,
 											list:null});
+	//DataGridElement
+	var dataGridDef = new StyleDefinition();
+	dataGridDef.setStyle("PercentWidth", 100);
+	dataGridDef.setStyle("PercentHeight", 100);
+	
+	var dataGridControl = new DataGridElement();
+	dataGridControl.setStyleDefinitions(dataGridDef);
+	
+	//Set some arbitrary columns & data.
+	var column1 = new DataGridColumnDefinition();
+	column1.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col1; });
+	column1.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col1 < objB.col1 ? -1 : objA.col1 > objB.col1 ? 1 : 0; }));
+	column1.setStyle("HeaderLabel", "Column1");
+	dataGridControl.addColumnDefinition(column1);
+	
+	var column2 = new DataGridColumnDefinition();
+	column2.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col2; });
+	column2.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col2 < objB.col2 ? -1 : objA.col2 > objB.col2 ? 1 : 0; }));
+	column2.setStyle("HeaderLabel", "Column2");
+	dataGridControl.addColumnDefinition(column2);
+	
+	var column3 = new DataGridColumnDefinition();
+	column3.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col3; });
+	column3.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return Number(objA.col3) < Number(objB.col3) ? -1 : Number(objA.col3) > Number(objB.col3) ? 1 : 0; }));
+	column3.setStyle("HeaderLabel", "Column3");
+	dataGridControl.addColumnDefinition(column3);
+	
+	var dataGridListCollection = new ListCollection();
+	for (i = 1; i <= 500; i++)
+		dataGridListCollection.addItem({col1:"Column1 Data " + i, col2:"Column2 Data " + i, col3:i.toString()});
+	
+	dataGridControl.setListCollection(dataGridListCollection);
+	
+	var dataGridControlStyleType = new ControlStyleType("", "DataGridStyle", "root", false, false, dataGridControl, null, null, null);
+	dataGridControlStyleType.styleListCodeString = "var DataGridStyle = new StyleDefinition();\r\n";
+	
+	dataGridControlStyleType.buildControlStyleTypeLists();
+	
+	this._dataListControlsCollection.addItem({label:"DataGrid", 
+											control:dataGridControl, 
+											rootControlStyleType:dataGridControlStyleType,
+											list:null});
 	////////////////////////////////////
 	
 	
