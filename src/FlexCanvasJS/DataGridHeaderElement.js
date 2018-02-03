@@ -57,7 +57,7 @@ DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		StyleableBase.EStyleTyp
  * 
  * @seealso DataGridHeaderColumnDividerSkinElement
  */
-DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		StyleableBase.EStyleType.NORMAL; 	// StyleDefinition
+DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		StyleableBase.EStyleType.SUBSTYLE; 	// StyleDefinition
 
 /**
  * @style DraggableColumns boolean
@@ -70,30 +70,43 @@ DataGridHeaderElement._StyleTypes.DraggableColumns = 		StyleableBase.EStyleType.
 ////////////Default Styles////////////////////
 
 DataGridHeaderElement.StyleDefault = new StyleDefinition();
-
-DataGridHeaderElement.StyleDefault.setStyle("BorderType", 				"solid");
-DataGridHeaderElement.StyleDefault.setStyle("BorderThickness", 			1);
-DataGridHeaderElement.StyleDefault.setStyle("PaddingBottom", 			1);
+DataGridHeaderElement.StyleDefault.setStyle("PaddingBottom", 				1);
+DataGridHeaderElement.StyleDefault.setStyle("BorderType", 					"solid");
+DataGridHeaderElement.StyleDefault.setStyle("BorderThickness", 				1);
+DataGridHeaderElement.StyleDefault.setStyle("BorderColor", 					"#000000");
 
 //Column Divider button style
-DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerSkinStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerLineColor", 		"#777777");
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerArrowColor", 		"#444444");
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BackgroundColor", 		null);
 
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); //
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DividerLineColor", 		"#777777");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DividerArrowColor", 		"#444444");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("BackgroundColor", 		null);
+DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); 
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("Width", 					11);
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("TabStop", 				-1);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("UpSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("OverSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DownSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
 
+DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerClass", 					ButtonElement);
+DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerStyle", 					DataGridHeaderElement.ColumnDividerStyleDefault); 
 
-DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerClass", 			ButtonElement);
-DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerStyle", 			DataGridHeaderElement.ColumnDividerStyleDefault); 
-DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 			true);
+DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 					true);
 
 
 
 ////////Internal////////////////////////////////
+
+//@override, we dont need skinning for this element. 
+//We inherit from skinnable because it uses the same renderer used for rows for column logic.
+DataGridHeaderElement.prototype._getSkinClass = 
+	function ()
+	{
+		return null;
+	};
+
 
 /**
  * @function _onColumnDividerDrag
@@ -402,4 +415,9 @@ DataGridHeaderElement.prototype._doLayout =
 	};
 	
 	
-	
+//@override - render ourself. Not using skins.
+DataGridHeaderElement.prototype._doRender = 
+	function ()
+	{
+		SkinnableElement.base.prototype._doRender.call(this);
+	};		

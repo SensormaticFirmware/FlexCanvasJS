@@ -25,6 +25,16 @@ function DataGridDataRenderer()
 	//Use a containing element for the renderers so we dont interfere with our skins.
 	this._itemRenderersContainer = new CanvasElement();
 	this._addChild(this._itemRenderersContainer);
+	
+	var _self = this;
+	
+	this._onItemRenderersContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self.__onItemRenderersContainerMeasureComplete(event);
+		};
+	
+	this._itemRenderersContainer.addEventListener("measurecomplete", this._onItemRenderersContainerMeasureCompleteInstance);
 }
 	
 //Inherit from DataRendererBaseElement
@@ -49,6 +59,13 @@ DataGridDataRenderer.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none")
 DataGridDataRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridDataRenderer.UpSkinStyleDefault);	// StyleDefinition
 DataGridDataRenderer.StyleDefault.setStyle("AltSkinStyle", 						DataGridDataRenderer.AltSkinStyleDefault);	// StyleDefinition
 
+
+//@private
+DataGridDataRenderer.prototype.__onItemRenderersContainerMeasureComplete =
+	function (event)
+	{
+		this._invalidateMeasure();
+	};
 
 //@Override
 DataGridDataRenderer.prototype._setListData = 

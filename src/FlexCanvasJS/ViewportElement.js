@@ -546,7 +546,7 @@ ViewportElement.prototype._doLayout =
 		if (this._viewElement != null)
 		{
 			this._viewElement._setActualSize(Math.max(paneWidth, contentWidth), Math.max(paneHeight, contentHeight));
-			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1)
+			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1);
 		}
 	};
 	

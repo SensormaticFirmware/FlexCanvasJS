@@ -185,7 +185,7 @@ DataGridElement.StyleDefault.setStyle("GridLinesPriority", 				"vertical"); 				
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 
-DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		null); 									// Element constructor()
+DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("HorizontalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 DataGridElement.StyleDefault.setStyle("TabStop", 						0);
 

@@ -82,55 +82,64 @@ DataGridHeaderItemRenderer._StyleTypes.IconPlacement =				StyleableBase.EStyleTy
 
 /////////Default Styles///////////////
 
+//Make disabled skin look like "up" skin (just not click-able)
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#EBEBEB");
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BorderType", 				null);
+
+//Other up/over/down skins (kill border)
+DataGridHeaderItemRenderer.SkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SkinStyleDefault.setStyle("BorderType", 						null);
+
+
 DataGridHeaderItemRenderer.StyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("OverSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DownSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 					DataGridHeaderItemRenderer.DisabledSkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 					"#000000");
 
-//Override disabled styles, make them same as "up" state styles.
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 		ButtonElement.UpSkinStyleDefault);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 		null);
-
-DataGridHeaderItemRenderer.StyleDefault.setStyle("BorderType", 				"none");		
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextSize", 				12);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 	"left");
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",				3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",			3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",				8);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",			8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 				"left");
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",							4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",						4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",							8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",						8);
 
 /////Sort Icon default styles //////
 
 //Ascending Sort Icon
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault.setStyle("Direction", "up");
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault.setStyle("Direction", 				"up");
+
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundColor", 			"#444444");
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortAscIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundColor", 			"#444444");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 					DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 			false);
-
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 				null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 				false);
 
 //Descending Sort Icon
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault.setStyle("Direction", "down");
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault.setStyle("Direction", 			"down");
+
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundColor", 		"#444444");
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortDescIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundColor", 		"#444444");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
 DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 			false);
 
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
 ///////////////////////////////////
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",					ButtonElement);											// CanvasElement constructor
@@ -167,8 +176,6 @@ DataGridHeaderItemRenderer.prototype._createSortIcon =
 	function (isDecending)
 	{
 		var iconClass = null;
-		var iconDefaultStyle = null;
-		var iconStyle = null;
 		
 		if (isDecending == true)
 			iconClass = this.getStyle("SortDescIconClass");

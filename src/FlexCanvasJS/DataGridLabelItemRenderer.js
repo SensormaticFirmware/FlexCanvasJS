@@ -33,7 +33,10 @@ DataGridLabelItemRenderer.base = LabelElement;
 
 DataGridLabelItemRenderer.StyleDefault = new StyleDefinition();
 
-DataGridLabelItemRenderer.StyleDefault.setStyle("Padding", 				5);			// Override
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingTop", 				4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingBottom", 			4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingLeft", 				5);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingRight", 			5);			
 
 
 //////////////Internal//////////////////////////////////////////
