@@ -77,6 +77,14 @@ function DataGridElement()
 		{
 			_self._onDataGridHeaderItemClick(elementMouseEvent);
 		};
+	this._onGridLineContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onGridLineContainerMeasureComplete(event);
+		};
+		
+	
+	this._gridLineContainer.addEventListener("measurecomplete", this._onGridLineContainerMeasureCompleteInstance);	
 }
 
 //Inherit from DataListElement
@@ -311,6 +319,13 @@ DataGridElement.prototype.getNumColumns =
 	
 	
 ///////////Internal////////////////////////////////
+	
+//@private
+DataGridElement.prototype._onGridLineContainerMeasureComplete = 
+	function (event)
+	{
+		this._invalidateLayout();
+	};
 	
 /**
  * @function _onDataGridColumnDefinitionChanged

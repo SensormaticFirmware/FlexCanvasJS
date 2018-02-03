@@ -89,6 +89,7 @@ DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("TabStop", 				-1);
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("UpSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("OverSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DownSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DisabledSkinStyle", 		DataGridHeaderElement.ColumnDividerSkinStyleDefault);
 
 DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerClass", 					ButtonElement);
 DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerStyle", 					DataGridHeaderElement.ColumnDividerStyleDefault); 
