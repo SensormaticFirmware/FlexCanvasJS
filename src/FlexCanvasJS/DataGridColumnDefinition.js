@@ -55,10 +55,10 @@ DataGridColumnDefinition._StyleTypes.PercentSize = 					StyleableBase.EStyleType
 DataGridColumnDefinition._StyleTypes.MinSize = 						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
- * @style HeaderLabel String
+ * @style HeaderText String
  * Text label to be used for the column header.
  */
-DataGridColumnDefinition._StyleTypes.HeaderLabel = 					StyleableBase.EStyleType.NORMAL;		// "string"
+DataGridColumnDefinition._StyleTypes.HeaderText = 					StyleableBase.EStyleType.NORMAL;		// "string"
 
 /**
  * @style HeaderItemClass CanvasElement
@@ -111,7 +111,7 @@ DataGridColumnDefinition.StyleDefault = new StyleDefinition();
 DataGridColumnDefinition.StyleDefault.setStyle("PercentSize", 				100);							// number || null
 DataGridColumnDefinition.StyleDefault.setStyle("MinSize", 					12);							// number || null
 
-DataGridColumnDefinition.StyleDefault.setStyle("HeaderLabel", 				"");							// "string"
+DataGridColumnDefinition.StyleDefault.setStyle("HeaderText", 				"");							// "string"
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemClass", 			DataGridHeaderItemRenderer);	// Element constructor()
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemStyle", 			null);							// StyleDefinition
 DataGridColumnDefinition.StyleDefault.setStyle("CollectionSort", 			null);							// CollectionSort()

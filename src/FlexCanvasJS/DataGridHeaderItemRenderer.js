@@ -310,7 +310,7 @@ DataGridHeaderItemRenderer.prototype._setListData =
 		if (listData == null)
 			return;
 		
-		this.setStyle("Text", listData._parentGrid._gridColumns[listData._columnIndex].getStyle("HeaderLabel"));
+		this.setStyle("Text", listData._parentGrid._gridColumns[listData._columnIndex].getStyle("HeaderText"));
 		this._updateSortIcons();
 	};
 
