@@ -1407,8 +1407,8 @@ TextFieldElement.prototype._doMeasure =
 				//Measure last line
 				if (lineStartIndex < this._charMetrics.length - 1)
 				{
-					if (this._charMetrics[lineStartIndex].x - this._charMetrics[this._charMetrics.length - 1].x > widestLineSize)
-						widestLineSize = this._charMetrics[lineStartIndex].x - this._charMetrics[this._charMetrics.length - 1].x;
+					if (this._charMetrics[this._charMetrics.length - 1].x - this._charMetrics[lineStartIndex].x > widestLineSize)
+						widestLineSize = this._charMetrics[this._charMetrics.length - 1].x - this._charMetrics[lineStartIndex].x;
 				}
 					
 				textWidth = widestLineSize;
