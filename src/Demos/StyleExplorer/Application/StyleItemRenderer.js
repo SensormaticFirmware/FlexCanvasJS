@@ -1,5 +1,5 @@
 
-//Renders style editing row & substyle list if applicable.
+//Renders style editing row & substyle StyleListRenderer if applicable.
 
 function StyleItemRenderer() //extends ListContainer
 {
@@ -62,8 +62,7 @@ function StyleItemRenderer() //extends ListContainer
 	
 	////Functional
 	
-	this._styleControlType = null;
-	
+	this._styleControlType = null;	
 }
 
 //Inherit from ListContainer

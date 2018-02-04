@@ -792,12 +792,14 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 		while (this._sandboxControlContainer.getNumElements() > 0)
 			this._sandboxControlContainer.removeElementAt(0);
 		
-		//Purge style code
-		this._textSandboxStyleCode.setStyle("Text", "");
-		
 		//Bail if no selection
 		if (this._dataListControls.getSelectedIndex() == -1)
+		{
+			//Purge style code
+			this._textSandboxStyleCode.setStyle("Text", "");
+			
 			return;
+		}
 		
 		var controlData = this._dataListControls.getSelectedItem();
 		

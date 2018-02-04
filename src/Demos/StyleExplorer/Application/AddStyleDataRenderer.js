@@ -118,5 +118,6 @@ AddStyleDataRenderer.prototype._doLayout =
 		
 		this._checkboxSelected._setActualSize(this._labelElement._height, this._labelElement._height);
 		this._checkboxSelected._setActualPosition(x + w - this._checkboxSelected._width, Math.round(y + (h / 2) - (this._checkboxSelected._height / 2)));
-		
 	};	
+	
+	

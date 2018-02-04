@@ -1,7 +1,7 @@
 
 //Renders an Add Style dropdown and a list of StyleItemRenderer(s).
 
-function StyleListRenderer()
+function StyleListRenderer() //extends ListContainer
 {
 	StyleListRenderer.base.prototype.constructor.call(this);
 	
@@ -52,6 +52,7 @@ StyleListRenderer.prototype = Object.create(ListContainerElement.prototype);
 StyleListRenderer.prototype.constructor = StyleListRenderer;
 StyleListRenderer.base = ListContainerElement;
 
+
 //////STATIC//////////////////// 
 
 StyleListRenderer.addStyleDropdownLabelFunction = 
@@ -63,6 +64,7 @@ StyleListRenderer.addStyleDropdownLabelFunction =
 		return itemData.category;
 	};
 
+	
 //////INTERNAL/////////////////
 
 StyleListRenderer.prototype._onLocaleChanged = 
@@ -148,6 +150,7 @@ StyleListRenderer.prototype._clearItemRenderer =
 		this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
 	};
 
+	
 //////PUBLIC///////////////////
 
 StyleListRenderer.prototype.setStyleControlType = 
