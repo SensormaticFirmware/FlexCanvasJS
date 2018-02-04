@@ -645,10 +645,20 @@ function StyleExplorerApplication() //extends CanvasManager
 	column2.setStyle("HeaderText", "Column2");
 	dataGridControl.addColumnDefinition(column2);
 	
+	var column3HeaderItemStyle = new StyleDefinition();
+	column3HeaderItemStyle.setStyle("TextHorizontalAlign", "right");
+	column3HeaderItemStyle.setStyle("PaddingRight", 18);
+	column3HeaderItemStyle.setStyle("SortIconPlacement", "left");
+	
+	var column3RowItemStyle = new StyleDefinition();
+	column3RowItemStyle.setStyle("TextHorizontalAlign", "right");
+	
 	var column3 = new DataGridColumnDefinition();
 	column3.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col3; });
 	column3.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return Number(objA.col3) < Number(objB.col3) ? -1 : Number(objA.col3) > Number(objB.col3) ? 1 : 0; }));
 	column3.setStyle("HeaderText", "Column3");
+	column3.setStyle("HeaderItemStyle", column3HeaderItemStyle);
+	column3.setStyle("RowItemStyle", column3RowItemStyle);
 	dataGridControl.addColumnDefinition(column3);
 	
 	var dataGridListCollection = new ListCollection();
@@ -820,6 +830,10 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 					var subList = new StyleListRenderer();
 					subList.setStyleControlType(controlData.rootControlStyleType[i]);
 					controlData.list.addElement(subList);
+					
+					//Add some gap between lists.
+					if (i != controlData.rootControlStyleType.length - 1)
+						subList.setStyle("PaddingBottom", 12);
 					
 					if (i < controlData.rootControlStyleType.length - 1)
 					{
