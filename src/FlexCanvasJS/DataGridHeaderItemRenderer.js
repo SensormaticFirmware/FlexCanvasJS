@@ -66,18 +66,18 @@ DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			StyleableBase.EStyl
 DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
- * @style IconGap Number
+ * @style SortIconGap Number
  * 
  * Distance in pixels between the sort icon and the header label.
  */
-DataGridHeaderItemRenderer._StyleTypes.IconGap =					StyleableBase.EStyleType.NORMAL;		// number
+DataGridHeaderItemRenderer._StyleTypes.SortIconGap =					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
- * @style IconPlacement String
+ * @style SortIconPlacement String
  * 
  * Determines placement of the sort icon. Allowable values are "left" or "right".
  */
-DataGridHeaderItemRenderer._StyleTypes.IconPlacement =				StyleableBase.EStyleType.NORMAL;		// "left" || "right"
+DataGridHeaderItemRenderer._StyleTypes.SortIconPlacement =				StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 
 /////////Default Styles///////////////
@@ -147,8 +147,8 @@ DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconStyle",					DataGri
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconClass",					ButtonElement);											// CanvasElement constructor
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconStyle",					DataGridHeaderItemRenderer.SortDescIconStyleDefault);	// StyleDefinition
 
-DataGridHeaderItemRenderer.StyleDefault.setStyle("IconGap",								3);			// number
-DataGridHeaderItemRenderer.StyleDefault.setStyle("IconPlacement",						"right");	// "left" || "right"
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconGap",								3);			// number
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconPlacement",						"right");	// "left" || "right"
 
 
 
@@ -328,7 +328,7 @@ DataGridHeaderItemRenderer.prototype._doStylesUpdated =
 			this._updateSortIcons();
 		}
 		
-		if ("IconGap" in stylesMap || "IconPlacement" in stylesMap)
+		if ("SortIconGap" in stylesMap || "SortIconPlacement" in stylesMap)
 			this._invalidateLayout();
 	};	
 	
@@ -369,8 +369,8 @@ DataGridHeaderItemRenderer.prototype._doLayout =
 				}
 				else
 				{
-					var gap = this.getStyle("IconGap");
-					var iconPlacement = this.getStyle("IconPlacement");
+					var gap = this.getStyle("SortIconGap");
+					var iconPlacement = this.getStyle("SortIconPlacement");
 					
 					if (iconPlacement == "left")
 					{
