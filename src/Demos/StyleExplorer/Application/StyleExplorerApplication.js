@@ -597,7 +597,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var listContainerControl = new ListContainerElement();
 	listContainerControl.setStyleDefinitions(listContainerDef);
 	
-	//Set some arbitrary controls.
+	//Add some arbitrary controls.
 	var listContainerButton1 = new ButtonElement();
 	listContainerButton1.setStyle("Text", "Measured X Measured");
 	
@@ -636,19 +636,19 @@ function StyleExplorerApplication() //extends CanvasManager
 	var column1 = new DataGridColumnDefinition();
 	column1.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col1; });
 	column1.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col1 < objB.col1 ? -1 : objA.col1 > objB.col1 ? 1 : 0; }));
-	column1.setStyle("HeaderLabel", "Column1");
+	column1.setStyle("HeaderText", "Column1");
 	dataGridControl.addColumnDefinition(column1);
 	
 	var column2 = new DataGridColumnDefinition();
 	column2.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col2; });
 	column2.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col2 < objB.col2 ? -1 : objA.col2 > objB.col2 ? 1 : 0; }));
-	column2.setStyle("HeaderLabel", "Column2");
+	column2.setStyle("HeaderText", "Column2");
 	dataGridControl.addColumnDefinition(column2);
 	
 	var column3 = new DataGridColumnDefinition();
 	column3.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col3; });
 	column3.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return Number(objA.col3) < Number(objB.col3) ? -1 : Number(objA.col3) > Number(objB.col3) ? 1 : 0; }));
-	column3.setStyle("HeaderLabel", "Column3");
+	column3.setStyle("HeaderText", "Column3");
 	dataGridControl.addColumnDefinition(column3);
 	
 	var dataGridListCollection = new ListCollection();
@@ -659,7 +659,6 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	var dataGridControlStyleType = new ControlStyleType("", "DataGridStyle", "root", false, false, dataGridControl, null, null, null);
 	dataGridControlStyleType.styleListCodeString = "var DataGridStyle = new StyleDefinition();\r\n";
-	
 	dataGridControlStyleType.buildControlStyleTypeLists(dataGridDef);
 	
 	var dataGridColumn1ControlStyleType = new ControlStyleType("", "DataGridColumn1Style", "class", false, false, dataGridControl, null, null, null);
