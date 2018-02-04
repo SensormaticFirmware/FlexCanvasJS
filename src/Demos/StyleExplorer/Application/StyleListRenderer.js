@@ -70,9 +70,8 @@ StyleListRenderer.addStyleDropdownLabelFunction =
 StyleListRenderer.prototype._onLocaleChanged = 
 	function (event)
 	{
-		//Sometimes manager is null cause we fire this when we set the controlStyleType
-		//which is sometimes prior to being attached to the display chain. Just bail.
-		if (this.getManager() == null)
+		//Sometimes we're null depending on if we set data, or add to display first.
+		if (this.getManager() == null || this._styleControlType == null)
 			return;
 	
 		var currentLocale = this.getManager().getLocale();

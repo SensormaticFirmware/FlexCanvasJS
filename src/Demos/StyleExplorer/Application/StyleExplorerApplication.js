@@ -648,7 +648,6 @@ function StyleExplorerApplication() //extends CanvasManager
 	var column3HeaderItemStyle = new StyleDefinition();
 	column3HeaderItemStyle.setStyle("TextHorizontalAlign", "right");
 	column3HeaderItemStyle.setStyle("PaddingRight", 18);
-	column3HeaderItemStyle.setStyle("SortIconPlacement", "left");
 	
 	var column3RowItemStyle = new StyleDefinition();
 	column3RowItemStyle.setStyle("TextHorizontalAlign", "right");
