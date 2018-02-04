@@ -1,6 +1,6 @@
 
 /**
- * @depends LabelElement.js
+ * @depends DataRendererLabelElement.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -8,7 +8,7 @@
 	
 /**
  * @class DataGridLabelItemRenderer
- * @inherits LabelElement
+ * @inherits DataRendererLabelElement
  * 
  * DataGrid ItemRenderer for a basic label. Updates label text via 
  * DataGridColumnDefiniton RowItemLabelFunction.
@@ -24,9 +24,9 @@ function DataGridLabelItemRenderer()
 }
 
 //Inherit from LabelElement
-DataGridLabelItemRenderer.prototype = Object.create(LabelElement.prototype);
+DataGridLabelItemRenderer.prototype = Object.create(DataRendererLabelElement.prototype);
 DataGridLabelItemRenderer.prototype.constructor = DataGridLabelItemRenderer;
-DataGridLabelItemRenderer.base = LabelElement;
+DataGridLabelItemRenderer.base = DataRendererLabelElement;
 
 
 ///////////Default Styles//////////////////////
@@ -58,14 +58,14 @@ DataGridLabelItemRenderer.prototype._updateLabelText =
 	function ()
 	{
 		if (this._itemData == null || this._listData == null)
-			this.setStyle("Text", "");
+			this._labelElement.setStyle("Text", "");
 		else
 		{
 			var parentGrid = this._listData._parentGrid;
 			var columnDefinition = parentGrid._gridColumns[this._listData._columnIndex];
 			var labelFunction = columnDefinition.getStyle("RowItemLabelFunction");
 			
-			this.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
+			this._labelElement.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
 		}
 	};
 	
