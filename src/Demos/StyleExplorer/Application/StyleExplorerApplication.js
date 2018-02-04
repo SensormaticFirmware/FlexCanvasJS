@@ -411,8 +411,8 @@ function StyleExplorerApplication() //extends CanvasManager
 	//CanvasElement
 	var canvasElementDef = new StyleDefinition();
 	canvasElementDef.setStyle("BackgroundColor", "#FFFF00");
-	canvasElementDef.setStyle("MinWidth", 75);
-	canvasElementDef.setStyle("MinHeight", 75);
+	canvasElementDef.setStyle("Width", 75);
+	canvasElementDef.setStyle("Height", 75);
 	
 	var canvasElementControl = new CanvasElement();
 	canvasElementControl.setStyleDefinitions(canvasElementDef);
@@ -504,6 +504,32 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._dataListControlsCollection.addItem({label:"Label", 
 											control:labelControl, 
 											rootControlStyleType:labelControlStyleType,
+											list:null});
+	//TextElement
+	var textDef = new StyleDefinition();
+	textDef.setStyle("PercentWidth", 100);
+	textDef.setStyle("WordWrap", true);
+	textDef.setStyle("Multiline", true);
+	textDef.setStyle("Text", 
+		"1) Lorem ipsum dolor sit amet, consectetur adipiscing elit.\r\n" +
+		"2) Cras posuere sem varius, luctus erat id, tincidunt nibh.\r\n" +
+		"3) Nam nec augue imperdiet massa porta ultricies nec vel eros.\r\n" +
+		"4) Nulla tincidunt quam vitae nisi hendrerit, ut commodo mauris pretium.\r\n" +
+		"5) Maecenas mattis ante in sapien lacinia, in consectetur urna vulputate.\r\n" +
+		"\r\n" +
+		"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam feugiat ultricies ante et semper. Quisque eget vulputate massa. In hac habitasse platea dictumst. Cras consequat leo nec mauris facilisis, vel bibendum dui vulputate. Nulla facilisi.");
+	
+	var textControl = new TextElement();
+	textControl.setStyleDefinitions(textDef);
+	
+	var textControlStyleType = new ControlStyleType("", "TextStyle", "root", false, false, textControl, null, null, null);
+	textControlStyleType.styleListCodeString = "var TextStyle = new StyleDefinition();\r\n";
+	
+	textControlStyleType.buildControlStyleTypeLists(textDef);
+	
+	this._dataListControlsCollection.addItem({label:"Text", 
+											control:textControl, 
+											rootControlStyleType:textControlStyleType,
 											list:null});
 	//ScrollBarElement
 	var scrollBarDef = new StyleDefinition();

@@ -245,7 +245,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "DataGridStyle" ||
 			this.styleName == "HeaderStyle" ||
 			this.styleName == "HeaderItemStyle" ||
-			this.styleName == "RowItemStyle")
+			this.styleName == "RowItemStyle" ||
+			this.styleName == "TextStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Text", 		"TextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			this.styleList.addItem(new ControlStyleType("Text", 		"TextStyle", 								"string", 	false, 	false, 	styleDef, this,	"normal",					[{label:"normal", value:"normal"}, {label:"bold", value:"bold"}, {label:"italic", value:"italic"}, {label:"bold italic", value:"bold italic"}]));
@@ -277,7 +278,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "DataGridStyle" ||
 			this.styleName == "HeaderStyle" ||
 			this.styleName == "HeaderItemStyle" ||
-			this.styleName == "RowItemStyle")
+			this.styleName == "RowItemStyle" ||
+			this.styleName == "TextStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Layout", 		"Padding", 									"number", 	false, 	false, 	styleDef, this,	2,							null));
 			this.styleList.addItem(new ControlStyleType("Layout", 		"PaddingTop", 								"number", 	false, 	false, 	styleDef, this,	2,							null));
@@ -473,6 +475,14 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		if (this.styleName == "LabelStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"TruncateToFit", 							"string", 	false, 	false, 	styleDef, this, "...",						null));
+		}
+		
+		if (this.styleName == "TextStyle")
+		{
+			this.styleList.addItem(new ControlStyleType("Text", 		"Multiline", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+			this.styleList.addItem(new ControlStyleType("Text", 		"WordWrap", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+			
+			this.styleList.addItem(new ControlStyleType("Text", 		"TextLineSpacing", 							"number", 	false, 	false, 	styleDef, this,	0,							null));
 		}
 		
 		if (this.styleName == "DataListStyle" ||
