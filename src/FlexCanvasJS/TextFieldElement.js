@@ -1484,8 +1484,11 @@ TextFieldElement.prototype._doLayout =
 				for (var i = spaceSpanIndex; i < this._spaceSpans.length; i++)
 				{
 					//Ignore spaces if wordwrap is off
-					if (this._spaceSpans.type == "space" && isWordWrap == false)
+					if (this._spaceSpans[i].type == "space" && isWordWrap == false)
+					{
+						spaceSpanIndex++;
 						continue;
+					}
 					
 					if (textAlign == "left")
 						lineEndCharIndex = this._spaceSpans[i].end;

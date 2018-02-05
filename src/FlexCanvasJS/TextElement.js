@@ -71,8 +71,8 @@ TextElement.StyleDefault.setStyle("PaddingTop", 					2);
 TextElement.StyleDefault.setStyle("PaddingBottom", 					2);
 TextElement.StyleDefault.setStyle("PaddingLeft", 					2);
 TextElement.StyleDefault.setStyle("PaddingRight", 					2);
-TextElement.StyleDefault.setStyle("HorizontalTextAlign", 			"left");
-TextElement.StyleDefault.setStyle("VerticalTextAlign", 				"right");
+TextElement.StyleDefault.setStyle("TextHorizontalAlign", 			"left");
+TextElement.StyleDefault.setStyle("TextVerticalAlign", 				"top");
 
 //TextElement specific styles
 TextElement.StyleDefault.setStyle("Text", 							null);
@@ -101,6 +101,12 @@ TextElement.prototype._doStylesUpdated =
 		
 		if ("WordWrap" in stylesMap)
 			this._textField.setStyle("WordWrap", this.getStyle("WordWrap"));
+		
+		//Force the textField to use our defaults rather than inherited.
+		if ("TextHorizontalAlign" in stylesMap)
+			this._textField.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+		if ("TextVerticalAlign" in stylesMap)
+			this._textField.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
 		
 		//Proxy padding to TextField for proper mouse handling
 		if ("Padding" in stylesMap ||
