@@ -372,7 +372,7 @@ ImageElement.prototype._doRender =
 				}
 			}
 		}
-		else if (scaleType == "fit" || scaleType == "none")
+		else if (scaleType == "fit" || scaleType == "none" || scaleType == null)
 		{
 			var verticalAlign = this.getStyle("ImageVerticalAlign");
 			var horizontalAlign = this.getStyle("ImageHorizontalAlign");
