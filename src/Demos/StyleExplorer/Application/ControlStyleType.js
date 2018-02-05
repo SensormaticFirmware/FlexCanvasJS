@@ -477,6 +477,18 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Functional", 	"TruncateToFit", 							"string", 	false, 	false, 	styleDef, this, "...",						null));
 		}
 		
+		if (this.styleName == "ImageStyle")
+		{
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ImageSourceClipX", 						"number", 	true, 	true, 	styleDef, this,	0,						null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ImageSourceClipY", 						"number", 	true, 	true, 	styleDef, this,	0,						null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ImageSourceClipWidth", 					"number", 	true, 	true, 	styleDef, this,	150,					null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ImageSourceClipHeight", 					"number", 	true, 	true, 	styleDef, this,	150,					null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ImageScaleType", 							"string", 	true, 	true, 	styleDef, this,	0,						[{label:"fit", value:"fit"}, {label:"stretch", value:"stretch"}, {label:"tile", value:"tile"}, {label:"tilefit", value:"tilefit"}]));
+			
+			this.styleList.addItem(new ControlStyleType("Layout", 		"ImageVerticalAlign", 						"string", 	false, 	false, 	styleDef, this,	"middle",				[{label:"top", value:"top"}, {label:"middle", value:"middle"}, {label:"bottom", value:"bottom"}]));
+			this.styleList.addItem(new ControlStyleType("Layout", 		"ImageHorizontalAlign", 					"string", 	false, 	false, 	styleDef, this,	"center",				[{label:"left", value:"left"}, {label:"center", value:"center"}, {label:"right", value:"right"}]));
+		}
+		
 		if (this.styleName == "TextStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Text", 		"Multiline", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));

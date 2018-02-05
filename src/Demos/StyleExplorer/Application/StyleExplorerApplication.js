@@ -505,6 +505,22 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:labelControl, 
 											rootControlStyleType:labelControlStyleType,
 											list:null});
+	//LabelElement
+	var imageDef = new StyleDefinition();
+	imageDef.setStyle("ImageSource", urlImgBlueMarble);
+	
+	var imageControl = new ImageElement();
+	imageControl.setStyleDefinitions(imageDef);
+	
+	var imageControlStyleType = new ControlStyleType("", "ImageStyle", "root", false, false, imageControl, null, null, null);
+	imageControlStyleType.styleListCodeString = "var ImageStyle = new StyleDefinition();\r\n";
+	
+	imageControlStyleType.buildControlStyleTypeLists(imageDef);
+	
+	this._dataListControlsCollection.addItem({label:"Image", 
+											control:imageControl, 
+											rootControlStyleType:imageControlStyleType,
+											list:null});
 	//TextElement
 	var textDef = new StyleDefinition();
 	textDef.setStyle("PercentWidth", 100);
