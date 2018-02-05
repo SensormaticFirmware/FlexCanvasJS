@@ -11139,12 +11139,15 @@ TextElement.StyleDefault.setStyle("PaddingTop", 					2);
 TextElement.StyleDefault.setStyle("PaddingBottom", 					2);
 TextElement.StyleDefault.setStyle("PaddingLeft", 					2);
 TextElement.StyleDefault.setStyle("PaddingRight", 					2);
+TextElement.StyleDefault.setStyle("HorizontalTextAlign", 			"left");
+TextElement.StyleDefault.setStyle("VerticalTextAlign", 				"right");
 
 //TextElement specific styles
 TextElement.StyleDefault.setStyle("Text", 							null);
 TextElement.StyleDefault.setStyle("Selectable", 					false);
 TextElement.StyleDefault.setStyle("Multiline", 						true);
 TextElement.StyleDefault.setStyle("WordWrap", 						true);
+
 
 
 /////////////Internal Functions///////////////////
