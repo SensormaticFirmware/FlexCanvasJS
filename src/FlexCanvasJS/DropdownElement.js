@@ -2,7 +2,6 @@
 /**
  * @depends ButtonElement.js
  * @depends DropdownArrowButtonSkinElement.js
- * @depends DataGridDataRenderer.js
  * @depends DataRendererLabelElement.js
  * @depends Tween.js
  * @depends DataListElement.js
@@ -212,10 +211,18 @@ DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			Dropdow
 DropdownElement.DataListScrollBarStyleDefault = new StyleDefinition();
 DropdownElement.DataListScrollBarStyleDefault.setStyle("Padding", -1);			//Expand by 1px to share borders
 
+DropdownElement.DataListItemUpSkinStyleDefault = new StyleDefinition();
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("BackgroundColor", 		"#FFFFFF");
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+
+DropdownElement.DataListItemAltSkinStyleDefault = new StyleDefinition();
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("BackgroundColor", 	"#F0F0F0");
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+
 //DataList ListItem style
 DropdownElement.DataListItemStyleDefault = new StyleDefinition();
-DropdownElement.DataListItemStyleDefault.setStyle("UpSkinStyle", 				DataGridDataRenderer.UpSkinStyleDefault);
-DropdownElement.DataListItemStyleDefault.setStyle("AltSkinStyle", 				DataGridDataRenderer.AltSkinStyleDefault);
+DropdownElement.DataListItemStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.DataListItemUpSkinStyleDefault);
+DropdownElement.DataListItemStyleDefault.setStyle("AltSkinStyle", 				DropdownElement.DataListItemAltSkinStyleDefault);
 
 //DataList style
 DropdownElement.DataListStyleDefault = new StyleDefinition();
