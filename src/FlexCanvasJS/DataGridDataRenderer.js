@@ -109,12 +109,17 @@ DataGridDataRenderer.prototype._setListSelected =
 			columnSelectionType = columnData.getStyle("SelectionType");
 			columnSelectable = columnData.getStyle("Selectable");
 			columnHighlightable = columnData.getStyle("Highlightable");			
-			itemRenderer = this._getChildAt(i);
+			itemRenderer = this._itemRenderersContainer._getChildAt(i);
 
 			//Optimize, use existing data if available
 			itemRendererSelectedData = itemRenderer._listSelected;
 			if (itemRendererSelectedData == null)
 				itemRendererSelectedData = {highlight:false, selected:false};
+			else
+			{
+				itemRendererSelectedData.highlight = false;
+				itemRendererSelectedData.selected = false;
+			}
 			
 			if (columnSelectable == true)
 			{

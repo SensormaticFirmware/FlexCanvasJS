@@ -1,6 +1,6 @@
 
 /**
- * @depends DataGridRowItemRendererBase.js
+ * @depends DataGridItemRendererBase.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -8,7 +8,7 @@
 	
 /**
  * @class DataGridLabelItemRenderer
- * @inherits DataGridRowItemRendererBase
+ * @inherits DataGridItemRendererBase
  * 
  * DataGrid ItemRenderer for a basic label. Updates label text via 
  * DataGridColumnDefiniton RowItemLabelFunction.
@@ -27,9 +27,9 @@ function DataGridLabelItemRenderer()
 }
 
 //Inherit from LabelElement
-DataGridLabelItemRenderer.prototype = Object.create(DataGridRowItemRendererBase.prototype);
+DataGridLabelItemRenderer.prototype = Object.create(DataGridItemRendererBase.prototype);
 DataGridLabelItemRenderer.prototype.constructor = DataGridLabelItemRenderer;
-DataGridLabelItemRenderer.base = DataGridRowItemRendererBase;
+DataGridLabelItemRenderer.base = DataGridItemRendererBase;
 
 
 /////////////Style Types/////////////////////////

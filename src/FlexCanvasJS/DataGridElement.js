@@ -349,7 +349,7 @@ DataGridElement.prototype.getNumColumns =
 DataGridElement.prototype.setSelectedIndex = 
 	function (rowIndex, columnIndex)
 	{
-		if (this._selectedIndex == index && this._selectedColumnIndex == columnIndex)
+		if (this._selectedIndex == rowIndex && this._selectedColumnIndex == columnIndex)
 			return false;
 		
 		if (rowIndex > this._listCollection.length -1)
@@ -622,8 +622,8 @@ DataGridElement.prototype._createRowItemRenderer =
 DataGridElement.prototype._onDataGridRowItemRollover = 
 	function (event)
 	{
-		this._overIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
-		this._columnOverIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
+		this._overIndex = event.getCurrentTarget()._listData._itemIndex;
+		this._columnOverIndex = event.getCurrentTarget()._listData._columnIndex;
 		
 		var renderer = null;
 		for (var i = 0; i < this._contentPane._children.length; i++)
@@ -679,9 +679,6 @@ DataListElement.prototype._updateRendererData =
 DataGridElement.prototype._onDataGridRowItemClick = 
 	function (elementMouseEvent)
 	{
-		if (this.getStyle("Selectable") == false)
-			return;
-	
 		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
 		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
 		var itemData = elementMouseEvent.getCurrentTarget()._itemData;

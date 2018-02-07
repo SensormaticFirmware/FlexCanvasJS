@@ -4,7 +4,7 @@
  */
 
 ///////////////////////////////////////////////////////////////////////
-////////////////////DataGridRowItemRendererBase////////////////////////
+////////////////////DataGridItemRendererBase////////////////////////
 
 /**
  * @class DataGridItemRendererBase
@@ -16,8 +16,8 @@
  * 
  * Adds skin states and styles for "up", "alt", "over", and "selected" states. 
  * 
- * @constructor DataGridRowItemRendererBase 
- * Creates new DataGridRowItemRendererBase instance.
+ * @constructor DataGridItemRendererBase 
+ * Creates new DataGridItemRendererBase instance.
  */
 function DataGridItemRendererBase()
 {
@@ -28,6 +28,18 @@ function DataGridItemRendererBase()
 DataGridItemRendererBase.prototype = Object.create(DataRendererBaseElement.prototype);
 DataGridItemRendererBase.prototype.constructor = DataGridItemRendererBase;
 DataGridItemRendererBase.base = DataRendererBaseElement;
+
+DataGridItemRendererBase.UpSkinStyleDefault = new StyleDefinition();
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+
+DataGridItemRendererBase.AltSkinStyleDefault = new StyleDefinition();
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+
+DataGridItemRendererBase.StyleDefault = new StyleDefinition();
+DataGridItemRendererBase.StyleDefault.setStyle("UpSkinStyle", DataGridItemRendererBase.UpSkinStyleDefault);
+DataGridItemRendererBase.StyleDefault.setStyle("AltSkinStyle", DataGridItemRendererBase.AltSkinStyleDefault);
 
 
 /////////////Internal///////////////////////////
