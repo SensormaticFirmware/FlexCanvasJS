@@ -52,6 +52,9 @@ function DataGridElement()
 	
 	this._selectedColumnIndex = -1;
 	
+	this._overIndex = -1; //row index
+	this._overColumnIndex = -1;
+	
 	this._gridHeader = null;
 	
 	this._gridLineContainer = new CanvasElement();
@@ -361,25 +364,13 @@ DataGridElement.prototype.setSelectedIndex =
 		if (columnIndex < -1)
 			columnIndex = -1;
 		
-		var oldRowIndex = this._selectedIndex;
-		var oldColumnIndex = this._selectedColumnIndex;
+		this._selectedIndex = rowIndex;
+		this._selectedColumnIndex = columnIndex;
 		
-//		var oldIndex = this._selectedIndex;
-//		
-//		this._selectedIndex = index;
-//		this._selectedItem = this._listCollection.getItemAt(index);
-//		
-//		//Update renderer data.
-//		if (this._contentPane._children.length > 0)
-//		{
-//			var firstIndex = this._contentPane._children[0]._listData._itemIndex;
-//			var lastIndex = this._contentPane._children[this._contentPane._children.length - 1]._listData._itemIndex;
-//			
-//			if (index != null && index >= firstIndex && index <= lastIndex)
-//				this._contentPane._children[index - firstIndex]._setListSelected(true);
-//			if (oldIndex != null && oldIndex >= firstIndex && oldIndex <= lastIndex)
-//				this._contentPane._children[oldIndex - firstIndex]._setListSelected(false);
-//		}
+		var selectionData = {rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex};
+		
+		for (var i = 0; i < this._contentPane._children.length; i++)
+			this._contentPane._children[i]._setListSelected(selectionData);
 		
 		return true;
 	};	
@@ -457,16 +448,13 @@ DataGridElement.prototype._columnsChanged =
 		for (var i = 0; i < this._contentPane._children.length; i++)
 		{
 			renderer = this._contentPane._children[i];
-			
-			renderer._setListData(
-				renderer._listData,
-				renderer._itemData);
+			this._updateRendererData(renderer, renderer._listData._itemIndex);
 		}
 		
 		this._invalidateLayout();
 	};
 
-//Override	
+//@override	
 DataGridElement.prototype._onDataListCollectionChanged = 
 	function (collectionChangedEvent)
 	{
@@ -482,7 +470,7 @@ DataGridElement.prototype._onDataListCollectionChanged =
 		}
 	};
 	
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementAdded = 
 	function (addedRemovedEvent)
 	{
@@ -492,7 +480,7 @@ DataGridElement.prototype._onCanvasElementAdded =
 			this._gridColumns[i].addEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};
 
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementRemoved = 
 	function (addedRemovedEvent)
 	{
@@ -501,52 +489,6 @@ DataGridElement.prototype._onCanvasElementRemoved =
 		for (var i = 0; i < this._gridColumns.length; i++)
 			this._gridColumns[i].removeEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};		
-	
-//@Override
-DataGridElement.prototype._doStylesUpdated =
-	function (stylesMap)
-	{
-		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-		
-		if ("HeaderClass" in stylesMap)
-		{
-			var headerClass = this.getStyle("HeaderClass");
-			
-			//Destroy if class is null or does not match existing
-			if ((headerClass == null && this._gridHeader != null) ||
-				this._gridHeader != null && this._gridHeader.constructor != headerClass)
-			{
-				this._removeChild(this._gridHeader);
-				this._gridHeader = null;
-			}
-			
-			//Create
-			if (headerClass != null && this._gridHeader == null)
-			{
-				this._gridHeader = new (headerClass)();
-				
-				this._gridHeader._setListData(
-					new DataListData(this, -1),
-					null);
-				
-				this._addChild(this._gridHeader);
-			}
-			
-			this._invalidateLayout();
-		}
-		
-		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
-			this._applySubStylesToElement("HeaderStyle", this._gridHeader);
-		
-		if ("GridLinesPriority" in stylesMap ||
-			"VerticalGridLinesClass" in stylesMap ||
-			"VerticalGridLinesStyle" in stylesMap ||
-			"HorizontalGridLinesClass" in stylesMap ||
-			"HorizontalGridLinesStyle" in stylesMap)
-		{
-			this._invalidateLayout();
-		}
-	};	
 	
 //@override		
 DataGridElement.prototype._createRenderer = 
@@ -680,13 +622,29 @@ DataGridElement.prototype._createRowItemRenderer =
 DataGridElement.prototype._onDataGridRowItemRollover = 
 	function (event)
 	{
-	
+		this._overIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
+		this._columnOverIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
 	};
 	
 DataGridElement.prototype._onDataGridRowItemRollout = 
 	function (event)
 	{
-	
+		this._overIndex = -1;
+		this._columnOverIndex = -1;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
 	};	
 	
 //@override	
@@ -708,10 +666,7 @@ DataListElement.prototype._updateRendererData =
 			listData,
 			this._listCollection.getItemAt(itemIndex));
 		
-		if (this._selectedIndex == itemIndex)
-			renderer._setListSelected(true);
-		else
-			renderer._setListSelected(false);
+		renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
 	};	
 	
 /**
@@ -794,7 +749,53 @@ DataGridElement.prototype._updateRowItemRendererData =
 			this._listCollection.getItemAt(itemIndex));
 	};
 	
-//@Override
+//@override
+DataGridElement.prototype._doStylesUpdated =
+	function (stylesMap)
+	{
+		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		if ("HeaderClass" in stylesMap)
+		{
+			var headerClass = this.getStyle("HeaderClass");
+			
+			//Destroy if class is null or does not match existing
+			if ((headerClass == null && this._gridHeader != null) ||
+				this._gridHeader != null && this._gridHeader.constructor != headerClass)
+			{
+				this._removeChild(this._gridHeader);
+				this._gridHeader = null;
+			}
+			
+			//Create
+			if (headerClass != null && this._gridHeader == null)
+			{
+				this._gridHeader = new (headerClass)();
+				
+				this._gridHeader._setListData(
+					new DataListData(this, -1),
+					null);
+				
+				this._addChild(this._gridHeader);
+			}
+			
+			this._invalidateLayout();
+		}
+		
+		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
+			this._applySubStylesToElement("HeaderStyle", this._gridHeader);
+		
+		if ("GridLinesPriority" in stylesMap ||
+			"VerticalGridLinesClass" in stylesMap ||
+			"VerticalGridLinesStyle" in stylesMap ||
+			"HorizontalGridLinesClass" in stylesMap ||
+			"HorizontalGridLinesStyle" in stylesMap)
+		{
+			this._invalidateLayout();
+		}
+	};		
+	
+//@override
 DataGridElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
