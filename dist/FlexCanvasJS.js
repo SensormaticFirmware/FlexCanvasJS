@@ -3997,10 +3997,10 @@ CanvasElement._StyleTypes.Visible = 				StyleableBase.EStyleType.NORMAL;		// tru
  * @style BorderType String
  * 
  * Determines the border type the CanvasElement should render. Allowable values are
- * "none", "solid", "inset", or "outset". Note that borders are internal and drawn on the inside
+ * "solid", "inset", "outset" or "none" / null. Note that borders are internal and drawn on the inside
  * of the elements bounding area.
  */
-CanvasElement._StyleTypes.BorderType = 				StyleableBase.EStyleType.NORMAL;		// "none" || "solid" || "inset" || "outset"
+CanvasElement._StyleTypes.BorderType = 				StyleableBase.EStyleType.NORMAL;		// "none"/null || "solid" || "inset" || "outset"
 
 /**
  * @style BorderColor String
@@ -13823,7 +13823,6 @@ DataRendererLabelElement.StyleDefault.setStyle("PaddingTop", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingBottom", 			4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingLeft", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingRight", 				4);
-DataRendererLabelElement.StyleDefault.setStyle("BorderType", 				"none");
 
 DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
@@ -13877,7 +13876,7 @@ DataRendererLabelElement.prototype._getTextColor =
 
 /**
  * @function _updateLabelTextColor
- * Updates the text color base on the current state.
+ * Updates the text color for the current state.
  */	
 DataRendererLabelElement.prototype._updateLabelTextColor = 
 	function ()
@@ -14195,12 +14194,15 @@ DataListElement._DataRendererProxyMap._Arbitrary = 				true;
  * 
  * @param index int
  * The collection index to be selected.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
  */	
 DataListElement.prototype.setSelectedIndex = 
 	function (index)
 	{
 		if (this._selectedIndex == index)
-			return true;
+			return false;
 		
 		if (index > this._listCollection.length -1)
 			return false;
@@ -15191,7 +15193,78 @@ DataListElement.prototype._doLayout =
 
 
 /**
- * @depends DataRendererLabelElement.js
+ * @depends DataRendererBaseElement.js
+ */
+
+///////////////////////////////////////////////////////////////////////
+////////////////////DataGridItemRendererBase////////////////////////
+
+/**
+ * @class DataGridItemRendererBase
+ * @inherits DataRendererBaseElement
+ * 
+ * Abstract base class for DataGrid row item rendering. Any CanvasElement
+ * can be a data renderer. This class is just here for convenience as it
+ * implements some commonly used functionality if you wish to subclass it. 
+ * 
+ * Adds skin states and styles for "up", "alt", "over", and "selected" states. 
+ * 
+ * @constructor DataGridItemRendererBase 
+ * Creates new DataGridItemRendererBase instance.
+ */
+function DataGridItemRendererBase()
+{
+	DataGridItemRendererBase.base.prototype.constructor.call(this);
+}
+	
+//Inherit from DataRendererBaseElement
+DataGridItemRendererBase.prototype = Object.create(DataRendererBaseElement.prototype);
+DataGridItemRendererBase.prototype.constructor = DataGridItemRendererBase;
+DataGridItemRendererBase.base = DataRendererBaseElement;
+
+DataGridItemRendererBase.UpSkinStyleDefault = new StyleDefinition();
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+
+DataGridItemRendererBase.AltSkinStyleDefault = new StyleDefinition();
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+
+DataGridItemRendererBase.StyleDefault = new StyleDefinition();
+DataGridItemRendererBase.StyleDefault.setStyle("UpSkinStyle", DataGridItemRendererBase.UpSkinStyleDefault);
+DataGridItemRendererBase.StyleDefault.setStyle("AltSkinStyle", DataGridItemRendererBase.AltSkinStyleDefault);
+
+
+/////////////Internal///////////////////////////
+
+//@override
+DataGridItemRendererBase.prototype._updateState = 
+	function ()
+	{
+		DataGridItemRendererBase.base.prototype._updateState.call(this);
+		
+		if (this._listSelected != null && this._listSelected.selected == true)
+			newState = "selected";
+		else if (this._listSelected != null && this._listSelected.highlight == true)
+			newState = "over";
+		else
+		{
+			if (this._listData == null || this._listData._itemIndex % 2 == 0)
+				newState = "up";
+			else
+				newState = "alt";
+		}
+	
+		this.setStyle("SkinState", newState);
+	};
+
+
+
+
+
+
+/**
+ * @depends DataGridItemRendererBase.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -15199,12 +15272,10 @@ DataListElement.prototype._doLayout =
 	
 /**
  * @class DataGridLabelItemRenderer
- * @inherits DataRendererLabelElement
+ * @inherits DataGridItemRendererBase
  * 
  * DataGrid ItemRenderer for a basic label. Updates label text via 
  * DataGridColumnDefiniton RowItemLabelFunction.
- * 
- * This class needs more work to add  text color styles for DataRenderer states.
  * 
  * @constructor DataGridLabelItemRenderer 
  * Creates new DataGridLabelItemRenderer instance.
@@ -15212,39 +15283,131 @@ DataListElement.prototype._doLayout =
 function DataGridLabelItemRenderer()
 {
 	DataGridLabelItemRenderer.base.prototype.constructor.call(this);
+	
+	this._labelElement = new LabelElement();
+	this._labelElement.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
+	
+	this._addChild(this._labelElement);
 }
 
 //Inherit from LabelElement
-DataGridLabelItemRenderer.prototype = Object.create(DataRendererLabelElement.prototype);
+DataGridLabelItemRenderer.prototype = Object.create(DataGridItemRendererBase.prototype);
 DataGridLabelItemRenderer.prototype.constructor = DataGridLabelItemRenderer;
-DataGridLabelItemRenderer.base = DataRendererLabelElement;
+DataGridLabelItemRenderer.base = DataGridItemRendererBase;
 
 
-///////////Default Styles//////////////////////
+/////////////Style Types/////////////////////////
+
+DataGridLabelItemRenderer._StyleTypes = Object.create(null);
+
+/**
+ * @style UpTextColor String
+ * 
+ * Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.UpTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+/**
+ * @style AltTextColor String
+ * 
+ * Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.AltTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+/**
+ * @style OverTextColor String
+ * 
+ * Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.OverTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+/**
+ * @style SelectedTextColor String
+ * 
+ * Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.SelectedTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+
+////////////Default Styles///////////////////////
 
 DataGridLabelItemRenderer.StyleDefault = new StyleDefinition();
 
 DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingTop", 				4);
 DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingBottom", 			4);
-DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingLeft", 				5);
-DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingRight", 			5);			
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingLeft", 				4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingRight", 			4);
+
+DataGridLabelItemRenderer.StyleDefault.setStyle("UpTextColor", 				"#000000");
+DataGridLabelItemRenderer.StyleDefault.setStyle("AltTextColor", 			"#000000");
+DataGridLabelItemRenderer.StyleDefault.setStyle("OverTextColor", 			"#000000");
+DataGridLabelItemRenderer.StyleDefault.setStyle("SelectedTextColor", 		"#000000");
 
 
-//////////////Internal//////////////////////////////////////////
+////////////Internal/////////////////////////////
 
 //@Override
-DataGridLabelItemRenderer.prototype._setListData = 
-	function (listData, itemData)
+DataGridLabelItemRenderer.prototype._changeState = 
+	function (state)
 	{
-		DataGridLabelItemRenderer.base.prototype._setListData.call(this, listData, itemData);
+		DataGridLabelItemRenderer.base.prototype._changeState.call(this, state);
 		
-		this._updateLabelText();
+		this._updateLabelTextColor();
+	};
+	
+/**
+ * @function _getTextColor
+ * Gets the text color style for the supplied state.
+ * 
+ * @param state String
+ * The current state.
+ * 
+ * @returns String
+ * Text color style for the supplied state.
+ */	
+DataGridLabelItemRenderer.prototype._getTextColor = 
+	function (state)
+	{
+		var stateTextColor = null;
+		
+		if (state == "up")
+			stateTextColor = this.getStyleData("UpTextColor");
+		else if (state == "alt")
+			stateTextColor = this.getStyleData("AltTextColor");
+		else if (state == "over")
+			stateTextColor = this.getStyleData("OverTextColor");
+		else if (state == "selected")
+			stateTextColor = this.getStyleData("SelectedTextColor");
+	
+		var textColor = this.getStyleData("TextColor");
+		
+		//Shouldnt have null stateTextColor
+		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
+			return textColor.value;
+		
+		return stateTextColor.value;
 	};
 
 /**
- * @function _updateLabelText
- * Updates the label text in response to list data changes using the associated parent grid column's RowItemLabelFunction.
+ * @function _updateLabelTextColor
+ * Updates the text color for the current state.
  */	
+DataGridLabelItemRenderer.prototype._updateLabelTextColor = 
+	function ()
+	{
+		var color = this._getTextColor(this._currentSkinState);
+		if (color != null)
+			this._labelElement.setStyle("TextColor", color);
+	};
+	
+/**
+ * @function _updateLabelTextColor
+ * Updates the label text base on the DataGrid data and column RowItemLabelFunction.
+ */		
 DataGridLabelItemRenderer.prototype._updateLabelText = 
 	function ()
 	{
@@ -15260,11 +15423,47 @@ DataGridLabelItemRenderer.prototype._updateLabelText =
 		}
 	};
 	
+//@override
+DataGridLabelItemRenderer.prototype._setListData = 
+	function (listData, itemData)
+	{
+		DataGridLabelItemRenderer.base.prototype._setListData.call(this, listData, itemData);
+		
+		this._updateLabelText();
+	};
+
+//@override
+DataGridLabelItemRenderer.prototype._doStylesUpdated =
+	function (stylesMap)
+	{
+		DataGridLabelItemRenderer.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		this._updateLabelTextColor();
+	};
+
+//@override
+DataGridLabelItemRenderer.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		return {width: this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
+				height: this._labelElement._getStyledOrMeasuredHeight() + padHeight};
+	};
+
+//@override	
+DataGridLabelItemRenderer.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		DataGridLabelItemRenderer.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		this._labelElement._setActualPosition(paddingMetrics.getX(), paddingMetrics.getY());
+		this._labelElement._setActualSize(paddingMetrics.getWidth(), paddingMetrics.getHeight());
+	};
+	
 	
 
 
 /**
- * @depends DataRendererBaseElement.js
+ * @depends CanvasElement.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -15272,7 +15471,7 @@ DataGridLabelItemRenderer.prototype._updateLabelText =
 
 /**
  * @class DataGridDataRenderer
- * @inherits DataRendererBaseElement
+ * @inherits CanvasElement
  * 
  * Default DataGrid ListItemClass used to render DataGrid rows. Renders
  * column items per the parent DataGrid's column definitions. 
@@ -15301,34 +15500,17 @@ function DataGridDataRenderer()
 	this._itemRenderersContainer.addEventListener("measurecomplete", this._onItemRenderersContainerMeasureCompleteInstance);
 }
 	
-//Inherit from DataRendererBaseElement
-DataGridDataRenderer.prototype = Object.create(DataRendererBaseElement.prototype);
+//Inherit from CanvasElement
+DataGridDataRenderer.prototype = Object.create(CanvasElement.prototype);
 DataGridDataRenderer.prototype.constructor = DataGridDataRenderer;
-DataGridDataRenderer.base = DataRendererBaseElement;
-
-//////////Default Styles/////////////////////////
-
-DataGridDataRenderer.StyleDefault = new StyleDefinition();
-
-//Skin Defaults///////
-DataGridDataRenderer.UpSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-
-DataGridDataRenderer.AltSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-/////////////////////
-
-DataGridDataRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridDataRenderer.UpSkinStyleDefault);	// StyleDefinition
-DataGridDataRenderer.StyleDefault.setStyle("AltSkinStyle", 						DataGridDataRenderer.AltSkinStyleDefault);	// StyleDefinition
-
+DataGridDataRenderer.base = CanvasElement;
 
 //@private
 DataGridDataRenderer.prototype.__onItemRenderersContainerMeasureComplete =
 	function (event)
 	{
 		this._invalidateMeasure();
+		this._invalidateLayout();
 	};
 
 //@Override
@@ -15369,10 +15551,61 @@ DataGridDataRenderer.prototype._setListData =
 		//Purge excess renderers.
 		while (this._itemRenderersContainer._children.length > this._listData._parentList._gridColumns.length)
 			this._itemRenderersContainer._removeChildAt(this._itemRenderersContainer._children.length - 1);
+	};
+	
+//@override	
+DataGridDataRenderer.prototype._setListSelected = 
+	function (selectedData)
+	{
+		DataGridDataRenderer.base.prototype._setListSelected.call(this, selectedData);
 		
-		//Invalidate, the item renderer container doesnt measure so wont do it for us.
-		this._invalidateMeasure();
-		this._invalidateLayout();
+		var columnData;
+		var columnSelectionType;
+		var columnSelectable;
+		var columnHighlightable;
+		var itemRenderer;
+		var itemRendererSelectedData;
+		
+		for (var i = 0; i < this._itemRenderersContainer._children.length; i++)
+		{
+			columnData = this._listData._parentList._gridColumns[i];
+			columnSelectionType = columnData.getStyle("SelectionType");
+			columnSelectable = columnData.getStyle("Selectable");
+			columnHighlightable = columnData.getStyle("Highlightable");			
+			itemRenderer = this._itemRenderersContainer._getChildAt(i);
+
+			//Optimize, use existing data if available
+			itemRendererSelectedData = itemRenderer._listSelected;
+			if (itemRendererSelectedData == null)
+				itemRendererSelectedData = {highlight:false, selected:false};
+			else
+			{
+				itemRendererSelectedData.highlight = false;
+				itemRendererSelectedData.selected = false;
+			}
+			
+			if (columnSelectable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowIndex == this._listData._itemIndex) ||
+					(columnSelectionType == "column" && i == selectedData.columnIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnIndex && this._listData._itemIndex == selectedData.rowIndex))
+				{
+					itemRendererSelectedData.selected = true;
+				}
+			}
+			
+			if (columnHighlightable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowOverIndex == this._listData._itemIndex) ||
+					(columnSelectionType == "column" && i == selectedData.columnOverIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnOverIndex && this._listData._itemIndex == selectedData.rowOverIndex))
+				{
+					itemRendererSelectedData.highlight = true;
+				}
+			}
+			
+			itemRenderer._setListSelected(itemRendererSelectedData);
+		}
 	};
 	
 //@Override
@@ -18552,7 +18785,6 @@ RadioButtonElement.prototype._doLayout =
 /**
  * @depends ButtonElement.js
  * @depends DropdownArrowButtonSkinElement.js
- * @depends DataGridDataRenderer.js
  * @depends DataRendererLabelElement.js
  * @depends Tween.js
  * @depends DataListElement.js
@@ -18762,10 +18994,18 @@ DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			Dropdow
 DropdownElement.DataListScrollBarStyleDefault = new StyleDefinition();
 DropdownElement.DataListScrollBarStyleDefault.setStyle("Padding", -1);			//Expand by 1px to share borders
 
+DropdownElement.DataListItemUpSkinStyleDefault = new StyleDefinition();
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("BackgroundColor", 		"#FFFFFF");
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+
+DropdownElement.DataListItemAltSkinStyleDefault = new StyleDefinition();
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("BackgroundColor", 	"#F0F0F0");
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+
 //DataList ListItem style
 DropdownElement.DataListItemStyleDefault = new StyleDefinition();
-DropdownElement.DataListItemStyleDefault.setStyle("UpSkinStyle", 				DataGridDataRenderer.UpSkinStyleDefault);
-DropdownElement.DataListItemStyleDefault.setStyle("AltSkinStyle", 				DataGridDataRenderer.AltSkinStyleDefault);
+DropdownElement.DataListItemStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.DataListItemUpSkinStyleDefault);
+DropdownElement.DataListItemStyleDefault.setStyle("AltSkinStyle", 				DropdownElement.DataListItemAltSkinStyleDefault);
 
 //DataList style
 DropdownElement.DataListStyleDefault = new StyleDefinition();
@@ -20128,15 +20368,6 @@ DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 					true);
 
 ////////Internal////////////////////////////////
 
-//@override, we dont need skinning for this element. 
-//We inherit from skinnable because it uses the same renderer used for rows for column logic.
-DataGridHeaderElement.prototype._getSkinClass = 
-	function ()
-	{
-		return null;
-	};
-
-
 /**
  * @function _onColumnDividerDrag
  * Event handler for column divider "dragging" event. Updates the header item renderers and 
@@ -20449,12 +20680,6 @@ DataGridHeaderElement.prototype._doLayout =
 	};
 	
 	
-//@override - render ourself. Not using skins.
-DataGridHeaderElement.prototype._doRender = 
-	function ()
-	{
-		SkinnableElement.base.prototype._doRender.call(this);
-	};		
 
 
 /**
@@ -20508,6 +20733,11 @@ function DataGridElement()
 	this._columnSizes = [];
 	this._columnPercents = [];	
 	
+	this._selectedColumnIndex = -1;
+	
+	this._overIndex = -1; //row index
+	this._overColumnIndex = -1;
+	
 	this._gridHeader = null;
 	
 	this._gridLineContainer = new CanvasElement();
@@ -20523,13 +20753,21 @@ function DataGridElement()
 		{
 			_self._onDataGridColumnDefinitionChanged(styleChangedEvent);
 		};
-		
 	this._onDataGridRowItemClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataGridRowItemClick(elementMouseEvent);
 		};
-		
+	this._onDataGridRowItemRolloverInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollover(event);
+		};
+	this._onDataGridRowItemRolloutInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollout(event);
+		};	
 	this._onDataGridHeaderItemClickInstance = 
 		function (elementMouseEvent)
 		{
@@ -20775,6 +21013,65 @@ DataGridElement.prototype.getNumColumns =
 		return this._gridColumns.length;
 	};
 	
+/**
+ * @function setSelectedIndex
+ * @override
+ * 
+ * Sets the selected collection (row) index and column index. 
+ * When both row and column is specified the associated cell is selected.
+ * 
+ * @param rowIndex int
+ * The collection (row) index to be selected or -1 for none.
+ * 
+ * @param columnIndex int
+ * the column index to be selected or -1 for none.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
+ */	
+DataGridElement.prototype.setSelectedIndex = 
+	function (rowIndex, columnIndex)
+	{
+		if (this._selectedIndex == rowIndex && this._selectedColumnIndex == columnIndex)
+			return false;
+		
+		if (rowIndex > this._listCollection.length -1)
+			return false;
+		
+		if (columnIndex > this._gridColumns.length - 1)
+			return false;
+		
+		if (rowIndex < -1)
+			rowIndex = -1;
+		
+		if (columnIndex < -1)
+			columnIndex = -1;
+		
+		this._selectedIndex = rowIndex;
+		this._selectedColumnIndex = columnIndex;
+		
+		var selectionData = {rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex};
+		
+		for (var i = 0; i < this._contentPane._children.length; i++)
+			this._contentPane._children[i]._setListSelected(selectionData);
+		
+		return true;
+	};	
+	
+/**
+ * @function getSelectedIndex
+ * @override
+ * Gets the selected collection (row) and column index. 
+ * 
+ * @returns Object
+ * Returns and object containing row and column indexes {row:-1, column:-1}
+ */		
+DataListElement.prototype.getSelectedIndex = 
+	function ()
+	{
+		return {row:this._selectedIndex, column:this._selectedColumnIndex};
+	};	
+	
 	
 ///////////Internal////////////////////////////////
 	
@@ -20834,16 +21131,13 @@ DataGridElement.prototype._columnsChanged =
 		for (var i = 0; i < this._contentPane._children.length; i++)
 		{
 			renderer = this._contentPane._children[i];
-			
-			renderer._setListData(
-				renderer._listData,
-				renderer._itemData);
+			this._updateRendererData(renderer, renderer._listData._itemIndex);
 		}
 		
 		this._invalidateLayout();
 	};
 
-//Override	
+//@override	
 DataGridElement.prototype._onDataListCollectionChanged = 
 	function (collectionChangedEvent)
 	{
@@ -20859,7 +21153,7 @@ DataGridElement.prototype._onDataListCollectionChanged =
 		}
 	};
 	
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementAdded = 
 	function (addedRemovedEvent)
 	{
@@ -20869,7 +21163,7 @@ DataGridElement.prototype._onCanvasElementAdded =
 			this._gridColumns[i].addEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};
 
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementRemoved = 
 	function (addedRemovedEvent)
 	{
@@ -20879,53 +21173,7 @@ DataGridElement.prototype._onCanvasElementRemoved =
 			this._gridColumns[i].removeEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};		
 	
-//@Override
-DataGridElement.prototype._doStylesUpdated =
-	function (stylesMap)
-	{
-		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-		
-		if ("HeaderClass" in stylesMap)
-		{
-			var headerClass = this.getStyle("HeaderClass");
-			
-			//Destroy if class is null or does not match existing
-			if ((headerClass == null && this._gridHeader != null) ||
-				this._gridHeader != null && this._gridHeader.constructor != headerClass)
-			{
-				this._removeChild(this._gridHeader);
-				this._gridHeader = null;
-			}
-			
-			//Create
-			if (headerClass != null && this._gridHeader == null)
-			{
-				this._gridHeader = new (headerClass)();
-				
-				this._gridHeader._setListData(
-					new DataListData(this, -1),
-					null);
-				
-				this._addChild(this._gridHeader);
-			}
-			
-			this._invalidateLayout();
-		}
-		
-		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
-			this._applySubStylesToElement("HeaderStyle", this._gridHeader);
-		
-		if ("GridLinesPriority" in stylesMap ||
-			"VerticalGridLinesClass" in stylesMap ||
-			"VerticalGridLinesStyle" in stylesMap ||
-			"HorizontalGridLinesClass" in stylesMap ||
-			"HorizontalGridLinesStyle" in stylesMap)
-		{
-			this._invalidateLayout();
-		}
-	};	
-	
-//@Override		
+//@override		
 DataGridElement.prototype._createRenderer = 
 	function (itemIndex)
 	{
@@ -21048,10 +21296,107 @@ DataGridElement.prototype._createRowItemRenderer =
 		this._updateRowItemRendererData(newRenderer, itemIndex, columnIndex);		
 		
 		newRenderer.addEventListener("click", this._onDataGridRowItemClickInstance);
+		newRenderer.addEventListener("rollover", this._onDataGridRowItemRolloverInstance);
+		newRenderer.addEventListener("rollout", this._onDataGridRowItemRolloutInstance);
 		
 		return newRenderer;
 	};
 
+DataGridElement.prototype._onDataGridRowItemRollover = 
+	function (event)
+	{
+		this._overIndex = event.getCurrentTarget()._listData._itemIndex;
+		this._columnOverIndex = event.getCurrentTarget()._listData._columnIndex;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
+	};
+	
+DataGridElement.prototype._onDataGridRowItemRollout = 
+	function (event)
+	{
+		this._overIndex = -1;
+		this._columnOverIndex = -1;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
+	};	
+	
+//@override	
+DataListElement.prototype._updateRendererData = 
+	function (renderer, itemIndex)
+	{
+		var listData = null;
+		
+		//Optimize, dont create new data unless its actually changed.
+		if (renderer._listData != null && renderer._listData._itemIndex == itemIndex)
+			listData = renderer._listData;
+		else
+			listData = new DataListData(this, itemIndex);
+	
+		//Always call the function even if data has not changed, this indicates to the
+		//renderer to inspect its parent related data and it may make changes even if
+		//this data is the same. An example is changes to a DataGrid's columns.
+		renderer._setListData(
+			listData,
+			this._listCollection.getItemAt(itemIndex));
+		
+		renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+	};	
+	
+/**
+ * @function _onDataGridRowItemClick
+ * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */
+DataGridElement.prototype._onDataGridRowItemClick = 
+	function (elementMouseEvent)
+	{
+		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
+		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
+		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
+		
+		var columnDef = this._gridColumns[columnIndex];
+		
+		var gridSelectable = this.getStyle("Selectable");
+		var columnSelectable = columnDef.getStyle("Selectable");
+		var elementSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable"); 
+		
+		if (elementSelectable === "undefined")
+			elementSelectable = true;
+		
+		var dispatchChanged = false;
+		
+		if (gridSelectable && columnSelectable && elementSelectable)
+		{
+			var selectRow = itemIndex;
+			var selectColumn = columnIndex;
+			
+			if (columnDef.getStyle("SelectionType") == "row")
+				selectColumn = -1;
+			else if (columnDef.getStyle("SelectionType") == "column")
+				selectRow = -1;
+			
+			if (this.setSelectedIndex(selectRow, selectColumn) == true)
+				dispatchChanged = true;
+		}
+		
+		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
+		
+		if (dispatchChanged == true)
+			this._dispatchEvent(new ElementEvent("changed", false));
+	};	
+	
 /**
  * @function _updateRowItemRendererData
  * Updates the row ItemRenderer list data.
@@ -21084,32 +21429,53 @@ DataGridElement.prototype._updateRowItemRendererData =
 			this._listCollection.getItemAt(itemIndex));
 	};
 	
-/**
- * @function _onDataGridRowItemClick
- * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
- * 
- * @param elementMouseEvent ElementMouseEvent
- * The ElementMouseEvent to process.
- */
-DataGridElement.prototype._onDataGridRowItemClick = 
-	function (elementMouseEvent)
+//@override
+DataGridElement.prototype._doStylesUpdated =
+	function (stylesMap)
 	{
-		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
-		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
-		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
+		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		var dispatchChanged = false;
+		if ("HeaderClass" in stylesMap)
+		{
+			var headerClass = this.getStyle("HeaderClass");
+			
+			//Destroy if class is null or does not match existing
+			if ((headerClass == null && this._gridHeader != null) ||
+				this._gridHeader != null && this._gridHeader.constructor != headerClass)
+			{
+				this._removeChild(this._gridHeader);
+				this._gridHeader = null;
+			}
+			
+			//Create
+			if (headerClass != null && this._gridHeader == null)
+			{
+				this._gridHeader = new (headerClass)();
+				
+				this._gridHeader._setListData(
+					new DataListData(this, -1),
+					null);
+				
+				this._addChild(this._gridHeader);
+			}
+			
+			this._invalidateLayout();
+		}
 		
-		if (this.getStyle("Selectable") == true && this.setSelectedIndex(itemIndex) == true)
-			dispatchChanged = true;
+		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
+			this._applySubStylesToElement("HeaderStyle", this._gridHeader);
 		
-		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
-		
-		if (dispatchChanged == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
-	};
+		if ("GridLinesPriority" in stylesMap ||
+			"VerticalGridLinesClass" in stylesMap ||
+			"VerticalGridLinesStyle" in stylesMap ||
+			"HorizontalGridLinesClass" in stylesMap ||
+			"HorizontalGridLinesStyle" in stylesMap)
+		{
+			this._invalidateLayout();
+		}
+	};		
 	
-//@Override
+//@override
 DataGridElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
@@ -21421,6 +21787,31 @@ DataGridColumnDefinition._StyleTypes.RowItemStyle = 				StyleableBase.EStyleType
  */
 DataGridColumnDefinition._StyleTypes.RowItemLabelFunction = 		StyleableBase.EStyleType.NORMAL;		// function (data, columnIndex) { return "" }
 
+/**
+ * @style SelectionType string
+ * 
+ * Determines the selection type that the column will use. Allowable values are "row", "column", or "cell".
+ * Row selection will only affect other columns also set to "row".
+ */
+DataGridColumnDefinition._StyleTypes.SelectionType = 				StyleableBase.EStyleType.NORMAL;		
+
+/**
+ * @style Selectable boolean
+ * 
+ * When true, items in this column can be selected and the DataGrid will dispatch "changed" events.
+ * When SelectionType is set to "row" or "column", related items will also be set to a "selected" state.
+ */
+DataGridColumnDefinition._StyleTypes.Selectable = 					StyleableBase.EStyleType.NORMAL;	// true || false
+
+/**
+ * @style Highlightable boolean
+ * 
+ * When true, items in this column will be highlighted on mouseover, "over" state. 
+ * When SelectionType is set to "row" or "column", related items will also be set to an "over" state.
+ */
+DataGridColumnDefinition._StyleTypes.Highlightable = 				StyleableBase.EStyleType.NORMAL;	// true || false
+
+
 
 /////////Default Styles///////////////////////////////
 
@@ -21428,6 +21819,9 @@ DataGridColumnDefinition.StyleDefault = new StyleDefinition();
 
 DataGridColumnDefinition.StyleDefault.setStyle("PercentSize", 				100);							// number || null
 DataGridColumnDefinition.StyleDefault.setStyle("MinSize", 					12);							// number || null
+DataGridColumnDefinition.StyleDefault.setStyle("SelectionType", 			"row");							// "row" || "column" || "cell"
+DataGridColumnDefinition.StyleDefault.setStyle("Selectable", 				true);							// true || false
+DataGridColumnDefinition.StyleDefault.setStyle("Highlightable", 			true);							// true || false
 
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderText", 				"");							// "string"
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemClass", 			DataGridHeaderItemRenderer);	// Element constructor()
