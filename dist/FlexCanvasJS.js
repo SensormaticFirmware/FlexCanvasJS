@@ -3780,6 +3780,10 @@ function CanvasElement()
 	this._renderValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._renderValidateNode.data = this;
 	
+	this._redrawRegionInvalid = true;						//Dirty flag for redraw region
+	this._redrawRegionValidateNode = new CmLinkedNode();	//Reference to linked list iterator
+	this._redrawRegionValidateNode.data = this;
+	
 	//Off screen canvas for rendering this element.
 	this._graphicsCanvas = null;
 	this._graphicsCtx = null;
@@ -6709,6 +6713,7 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		this._measureInvalid = true;
 		this._layoutInvalid = true;
 		this._renderInvalid = true;
+		this._redrawRegionInvalid = true;
 		
 		//Nuke graphics canvas
 		this._graphicsCanvas = null;
@@ -7192,6 +7197,9 @@ CanvasElement.prototype._propagateChildData =
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.removeNode(this._renderValidateNode, this._displayDepth);
 				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.removeNode(this._redrawRegionValidateNode, this._displayDepth);
+				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.removeNode(this._compositeRenderValidateNode, this._displayDepth);
 				
@@ -7239,6 +7247,9 @@ CanvasElement.prototype._propagateChildData =
 				
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.addNode(this._renderValidateNode, this._displayDepth);
+				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
 				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.addNode(this._compositeRenderValidateNode, this._displayDepth);
@@ -8595,8 +8606,13 @@ CanvasElement.prototype._invalidateRender =
 CanvasElement.prototype._invalidateRedrawRegion = 
 	function ()
 	{
-		if (this._manager != null)
-			this._manager._redrawRegionInvalid = true;
+		if (this._redrawRegionInvalid == false)
+		{
+			this._redrawRegionInvalid = true;
+			
+			if (this._manager != null)
+				this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
+		}
 	};	
 	
 //@private
@@ -8878,13 +8894,13 @@ CanvasElement.prototype._setListData =
  * Override this function to make any changes to the DataRenderer per the selection state.
  * Update any styles, states, add/remove children, call any necessary _invalidate() functions, etc.
  * 
- * @param selected boolean
- * True if the DataRenderer is selected, otherwise false.
+ * @param selectedData Any
+ * Selected data, differs per container.
  */	
 CanvasElement.prototype._setListSelected = 
-	function (selected)
+	function (selectedData)
 	{
-		this._listSelected = selected;
+		this._listSelected = selectedData;
 	};	
 	
 	
@@ -15566,6 +15582,14 @@ DataGridDataRenderer.prototype._setListSelected =
 		var itemRenderer;
 		var itemRendererSelectedData;
 		
+		var overColumn = null;
+		if (selectedData.columnOverIndex >= 0 && selectedData.columnOverIndex < this._listData._parentList._gridColumns.length)
+			overColumn = this._listData._parentList._gridColumns[selectedData.columnOverIndex];
+		
+		var overColumnSelectionType = null;
+		if (overColumn != null)
+			overColumnSelectionType = overColumn.getStyle("SelectionType");
+		
 		for (var i = 0; i < this._itemRenderersContainer._children.length; i++)
 		{
 			columnData = this._listData._parentList._gridColumns[i];
@@ -15586,7 +15610,7 @@ DataGridDataRenderer.prototype._setListSelected =
 			
 			if (columnSelectable == true)
 			{
-				if ((columnSelectionType == "row" && selectedData.rowIndex == this._listData._itemIndex) ||
+				if ((columnSelectionType == "row" && selectedData.rowIndex == this._listData._itemIndex && selectedData.columnIndex == -1) ||
 					(columnSelectionType == "column" && i == selectedData.columnIndex) ||
 					(columnSelectionType == "cell" && i == selectedData.columnIndex && this._listData._itemIndex == selectedData.rowIndex))
 				{
@@ -15596,7 +15620,7 @@ DataGridDataRenderer.prototype._setListSelected =
 			
 			if (columnHighlightable == true)
 			{
-				if ((columnSelectionType == "row" && selectedData.rowOverIndex == this._listData._itemIndex) ||
+				if ((columnSelectionType == "row" && selectedData.rowOverIndex == this._listData._itemIndex && overColumnSelectionType == "row") ||
 					(columnSelectionType == "column" && i == selectedData.columnOverIndex) ||
 					(columnSelectionType == "cell" && i == selectedData.columnOverIndex && this._listData._itemIndex == selectedData.rowOverIndex))
 				{
@@ -21066,7 +21090,7 @@ DataGridElement.prototype.setSelectedIndex =
  * @returns Object
  * Returns and object containing row and column indexes {row:-1, column:-1}
  */		
-DataListElement.prototype.getSelectedIndex = 
+DataGridElement.prototype.getSelectedIndex = 
 	function ()
 	{
 		return {row:this._selectedIndex, column:this._selectedColumnIndex};
@@ -21331,7 +21355,7 @@ DataGridElement.prototype._onDataGridRowItemRollout =
 	};	
 	
 //@override	
-DataListElement.prototype._updateRendererData = 
+DataGridElement.prototype._updateRendererData = 
 	function (renderer, itemIndex)
 	{
 		var listData = null;
@@ -22614,7 +22638,7 @@ function CanvasManager()
 	this._updateMeasureQueue = new CmDepthQueue();
 	this._updateLayoutQueue = new CmDepthQueue();
 	this._updateRenderQueue = new CmDepthQueue();
-
+	this._updateRedrawRegionQueue = new CmDepthQueue();
 	this._compositeRenderQueue = new CmDepthQueue();
 	
 	//Used to store the add/remove events we need to dispatch after elements are added/removed from the display chain.
@@ -22650,7 +22674,7 @@ function CanvasManager()
 	
 	this._currentLocale = "en-us";
 	
-	this._redrawRegionInvalid = true;
+	//this._redrawRegionInvalid = true;
 	this._redrawRegionPrevMetrics = null;
 	
 	//Now call base
@@ -23481,11 +23505,20 @@ CanvasManager.prototype.updateNow =
 			}
 		}
 		
-		if (this._redrawRegionInvalid == true)
+		var queuedElement = null;
+		while (this._updateRedrawRegionQueue.length > 0)
 		{
-			this._validateRedrawRegion(this, false);
-			this._redrawRegionInvalid = false;
+			queuedElement = this._updateRedrawRegionQueue.removeLargest().data;
+			
+			if (queuedElement._redrawRegionInvalid == true)
+				this._validateRedrawRegion(queuedElement, false);
 		}
+		
+//		if (this._redrawRegionInvalid == true)
+//		{
+//			this._validateRedrawRegion(this, false);
+//			this._redrawRegionInvalid = false;
+//		}
 		
 		//Render composite layers.
 		while (this._compositeRenderQueue.length > 0)
@@ -23563,6 +23596,8 @@ CanvasManager.prototype._updateCompositeCanvas =
 CanvasManager.prototype._validateRedrawRegion = 
 	function (element, forceRegionUpdate)
 	{
+		element._redrawRegionInvalid = false;
+	
 		var newCompositeMetrics = [];
 		var oldVisible = element._renderVisible;
 		
