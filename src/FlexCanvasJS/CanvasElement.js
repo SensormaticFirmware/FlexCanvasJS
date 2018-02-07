@@ -161,6 +161,10 @@ function CanvasElement()
 	this._renderValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._renderValidateNode.data = this;
 	
+	this._redrawRegionInvalid = true;						//Dirty flag for redraw region
+	this._redrawRegionValidateNode = new CmLinkedNode();	//Reference to linked list iterator
+	this._redrawRegionValidateNode.data = this;
+	
 	//Off screen canvas for rendering this element.
 	this._graphicsCanvas = null;
 	this._graphicsCtx = null;
@@ -3090,6 +3094,7 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		this._measureInvalid = true;
 		this._layoutInvalid = true;
 		this._renderInvalid = true;
+		this._redrawRegionInvalid = true;
 		
 		//Nuke graphics canvas
 		this._graphicsCanvas = null;
@@ -3573,6 +3578,9 @@ CanvasElement.prototype._propagateChildData =
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.removeNode(this._renderValidateNode, this._displayDepth);
 				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.removeNode(this._redrawRegionValidateNode, this._displayDepth);
+				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.removeNode(this._compositeRenderValidateNode, this._displayDepth);
 				
@@ -3620,6 +3628,9 @@ CanvasElement.prototype._propagateChildData =
 				
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.addNode(this._renderValidateNode, this._displayDepth);
+				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
 				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.addNode(this._compositeRenderValidateNode, this._displayDepth);
@@ -4976,8 +4987,13 @@ CanvasElement.prototype._invalidateRender =
 CanvasElement.prototype._invalidateRedrawRegion = 
 	function ()
 	{
-		if (this._manager != null)
-			this._manager._redrawRegionInvalid = true;
+		if (this._redrawRegionInvalid == false)
+		{
+			this._redrawRegionInvalid = true;
+			
+			if (this._manager != null)
+				this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
+		}
 	};	
 	
 //@private
@@ -5265,7 +5281,7 @@ CanvasElement.prototype._setListData =
 CanvasElement.prototype._setListSelected = 
 	function (selectedData)
 	{
-		this._listSelected = selected;
+		this._listSelected = selectedData;
 	};	
 	
 	
