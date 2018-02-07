@@ -147,10 +147,24 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		{
 			this.styleList.addItem(new ControlStyleType("Container", 	"PercentWidth", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
 			this.styleList.addItem(new ControlStyleType("Container", 	"PercentHeight", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
-			this.styleList.addItem(new ControlStyleType("Container", 	"MinWidth", 								"number", 	true, 	true, 	styleDef, this,	50, 						null));
-			this.styleList.addItem(new ControlStyleType("Container", 	"MinHeight", 								"number", 	true, 	true, 	styleDef, this,	50, 						null));
 			this.styleList.addItem(new ControlStyleType("Container", 	"MaxWidth", 								"number", 	true, 	true, 	styleDef, this,	50, 						null));
 			this.styleList.addItem(new ControlStyleType("Container", 	"MaxHeight", 								"number", 	true, 	true, 	styleDef, this,	50, 						null));
+		}
+		
+		//ListContainer Styles
+		if (this.styleType == "root" ||
+			this.styleName == "ButtonIncrementStyle" || 
+			this.styleName == "ButtonDecrementStyle" ||
+			this.styleName == "ButtonTrackStyle" || 
+			this.styleName == "ButtonTabStyle" ||
+			this.styleName == "HeaderItemStyle" ||
+			this.styleName == "RowItemStyle" ||
+			this.styleName == "ListItemStyle")
+		{
+			if (this.hasParentStyleName("DataGridStyle") == false && this.styleName != "HeaderItemStyle" && this.styleName != "RowItemStyle")
+				this.styleList.addItem(new ControlStyleType("Container", 	"MinWidth", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
+			
+			this.styleList.addItem(new ControlStyleType("Container", 	"MinHeight", 								"number", 	true, 	true, 	styleDef, this,	50, 						null));
 		}
 		
 		//Width / Height
@@ -165,7 +179,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "HorizontalGridLinesStyle" ||
 			this.styleName == "ScrollBarStyle" ||
 			this.styleName == "SortAscIconStyle" ||
-			this.styleName == "SortDescIconStyle")
+			this.styleName == "SortDescIconStyle" ||
+			this.styleName == "HeaderItemStyle" ||
+			this.styleName == "RowItemStyle" ||
+			this.styleName == "ListItemStyle")
 		{
 			var whValue = 10;
 			if (this.styleType == "root")
@@ -173,7 +190,9 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			else if (this.styleName == "VerticalGridLinesStyle" || this.styleName == "HorizontalGridLinesStyle")
 				whValue = 1;
 			
-			this.styleList.addItem(new ControlStyleType("Container", 	"Width", 									"number", 	true, 	true, 	styleDef, this,	whValue, 						null));
+			if (this.hasParentStyleName("DataGridStyle") == false && this.styleName != "HeaderItemStyle" && this.styleName != "RowItemStyle")
+				this.styleList.addItem(new ControlStyleType("Container", 	"Width", 								"number", 	true, 	true, 	styleDef, this,	whValue, 						null));
+			
 			this.styleList.addItem(new ControlStyleType("Container", 	"Height", 									"number", 	true, 	true, 	styleDef, this,	whValue, 						null));
 		}
 		
@@ -211,10 +230,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
-			this.styleName == "HeaderStyle" ||
-			this.styleName == "ColumnDividerStyle" ||
-			this.styleName == "HeaderItemStyle" ||
-			this.styleName == "RowItemStyle") 
+			this.styleName == "ColumnDividerStyle") 
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"Visible", 									"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 		}
@@ -325,11 +341,12 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" || 
 			this.styleName == "TextInputStyle" ||
-			this.styleName == "ListItemStyle" ||
+			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
 			this.styleName == "HeaderItemStyle" ||
+			this.styleName == "RowItemStyle" ||
 			this.styleName == "SortAscIconStyle" ||
 			this.styleName == "SortDescIconStyle")
 		{
@@ -343,7 +360,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "TextInputStyle" ||
 			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
 			this.styleName == "DropdownStyle" ||
-			this.styleName == "HeaderItemStyle")
+			this.styleName == "HeaderItemStyle" ||
+			this.styleName == "RowItemStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Text", 		"UpTextColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",				null));
 		}
@@ -386,11 +404,12 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
-			this.styleName == "ListItemStyle" ||
+			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
 			this.styleName == "HeaderItemStyle" || 
+			this.styleName == "RowItemStyle" ||
 			this.styleName == "SortAscIconStyle" ||
 			this.styleName == "SortDescIconStyle")
 		{
@@ -403,7 +422,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "CheckboxStyle" ||
 			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
 			this.styleName == "DropdownStyle" ||
-			this.styleName == "HeaderItemStyle")
+			this.styleName == "HeaderItemStyle" ||
+			this.styleName == "RowItemStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Text", 		"OverTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 		}
@@ -447,16 +467,14 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ArrowButtonStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 		}
 		
-		if (this.styleName == "ListItemStyle")
+		if (this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle") ||
+			this.styleName == "RowItemStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AltSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			
-			if (this.hasParentStyleName("DataListStyle"))
-				this.styleList.addItem(new ControlStyleType("Text", 	"AltTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-			
-			if (this.hasParentStyleName("DataListStyle"))
-				this.styleList.addItem(new ControlStyleType("Text", 	"SelectedTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			this.styleList.addItem(new ControlStyleType("Text", 		"AltTextColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 		}
 		
 		if (this.styleName == "TextInputStyle")
@@ -533,7 +551,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		{
 			this.styleList.addItem(new ControlStyleType("Container", 	"MinSize", 									"number", 	true, 	true, 	styleDef, this,	100, 						null));
 			
-			this.styleList.addItem(new ControlStyleType("Functional", 	"HeaderText", 								"string", 	true, 	false, 	styleDef, this, "My Text",					null));
+			this.styleList.addItem(new ControlStyleType("Functional", 	"HeaderText", 								"string", 	false, 	false, 	styleDef, this, "My Text",					null));
+			this.styleList.addItem(new ControlStyleType("Functional", 	"SelectionType", 							"string", 	false, 	false, 	styleDef, this, "row",						[{label:"row", value:"row"}, {label:"column", value:"column"}, {label:"cell", value:"cell"}]));
+			this.styleList.addItem(new ControlStyleType("Functional", 	"Selectable", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+			this.styleList.addItem(new ControlStyleType("Functional", 	"Highlightable", 							"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 			
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"HeaderItemStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"RowItemStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
