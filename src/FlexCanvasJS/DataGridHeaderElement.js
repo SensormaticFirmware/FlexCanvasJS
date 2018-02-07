@@ -100,15 +100,6 @@ DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 					true);
 
 ////////Internal////////////////////////////////
 
-//@override, we dont need skinning for this element. 
-//We inherit from skinnable because it uses the same renderer used for rows for column logic.
-DataGridHeaderElement.prototype._getSkinClass = 
-	function ()
-	{
-		return null;
-	};
-
-
 /**
  * @function _onColumnDividerDrag
  * Event handler for column divider "dragging" event. Updates the header item renderers and 
@@ -421,9 +412,3 @@ DataGridHeaderElement.prototype._doLayout =
 	};
 	
 	
-//@override - render ourself. Not using skins.
-DataGridHeaderElement.prototype._doRender = 
-	function ()
-	{
-		SkinnableElement.base.prototype._doRender.call(this);
-	};		

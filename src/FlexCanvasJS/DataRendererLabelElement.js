@@ -78,7 +78,6 @@ DataRendererLabelElement.StyleDefault.setStyle("PaddingTop", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingBottom", 			4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingLeft", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingRight", 				4);
-DataRendererLabelElement.StyleDefault.setStyle("BorderType", 				"none");
 
 DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
@@ -132,7 +131,7 @@ DataRendererLabelElement.prototype._getTextColor =
 
 /**
  * @function _updateLabelTextColor
- * Updates the text color base on the current state.
+ * Updates the text color for the current state.
  */	
 DataRendererLabelElement.prototype._updateLabelTextColor = 
 	function ()

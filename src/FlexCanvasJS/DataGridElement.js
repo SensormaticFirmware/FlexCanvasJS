@@ -50,6 +50,8 @@ function DataGridElement()
 	this._columnSizes = [];
 	this._columnPercents = [];	
 	
+	this._selectedColumnIndex = -1;
+	
 	this._gridHeader = null;
 	
 	this._gridLineContainer = new CanvasElement();
@@ -65,13 +67,21 @@ function DataGridElement()
 		{
 			_self._onDataGridColumnDefinitionChanged(styleChangedEvent);
 		};
-		
 	this._onDataGridRowItemClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataGridRowItemClick(elementMouseEvent);
 		};
-		
+	this._onDataGridRowItemRolloverInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollover(event);
+		};
+	this._onDataGridRowItemRolloutInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollout(event);
+		};	
 	this._onDataGridHeaderItemClickInstance = 
 		function (elementMouseEvent)
 		{
@@ -317,6 +327,77 @@ DataGridElement.prototype.getNumColumns =
 		return this._gridColumns.length;
 	};
 	
+/**
+ * @function setSelectedIndex
+ * @override
+ * 
+ * Sets the selected collection (row) index and column index. 
+ * When both row and column is specified the associated cell is selected.
+ * 
+ * @param rowIndex int
+ * The collection (row) index to be selected or -1 for none.
+ * 
+ * @param columnIndex int
+ * the column index to be selected or -1 for none.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
+ */	
+DataGridElement.prototype.setSelectedIndex = 
+	function (rowIndex, columnIndex)
+	{
+		if (this._selectedIndex == index && this._selectedColumnIndex == columnIndex)
+			return false;
+		
+		if (rowIndex > this._listCollection.length -1)
+			return false;
+		
+		if (columnIndex > this._gridColumns.length - 1)
+			return false;
+		
+		if (rowIndex < -1)
+			rowIndex = -1;
+		
+		if (columnIndex < -1)
+			columnIndex = -1;
+		
+		var oldRowIndex = this._selectedIndex;
+		var oldColumnIndex = this._selectedColumnIndex;
+		
+//		var oldIndex = this._selectedIndex;
+//		
+//		this._selectedIndex = index;
+//		this._selectedItem = this._listCollection.getItemAt(index);
+//		
+//		//Update renderer data.
+//		if (this._contentPane._children.length > 0)
+//		{
+//			var firstIndex = this._contentPane._children[0]._listData._itemIndex;
+//			var lastIndex = this._contentPane._children[this._contentPane._children.length - 1]._listData._itemIndex;
+//			
+//			if (index != null && index >= firstIndex && index <= lastIndex)
+//				this._contentPane._children[index - firstIndex]._setListSelected(true);
+//			if (oldIndex != null && oldIndex >= firstIndex && oldIndex <= lastIndex)
+//				this._contentPane._children[oldIndex - firstIndex]._setListSelected(false);
+//		}
+		
+		return true;
+	};	
+	
+/**
+ * @function getSelectedIndex
+ * @override
+ * Gets the selected collection (row) and column index. 
+ * 
+ * @returns Object
+ * Returns and object containing row and column indexes {row:-1, column:-1}
+ */		
+DataListElement.prototype.getSelectedIndex = 
+	function ()
+	{
+		return {row:this._selectedIndex, column:this._selectedColumnIndex};
+	};	
+	
 	
 ///////////Internal////////////////////////////////
 	
@@ -467,7 +548,7 @@ DataGridElement.prototype._doStylesUpdated =
 		}
 	};	
 	
-//@Override		
+//@override		
 DataGridElement.prototype._createRenderer = 
 	function (itemIndex)
 	{
@@ -590,10 +671,97 @@ DataGridElement.prototype._createRowItemRenderer =
 		this._updateRowItemRendererData(newRenderer, itemIndex, columnIndex);		
 		
 		newRenderer.addEventListener("click", this._onDataGridRowItemClickInstance);
+		newRenderer.addEventListener("rollover", this._onDataGridRowItemRolloverInstance);
+		newRenderer.addEventListener("rollout", this._onDataGridRowItemRolloutInstance);
 		
 		return newRenderer;
 	};
 
+DataGridElement.prototype._onDataGridRowItemRollover = 
+	function (event)
+	{
+	
+	};
+	
+DataGridElement.prototype._onDataGridRowItemRollout = 
+	function (event)
+	{
+	
+	};	
+	
+//@override	
+DataListElement.prototype._updateRendererData = 
+	function (renderer, itemIndex)
+	{
+		var listData = null;
+		
+		//Optimize, dont create new data unless its actually changed.
+		if (renderer._listData != null && renderer._listData._itemIndex == itemIndex)
+			listData = renderer._listData;
+		else
+			listData = new DataListData(this, itemIndex);
+	
+		//Always call the function even if data has not changed, this indicates to the
+		//renderer to inspect its parent related data and it may make changes even if
+		//this data is the same. An example is changes to a DataGrid's columns.
+		renderer._setListData(
+			listData,
+			this._listCollection.getItemAt(itemIndex));
+		
+		if (this._selectedIndex == itemIndex)
+			renderer._setListSelected(true);
+		else
+			renderer._setListSelected(false);
+	};	
+	
+/**
+ * @function _onDataGridRowItemClick
+ * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */
+DataGridElement.prototype._onDataGridRowItemClick = 
+	function (elementMouseEvent)
+	{
+		if (this.getStyle("Selectable") == false)
+			return;
+	
+		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
+		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
+		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
+		
+		var columnDef = this._gridColumns[columnIndex];
+		
+		var gridSelectable = this.getStyle("Selectable");
+		var columnSelectable = columnDef.getStyle("Selectable");
+		var elementSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable"); 
+		
+		if (elementSelectable === "undefined")
+			elementSelectable = true;
+		
+		var dispatchChanged = false;
+		
+		if (gridSelectable && columnSelectable && elementSelectable)
+		{
+			var selectRow = itemIndex;
+			var selectColumn = columnIndex;
+			
+			if (columnDef.getStyle("SelectionType") == "row")
+				selectColumn = -1;
+			else if (columnDef.getStyle("SelectionType") == "column")
+				selectRow = -1;
+			
+			if (this.setSelectedIndex(selectRow, selectColumn) == true)
+				dispatchChanged = true;
+		}
+		
+		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
+		
+		if (dispatchChanged == true)
+			this._dispatchEvent(new ElementEvent("changed", false));
+	};	
+	
 /**
  * @function _updateRowItemRendererData
  * Updates the row ItemRenderer list data.
@@ -624,31 +792,6 @@ DataGridElement.prototype._updateRowItemRendererData =
 		renderer._setListData(
 			listData,
 			this._listCollection.getItemAt(itemIndex));
-	};
-	
-/**
- * @function _onDataGridRowItemClick
- * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
- * 
- * @param elementMouseEvent ElementMouseEvent
- * The ElementMouseEvent to process.
- */
-DataGridElement.prototype._onDataGridRowItemClick = 
-	function (elementMouseEvent)
-	{
-		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
-		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
-		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
-		
-		var dispatchChanged = false;
-		
-		if (this.getStyle("Selectable") == true && this.setSelectedIndex(itemIndex) == true)
-			dispatchChanged = true;
-		
-		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
-		
-		if (dispatchChanged == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
 	};
 	
 //@Override

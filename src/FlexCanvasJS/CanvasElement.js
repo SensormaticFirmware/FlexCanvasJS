@@ -378,10 +378,10 @@ CanvasElement._StyleTypes.Visible = 				StyleableBase.EStyleType.NORMAL;		// tru
  * @style BorderType String
  * 
  * Determines the border type the CanvasElement should render. Allowable values are
- * "none", "solid", "inset", or "outset". Note that borders are internal and drawn on the inside
+ * "solid", "inset", "outset" or "none" / null. Note that borders are internal and drawn on the inside
  * of the elements bounding area.
  */
-CanvasElement._StyleTypes.BorderType = 				StyleableBase.EStyleType.NORMAL;		// "none" || "solid" || "inset" || "outset"
+CanvasElement._StyleTypes.BorderType = 				StyleableBase.EStyleType.NORMAL;		// "none"/null || "solid" || "inset" || "outset"
 
 /**
  * @style BorderColor String

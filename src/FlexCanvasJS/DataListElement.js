@@ -252,12 +252,15 @@ DataListElement._DataRendererProxyMap._Arbitrary = 				true;
  * 
  * @param index int
  * The collection index to be selected.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
  */	
 DataListElement.prototype.setSelectedIndex = 
 	function (index)
 	{
 		if (this._selectedIndex == index)
-			return true;
+			return false;
 		
 		if (index > this._listCollection.length -1)
 			return false;

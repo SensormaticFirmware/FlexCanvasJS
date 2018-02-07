@@ -1,6 +1,6 @@
 
 /**
- * @depends DataRendererBaseElement.js
+ * @depends CanvasElement.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -8,7 +8,7 @@
 
 /**
  * @class DataGridDataRenderer
- * @inherits DataRendererBaseElement
+ * @inherits CanvasElement
  * 
  * Default DataGrid ListItemClass used to render DataGrid rows. Renders
  * column items per the parent DataGrid's column definitions. 
@@ -37,34 +37,17 @@ function DataGridDataRenderer()
 	this._itemRenderersContainer.addEventListener("measurecomplete", this._onItemRenderersContainerMeasureCompleteInstance);
 }
 	
-//Inherit from DataRendererBaseElement
-DataGridDataRenderer.prototype = Object.create(DataRendererBaseElement.prototype);
+//Inherit from CanvasElement
+DataGridDataRenderer.prototype = Object.create(CanvasElement.prototype);
 DataGridDataRenderer.prototype.constructor = DataGridDataRenderer;
-DataGridDataRenderer.base = DataRendererBaseElement;
-
-//////////Default Styles/////////////////////////
-
-DataGridDataRenderer.StyleDefault = new StyleDefinition();
-
-//Skin Defaults///////
-DataGridDataRenderer.UpSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-
-DataGridDataRenderer.AltSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-/////////////////////
-
-DataGridDataRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridDataRenderer.UpSkinStyleDefault);	// StyleDefinition
-DataGridDataRenderer.StyleDefault.setStyle("AltSkinStyle", 						DataGridDataRenderer.AltSkinStyleDefault);	// StyleDefinition
-
+DataGridDataRenderer.base = CanvasElement;
 
 //@private
 DataGridDataRenderer.prototype.__onItemRenderersContainerMeasureComplete =
 	function (event)
 	{
 		this._invalidateMeasure();
+		this._invalidateLayout();
 	};
 
 //@Override
@@ -105,10 +88,13 @@ DataGridDataRenderer.prototype._setListData =
 		//Purge excess renderers.
 		while (this._itemRenderersContainer._children.length > this._listData._parentList._gridColumns.length)
 			this._itemRenderersContainer._removeChildAt(this._itemRenderersContainer._children.length - 1);
-		
-		//Invalidate, the item renderer container doesnt measure so wont do it for us.
-		this._invalidateMeasure();
-		this._invalidateLayout();
+	};
+	
+//@override	
+DataGridDataRenderer.prototype._setListSelected = 
+	function (selectedData)
+	{
+	
 	};
 	
 //@Override

@@ -41,10 +41,10 @@ localeStrings["es-es"]["Press Ctrl C"] = 			"Presione CTRL + C";
 
 //////IMAGES///////////////////////
 
-//Image control loads image when added to display.
+//ImageElement loads image from URL when added to display.
 var urlImgBlueMarble = "BlueMarble.jpg";
 
-//Pre-load images (skins)
+//Pre-load images (good for skins)
 //var imgBlueMarble = new Image();
 //imgBlueMarble.src = "BlueMarble.jpg";
 
