@@ -5259,11 +5259,11 @@ CanvasElement.prototype._setListData =
  * Override this function to make any changes to the DataRenderer per the selection state.
  * Update any styles, states, add/remove children, call any necessary _invalidate() functions, etc.
  * 
- * @param selected boolean
- * True if the DataRenderer is selected, otherwise false.
+ * @param selectedData Any
+ * Selected data, differs per container.
  */	
 CanvasElement.prototype._setListSelected = 
-	function (selected)
+	function (selectedData)
 	{
 		this._listSelected = selected;
 	};	
