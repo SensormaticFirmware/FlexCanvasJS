@@ -901,6 +901,7 @@ CanvasManager.prototype.updateNow =
 		{
 			queuedElement = this._updateRedrawRegionQueue.removeLargest().data;
 			
+			//Dont re-validate children of parents that have already been validated.
 			if (queuedElement._redrawRegionInvalid == true)
 				this._validateRedrawRegion(queuedElement, false);
 		}

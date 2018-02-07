@@ -14296,7 +14296,7 @@ DataListElement.prototype.getSelectedItem =
 DataListElement.prototype.setScrollIndex = 
 	function (scrollIndex)
 	{
-		scrollIndex = CanvasElement.roundToPrecision(scrollIndex, 6);
+		scrollIndex = CanvasElement.roundToPrecision(scrollIndex, 3);
 	
 		this._invalidateLayout();
 		
@@ -14571,9 +14571,9 @@ DataListElement.prototype._onDataListScrollBarChanged =
 	function (elementEvent)
 	{
 		//Handle rounding errors
-		var scrollValue = CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6);
-		var scrollPageSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollPageSize(), 6);
-		var scrollViewSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollViewSize(), 6);
+		var scrollValue = CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 3);
+		var scrollPageSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollPageSize(), 3);
+		var scrollViewSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollViewSize(), 3);
 		
 		//Fix for issue where last renderer is larger than first, resulting in exponential adjustments 
 		//due to view size shrinking / scroll range increasing at the same time as scroll. We check if the
@@ -14982,7 +14982,7 @@ DataListElement.prototype._doLayout =
 			}
 			
 			//Handle rounding errors
-			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
+			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 		}
 		
 		//Extra space - need another renderer or scroll shift
@@ -15028,7 +15028,7 @@ DataListElement.prototype._doLayout =
 					}
 					
 					//Handle rounding errors
-					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
+					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 				}
 				else if (clipFirst > 0 && collectionLength == this._contentPane._children.length)
 				{//We dont have enough clipping, but we're out of data (cannot make new renderer)
@@ -15197,7 +15197,7 @@ DataListElement.prototype._doLayout =
 			this._scrollBar.setScrollPageSize(collectionLength);
 			this._scrollBar.setScrollViewSize(viewSize);
 			
-			if (CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6) != this._scrollIndex)
+			if (CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 3) != this._scrollIndex)
 			{
 				this._scrollBar.endScrollTween();
 				this._scrollBar.setScrollValue(this._scrollIndex);
@@ -22674,7 +22674,6 @@ function CanvasManager()
 	
 	this._currentLocale = "en-us";
 	
-	//this._redrawRegionInvalid = true;
 	this._redrawRegionPrevMetrics = null;
 	
 	//Now call base
@@ -23510,15 +23509,10 @@ CanvasManager.prototype.updateNow =
 		{
 			queuedElement = this._updateRedrawRegionQueue.removeLargest().data;
 			
+			//Dont re-validate children of parents that have already been validated.
 			if (queuedElement._redrawRegionInvalid == true)
 				this._validateRedrawRegion(queuedElement, false);
 		}
-		
-//		if (this._redrawRegionInvalid == true)
-//		{
-//			this._validateRedrawRegion(this, false);
-//			this._redrawRegionInvalid = false;
-//		}
 		
 		//Render composite layers.
 		while (this._compositeRenderQueue.length > 0)
