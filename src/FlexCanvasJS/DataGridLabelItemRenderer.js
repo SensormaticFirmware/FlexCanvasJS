@@ -50,7 +50,7 @@ DataGridLabelItemRenderer._StyleTypes.UpTextColor = 				StyleableBase.EStyleType
  * Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataGridLabelItemRenderer._StyleTypes.AltTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
+DataGridLabelItemRenderer._StyleTypes.AltTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style OverTextColor String
@@ -58,7 +58,7 @@ DataGridLabelItemRenderer._StyleTypes.AltTextColor = 			StyleableBase.EStyleType
  * Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataGridLabelItemRenderer._StyleTypes.OverTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
+DataGridLabelItemRenderer._StyleTypes.OverTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedTextColor String
@@ -66,7 +66,7 @@ DataGridLabelItemRenderer._StyleTypes.OverTextColor = 			StyleableBase.EStyleTyp
  * Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataGridLabelItemRenderer._StyleTypes.SelectedTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
+DataGridLabelItemRenderer._StyleTypes.SelectedTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 ////////////Default Styles///////////////////////

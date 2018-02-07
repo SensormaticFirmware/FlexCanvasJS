@@ -94,7 +94,50 @@ DataGridDataRenderer.prototype._setListData =
 DataGridDataRenderer.prototype._setListSelected = 
 	function (selectedData)
 	{
-	
+		DataGridDataRenderer.base.prototype._setListSelected.call(this, selectedData);
+		
+		var columnData;
+		var columnSelectionType;
+		var columnSelectable;
+		var columnHighlightable;
+		var itemRenderer;
+		var itemRendererSelectedData;
+		
+		for (var i = 0; i < this._itemRenderersContainer._children.length; i++)
+		{
+			columnData = this._listData._parentList._gridColumns[i];
+			columnSelectionType = columnData.getStyle("SelectionType");
+			columnSelectable = columnData.getStyle("Selectable");
+			columnHighlightable = columnData.getStyle("Highlightable");			
+			itemRenderer = this._getChildAt(i);
+
+			//Optimize, use existing data if available
+			itemRendererSelectedData = itemRenderer._listSelected;
+			if (itemRendererSelectedData == null)
+				itemRendererSelectedData = {highlight:false, selected:false};
+			
+			if (columnSelectable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowIndex == this._listData._itemIndex) ||
+					(columnSelectionType == "column" && i == selectedData.columnIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnIndex && this._listData._itemIndex == selectedData.rowIndex))
+				{
+					itemRendererSelectedData.selected = true;
+				}
+			}
+			
+			if (columnHighlightable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowOverIndex == this._listData._itemIndex) ||
+					(columnSelectionType == "column" && i == selectedData.columnOverIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnOverIndex && this._listData._itemIndex == selectedData.rowOverIndex))
+				{
+					itemRendererSelectedData.highlight = true;
+				}
+			}
+			
+			itemRenderer._setListSelected(itemRendererSelectedData);
+		}
 	};
 	
 //@Override
