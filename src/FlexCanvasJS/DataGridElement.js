@@ -383,7 +383,7 @@ DataGridElement.prototype.setSelectedIndex =
  * @returns Object
  * Returns and object containing row and column indexes {row:-1, column:-1}
  */		
-DataListElement.prototype.getSelectedIndex = 
+DataGridElement.prototype.getSelectedIndex = 
 	function ()
 	{
 		return {row:this._selectedIndex, column:this._selectedColumnIndex};
@@ -648,7 +648,7 @@ DataGridElement.prototype._onDataGridRowItemRollout =
 	};	
 	
 //@override	
-DataListElement.prototype._updateRendererData = 
+DataGridElement.prototype._updateRendererData = 
 	function (renderer, itemIndex)
 	{
 		var listData = null;
