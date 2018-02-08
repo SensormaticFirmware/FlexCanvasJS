@@ -57,26 +57,29 @@ function DataListElement()
 		{
 			_self._onDataListCollectionChanged(collectionChangedEvent);
 		};
-		
 	this._onDataListScrollBarChangedInstance = 
 		function (elementEvent)
 		{
 			_self._onDataListScrollBarChanged(elementEvent);
 		};
-		
 	this._onDataListMouseWheelEventInstance = 
 		function (elementMouseWheelEvent)
 		{
 			_self._onDataListMouseWheelEvent(elementMouseWheelEvent);
 		};
-	
 	this._onDataListRendererClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataListRendererClick(elementMouseEvent);
 		};
+	this._onContentPaneMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onContentPaneMeasureComplete(event);
+		};	
 		
 	this.addEventListener("wheel", this._onDataListMouseWheelEventInstance);	
+	this._contentPane.addEventListener("measurecomplete", this._onContentPaneMeasureCompleteInstance);
 }
 
 //Inherit from SkinnableElement
@@ -128,33 +131,49 @@ DataListElement.DefaultItemLabelFunction =
 DataListElement._StyleTypes = Object.create(null);
 
 /**
- * @style ListDirection String
+ * @style LayoutDirection String
  * 
  * Determines the layout direction of this DataList. Allowable values are "horizontal" or "vertical".
  */
-DataListElement._StyleTypes.ListDirection = 					{inheritable:false};		// "horizontal" || "vertical
+DataListElement._StyleTypes.LayoutDirection = 					StyleableBase.EStyleType.NORMAL;		// "horizontal" || "vertical
 
 /**
- * @style ListAlign String
+ * @style LayoutGap Number
  * 
- * Determines the alignment of content when there is not enough data in the ListCollection to fill the DataList.
- * Allowable values are "left", "center", "right" for horizontal layout, and "top", "middle", "bottom" for vertical layout. 
+ * Space in pixels to leave between child elements. 
+ * (Not yet implemented)
  */
-DataListElement._StyleTypes.ListAlign = 						{inheritable:false};		// "left" || "center" || "right" / "top" || "middle" || "bottom"
+DataListElement._StyleTypes.LayoutGap = 						StyleableBase.EStyleType.NORMAL;		// number
+
+/**
+ * @style LayoutVerticalAlign String
+ * 
+ * Child vertical alignment to be used when children do not fill all available space. Allowable values are "top", "bottom", or "middle". 
+ * (Only partially implemented, depending on LayoutDirection)
+ */
+DataListElement._StyleTypes.LayoutVerticalAlign = 				StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" || "middle" 
+
+/**
+ * @style LayoutHorizontalAlign String
+ * 
+ * Child horizontal alignment to be used when children do not fill all available space. Allowable values are "left", "right", or "center". 
+ * (Only partially implemented, depending on LayoutDirection)
+ */
+DataListElement._StyleTypes.LayoutHorizontalAlign = 			StyleableBase.EStyleType.NORMAL;		//"left" || "right" || "center"
 
 /**
  * @style Selectable boolean
  * 
  * When true, list items can be selected and the DataList will dispatch "changed" events.
  */
-DataListElement._StyleTypes.Selectable = 						{inheritable:false};		// true || false
+DataListElement._StyleTypes.Selectable = 						StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style ScrollBarDisplay String
  * 
  * Determines the behavior of the scroll bar. Allowable values are "on", "off", and "auto".
  */
-DataListElement._StyleTypes.ScrollBarDisplay = 					{inheritable:false};		// "on" || "off" || "auto"
+DataListElement._StyleTypes.ScrollBarDisplay = 					StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
 
 /**
  * @style ScrollBarPlacement String
@@ -162,14 +181,14 @@ DataListElement._StyleTypes.ScrollBarDisplay = 					{inheritable:false};		// "on
  * Determines the placement of the scroll bar. 
  * Allowable values are "top" or "bottom" for horizontal layout and "left" or "right" for vertical layout.
  */
-DataListElement._StyleTypes.ScrollBarPlacement = 				{inheritable:false};		// "top" || "bottom" / "left || "right"
+DataListElement._StyleTypes.ScrollBarPlacement = 				StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" / "left || "right"
 
 /**
  * @style ScrollBarStyle StyleDefinition
  * 
  * The StyleDefinition to be applied to the scroll bar.
  */
-DataListElement._StyleTypes.ScrollBarStyle = 					{inheritable:false};		// StyleDefinition
+DataListElement._StyleTypes.ScrollBarStyle = 					StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 //Returns the string to use for the label per provided data.
 /**
@@ -178,29 +197,31 @@ DataListElement._StyleTypes.ScrollBarStyle = 					{inheritable:false};		// Style
  * A function that returns a text string per a supplied collection item.
  * function (itemData) { return "" }
  */
-DataListElement._StyleTypes.ItemLabelFunction = 				{inheritable:false}; 		// function (itemData) { return "" }
+DataListElement._StyleTypes.ItemLabelFunction = 				StyleableBase.EStyleType.NORMAL; 		// function (itemData) { return "" }
 
 /**
  * @style ListItemClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataRenderer.
  */
-DataListElement._StyleTypes.ListItemClass = 					{inheritable:false};		//DataRendererBaseElement constructor()
+DataListElement._StyleTypes.ListItemClass = 					StyleableBase.EStyleType.NORMAL;		//DataRendererBaseElement constructor()
 
 /**
  * @style ListItemStyle StyleDefinition
  * 
  * The StyleDefinition to be applied to the DataRenderer.
  */
-DataListElement._StyleTypes.ListItemStyle = 					{inheritable:false};		//StyleDefinition
+DataListElement._StyleTypes.ListItemStyle = 					StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 
 ///////////Default Styles////////////////////////////////////
 
 DataListElement.StyleDefault = new StyleDefinition();
 
-DataListElement.StyleDefault.setStyle("ListDirection", 				"vertical");								// "horizontal" || "vertical
-DataListElement.StyleDefault.setStyle("ListAlign", 					"top");										// "left" || "center" || "right" / "top" || "middle" || "bottom"
+DataListElement.StyleDefault.setStyle("LayoutDirection", 			"vertical");								// "horizontal" || "vertical
+DataListElement.StyleDefault.setStyle("LayoutVerticalAlign", 		"top");										//"top" || "middle" || "bottom"
+DataListElement.StyleDefault.setStyle("LayoutHorizontalAlign", 		"left");									//"left" || "center" || "right"
+DataListElement.StyleDefault.setStyle("LayoutGap", 					0);											//number
 
 DataListElement.StyleDefault.setStyle("ItemLabelFunction", 			DataListElement.DefaultItemLabelFunction);	// function (data) { return "" }
 
@@ -231,12 +252,15 @@ DataListElement._DataRendererProxyMap._Arbitrary = 				true;
  * 
  * @param index int
  * The collection index to be selected.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
  */	
 DataListElement.prototype.setSelectedIndex = 
 	function (index)
 	{
 		if (this._selectedIndex == index)
-			return true;
+			return false;
 		
 		if (index > this._listCollection.length -1)
 			return false;
@@ -314,7 +338,7 @@ DataListElement.prototype.getSelectedItem =
 DataListElement.prototype.setScrollIndex = 
 	function (scrollIndex)
 	{
-		scrollIndex = CanvasElement.roundToPrecision(scrollIndex, 6);
+		scrollIndex = CanvasElement.roundToPrecision(scrollIndex, 3);
 	
 		this._invalidateLayout();
 		
@@ -459,12 +483,20 @@ DataListElement.prototype._getContentSize =
 	{
 		var paddingSize = this._getPaddingSize();
 	
-		if (this.getStyle("ListDirection") == "vertical")
+		if (this.getStyle("LayoutDirection") == "vertical")
 			return this._contentSize + paddingSize.height;
-		else //if (this.getStyle("ListDirection") == "horizontal")
+		else //if (this.getStyle("LayoutDirection") == "horizontal")
 			return this._contentSize + paddingSize.width;
 	};
 
+//@private
+DataListElement.prototype._onContentPaneMeasureComplete = 
+	function (event)
+	{
+		this._invalidateMeasure();
+		this._invalidateLayout();
+	};
+	
 /**
  * @function _getNumRenderers
  * Gets the number of DataRenderers that are currently being rendered.
@@ -496,7 +528,7 @@ DataListElement.prototype._onDataListMouseWheelEvent =
 			return;
 	
 		var delta = 0;
-		var listDirection = this.getStyle("ListDirection");
+		var listDirection = this.getStyle("LayoutDirection");
 		
 		var minScrolled = false;
 		var maxScrolled = false;
@@ -581,9 +613,9 @@ DataListElement.prototype._onDataListScrollBarChanged =
 	function (elementEvent)
 	{
 		//Handle rounding errors
-		var scrollValue = CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6);
-		var scrollPageSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollPageSize(), 6);
-		var scrollViewSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollViewSize(), 6);
+		var scrollValue = CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 3);
+		var scrollPageSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollPageSize(), 3);
+		var scrollViewSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollViewSize(), 3);
 		
 		//Fix for issue where last renderer is larger than first, resulting in exponential adjustments 
 		//due to view size shrinking / scroll range increasing at the same time as scroll. We check if the
@@ -766,36 +798,34 @@ DataListElement.prototype._doStylesUpdated =
 				this._invalidateLayout();
 			}
 		}
-		else if ("ListItemStyle" in stylesMap)
+		
+		if ("ListItemStyle" in stylesMap)
 		{
-			var listItemStyle = this.getStyle("ListItemStyle");
-			
 			for (var i = 0; i < this._contentPane._children.length; i++)
-				this._contentPane._children[i].setStyleDefinitions(listItemStyle);
+				this._applySubStylesToElement("ListItemStyle", this._contentPane._children[i]);
 			
 			this._invalidateLayout();
 		}
 		
-		if ("ListDirection" in stylesMap)
+		if ("LayoutDirection" in stylesMap)
 		{
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("ScrollBarPlacement" in stylesMap || "ScrollBarDisplay" in stylesMap ||  "ListAlign" in stylesMap)
+		else if ("ScrollBarPlacement" in stylesMap || 
+				"ScrollBarDisplay" in stylesMap ||  
+				"LayoutGap" in stylesMap ||
+				"LayoutHorizontalAlign" in stylesMap ||
+				"LayoutVerticalAlign" in stylesMap)
+		{
 			this._invalidateLayout();
+		}
 		
 		if ("ScrollBarStyle" in stylesMap && this._scrollBar != null)
-			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
+			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
 		
 		if ("ItemLabelFunction" in stylesMap)
 			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
-	};
-
-//@Override
-DataListElement.prototype._doMeasure = 
-	function(padWidth, padHeight)
-	{
-		return {width:16, height:16};
 	};
 
 /**
@@ -842,10 +872,9 @@ DataListElement.prototype._createRenderer =
 	function (itemIndex)
 	{
 		var newRenderer = new (this.getStyle("ListItemClass"))();
-		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
 		newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
 		
+		this._applySubStylesToElement("ListItemStyle", newRenderer);
 		this._updateRendererData(newRenderer, itemIndex);
 		
 		newRenderer.addEventListener("click", this._onDataListRendererClickInstance);
@@ -887,7 +916,15 @@ DataListElement.prototype._updateRendererData =
 			renderer._setListSelected(false);
 	};
 	
-//@Override	
+//@override
+DataListElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		//TODO: Sample text widths if label function is set.
+		return {width:16, height:16};
+	};	
+	
+//@override	
 DataListElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
@@ -902,7 +939,7 @@ DataListElement.prototype._doLayout =
 		var listItem = null;
 		var i;
 		
-		var listDirection = this.getStyle("ListDirection");
+		var listDirection = this.getStyle("LayoutDirection");
 		var itemIndex = Math.floor(this._scrollIndex);
 		
 		var collectionLength = 0;
@@ -968,12 +1005,26 @@ DataListElement.prototype._doLayout =
 			
 			//Fix scroll index
 			if (listDirection == "horizontal")
-				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
+			{
+				itemSize = this._contentPane._children[0]._getStyledOrMeasuredWidth();
+				
+				if (itemSize != 0)
+					this._scrollIndex = itemIndex + (clipFirst / itemSize);
+				else
+					this._scrollIndex = itemIndex;
+			}
 			else // if (listDirection == "vertical")
-				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+			{
+				itemSize = this._contentPane._children[0]._getStyledOrMeasuredHeight();
+				
+				if (itemSize != 0)
+					this._scrollIndex = itemIndex + (clipFirst / itemSize);
+				else
+					this._scrollIndex = itemIndex;
+			}
 			
 			//Handle rounding errors
-			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
+			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 		}
 		
 		//Extra space - need another renderer or scroll shift
@@ -986,7 +1037,6 @@ DataListElement.prototype._doLayout =
 				this._contentPane._addChild(newRenderer);
 				
 				//Wait for the new renderer to measure.
-				//Re-invalidate ourself, (content pane doesnt measure so wont do it for us).
 				this._invalidateLayout();
 				return;
 			}
@@ -1001,12 +1051,26 @@ DataListElement.prototype._doLayout =
 					clipFirst -= excessSize;
 					
 					if (listDirection == "horizontal")
-						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
+					{
+						itemSize = this._contentPane._children[0]._getStyledOrMeasuredWidth();
+						
+						if (itemSize != 0)
+							this._scrollIndex = itemIndex + (clipFirst / itemSize);
+						else
+							this._scrollIndex = itemIndex;
+					}
 					else // if (listDirection == "vertical")
-						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+					{
+						itemSize = this._contentPane._children[0]._getStyledOrMeasuredHeight();
+						
+						if (itemSize != 0)
+							this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+						else
+							this._scrollIndex = itemIndex;
+					}
 					
 					//Handle rounding errors
-					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
+					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 				}
 				else if (clipFirst > 0 && collectionLength == this._contentPane._children.length)
 				{//We dont have enough clipping, but we're out of data (cannot make new renderer)
@@ -1041,9 +1105,9 @@ DataListElement.prototype._doLayout =
 		if (needsScrollBar == true && this._scrollBar == null)
 		{
 			this._scrollBar = new ScrollBarElement();
-			this._scrollBar._setStyleDefinitionDefault(this._getDefaultStyle("ScrollBarStyle"));
-			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
-			this._scrollBar.setStyle("LayoutDirection", listDirection);
+			
+			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
+			
 			this._scrollBar.setScrollLineSize(1);
 			
 			this._scrollBar.addEventListener("changed", this._onDataListScrollBarChangedInstance);
@@ -1066,6 +1130,8 @@ DataListElement.prototype._doLayout =
 		//Size / Position the scroll bar and content pane.
 		if (this._scrollBar != null)
 		{
+			this._scrollBar.setStyle("LayoutDirection", listDirection);
+			
 			var scrollBarPlacement = this.getStyle("ScrollBarPlacement");
 			
 			if (listDirection == "horizontal")
@@ -1111,7 +1177,11 @@ DataListElement.prototype._doLayout =
 		var currentPosition = clipFirst * -1;
 		if (this._contentSize < availableSize)
 		{
-			var listAlign = this.getStyle("ListAlign");
+			var listAlign = null;
+			if (listDirection == "horizontal")
+				listAlign = this.getStyle("LayoutHorizontalAlign");
+			else //if (listDirection == "vertical")
+				listAlign = this.getStyle("LayoutVerticalAlign");
 			
 			if (listAlign == "top" || listAlign == "left")
 				currentPosition = 0;
@@ -1150,20 +1220,26 @@ DataListElement.prototype._doLayout =
 			{
 				if (listDirection == "horizontal")
 				{
-					viewSize -= clipFirst / this._contentPane._children[0]._width;
-					viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._width;
+					if (this._contentPane._children[0]._width != 0)
+						viewSize -= clipFirst / this._contentPane._children[0]._width;
+					
+					if (this._contentPane._children[this._contentPane._children.length - 1]._width != 0)
+						viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._width;
 				}
 				else // if (listDirection == "vertical")
 				{
-					viewSize -= clipFirst / this._contentPane._children[0]._height;
-					viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._height;
+					if (this._contentPane._children[0]._height != 0)
+						viewSize -= clipFirst / this._contentPane._children[0]._height;
+					
+					if (this._contentPane._children[this._contentPane._children.length - 1]._height != 0)
+						viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._height;
 				}
 			}
 			
 			this._scrollBar.setScrollPageSize(collectionLength);
 			this._scrollBar.setScrollViewSize(viewSize);
 			
-			if (CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6) != this._scrollIndex)
+			if (CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 3) != this._scrollIndex)
 			{
 				this._scrollBar.endScrollTween();
 				this._scrollBar.setScrollValue(this._scrollIndex);

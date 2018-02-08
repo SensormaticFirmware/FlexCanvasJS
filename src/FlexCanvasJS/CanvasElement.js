@@ -33,7 +33,7 @@ function CanvasElement()
 	//This is *not* class based defaults. Its a default version of _styleDefinition.
 	//Used when the framework wants to apply a default definition that override class 
 	//based default styles but *not* user applied styles.
-	this._styleDefinitionDefault = null; 
+	this._styleDefinitionDefaults = []; 
 	
 	//Assigned style definitions
 	this._styleDefinitions = [];
@@ -161,6 +161,10 @@ function CanvasElement()
 	this._renderValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._renderValidateNode.data = this;
 	
+	this._redrawRegionInvalid = true;						//Dirty flag for redraw region
+	this._redrawRegionValidateNode = new CmLinkedNode();	//Reference to linked list iterator
+	this._redrawRegionValidateNode.data = this;
+	
 	//Off screen canvas for rendering this element.
 	this._graphicsCanvas = null;
 	this._graphicsCtx = null;
@@ -271,15 +275,14 @@ CanvasElement.prototype.constructor = CanvasElement;
 CanvasElement.base = StyleableBase;
 
 //Style priority enum
-CanvasElement.StylePriorities = 
+CanvasElement.EStylePriorities = 
 {
 	INSTANCE:0,
 	DEFINITION:1,
 	PROXY:2,
 	INHERITED:3,
 	DEFAULT_DEFINITION:4,
-	DEFAULT_PROXY:5,
-	CLASS:6
+	CLASS:5
 };
 
 ////////////Events/////////////////////////////////////
@@ -373,30 +376,30 @@ CanvasElement._StyleTypes = Object.create(null);
  * 
  * When false the element will not be rendered.
  */
-CanvasElement._StyleTypes.Visible = 				{inheritable:false};		// true || false
+CanvasElement._StyleTypes.Visible = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style BorderType String
  * 
  * Determines the border type the CanvasElement should render. Allowable values are
- * "none", "solid", "inset", or "outset". Note that borders are internal and drawn on the inside
+ * "solid", "inset", "outset" or "none" / null. Note that borders are internal and drawn on the inside
  * of the elements bounding area.
  */
-CanvasElement._StyleTypes.BorderType = 				{inheritable:false};		// "none" || "solid" || "inset" || "outset"
+CanvasElement._StyleTypes.BorderType = 				StyleableBase.EStyleType.NORMAL;		// "none"/null || "solid" || "inset" || "outset"
 
 /**
  * @style BorderColor String
  * 
  * Hex color value to be used when drawing the border. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.BorderColor = 			{inheritable:false};		// "#FF0000" or null
+CanvasElement._StyleTypes.BorderColor = 			StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
 
 /**
  * @style BorderThickness Number
  * 
  * Thickness in pixels to be used when drawing the border. 
  */
-CanvasElement._StyleTypes.BorderThickness = 		{inheritable:false};		// number
+CanvasElement._StyleTypes.BorderThickness = 		StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style BackgroundColor String
@@ -404,7 +407,7 @@ CanvasElement._StyleTypes.BorderThickness = 		{inheritable:false};		// number
  * Hex color value to be used when drawing the background. This may be set to null and no
  * background will be rendered. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.BackgroundColor = 		{inheritable:false};		// "#FF0000" or null
+CanvasElement._StyleTypes.BackgroundColor = 		StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
 
 /**
  * @style ShadowSize Number
@@ -412,21 +415,21 @@ CanvasElement._StyleTypes.BackgroundColor = 		{inheritable:false};		// "#FF0000"
  * Size in pixels that the drop shadow should be rendered. Note that the drop shadow may be rendered
  * outside the elements bounding area. This will cause the element to be composite rendered.
  */
-CanvasElement._StyleTypes.ShadowSize = 				{inheritable:false};		// number
+CanvasElement._StyleTypes.ShadowSize = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style ShadowOffsetX Number
  * 
  * X offset that the drop shadow will be rendered.
  */
-CanvasElement._StyleTypes.ShadowOffsetX = 			{inheritable:false};		// number
+CanvasElement._StyleTypes.ShadowOffsetX = 			StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style ShadowOffsetY Number
  * 
  * Y offset that the drop shadow will be rendered.
  */
-CanvasElement._StyleTypes.ShadowOffsetY = 			{inheritable:false};		// number
+CanvasElement._StyleTypes.ShadowOffsetY = 			StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style ShadowColor String
@@ -434,7 +437,7 @@ CanvasElement._StyleTypes.ShadowOffsetY = 			{inheritable:false};		// number
  * Hex color value to be used when drawing the drop shadow. This may be set to null and no
  * shadow will be rendered. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.ShadowColor = 			{inheritable:false};		// "#FF0000" or null
+CanvasElement._StyleTypes.ShadowColor = 			StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
 
 /**
  * @style Alpha Number
@@ -443,7 +446,7 @@ CanvasElement._StyleTypes.ShadowColor = 			{inheritable:false};		// "#FF0000" or
  * 0 being transparent and 1 being opaque. This causes the element to perform composite rendering
  * when a value between 1 and 0 is used.
  */
-CanvasElement._StyleTypes.Alpha = 					{inheritable:false};		// number
+CanvasElement._StyleTypes.Alpha = 					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style AutoGradientType String
@@ -454,7 +457,7 @@ CanvasElement._StyleTypes.Alpha = 					{inheritable:false};		// number
  * canvas itself regardless of rotation or transformation applied to the element. 
  * This is used to create effects like a consistent light source even if the element is rotating.
  */
-CanvasElement._StyleTypes.AutoGradientType = 		{inheritable:false};		// "none" || "linear" || "radial"
+CanvasElement._StyleTypes.AutoGradientType = 		StyleableBase.EStyleType.NORMAL;		// "none" || "linear" || "radial"
 
 /**
  * @style AutoGradientStart Number
@@ -462,7 +465,7 @@ CanvasElement._StyleTypes.AutoGradientType = 		{inheritable:false};		// "none" |
  * Color offset to apply to the start of the gradient. Allowable values are numbers between 
  * -1 (white) and +1 (black). 
  */
-CanvasElement._StyleTypes.AutoGradientStart = 		{inheritable:false};		// number (-1 to +1 values)
+CanvasElement._StyleTypes.AutoGradientStart = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
 
 /**
  * @style AutoGradientStop Number
@@ -470,7 +473,7 @@ CanvasElement._StyleTypes.AutoGradientStart = 		{inheritable:false};		// number 
  * Color offset to apply to the end of the gradient. Allowable values are numbers between 
  * -1 (white) and +1 (black). 
  */
-CanvasElement._StyleTypes.AutoGradientStop = 		{inheritable:false};		// number (-1 to +1 values)
+CanvasElement._StyleTypes.AutoGradientStop = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
 
 /**
  * @style ClipContent boolean
@@ -478,7 +481,7 @@ CanvasElement._StyleTypes.AutoGradientStop = 		{inheritable:false};		// number (
  * Determines if out of bounds rendering is allowed. If true the element will clip all rendering
  * and children's rendering to the elements bounding box. 
  */
-CanvasElement._StyleTypes.ClipContent = 			{inheritable:false};		// number (true || false)
+CanvasElement._StyleTypes.ClipContent = 			StyleableBase.EStyleType.NORMAL;		// number (true || false)
 
 /**
  * @style SkinState String
@@ -486,14 +489,14 @@ CanvasElement._StyleTypes.ClipContent = 			{inheritable:false};		// number (true
  * This is an internal style used to toggle an element's current skin for different states such
  * as normal, mouse-over, mouse-down, etc. Its also commonly used by skin classes to identify their skin state.
  */
-CanvasElement._StyleTypes.SkinState = 				{inheritable:false};		// "state"
+CanvasElement._StyleTypes.SkinState = 				StyleableBase.EStyleType.NORMAL;		// "state"
 
 /**
  * @style BackgroundShape ShapeBase
  * 
  * Shape to be used when rendering the elements background. May be any ShapeBase subclass instance.
  */
-CanvasElement._StyleTypes.BackgroundShape = 		{inheritable:false};		// ShapeBase()
+CanvasElement._StyleTypes.BackgroundShape = 		StyleableBase.EStyleType.NORMAL;		// ShapeBase()
 
 /**
  * @style FocusColor String
@@ -502,7 +505,7 @@ CanvasElement._StyleTypes.BackgroundShape = 		{inheritable:false};		// ShapeBase
  * Hex color value to be used when drawing the elements focus indicator. Format "#FF0000" (Red). 
  * The focus indicator is only rendered when the element gains focus due to a tab stop.
  */
-CanvasElement._StyleTypes.FocusColor = 				{inheritable:true};			// color ("#000000")
+CanvasElement._StyleTypes.FocusColor = 				StyleableBase.EStyleType.INHERITABLE;			// color ("#000000")
 
 /**
  * @style FocusThickness Number
@@ -511,7 +514,7 @@ CanvasElement._StyleTypes.FocusColor = 				{inheritable:true};			// color ("#000
  * Size in pixels that the focus ring should be rendered. Note that the focus ring is rendered
  * outside the elements bounding area.
  */
-CanvasElement._StyleTypes.FocusThickness =			{inheritable:true};			// number
+CanvasElement._StyleTypes.FocusThickness =			StyleableBase.EStyleType.INHERITABLE;			// number
 
 
 //Layout
@@ -522,7 +525,7 @@ CanvasElement._StyleTypes.FocusThickness =			{inheritable:true};			// number
  * Padding effects all sides of the element. Padding may be negative under certain circumstances like
  * expanding an inner child to allow border collapsing with its parent.
  */
-CanvasElement._StyleTypes.Padding = 				{inheritable:false};		// number
+CanvasElement._StyleTypes.Padding = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style PaddingTop Number
@@ -530,7 +533,7 @@ CanvasElement._StyleTypes.Padding = 				{inheritable:false};		// number
  * Size in pixels that inner content should be spaced from the upper bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingTop = 				{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingTop = 				StyleableBase.EStyleType.NORMAL;		// number or null
 
 /**
  * @style PaddingBottom Number
@@ -538,7 +541,7 @@ CanvasElement._StyleTypes.PaddingTop = 				{inheritable:false};		// number or nu
  * Size in pixels that inner content should be spaced from the lower bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingBottom = 			{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingBottom = 			StyleableBase.EStyleType.NORMAL;		// number or null
 
 /**
  * @style PaddingLeft Number
@@ -546,7 +549,7 @@ CanvasElement._StyleTypes.PaddingBottom = 			{inheritable:false};		// number or 
  * Size in pixels that inner content should be spaced from the left most bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingLeft = 			{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingLeft = 			StyleableBase.EStyleType.NORMAL;		// number or null
 
 /**
  * @style PaddingRight Number
@@ -554,7 +557,7 @@ CanvasElement._StyleTypes.PaddingLeft = 			{inheritable:false};		// number or nu
  * Size in pixels that inner content should be spaced from the right most bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingRight = 			{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingRight = 			StyleableBase.EStyleType.NORMAL;		// number or null
 
 
 //Functional
@@ -564,14 +567,14 @@ CanvasElement._StyleTypes.PaddingRight = 			{inheritable:false};		// number or n
  * 
  * When false disables user interaction with the element.
  */
-CanvasElement._StyleTypes.Enabled = 				{inheritable:false};		// true || false
+CanvasElement._StyleTypes.Enabled = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style MouseEnabled boolean
  * 
  * When false disables mouse events for the element.
  */
-CanvasElement._StyleTypes.MouseEnabled = 			{inheritable:false};		// true || false
+CanvasElement._StyleTypes.MouseEnabled = 			StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style Draggable boolean
@@ -579,7 +582,7 @@ CanvasElement._StyleTypes.MouseEnabled = 			{inheritable:false};		// true || fal
  * When true allows the element to be dragged by the user. This does not work for containers
  * that do not allow absolute positioning such as a ListContainer.
  */
-CanvasElement._StyleTypes.Draggable = 				{inheritable:false};		// true || false
+CanvasElement._StyleTypes.Draggable = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style Cursor CursorDefinition
@@ -587,7 +590,7 @@ CanvasElement._StyleTypes.Draggable = 				{inheritable:false};		// true || false
  * Specifies the cursor to be displayed when the mouse is over the element. A custom CursorDefinition
  * may be used or a browser type String ("text", "none", etc) may be used.
  */
-CanvasElement._StyleTypes.Cursor = 					{inheritable:false};		// CursorDefinition()
+CanvasElement._StyleTypes.Cursor = 					StyleableBase.EStyleType.NORMAL;		// CursorDefinition()
 
 /**
  * @style TabStop int
@@ -596,7 +599,7 @@ CanvasElement._StyleTypes.Cursor = 					{inheritable:false};		// CursorDefinitio
  * take focus, 0 is default and the element will be focused in the order it appears in the display chain.
  * Numbers higher than 0 indicate a specific order to be used (not yet implemented).
  */
-CanvasElement._StyleTypes.TabStop = 				{inheritable:false};		// number
+CanvasElement._StyleTypes.TabStop = 				StyleableBase.EStyleType.NORMAL;		// number
 
 
 //Container Placement
@@ -606,7 +609,7 @@ CanvasElement._StyleTypes.TabStop = 				{inheritable:false};		// number
  * The X position the element should be rendered relative to its parent container. This only
  * works if the element is a child of an AnchorContainer.
  */
-CanvasElement._StyleTypes.X =						{inheritable:false};		// number || null
+CanvasElement._StyleTypes.X =						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Y Number
@@ -614,7 +617,7 @@ CanvasElement._StyleTypes.X =						{inheritable:false};		// number || null
  * The Y position the element should be rendered relative to its parent container. This only
  * works if the element is a child of an AnchorContainer.
  */
-CanvasElement._StyleTypes.Y =						{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Y =						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Width Number
@@ -622,7 +625,7 @@ CanvasElement._StyleTypes.Y =						{inheritable:false};		// number || null
  * The Width the element should be rendered relative to its parent container. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.Width =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Width =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Height Number
@@ -630,7 +633,7 @@ CanvasElement._StyleTypes.Width =					{inheritable:false};		// number || null
  * The Height the element should be rendered relative to its parent container. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.Height =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Height =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Top Number
@@ -638,7 +641,7 @@ CanvasElement._StyleTypes.Height =					{inheritable:false};		// number || null
  * The distance the element should be positioned from the upper bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Top =						{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Top =						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Left Number
@@ -646,7 +649,7 @@ CanvasElement._StyleTypes.Top =						{inheritable:false};		// number || null
  * The distance the element should be positioned from the left most bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Left =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Left =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Bottom Number
@@ -654,7 +657,7 @@ CanvasElement._StyleTypes.Left =					{inheritable:false};		// number || null
  * The distance the element should be positioned from the lower bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Bottom =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Bottom =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Right Number
@@ -662,7 +665,7 @@ CanvasElement._StyleTypes.Bottom =					{inheritable:false};		// number || null
  * The distance the element should be positioned from the right most bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Right =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Right =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style PercentWidth Number
@@ -675,7 +678,7 @@ CanvasElement._StyleTypes.Right =					{inheritable:false};		// number || null
  * per the ratio of percent vs total percent used so it is perfectly reasonable to set 3 elements all
  * to 100 and allow them to split the real-estate by 3.
  */
-CanvasElement._StyleTypes.PercentWidth =			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.PercentWidth =			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style PercentHeight Number
@@ -688,7 +691,7 @@ CanvasElement._StyleTypes.PercentWidth =			{inheritable:false};		// number || nu
  * per the ratio of percent vs total percent used so it is perfectly reasonable to set 3 elements all
  * to 100 and allow them to split the real-estate by 3.
  */
-CanvasElement._StyleTypes.PercentHeight =			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.PercentHeight =			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MinWidth Number
@@ -696,7 +699,7 @@ CanvasElement._StyleTypes.PercentHeight =			{inheritable:false};		// number || n
  * The minimum width in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MinWidth =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MinWidth =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MinHeight Number
@@ -704,7 +707,7 @@ CanvasElement._StyleTypes.MinWidth =				{inheritable:false};		// number || null
  * The minimum height in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MinHeight =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MinHeight =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MaxWidth Number
@@ -712,7 +715,7 @@ CanvasElement._StyleTypes.MinHeight =				{inheritable:false};		// number || null
  * The maximum width in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MaxWidth =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MaxWidth =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MaxHeight Number
@@ -720,7 +723,7 @@ CanvasElement._StyleTypes.MaxWidth =				{inheritable:false};		// number || null
  * The maximum height in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MaxHeight =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MaxHeight =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style HorizontalCenter Number
@@ -729,7 +732,7 @@ CanvasElement._StyleTypes.MaxHeight =				{inheritable:false};		// number || null
  * Negative numbers indicate left of center, positive right of center. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.HorizontalCenter =		{inheritable:false};		// number || null
+CanvasElement._StyleTypes.HorizontalCenter =		StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style VerticalCenter Number
@@ -738,7 +741,7 @@ CanvasElement._StyleTypes.HorizontalCenter =		{inheritable:false};		// number ||
  * Negative numbers indicate left of center, positive right of center. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.VerticalCenter =			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.VerticalCenter =			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RotateDegrees Number
@@ -748,7 +751,7 @@ CanvasElement._StyleTypes.VerticalCenter =			{inheritable:false};		// number || 
  * still positioned relative to their parent's coordinate plane after the transform has occurred.
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.RotateDegrees = 			{inheritable:false};		// number
+CanvasElement._StyleTypes.RotateDegrees = 			StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style RotateCenterX Number
@@ -756,7 +759,7 @@ CanvasElement._StyleTypes.RotateDegrees = 			{inheritable:false};		// number
  * The X position of the parent container the element should be rotated around. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.RotateCenterX = 			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.RotateCenterX = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RotateCenterY Number
@@ -764,7 +767,7 @@ CanvasElement._StyleTypes.RotateCenterX = 			{inheritable:false};		// number || 
  * The Y position of the parent container the element should be rotated around. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.RotateCenterY = 			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.RotateCenterY = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style IncludeInLayout boolean
@@ -773,7 +776,7 @@ CanvasElement._StyleTypes.RotateCenterY = 			{inheritable:false};		// number || 
  * Typically this is used in conjunction with Visible, however sometimes you may want to
  * hide an element, but still have it consume container space.
  */
-CanvasElement._StyleTypes.IncludeInLayout = 		{inheritable:false};		// true || false
+CanvasElement._StyleTypes.IncludeInLayout = 		StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style CompositeLayer boolean
@@ -792,7 +795,7 @@ CanvasElement._StyleTypes.IncludeInLayout = 		{inheritable:false};		// true || f
  * area. Composite elements/children changing will update the composite layer, then that region of the 
  * composite layer needs to be copied up to the parent, resulting in an additional buffer copy.
  */
-CanvasElement._StyleTypes.CompositeLayer = 					{inheritable:false};		//true || false
+CanvasElement._StyleTypes.CompositeLayer = 					StyleableBase.EStyleType.NORMAL;		//true || false
 
 //Text
 /**
@@ -801,7 +804,7 @@ CanvasElement._StyleTypes.CompositeLayer = 					{inheritable:false};		//true || 
  * 
  * Determines the style to render text. Available values are "normal", "bold", "italic", and "bold italic".
  */
-CanvasElement._StyleTypes.TextStyle =						{inheritable:true};		// "normal" || "bold" || "italic" || "bold italic"
+CanvasElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.INHERITABLE;		// "normal" || "bold" || "italic" || "bold italic"
 
 /**
  * @style TextFont String
@@ -809,7 +812,7 @@ CanvasElement._StyleTypes.TextStyle =						{inheritable:true};		// "normal" || "
  * 
  * Determines the font family to use when rendering text such as "Arial".
  */
-CanvasElement._StyleTypes.TextFont =						{inheritable:true};		// "Arial"
+CanvasElement._StyleTypes.TextFont =						StyleableBase.EStyleType.INHERITABLE;		// "Arial"
 
 /**
  * @style TextSize int
@@ -817,7 +820,7 @@ CanvasElement._StyleTypes.TextFont =						{inheritable:true};		// "Arial"
  * 
  * Determines the size in pixels to render text.
  */
-CanvasElement._StyleTypes.TextSize =						{inheritable:true};		// number
+CanvasElement._StyleTypes.TextSize =						StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style TextHorizontalAlign String
@@ -825,7 +828,7 @@ CanvasElement._StyleTypes.TextSize =						{inheritable:true};		// number
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-CanvasElement._StyleTypes.TextHorizontalAlign =						{inheritable:true};		// "left" || "center" || "right"
+CanvasElement._StyleTypes.TextHorizontalAlign =						StyleableBase.EStyleType.INHERITABLE;		// "left" || "center" || "right"
 
 /**
  * @style TextVerticalAlign String
@@ -833,7 +836,7 @@ CanvasElement._StyleTypes.TextHorizontalAlign =						{inheritable:true};		// "le
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-CanvasElement._StyleTypes.TextVerticalAlign =					{inheritable:true};  	// "top" || "middle" || "bottom"
+CanvasElement._StyleTypes.TextVerticalAlign =					StyleableBase.EStyleType.INHERITABLE;  	// "top" || "middle" || "bottom"
 
 /**
  * @style LinePaddingTop Number
@@ -842,7 +845,7 @@ CanvasElement._StyleTypes.TextVerticalAlign =					{inheritable:true};  	// "top"
  * Padding to apply to the top of each line of text. This also impacts the size of the highlight background.
  * This is useful when using strange fonts that exceed their typical vertical bounds.
  */
-CanvasElement._StyleTypes.TextLinePaddingTop = 				{inheritable:true};		// number
+CanvasElement._StyleTypes.TextLinePaddingTop = 				StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style LinePaddingBottom Number
@@ -851,7 +854,7 @@ CanvasElement._StyleTypes.TextLinePaddingTop = 				{inheritable:true};		// numbe
  * Padding to apply to the bottom of each line of text. This also impacts the size of the highlight background.
  * This is useful when using strange fonts that exceed their typical vertical bounds.
  */
-CanvasElement._StyleTypes.TextLinePaddingBottom = 			{inheritable:true};		// number
+CanvasElement._StyleTypes.TextLinePaddingBottom = 			StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style TextLineSpacing Number
@@ -859,7 +862,7 @@ CanvasElement._StyleTypes.TextLinePaddingBottom = 			{inheritable:true};		// num
  * 
  * Vertical line spacing in pixels.
  */
-CanvasElement._StyleTypes.TextLineSpacing = 				{inheritable:true};		// number
+CanvasElement._StyleTypes.TextLineSpacing = 				StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style TextColor String
@@ -867,7 +870,7 @@ CanvasElement._StyleTypes.TextLineSpacing = 				{inheritable:true};		// number
  * 
  * Hex color value to be used when drawing text. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextColor =						{inheritable:true};		// "#000000"
+CanvasElement._StyleTypes.TextColor =						StyleableBase.EStyleType.INHERITABLE;		// "#000000"
 
 /**
  * @style TextFillType String
@@ -876,7 +879,7 @@ CanvasElement._StyleTypes.TextColor =						{inheritable:true};		// "#000000"
  * Determines the fill type when rendering text. Available values are "fill" and "stroke".
  * Stroke draws a border around characters, while fill completely fills them.
  */
-CanvasElement._StyleTypes.TextFillType =					{inheritable:true};		// "fill" || "stroke"
+CanvasElement._StyleTypes.TextFillType =					StyleableBase.EStyleType.INHERITABLE;		// "fill" || "stroke"
 
 /**
  * @style TextHighlightedColor String
@@ -884,7 +887,7 @@ CanvasElement._StyleTypes.TextFillType =					{inheritable:true};		// "fill" || "
  * 
  * Hex color value to be used when drawing highlighted text. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextHighlightedColor = 			{inheritable:true};		// color "#000000"
+CanvasElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
 /**
  * @style TextHighlightedColor String
@@ -892,7 +895,7 @@ CanvasElement._StyleTypes.TextHighlightedColor = 			{inheritable:true};		// colo
  * 
  * Hex color value to be used when drawing highlighted text background. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:true};		// color "#000000"
+CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
 /**
  * @style TextCaretColor String
@@ -900,7 +903,7 @@ CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:true};	
  * 
  * Hex color value to be used when drawing blinking text caret. "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextCaretColor = 					{inheritable:true};		// color "#000000"
+CanvasElement._StyleTypes.TextCaretColor = 					StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
 
 /////////////Default Styles///////////////////////////////
@@ -1018,43 +1021,7 @@ CanvasElement.prototype.addStyleDefinition =
 CanvasElement.prototype.addStyleDefinitionAt = 
 	function (styleDefinition, index)
 	{
-		if (!(styleDefinition instanceof StyleDefinition))
-			return null;
-	
-		if (index < 0 || index > this._styleDefinitions.length)
-			return null;
-		
-		//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-		//Make sure this style definition is not already in the list (no adding duplicates)
-		if (this._styleDefinitions.indexOf(styleDefinition) != -1 || styleDefinition == this._styleDefinitionDefault)
-			return null;
-		
-		this._styleDefinitions.splice(index, 0, styleDefinition);
-		
-		if (this._manager != null) //Attached to display chain
-		{
-			styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
-			
-			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
-			var styleNamesMap = Object.create(null);
-			var styleName = null;
-			
-			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
-			//when we add a new one, so we need to invoke a style change on all associated styles.
-			
-			//Record relevant style names
-			for (var i = index; i >= 0; i--)
-			{
-				for (styleName in this._styleDefinitions[i]._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal handling.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		
-		return styleDefinition;
+		return this._addStyleDefinitionAt(styleDefinition, index, false);
 	};
 	
 /**
@@ -1092,40 +1059,7 @@ CanvasElement.prototype.removeStyleDefinition =
 CanvasElement.prototype.removeStyleDefinitionAt = 
 	function (index)
 	{
-		if (index < 0 || index > this._styleDefinitions.length - 1)
-			return null;
-		
-		var styleDefinition = null;
-		
-		if (this._manager != null) //Attached to display chain
-		{
-			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
-			var styleNamesMap = Object.create(null);
-			var styleName = null;
-			
-			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
-			//when we add a new one, so we need to invoke a style change on all associated styles.
-			
-			//Record relevant styles
-			for (var i = index; i >= 0; i--)
-			{
-				for (styleName in this._styleDefinitions[i]._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-			//Remove definition
-			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
-			styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-			
-			//Spoof style changed event for relevant styles.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached, just remove the definition
-			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
-		
-		return styleDefinition;
+		return this._removeStyleDefinitionAt(index, false);
 	};
 	
 /**
@@ -1136,34 +1070,7 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 CanvasElement.prototype.clearStyleDefinitions = 
 	function ()
 	{
-		if (this._manager != null) //Attached to display chain
-		{
-			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
-			var styleNamesMap = Object.create(null);
-			var styleDefinition = null;
-			var styleName = null;
-			
-			for (var i = 0; i < this._styleDefinitions.length; i++)
-			{
-				styleDefinition = this._styleDefinitions[i];
-				
-				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in styleDefinition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Clear definitions
-			this._styleDefinitions.splice(0, this._styleDefinitions.length);
-			
-			//Spoof a style changed event on all the styles we removed.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached, just clear the definition list.
-			this._styleDefinitions.splice(0, this._styleDefinitions.length);
+		return this._setStyleDefinitions([], false);
 	};
 	
 /**
@@ -1177,88 +1084,10 @@ CanvasElement.prototype.clearStyleDefinitions =
 CanvasElement.prototype.setStyleDefinitions = 
 	function (styleDefinitions)
 	{
-		if (styleDefinitions == null)
-			styleDefinitions = [];
-		
-		if (Array.isArray(styleDefinitions) == false)
-			styleDefinitions = [styleDefinitions];
-		
-		var i = 0;
-		
-		//trim the definitions for duplicates
-		for (i = styleDefinitions.length - 1; i >= 0; i--)
-		{
-			//Make sure this style definition is not already in the list (no adding duplicates)
-			if (styleDefinitions.indexOf(styleDefinitions[i]) < i || styleDefinitions[i] == this._styleDefinitionDefault)
-				styleDefinitions.splice(i, 1);
-		}
-		
-		if (this._manager != null) //Attached to display chain
-		{
-			//Check if nothing changed before we do a bunch of work.
-			if (styleDefinitions.length == this._styleDefinitions.length)
-			{
-				var changed = false;
-				for (i = 0; i < styleDefinitions.length; i++)
-				{
-					if (styleDefinitions[i] != this._styleDefinitions[i])
-					{
-						changed = true;
-						break;
-					}
-				}
-				
-				//No changes.
-				if (changed == false)
-					return;
-			}
-			
-			var styleName = null;
-			var styleNamesMap = Object.create(null);
-			var styleDefinition = null;
-			
-			//Remove old
-			while (this._styleDefinitions.length > 0)
-			{
-				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
-				this._styleDefinitions.splice(this._styleDefinitions.length - 1, 1);
-				
-				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in styleDefinition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Add new
-			for (i = 0; i < styleDefinitions.length; i++)
-			{
-				styleDefinition = styleDefinitions[i];
-				this._styleDefinitions.push(styleDefinition);
-				
-				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record added style names
-				for (styleName in styleDefinition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal style changed handling.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached to display chain, just swap the definitions
-		{
-			//Clear the definition list
-			this._styleDefinitions.splice(0, this._styleDefinitions.length);
-			
-			//Add the new definitions.
-			for (i = 0; i < styleDefinitions.length; i++)
-				this._styleDefinitions.push(styleDefinitions[i]);
-		}
+		return this._setStyleDefinitions(styleDefinitions, false);
 	};
+	
+
 	
 /**
  * @function getNumStyleDefinitions
@@ -1270,8 +1099,27 @@ CanvasElement.prototype.setStyleDefinitions =
 CanvasElement.prototype.getNumStyleDefinitions = 
 	function ()
 	{
-		return this._styleDefinitions.length;
+		return this._getNumStyleDefinitions(false);
 	};
+	
+/**
+ * @function _getNumStyleDefinitions
+ * Gets the number of style definitions or default definitions associated with this element.
+ * 
+ * @param isDefault bool
+ * When true, returns the number of default definitions.
+ * 
+ * @returns int
+ * The number of style definitions.
+ */			
+CanvasElement.prototype._getNumStyleDefinitions = 
+	function (isDefault)
+	{
+		if (isDefault == true)
+			return this._styleDefinitionDefaults.length;
+
+		return this._styleDefinitions.length;
+	}
 	
 /**
  * @function getStyleDefinitionAt
@@ -1286,10 +1134,7 @@ CanvasElement.prototype.getNumStyleDefinitions =
 CanvasElement.prototype.getStyleDefinitionAt = 
 	function (index)
 	{
-		if (index < 0 || index >= this._styleDefinitions.length)
-			return null;
-		
-		return this._styleDefinitions[index];
+		return this._getStyleDefinitionAt(index, false);
 	};
 	
 /**
@@ -1351,13 +1196,12 @@ CanvasElement.prototype.getStyleData =
 		
 		if (styleData.value !== undefined)
 		{
-			styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
+			styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);
 			return styleData;
 		}
 		
 		//Counters (priority depth)
 		var ctr = 0;
-		var ctr2 = 0;
 		
 		//Check definitions
 		for (ctr = this._styleDefinitions.length - 1; ctr >= 0; ctr--)
@@ -1366,114 +1210,31 @@ CanvasElement.prototype.getStyleData =
 			
 			if (styleData.value !== undefined)
 			{
-				styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
+				styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
 				styleData.priority.push((this._styleDefinitions.length - 1) - ctr); //StyleDefinition depth
 				
 				return styleData;
 			}
 		}
 		
-		var proxy = null;
+		var thisStyleType = this._getStyleType(styleName);
+		
 		var styleType = null;
+		var proxy = null;
+		var ctr2 = 0;
 		
-		//Check proxy
-		proxy = this._styleProxy;
-		while (proxy != null)
+		//Proxy / Inheritable not allowed for sub styles.
+		if (thisStyleType != StyleableBase.EStyleType.SUBSTYLE)
 		{
-			styleType = proxy._proxyElement._getStyleType(styleName);
-			
-			if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
-				(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
-				break;
-			
-			//Check proxy instance
-			if (styleName in proxy._proxyElement._styleMap)
-				styleData.value = proxy._proxyElement._styleMap[styleName];
-			
-			if (styleData.value !== undefined)
-			{
-				styleData.priority.push(CanvasElement.StylePriorities.PROXY);		
-				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
-				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);	
-				
-				return styleData;
-			}
-			
-			//Check proxy definitions
-			for (ctr2 = proxy._proxyElement._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
-			{
-				styleData.value = proxy._proxyElement._styleDefinitions[ctr2].getStyle(styleName);
-				
-				if (styleData.value !== undefined)
-				{
-					styleData.priority.push(CanvasElement.StylePriorities.PROXY);
-					styleData.priority.push(ctr);	//Proxy depth (chained proxies)
-					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);	
-					styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
-					
-					return styleData;
-				}
-			}
-			
-			ctr++;
-			proxy = proxy._proxyElement._styleProxy;
-		}
-		
-		//Check inherited
-		proxy = null;
-		styleType = null;
-		ctr = 0;
-		ctr2 = 0;
-		
-		var parent = this;
-		var ctr3 = 0;
-		
-		while (true)
-		{
-			styleType = parent._getStyleType(styleName);
-			if (styleType == null || styleType.inheritable == false)
-				break;
-			
-			parent = parent._parent;
-			
-			if (parent == null)
-				break;
-			
-			//Check parent instance
-			if (styleName in parent._styleMap)
-				styleData.value = parent._styleMap[styleName];
-			
-			if (styleData.value !== undefined)
-			{
-				styleData.priority.push(CanvasElement.StylePriorities.INHERITED);	
-				styleData.priority.push(ctr);	//Parent depth
-				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
-				
-				return styleData;
-			}
-			
-			//Check style definitions
-			for (ctr2 = parent._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
-			{
-				styleData.value = parent._styleDefinitions[ctr2].getStyle(styleName);
-				
-				if (styleData.value !== undefined)
-				{
-					styleData.priority.push(CanvasElement.StylePriorities.INHERITED);	
-					styleData.priority.push(ctr);	//Parent depth
-					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
-					styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
-					
-					return styleData;
-				}
-			}
-			
-			//Check parent proxy
-			proxy = parent._styleProxy;
-			ctr2 = 0;
+			//Check proxy
+			proxy =	this._styleProxy;
 			while (proxy != null)
 			{
 				styleType = proxy._proxyElement._getStyleType(styleName);
+				
+				//Proxy not allowed for sub styles.
+				if (styleType == StyleableBase.EStyleType.SUBSTYLE)
+					break;
 				
 				if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
 					(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
@@ -1485,79 +1246,152 @@ CanvasElement.prototype.getStyleData =
 				
 				if (styleData.value !== undefined)
 				{
-					styleData.priority.push(CanvasElement.StylePriorities.INHERITED);		
-					styleData.priority.push(ctr);	//Parent depth
-					styleData.priority.push(CanvasElement.StylePriorities.PROXY);		
-					styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
-					styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);		
+					styleData.priority.push(CanvasElement.EStylePriorities.PROXY);		
+					styleData.priority.push(ctr);	//Proxy depth (chained proxies)
+					styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);	
 					
 					return styleData;
 				}
 				
-				//Check proxy definition
-				for (ctr3 = proxy._proxyElement._styleDefinitions.length - 1; ctr3 >= 0; ctr3--)
+				//Check proxy definitions
+				for (ctr2 = proxy._proxyElement._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
 				{
-					styleData.value = proxy._proxyElement._styleDefinitions[ctr3].getStyle(styleName);
+					styleData.value = proxy._proxyElement._styleDefinitions[ctr2].getStyle(styleName);
 					
 					if (styleData.value !== undefined)
 					{
-						styleData.priority.push(CanvasElement.StylePriorities.INHERITED);	
-						styleData.priority.push(ctr);	//Parent depth
-						styleData.priority.push(CanvasElement.StylePriorities.PROXY);	
-						styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
-						styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
-						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
+						styleData.priority.push(CanvasElement.EStylePriorities.PROXY);
+						styleData.priority.push(ctr);	//Proxy depth (chained proxies)
+						styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);	
+						styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
 						
 						return styleData;
 					}
 				}
-
-				ctr2++;
+				
+				ctr++;
 				proxy = proxy._proxyElement._styleProxy;
 			}
 			
-			ctr++;
+			//Check inherited
+			proxy = null;
+			styleType = thisStyleType;
+			var parent = this;
+			
+			ctr = 0;
+			ctr2 = 0;
+			var ctr3 = 0;
+			
+			while (styleType == StyleableBase.EStyleType.INHERITABLE)
+			{
+				parent = parent._parent;
+				
+				if (parent == null)
+					break;
+				
+				//Check parent instance
+				if (styleName in parent._styleMap)
+					styleData.value = parent._styleMap[styleName];
+				
+				if (styleData.value !== undefined)
+				{
+					styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
+					styleData.priority.push(ctr);	//Parent depth
+					styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);
+					
+					return styleData;
+				}
+				
+				//Check style definitions
+				for (ctr2 = parent._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
+				{
+					styleData.value = parent._styleDefinitions[ctr2].getStyle(styleName);
+					
+					if (styleData.value !== undefined)
+					{
+						styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
+						styleData.priority.push(ctr);	//Parent depth
+						styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
+						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
+						
+						return styleData;
+					}
+				}
+				
+				//Check parent proxy
+				proxy = parent._styleProxy;
+				ctr2 = 0;
+				while (proxy != null)
+				{
+					styleType = proxy._proxyElement._getStyleType(styleName);
+					
+					//Proxy not allowed for sub styles.
+					if (styleType == StyleableBase.EStyleType.SUBSTYLE)
+						break;
+					
+					if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
+						(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
+						break;
+					
+					//Check proxy instance
+					if (styleName in proxy._proxyElement._styleMap)
+						styleData.value = proxy._proxyElement._styleMap[styleName];
+					
+					if (styleData.value !== undefined)
+					{
+						styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);		
+						styleData.priority.push(ctr);	//Parent depth
+						styleData.priority.push(CanvasElement.EStylePriorities.PROXY);		
+						styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
+						styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);		
+						
+						return styleData;
+					}
+					
+					//Check proxy definition
+					for (ctr3 = proxy._proxyElement._styleDefinitions.length - 1; ctr3 >= 0; ctr3--)
+					{
+						styleData.value = proxy._proxyElement._styleDefinitions[ctr3].getStyle(styleName);
+						
+						if (styleData.value !== undefined)
+						{
+							styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
+							styleData.priority.push(ctr);	//Parent depth
+							styleData.priority.push(CanvasElement.EStylePriorities.PROXY);	
+							styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
+							styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
+							styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
+							
+							return styleData;
+						}
+					}
+	
+					ctr2++;
+					proxy = proxy._proxyElement._styleProxy;
+				}
+				
+				ctr++;
+				styleType = parent._getStyleType(styleName);
+			}
 		}
 		
-		//Check default definition
-		if (this._styleDefinitionDefault != null)
-			styleData.value = this._styleDefinitionDefault.getStyle(styleName);
-			
-		if (styleData.value !== undefined)
+		//Check default definitions
+		for (ctr = this._styleDefinitionDefaults.length - 1; ctr >= 0; ctr--)
 		{
-			styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_DEFINITION);
-			return styleData;
-		}	
-		
-		//Check default proxy
-		proxy = this._styleProxy;
-		ctr = 0;
-		while (proxy != null)
-		{
-			styleType = proxy._proxyElement._getStyleType(styleName);
-			
-			if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
-				(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
-				break;
-			
-			if (proxy._proxyElement._styleDefinitionDefault != null)
-				styleData.value = proxy._proxyElement._styleDefinitionDefault.getStyle(styleName);
+			styleData.value = this._styleDefinitionDefaults[ctr].getStyle(styleName);
 			
 			if (styleData.value !== undefined)
 			{
-				styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_PROXY);
-				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
+				styleData.priority.push(CanvasElement.EStylePriorities.DEFAULT_DEFINITION);
+				styleData.priority.push((this._styleDefinitionDefaults.length - 1) - ctr); //StyleDefinition depth
 				
 				return styleData;
 			}
-			
-			ctr++;
-			proxy = proxy._proxyElement._styleProxy;
 		}
-			
+		
 		//Check class
 		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(CanvasElement.StylePriorities.CLASS);
+		styleData.priority.push(CanvasElement.EStylePriorities.CLASS);
 		
 		return styleData;		
 	};
@@ -2662,6 +2496,277 @@ CanvasElement.prototype._onBackgroundShapeStyleChanged =
 		this._invalidateRender();
 	};
 	
+/**
+ * @function _addStyleDefinitionAt
+ * Inserts a style definition to this elements style definition or default definition lists.
+ * Adding style definitions to elements already attached to the display chain is expensive, 
+ * for better performance add definitions before attaching the element via addElement().
+ * Default definitions are used when styling sub components with sub styles. 
+ * 
+ * @param styleDefinition StyleDefinition
+ * StyleDefinition to be added to this elements definition list.
+ * 
+ * @param index int
+ * The index to insert the style definition within the elements definition list.
+ * 
+ * @param isDefault bool
+ * When true, inserts the definition into the element's default definition list.
+ * 
+ * @returns StyleDefinition
+ * Returns StyleDefinition just added when successfull, null if the StyleDefinition could not
+ * be added due to the index being out of range or other error.
+ */		
+CanvasElement.prototype._addStyleDefinitionAt = 
+	function (styleDefinition, index, isDefault)
+	{
+		if (!(styleDefinition instanceof StyleDefinition))
+			return null;
+	
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+		
+		if (index < 0 || index > styleDefArray)
+			return null;
+		
+		styleDefArray.splice(index, 0, styleDefinition);
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+			
+			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
+			var styleNamesMap = Object.create(null);
+			var styleName = null;
+			
+			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
+			//when we add a new one, so we need to invoke a style change on all associated styles.
+			
+			//Record relevant style names
+			for (var i = index; i >= 0; i--)
+			{
+				for (styleName in styleDefArray[i]._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Spoof style changed events for normal handling.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		
+		return styleDefinition;
+	};	
+
+/**
+ * @function _removeStyleDefinitionAt
+ * Removes a style definition from this elements style definition or default definitions at the supplied index.
+ * Default definitions are used when styling sub components with sub styles. 
+ * 
+ * @param index int
+ * Index to be removed.
+ * 
+ * @param isDefault bool
+ * When true, removes the definition from the element's default definition list.
+ * 
+ * @returns StyleDefinition
+ * Returns the StyleDefinition just removed if successfull, null if the definition could
+ * not be removed due it it not being in this elements definition list, or index out of range.
+ */			
+CanvasElement.prototype._removeStyleDefinitionAt = 
+	function (index, isDefault)
+	{
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+	
+		if (index < 0 || index > styleDefArray - 1)
+			return null;
+		
+		var styleDefinition = null;
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
+			var styleNamesMap = Object.create(null);
+			var styleName = null;
+			
+			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
+			//when we add a new one, so we need to invoke a style change on all associated styles.
+			
+			//Record relevant styles
+			for (var i = index; i >= 0; i--)
+			{
+				for (styleName in styleDefArray._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Remove definition
+			styleDefinition = styleDefArray.splice(index, 1)[0]; //Returns array of removed items.
+			styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+			
+			//Spoof style changed event for relevant styles.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		else //Not attached, just remove the definition
+			styleDefinition = styleDefArray.splice(index, 1)[0]; //Returns array of removed items.
+		
+		return styleDefinition;
+	};	
+
+/**
+ * @function _setStyleDefinitions
+ * Replaces the elements current style definition or default definition lists. 
+ * This is more effecient than removing or adding style definitions one at a time.
+ * Default definitions are used when styling sub components with sub styles. 
+ * 
+ * @param styleDefinitions StyleDefinition
+ * May be a StyleDefinition, or an Array of StyleDefinition
+ * 
+ * @param isDefault bool
+ * When true, replaces the default definition list.
+ * 
+ * @param styleNamesChangedMap Object
+ * Optional - A empty map object - Object.create(null) to populate style changes
+ * due to swapping definitions while this element is attached to the display chain. 
+ * When specified (not null), does not automatically invoke style changed events.
+ */	
+CanvasElement.prototype._setStyleDefinitions = 
+	function (styleDefinitions, isDefault, styleNamesChangedMap)
+	{
+		if (styleDefinitions == null)
+			styleDefinitions = [];
+		
+		if (Array.isArray(styleDefinitions) == false)
+			styleDefinitions = [styleDefinitions];
+		
+		var i;
+		
+		//Remove any null definitions
+		for (i = styleDefinitions.length - 1; i >= 0; i--)
+		{
+			if (styleDefinitions[i] == null)
+				styleDefinitions.splice(i, 1);
+		}
+		
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			var oldIndex = styleDefArray.length - 1;
+			var newIndex = styleDefinitions.length - 1;
+			
+			var styleName = null;
+			var changed = false;
+			
+			var styleNamesMap = styleNamesChangedMap;
+			if (styleNamesMap == null)
+				styleNamesMap = Object.create(null);
+			
+			//Compare styles from the ends of the arrays
+			while (oldIndex >= 0 || newIndex >= 0)
+			{
+				//Detect change
+				if (changed == false && (oldIndex < 0 || newIndex < 0 || styleDefinitions[newIndex] != styleDefArray[oldIndex]))
+					changed = true;
+				
+				//Change detected
+				if (changed == true)
+				{
+					if (oldIndex >= 0)
+					{
+						//Record removed style names
+						for (styleName in styleDefArray[oldIndex]._styleMap)
+							styleNamesMap[styleName] = true;
+					}
+					if (newIndex >= 0)
+					{
+						//Record removed style names
+						for (styleName in styleDefinitions[newIndex]._styleMap)
+							styleNamesMap[styleName] = true;
+					}
+				}
+				
+				oldIndex--;
+				newIndex--;
+			}
+			
+			//Bail no changes
+			if (changed == false)
+				return;
+			
+			//Clear the definition list
+			while (styleDefArray.length > 0)
+			{
+				styleDefArray[styleDefArray.length - 1].removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				styleDefArray.splice(styleDefArray.length - 1, 1);
+			}
+			
+			//Add the new definitions.
+			for (i = 0; i < styleDefinitions.length; i++)
+			{
+				styleDefinitions[i].addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				styleDefArray.push(styleDefinitions[i]);
+			}
+			
+			//Spoof style changed events for normal style changed handling.
+			if (styleNamesChangedMap == null)
+			{
+				for (styleName in styleNamesMap)
+					this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+			}
+		}
+		else //Not attached to display chain, just swap the definitions
+		{
+			//Clear the definition list
+			styleDefArray.splice(0, styleDefArray.length);
+			
+			//Add the new definitions.
+			for (i = 0; i < styleDefinitions.length; i++)
+				styleDefArray.push(styleDefinitions[i]);
+		}
+	};	
+
+/**
+ * @function _getStyleDefinitionAt
+ * Gets the style definition or default definition at the supplied zero base index.
+ * 
+ * @param index int
+ * Index of the style definition to return;
+ * 
+ * @param isDefault bool
+ * When true, returns the default definition at the supplied index.
+ * 
+ * @returns StyleDefinition
+ * The style defenition at the supplied index, or null if index is out of range. 
+ */		
+CanvasElement.prototype._getStyleDefinitionAt = 
+	function (index, isDefault)
+	{
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+	
+		if (index < 0 || index >= styleDefArray.length)
+			return null;
+		
+		return styleDefArray[index];
+	};		
+	
 //@private	
 CanvasElement.prototype._onExternalStyleChanged = 
 	function (styleChangedEvent)
@@ -2683,8 +2788,11 @@ CanvasElement.prototype._onExternalStyleChanged =
 		
 		if (isProxy == true || isParent == true)
 		{
-			if ((isProxy == true && (styleName in this._styleProxy._proxyMap == true || this._styleProxy._proxyElement._getStyleType(styleName) == null)) ||
-				(isParent == true && styleType != null && styleType.inheritable == true))
+			//If coming from proxy, we cannot be a substyle, and style name must be in proxy map, or _Arbitrary specified and not in proxy map.
+			//If coming from parent, style must be inheritable.
+			if ((isProxy == true && styleType != StyleableBase.EStyleType.SUBSTYLE && 
+				(styleName in this._styleProxy._proxyMap == true || ("_Arbitrary" in this._styleProxy._proxyMap == true && this._styleProxy._proxyElement._getStyleType(styleName) == null))) ||
+				(isParent == true && styleType == StyleableBase.EStyleType.INHERITABLE))
 			{
 				validStyle = true;
 			}
@@ -2698,9 +2806,6 @@ CanvasElement.prototype._onExternalStyleChanged =
 		if (validStyle == false)
 			return;
 		
-		var oldStyleData = null;
-		var newStyleData = null;
-		
 		//Get the cache for this style.
 		var styleCache = this._stylesCache[styleName];
 		
@@ -2711,19 +2816,34 @@ CanvasElement.prototype._onExternalStyleChanged =
 			this._stylesCache[styleName] = styleCache;
 		}
 		
-		//Cache valid, copy it for later compare.
-		if (styleCache.cacheInvalid == false)
-			oldStyleData = styleCache.styleData.clone();
-		
-		//Invalidate the cache
-		styleCache.cacheInvalid = true;
-		
-		//Get updated data.
-		newStyleData = this.getStyleData(styleName);
-		
-		//No change, bail.
-		if (oldStyleData != null && oldStyleData.equals(newStyleData) == true)
-			return;
+		//Check if the StyleData changed (if we're not a sub style)
+		if (styleType != StyleableBase.EStyleType.SUBSTYLE)
+		{
+			var oldStyleData = null;
+			var newStyleData = null;
+			
+			//Cache valid, copy it for later compare.
+			if (styleCache.cacheInvalid == false)
+				oldStyleData = styleCache.styleData.clone();
+			
+			//Invalidate the cache
+			styleCache.cacheInvalid = true;
+			
+			//Get updated data.
+			newStyleData = this.getStyleData(styleName);
+			
+			//No change, bail.
+			if (oldStyleData != null && oldStyleData.equals(newStyleData) == true)
+				return;
+		}
+		else //Sub styles always invalidate (the entire chain is used)
+		{
+			//Invalidate the cache
+			styleCache.cacheInvalid = true;
+			
+			//Update data
+			this.getStyleData(styleName);
+		}
 		
 		if (styleType != null)
 			this._invalidateStyle(styleName);
@@ -2731,107 +2851,113 @@ CanvasElement.prototype._onExternalStyleChanged =
 		//Re-dispatch from ourself.
 		this._dispatchEvent(styleChangedEvent); 
 	};
-	
-//@override
-CanvasElement.prototype._getDefaultStyleData = 
-	function (styleName)
-	{
-		var styleData = new StyleData(styleName);
-		
-		//Check default definition
-		if (this._styleDefinitionDefault != null)
-			styleData.value = this._styleDefinitionDefault.getStyle(styleName);
-			
-		if (styleData.value !== undefined)
-		{
-			styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_DEFINITION);
-			return styleData;
-		}	
-		
-		//Check default proxy
-		var proxy = this._styleProxy;
-		var ctr = 0;
-		while (proxy != null)
-		{
-			if (styleName in proxy._proxyMap == false && proxy._proxyElement._getStyleType(styleName) != null)
-				break;
-			
-			if (proxy._proxyElement._styleDefinitionDefault != null)
-				styleData.value = proxy._proxyElement._styleDefinitionDefault.getStyle(styleName);
-			
-			if (styleData.value !== undefined)
-			{
-				styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_PROXY);
-				styleData.priority.push(ctr);	//Proxy level (chained proxies)
-				
-				return styleData;
-			}
-			
-			ctr++;
-			proxy = proxy._proxyElement._styleProxy;
-		}
-			
-		//Check class
-		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(CanvasElement.StylePriorities.CLASS);
-		
-		return styleData;			
-	};	
 
 /**
- * @function _setStyleDefinitionDefault
+ * @function _getStyleList
  * 
- * Sets the default style definition. Use this when you need to supply a default definition 
- * to a sub component that differs from the class based definition but also need to allow 
- * the implementor to supply a style definition to the sub component. 
+ * Gets the style values for the supplied style name in this elements
+ * style definition list and instance styles for the supplied style name. 
+ * This is used for sub styles as all stub styles in the list are applied to sub components.
+ * This list should be supplied to the sub components style definition list.
+ *  
+ * @param styleName String
+ * String representing the style list to return.
  * 
- * @param styleDefinition StyleDefintion
- * The default style definiton to apply to the element.
- */
-CanvasElement.prototype._setStyleDefinitionDefault = 
-	function (styleDefinition)
+ * @returns Array
+ * Returns an array of all styles in this elements definition list and instance styles
+ * for the associated style name. 
+ */	
+CanvasElement.prototype._getStyleList = 
+	function (styleName)
 	{
-		if (this._manager != null) //Attached to display chain
+		var styleList = [];
+		
+		//Add definitions
+		for (var i = 0; i < this._styleDefinitions.length; i++)
 		{
-			//Bail if no change
-			if (this._styleDefinitionDefault == styleDefinition)
-				return;
+			styleValue = this._styleDefinitions[i].getStyle(styleName);
 			
-			var styleName = null;
-			var styleNamesMap = Object.create(null);
-			
-			if (this._styleDefinitionDefault != null)
-			{
-				this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in this._styleDefinitionDefault._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			this._styleDefinitionDefault = styleDefinition;
-			
-			if (this._styleDefinitionDefault != null)
-			{
-				this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record added style names
-				for (styleName in this._styleDefinitionDefault._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal style changed handling.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+			if (styleValue !== undefined)
+				styleList.push(styleValue);
 		}
-		else //Not attached, just swap the definition
-			this._styleDefinitionDefault = styleDefinition;
+		
+		//Add instance
+		if (styleName in this._styleMap && this._styleMap[styleName] != null)
+			styleList.push(this._styleMap[styleName]);
+		
+		return styleList;
+	};
+	
+/**
+ * @function _getDefaultStyleList
+ * 
+ * Gets the style values for the supplied style name in this elements
+ * default style definition list and class list styles for the supplied style name. 
+ * This is used for sub styles as all stub styles in the list are applied to sub components.
+ * This list should be supplied to the sub components default style definition list.
+ *  
+ * @param styleName String
+ * String representing the default style list to return.
+ * 
+ * @returns Array
+ * Returns an array of all styles in this elements default definition and class list styles 
+ * for the associated style name. 
+ */	
+CanvasElement.prototype._getDefaultStyleList = 
+	function (styleName)
+	{
+		var styleValue = null;
+		
+		//Get class list
+		var styleList = this._getClassStyleList(styleName);
+		
+		//Check default definitions
+		for (var i = 0; i < this._styleDefinitionDefaults.length; i++)
+		{
+			styleValue = this._styleDefinitionDefaults[i].getStyle(styleName);
+			
+			if (styleValue !== undefined)
+				styleList.push(styleValue);
+		}
+		
+		return styleList;
+	};
+	
+/**
+ * @function _applySubStylesToElement
+ * @override
+ * 
+ * Convienence function for setting sub styles of sub components.
+ * Applies appropriate sub styling from this element to the 
+ * supplied elements definition and default definition style lists.
+ * You should call this on sub components from within the _doStylesUpdated()
+ * function when the associated sub style changes.
+ *  
+ * @param styleName String
+ * String representing the sub style to apply.
+ * 
+ * @param elementToApply CanvasElement
+ * The sub component element to apply sub styles.
+ */		
+CanvasElement.prototype._applySubStylesToElement = 
+	function (styleName, elementToApply)
+	{
+		var changedStyleName = null;
+		var styleNamesChangedMap = Object.create(null);
+	
+		elementToApply._setStyleDefinitions(this._getStyleList(styleName), false, styleNamesChangedMap);
+		elementToApply._setStyleDefinitions(this._getDefaultStyleList(styleName), true, styleNamesChangedMap);
+		
+		//Spoof style changed events for normal style changed handling.
+		for (changedStyleName in styleNamesChangedMap)
+			elementToApply._onExternalStyleChanged(new StyleChangedEvent(changedStyleName));
 	};
 	
 /**
  * @function _setStyleProxy
  * 
  * Sets the element which is to proxy styles to this element. See getStyle() and StyleProxy.
+ * This should be set prior to added this element to the display hierarchy via addElement() or _addChild().
  * 
  * @param styleProxy StyleProxy
  * The StyleProxy element wrapper to use to proxy styles from the proxy element to this element.
@@ -2873,8 +2999,11 @@ CanvasElement.prototype._onCanvasElementAdded =
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
-		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
-			this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);				
+		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
+		{
+			if (this._styleDefinitionDefaults[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+				this._styleDefinitionDefaults[i].addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+		}
 		
 		//Add broadcast events to manager//
 		if ("enterframe" in this._eventListeners && this._eventListeners["enterframe"].length > 0)
@@ -2931,18 +3060,21 @@ CanvasElement.prototype._onCanvasElementRemoved =
 	
 		for (i = 0; i < this._styleDefinitions.length; i++)
 		{
-			if (this._styleDefinitions[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+			if (this._styleDefinitions[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == true)
 				this._styleDefinitions[i].removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 		}
 		
 		if (this._styleProxy != null && this._styleProxy._proxyElement.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == true)
 			this._styleProxy._proxyElement.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 		
-		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
+		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == true)
 			this._backgroundShape.removeEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
-		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
-			this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
+		{
+			if (this._styleDefinitionDefaults[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == true)
+				this._styleDefinitionDefaults[i].removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+		}
 		
 		if (this._rollOverCursorInstance != null)
 		{
@@ -2962,6 +3094,7 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		this._measureInvalid = true;
 		this._layoutInvalid = true;
 		this._renderInvalid = true;
+		this._redrawRegionInvalid = true;
 		
 		//Nuke graphics canvas
 		this._graphicsCanvas = null;
@@ -3445,6 +3578,9 @@ CanvasElement.prototype._propagateChildData =
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.removeNode(this._renderValidateNode, this._displayDepth);
 				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.removeNode(this._redrawRegionValidateNode, this._displayDepth);
+				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.removeNode(this._compositeRenderValidateNode, this._displayDepth);
 				
@@ -3492,6 +3628,9 @@ CanvasElement.prototype._propagateChildData =
 				
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.addNode(this._renderValidateNode, this._displayDepth);
+				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
 				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.addNode(this._compositeRenderValidateNode, this._displayDepth);
@@ -4029,21 +4168,22 @@ CanvasElement.prototype._getAutoGradientLinear =
 		
 		var gradientMetrics = this._getAutoGradientMetrics();
 		
-		var fillGradient = context.createLinearGradient(
-									gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
-									gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
 		try
 		{
+			var fillGradient = context.createLinearGradient(
+					gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
+					gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
+			
 			fillGradient.addColorStop(0, lighterFill);
 			fillGradient.addColorStop(1, darkerFill);
+			
+			return fillGradient;
 		}
 		catch (ex)
 		{
 			//Swallow, invalid color
 			return null;
 		}
-		
-		return fillGradient;
 	};	
 	
 /**
@@ -4074,16 +4214,24 @@ CanvasElement.prototype._getAutoGradientRadial =
 		var gradientPoint = {x:gradientMetrics.startPoint.x + (xSpan * .42), 
 							y:gradientMetrics.startPoint.y + (ySpan * .42)};
 		
-		var fillGradient = context.createRadialGradient(
-				gradientPoint.x, gradientPoint.y, 
-				(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
-				gradientPoint.x, gradientPoint.y, 
-				0);
-		
-		fillGradient.addColorStop(0, darkerFill);
-		fillGradient.addColorStop(1, lighterFill);
-		
-		return fillGradient;
+		try
+		{
+			var fillGradient = context.createRadialGradient(
+					gradientPoint.x, gradientPoint.y, 
+					(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
+					gradientPoint.x, gradientPoint.y, 
+					0);
+			
+			fillGradient.addColorStop(0, darkerFill);
+			fillGradient.addColorStop(1, lighterFill);
+			
+			return fillGradient;
+		}
+		catch (ex)
+		{
+			//Swallow, invalid color
+			return null;
+		}
 	};	
 
 /**
@@ -4839,8 +4987,13 @@ CanvasElement.prototype._invalidateRender =
 CanvasElement.prototype._invalidateRedrawRegion = 
 	function ()
 	{
-		if (this._manager != null)
-			this._manager._redrawRegionInvalid = true;
+		if (this._redrawRegionInvalid == false)
+		{
+			this._redrawRegionInvalid = true;
+			
+			if (this._manager != null)
+				this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
+		}
 	};	
 	
 //@private
@@ -5122,13 +5275,13 @@ CanvasElement.prototype._setListData =
  * Override this function to make any changes to the DataRenderer per the selection state.
  * Update any styles, states, add/remove children, call any necessary _invalidate() functions, etc.
  * 
- * @param selected boolean
- * True if the DataRenderer is selected, otherwise false.
+ * @param selectedData Any
+ * Selected data, differs per container.
  */	
 CanvasElement.prototype._setListSelected = 
-	function (selected)
+	function (selectedData)
 	{
-		this._listSelected = selected;
+		this._listSelected = selectedData;
 	};	
 	
 	

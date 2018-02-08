@@ -50,6 +50,11 @@ function DataGridElement()
 	this._columnSizes = [];
 	this._columnPercents = [];	
 	
+	this._selectedColumnIndex = -1;
+	
+	this._overIndex = -1; //row index
+	this._overColumnIndex = -1;
+	
 	this._gridHeader = null;
 	
 	this._gridLineContainer = new CanvasElement();
@@ -65,18 +70,34 @@ function DataGridElement()
 		{
 			_self._onDataGridColumnDefinitionChanged(styleChangedEvent);
 		};
-		
 	this._onDataGridRowItemClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataGridRowItemClick(elementMouseEvent);
 		};
-		
+	this._onDataGridRowItemRolloverInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollover(event);
+		};
+	this._onDataGridRowItemRolloutInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollout(event);
+		};	
 	this._onDataGridHeaderItemClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataGridHeaderItemClick(elementMouseEvent);
 		};
+	this._onGridLineContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onGridLineContainerMeasureComplete(event);
+		};
+		
+	
+	this._gridLineContainer.addEventListener("measurecomplete", this._onGridLineContainerMeasureCompleteInstance);	
 }
 
 //Inherit from DataListElement
@@ -103,49 +124,49 @@ DataGridElement._StyleTypes = Object.create(null);
  * 
  * @seealso DataGridHeaderElement
  */
-DataGridElement._StyleTypes.HeaderClass = 						{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.HeaderClass = 						StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HeaderStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the header element.
  */
-DataGridElement._StyleTypes.HeaderStyle = 						{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.HeaderStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style GridLinesPriority String
  * 
  * Determines which set of grid lines will be rendered first. Allowable values are "vertical" or "horizontal".
  */
-DataGridElement._StyleTypes.GridLinesPriority = 				{inheritable:false};		// "vertical" || "horizontal" (Which lines are drawn first / below)
+DataGridElement._StyleTypes.GridLinesPriority = 				StyleableBase.EStyleType.NORMAL;		// "vertical" || "horizontal" (Which lines are drawn first / below)
 
 /**
  * @style VerticalGridLinesClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataGrid vertical grid lines. Default is CanvasElement.
  */
-DataGridElement._StyleTypes.VerticalGridLinesClass = 			{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.VerticalGridLinesClass = 			StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style VerticalGridLinesStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the vertical grid line elements.
  */
-DataGridElement._StyleTypes.VerticalGridLinesStyle = 			{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.VerticalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style HorizontalGridLinesClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataGrid horizontal grid lines. Default is null.
  */
-DataGridElement._StyleTypes.HorizontalGridLinesClass = 			{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.HorizontalGridLinesClass = 			StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HorizontalGridLinesStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the horizontal grid line elements.
  */
-DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 
 ////////////Default Styles/////////////////////////////////////////
@@ -185,7 +206,7 @@ DataGridElement.StyleDefault.setStyle("GridLinesPriority", 				"vertical"); 				
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 
-DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		null); 									// Element constructor()
+DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("HorizontalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 DataGridElement.StyleDefault.setStyle("TabStop", 						0);
 
@@ -309,8 +330,74 @@ DataGridElement.prototype.getNumColumns =
 		return this._gridColumns.length;
 	};
 	
+/**
+ * @function setSelectedIndex
+ * @override
+ * 
+ * Sets the selected collection (row) index and column index. 
+ * When both row and column is specified the associated cell is selected.
+ * 
+ * @param rowIndex int
+ * The collection (row) index to be selected or -1 for none.
+ * 
+ * @param columnIndex int
+ * the column index to be selected or -1 for none.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
+ */	
+DataGridElement.prototype.setSelectedIndex = 
+	function (rowIndex, columnIndex)
+	{
+		if (this._selectedIndex == rowIndex && this._selectedColumnIndex == columnIndex)
+			return false;
+		
+		if (rowIndex > this._listCollection.length -1)
+			return false;
+		
+		if (columnIndex > this._gridColumns.length - 1)
+			return false;
+		
+		if (rowIndex < -1)
+			rowIndex = -1;
+		
+		if (columnIndex < -1)
+			columnIndex = -1;
+		
+		this._selectedIndex = rowIndex;
+		this._selectedColumnIndex = columnIndex;
+		
+		var selectionData = {rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex};
+		
+		for (var i = 0; i < this._contentPane._children.length; i++)
+			this._contentPane._children[i]._setListSelected(selectionData);
+		
+		return true;
+	};	
+	
+/**
+ * @function getSelectedIndex
+ * @override
+ * Gets the selected collection (row) and column index. 
+ * 
+ * @returns Object
+ * Returns and object containing row and column indexes {row:-1, column:-1}
+ */		
+DataGridElement.prototype.getSelectedIndex = 
+	function ()
+	{
+		return {row:this._selectedIndex, column:this._selectedColumnIndex};
+	};	
+	
 	
 ///////////Internal////////////////////////////////
+	
+//@private
+DataGridElement.prototype._onGridLineContainerMeasureComplete = 
+	function (event)
+	{
+		this._invalidateLayout();
+	};
 	
 /**
  * @function _onDataGridColumnDefinitionChanged
@@ -361,16 +448,13 @@ DataGridElement.prototype._columnsChanged =
 		for (var i = 0; i < this._contentPane._children.length; i++)
 		{
 			renderer = this._contentPane._children[i];
-			
-			renderer._setListData(
-				renderer._listData,
-				renderer._itemData);
+			this._updateRendererData(renderer, renderer._listData._itemIndex);
 		}
 		
 		this._invalidateLayout();
 	};
 
-//Override	
+//@override	
 DataGridElement.prototype._onDataListCollectionChanged = 
 	function (collectionChangedEvent)
 	{
@@ -386,7 +470,7 @@ DataGridElement.prototype._onDataListCollectionChanged =
 		}
 	};
 	
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementAdded = 
 	function (addedRemovedEvent)
 	{
@@ -396,7 +480,7 @@ DataGridElement.prototype._onCanvasElementAdded =
 			this._gridColumns[i].addEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};
 
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementRemoved = 
 	function (addedRemovedEvent)
 	{
@@ -406,62 +490,12 @@ DataGridElement.prototype._onCanvasElementRemoved =
 			this._gridColumns[i].removeEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};		
 	
-//@Override
-DataGridElement.prototype._doStylesUpdated =
-	function (stylesMap)
-	{
-		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-		
-		if ("HeaderClass" in stylesMap)
-		{
-			var headerClass = this.getStyle("HeaderClass");
-			
-			//Destroy if class is null or does not match existing
-			if ((headerClass == null && this._gridHeader != null) ||
-				this._gridHeader != null && this._gridHeader.constructor != headerClass)
-			{
-				this._removeChild(this._gridHeader);
-				this._gridHeader = null;
-			}
-			
-			//Create
-			if (headerClass != null && this._gridHeader == null)
-			{
-				this._gridHeader = new (headerClass)();
-				this._gridHeader._setStyleDefinitionDefault(this._getDefaultStyle("HeaderStyle"));
-				
-				this._gridHeader._setListData(
-					new DataListData(this, -1),
-					null);
-				
-				this._addChild(this._gridHeader);
-			}
-			
-			this._invalidateLayout();
-		}
-		
-		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
-			this._gridHeader.setStyleDefinitions(this.getStyle("HeaderStyle"));
-		
-		if ("GridLinesPriority" in stylesMap ||
-			"VerticalGridLinesClass" in stylesMap ||
-			"VerticalGridLinesStyle" in stylesMap ||
-			"HorizontalGridLinesClass" in stylesMap ||
-			"HorizontalGridLinesStyle" in stylesMap)
-		{
-			this._invalidateLayout();
-		}
-	};	
-	
-//@Override		
+//@override		
 DataGridElement.prototype._createRenderer = 
 	function (itemIndex)
 	{
 		var newRenderer = new (this.getStyle("ListItemClass"))();
-		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
-		//newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
-		
+		this._applySubStylesToElement("ListItemStyle", newRenderer);
 		this._updateRendererData(newRenderer, itemIndex);
 		
 		return newRenderer;
@@ -484,7 +518,7 @@ DataGridElement.prototype._createHeaderItemRenderer =
 		
 		var headerItemClass = columnDefinition.getStyle("HeaderItemClass");
 		var newRenderer = new (headerItemClass)();
-		newRenderer._setStyleDefinitionDefault(columnDefinition._getDefaultStyle("HeaderItemStyle"));
+		columnDefinition._applySubStylesToElement("HeaderItemStyle", newRenderer);
 		
 		this._updateHeaderItemRendererData(newRenderer, columnIndex);		
 		
@@ -515,7 +549,7 @@ DataGridElement.prototype._updateHeaderItemRendererData =
 		else
 			listData = new DataGridItemData(this, -1, columnIndex);
 		
-		renderer.setStyleDefinitions(columnDefinition.getStyle("HeaderItemStyle"));
+		columnDefinition._applySubStylesToElement("HeaderItemStyle", renderer);
 		
 		renderer._setListData(
 			listData,
@@ -574,15 +608,112 @@ DataGridElement.prototype._createRowItemRenderer =
 	
 		var rowItemClass = columnDefinition.getStyle("RowItemClass");
 		var newRenderer = new (rowItemClass)();
-		newRenderer._setStyleDefinitionDefault(columnDefinition._getDefaultStyle("RowItemStyle"));
+		columnDefinition._applySubStylesToElement("RowItemStyle", newRenderer);
 		
 		this._updateRowItemRendererData(newRenderer, itemIndex, columnIndex);		
 		
 		newRenderer.addEventListener("click", this._onDataGridRowItemClickInstance);
+		newRenderer.addEventListener("rollover", this._onDataGridRowItemRolloverInstance);
+		newRenderer.addEventListener("rollout", this._onDataGridRowItemRolloutInstance);
 		
 		return newRenderer;
 	};
 
+DataGridElement.prototype._onDataGridRowItemRollover = 
+	function (event)
+	{
+		this._overIndex = event.getCurrentTarget()._listData._itemIndex;
+		this._columnOverIndex = event.getCurrentTarget()._listData._columnIndex;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
+	};
+	
+DataGridElement.prototype._onDataGridRowItemRollout = 
+	function (event)
+	{
+		this._overIndex = -1;
+		this._columnOverIndex = -1;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
+	};	
+	
+//@override	
+DataGridElement.prototype._updateRendererData = 
+	function (renderer, itemIndex)
+	{
+		var listData = null;
+		
+		//Optimize, dont create new data unless its actually changed.
+		if (renderer._listData != null && renderer._listData._itemIndex == itemIndex)
+			listData = renderer._listData;
+		else
+			listData = new DataListData(this, itemIndex);
+	
+		//Always call the function even if data has not changed, this indicates to the
+		//renderer to inspect its parent related data and it may make changes even if
+		//this data is the same. An example is changes to a DataGrid's columns.
+		renderer._setListData(
+			listData,
+			this._listCollection.getItemAt(itemIndex));
+		
+		renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+	};	
+	
+/**
+ * @function _onDataGridRowItemClick
+ * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */
+DataGridElement.prototype._onDataGridRowItemClick = 
+	function (elementMouseEvent)
+	{
+		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
+		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
+		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
+		
+		var columnDef = this._gridColumns[columnIndex];
+		
+		var gridSelectable = this.getStyle("Selectable");
+		var columnSelectable = columnDef.getStyle("Selectable");
+		var elementSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable"); 
+		
+		if (elementSelectable === "undefined")
+			elementSelectable = true;
+		
+		var dispatchChanged = false;
+		
+		if (gridSelectable && columnSelectable && elementSelectable)
+		{
+			var selectRow = itemIndex;
+			var selectColumn = columnIndex;
+			
+			if (columnDef.getStyle("SelectionType") == "row")
+				selectColumn = -1;
+			else if (columnDef.getStyle("SelectionType") == "column")
+				selectRow = -1;
+			
+			if (this.setSelectedIndex(selectRow, selectColumn) == true)
+				dispatchChanged = true;
+		}
+		
+		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
+		
+		if (dispatchChanged == true)
+			this._dispatchEvent(new ElementEvent("changed", false));
+	};	
+	
 /**
  * @function _updateRowItemRendererData
  * Updates the row ItemRenderer list data.
@@ -608,39 +739,60 @@ DataGridElement.prototype._updateRowItemRendererData =
 		else
 			listData = new DataGridItemData(this, itemIndex, columnIndex);
 		
-		renderer.setStyleDefinitions(columnDefinition.getStyle("RowItemStyle"));
+		columnDefinition._applySubStylesToElement("RowItemStyle", renderer);
 	
 		renderer._setListData(
 			listData,
 			this._listCollection.getItemAt(itemIndex));
 	};
 	
-/**
- * @function _onDataGridRowItemClick
- * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
- * 
- * @param elementMouseEvent ElementMouseEvent
- * The ElementMouseEvent to process.
- */
-DataGridElement.prototype._onDataGridRowItemClick = 
-	function (elementMouseEvent)
+//@override
+DataGridElement.prototype._doStylesUpdated =
+	function (stylesMap)
 	{
-		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
-		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
-		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
+		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		var dispatchChanged = false;
+		if ("HeaderClass" in stylesMap)
+		{
+			var headerClass = this.getStyle("HeaderClass");
+			
+			//Destroy if class is null or does not match existing
+			if ((headerClass == null && this._gridHeader != null) ||
+				this._gridHeader != null && this._gridHeader.constructor != headerClass)
+			{
+				this._removeChild(this._gridHeader);
+				this._gridHeader = null;
+			}
+			
+			//Create
+			if (headerClass != null && this._gridHeader == null)
+			{
+				this._gridHeader = new (headerClass)();
+				
+				this._gridHeader._setListData(
+					new DataListData(this, -1),
+					null);
+				
+				this._addChild(this._gridHeader);
+			}
+			
+			this._invalidateLayout();
+		}
 		
-		if (this.getStyle("Selectable") == true && this.setSelectedIndex(itemIndex) == true)
-			dispatchChanged = true;
+		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
+			this._applySubStylesToElement("HeaderStyle", this._gridHeader);
 		
-		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
-		
-		if (dispatchChanged == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
-	};
+		if ("GridLinesPriority" in stylesMap ||
+			"VerticalGridLinesClass" in stylesMap ||
+			"VerticalGridLinesStyle" in stylesMap ||
+			"HorizontalGridLinesClass" in stylesMap ||
+			"HorizontalGridLinesStyle" in stylesMap)
+		{
+			this._invalidateLayout();
+		}
+	};		
 	
-//@Override
+//@override
 DataGridElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
@@ -664,14 +816,12 @@ DataGridElement.prototype._createGridLine =
 		if (direction == "vertical")
 		{
 			line = new (this.getStyle("VerticalGridLinesClass"))();
-			line._setStyleDefinitionDefault(this._getDefaultStyle("VerticalGridLinesStyle"));
-			line.setStyleDefinitions(this.getStyle("VerticalGridLinesStyle"));
+			this._applySubStylesToElement("VerticalGridLinesStyle", line);
 		}
 		else
 		{
 			line = new (this.getStyle("HorizontalGridLinesClass"))();
-			line._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalGridLinesStyle"));
-			line.setStyleDefinitions(this.getStyle("HorizontalGridLinesStyle"));
+			this._applySubStylesToElement("HorizontalGridLinesStyle", line);
 		}
 		
 		return line;
@@ -765,9 +915,7 @@ DataGridElement.prototype._doLayout =
 		var horizontalComplete = false;
 		var linePriority = this.getStyle("GridLinesPriority");
 		var verticalClass = this.getStyle("VerticalGridLinesClass");
-		var verticalStyle = this.getStyle("VerticalGridLinesStyle");
 		var horizontalClass = this.getStyle("HorizontalGridLinesClass");
-		var horizontalStyle = this.getStyle("HorizontalGridLinesStyle");
 		
 		while (verticalComplete == false || horizontalComplete == false)
 		{
@@ -795,7 +943,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinitions(horizontalStyle);
+							this._applySubStylesToElement("HorizontalGridLinesStyle", gridLine);
 						
 						gridLine._setActualSize(this._gridLineContainer._width, gridLine.getStyle("Height"));
 						gridLine._setActualPosition(0, rowRenderer._y - (gridLine._height / 2));
@@ -829,7 +977,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinitions(verticalStyle);
+							this._applySubStylesToElement("VerticalGridLinesStyle", gridLine);
 						
 						gridLine._setActualSize(gridLine.getStyle("Width"), this._gridLineContainer._height);
 						gridLine._setActualPosition(linePosition - (gridLine._width / 2), 0);

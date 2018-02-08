@@ -35,14 +35,14 @@ DataGridHeaderColumnDividerSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the divider line. Format like "#FF0000" (red).
  */
-DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerLineColor =			{inheritable:false};		//"#000000"
+DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerLineColor =			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style DividerArrowColor String
  * 
  * Hex color value to be used for the arrows. Format like "#FF0000" (red).
  */
-DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerArrowColor =			{inheritable:false};		//"up" || "down" || "left" || "right"
+DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerArrowColor =			StyleableBase.EStyleType.NORMAL;		//"up" || "down" || "left" || "right"
 
 
 ////////Default Styles////////////////

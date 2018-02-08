@@ -34,7 +34,7 @@ ScrollButtonSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the arrow icon. Format like "#FF0000" (red).
  */
-ScrollButtonSkinElement._StyleTypes.ArrowColor =					{inheritable:false};		//"#000000"
+ScrollButtonSkinElement._StyleTypes.ArrowColor =					StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style ArrowDirection String
@@ -42,7 +42,7 @@ ScrollButtonSkinElement._StyleTypes.ArrowColor =					{inheritable:false};		//"#0
  * Determines the arrow direction. Allowable values are "up", "down", "left", "right". 
  * Note that ScrollBar sets this style directly to the parent button depending on the scroll bar orientation.
  */
-ScrollButtonSkinElement._StyleTypes.ArrowDirection =						{inheritable:false};	//"up" || "down" || "left" || "right"
+ScrollButtonSkinElement._StyleTypes.ArrowDirection =						StyleableBase.EStyleType.NORMAL;	//"up" || "down" || "left" || "right"
 
 
 ////////Default Styles//////////////////

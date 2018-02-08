@@ -1932,12 +1932,12 @@ StyleData.prototype.comparePriority =
  * Example:
  * 
  * StylableBaseSubclass._StyleTypes = Object.create(null);
- * StylableBaseSubclass._StyleTypes.Visible = 				{inheritable:false};		
- * StylableBaseSubclass._StyleTypes.BorderType = 			{inheritable:false};		
- * StylableBaseSubclass._StyleTypes.SkinStyle = 			{inheritable:false};		
- * StylableBaseSubclass._StyleTypes.TextStyle =				{inheritable:true};			
- * StylableBaseSubclass._StyleTypes.TextFont =				{inheritable:true};			
- * StylableBaseSubclass._StyleTypes.TextSize =				{inheritable:true};			
+ * StylableBaseSubclass._StyleTypes.Visible = 				StyleableBase.EStyleType.NORMAL;		
+ * StylableBaseSubclass._StyleTypes.BorderType = 			StyleableBase.EStyleType.NORMAL;		
+ * StylableBaseSubclass._StyleTypes.SkinStyle = 			StyleableBase.EStyleType.NORMAL;		
+ * StylableBaseSubclass._StyleTypes.TextStyle =				StyleableBase.EStyleType.INHERITABLE;			
+ * StylableBaseSubclass._StyleTypes.TextFont =				StyleableBase.EStyleType.INHERITABLE;			
+ * StylableBaseSubclass._StyleTypes.TextSize =				StyleableBase.EStyleType.INHERITABLE;			
  * 
  * StylableBaseSubclass.StyleDefault = new StyleDefinition();
  * StylableBaseSubclass.StyleDefault.setStyle("Visible", 				true);
@@ -1962,11 +1962,20 @@ StyleableBase.prototype.constructor = StyleableBase;
 StyleableBase.base = StyleDefinition;
 
 //Priority enum
-StyleableBase.StylePriorities = 
+StyleableBase.EStylePriorities = 
 	{
 		INSTANCE:0,
 		CLASS:1
 	};
+
+//StyleType enum
+StyleableBase.EStyleType = 
+	{
+		NORMAL:1,
+		INHERITABLE:2,
+		SUBSTYLE:3
+	};
+
 
 //////////////Public//////////////////////
 
@@ -2034,12 +2043,12 @@ StyleableBase.prototype.getStyleData =
 		styleData.value = StyleableBase.base.prototype.getStyle.call(this, styleName);
 		if (styleData.value !== undefined)
 		{
-			styleData.priority.push(StyleableBase.StylePriorities.INSTANCE);
+			styleData.priority.push(StyleableBase.EStylePriorities.INSTANCE);
 			return styleData;			
 		}
 		
 		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(StyleableBase.StylePriorities.CLASS);
+		styleData.priority.push(StyleableBase.EStylePriorities.CLASS);
 		
 		return styleData;
 	};
@@ -2095,55 +2104,96 @@ StyleableBase.prototype._flattenStyleTypes =
 	};
 	
 /**
- * @function _getDefaultStyle
+ * @function _getClassStyle
  * 
- * Gets default value for the supplied style. 
- * 
- * @param styleName String
- * String representing the default style to return.
- * 
- * @returns Any
- * Returns the associated default style value if found, otherwise undefined.
- */	
-StyleableBase.prototype._getDefaultStyle = 
-	function (styleName)
-	{
-		return this._getDefaultStyleData(styleName).value;
-	};	
-	
-/**
- * @function _getDefaultStyleData
- * 
- * Gets default StyleData for the supplied style. 
+ * Gets the default style value for the supplied style name specified on this
+ * classes StyleDefault map. Subclasses override base class values.
  *  
  * @param styleName String
  * String representing the default style to return.
  * 
- * @returns StyleData
- * Returns the associated default StyleData.
+ * @returns Any
+ * Returns the associated default style value or undefined if none specified.
  */	
-StyleableBase.prototype._getDefaultStyleData = 
-	function (styleName)
-	{
-		var styleData = new StyleData(styleName);
-		
-		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(StyleableBase.StylePriorities.CLASS);
-		
-		return styleData;
-	};
-	
-//@private	
 StyleableBase.prototype._getClassStyle = 
 	function (styleName)
 	{
 		this._flattenClassStyles();
 		
 		if (styleName in this.constructor.__StyleDefaultsFlatMap)
-			return this.constructor.__StyleDefaultsFlatMap[styleName];
+			return this.constructor.__StyleDefaultsFlatMap[styleName][this.constructor.__StyleDefaultsFlatMap[styleName].length - 1];
 		
 		return undefined;
 	};	
+	
+/**
+ * @function _getInstanceStyle
+ * 
+ * Gets the assigned style value for the supplied style name specified.
+ *  
+ * @param styleName String
+ * String representing the style to return.
+ * 
+ * @returns Any
+ * Returns the associated style value or undefined if none specified.
+ */		
+StyleableBase.prototype._getInstanceStyle = 
+	function (styleName)
+	{
+		if (styleName in this._styleMap)
+			return this._styleMap[styleName];
+		
+		return undefined;
+	};
+	
+/**
+ * @function _applySubStylesToElement
+ * 
+ * Convienence function for setting sub styles of sub components.
+ * Applies appropriate sub styling from this Styleable to the 
+ * supplied elements definition and default definition style lists.
+ *  
+ * @param styleName String
+ * String representing the sub style to apply.
+ * 
+ * @param elementToApply CanvasElement
+ * The sub component element to apply sub styles.
+ */		
+StyleableBase.prototype._applySubStylesToElement = 
+	function (styleName, elementToApply)
+	{
+		elementToApply._setStyleDefinitions(this._getClassStyleList(styleName), true);
+		
+		var instanceStyle = this._getInstanceStyle(styleName);
+		if (instanceStyle !== undefined)
+			elementToApply._setStyleDefinitions([instanceStyle], false);
+	};	
+	
+/**
+ * @function _getClassStyleList
+ * 
+ * Gets the default style values for the supplied style name specified on this
+ * classes and base classes StyleDefault maps. This is used for sub styles as all
+ * stub styles in the inheritance chain are applied to sub components.
+ *  
+ * @param styleName String
+ * String representing the default style list to return.
+ * 
+ * @returns Array
+ * Returns an array of all default styles on this class, and base classes
+ * for the supplied styleName.
+ */	
+StyleableBase.prototype._getClassStyleList = 
+	function (styleName)
+	{
+		this._flattenClassStyles();
+	
+		//Copy the array so our internal data cannot get fudged.
+		if (styleName in this.constructor.__StyleDefaultsFlatMap)
+			return this.constructor.__StyleDefaultsFlatMap[styleName].slice();
+	
+		return [];
+	};
 	
 //@private	
 StyleableBase.prototype._flattenClassStyles = 
@@ -2164,10 +2214,10 @@ StyleableBase.prototype._flattenClassStyles =
 			{
 				for (styleName in thisClass.StyleDefault._styleMap)
 				{
-					if (styleName in this.constructor.__StyleDefaultsFlatMap)
-						continue;
+					if (this.constructor.__StyleDefaultsFlatMap[styleName] == null)
+						this.constructor.__StyleDefaultsFlatMap[styleName] = [];
 					
-					this.constructor.__StyleDefaultsFlatMap[styleName] = thisClass.StyleDefault._styleMap[styleName];
+					this.constructor.__StyleDefaultsFlatMap[styleName].splice(0, 0, thisClass.StyleDefault._styleMap[styleName]);
 				}
 			}
 			
@@ -2266,7 +2316,7 @@ RoundedRectangleShape._StyleTypes = Object.create(null);
  * Radius size in pixels for the rectangle's corners. 
  * CornerRadius effects all corners of the rectangle.
  */
-RoundedRectangleShape._StyleTypes.CornerRadius = 					{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadius = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopLeft Number
@@ -2274,7 +2324,7 @@ RoundedRectangleShape._StyleTypes.CornerRadius = 					{inheritable:false};		// n
  * Radius size in pixels for the rectangle's top left corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopRight Number
@@ -2282,7 +2332,7 @@ RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};	
  * Radius size in pixels for the rectangle's top right corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomLeft Number
@@ -2290,7 +2340,7 @@ RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};
  * Radius size in pixels for the rectangle's bottom left corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomRight Number
@@ -2298,7 +2348,7 @@ RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			{inheritable:false
  * Radius size in pixels for the rectangle's bottom right corner.  
  * This will override the CornerRadius style unless it is null.
  */
-RoundedRectangleShape._StyleTypes.CornerRadiusBottomRight = 		{inheritable:false};		// number || null
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomRight = 		StyleableBase.EStyleType.NORMAL;		// number || null
 
 
 ////////////Style Defaults////////////////////////////
@@ -2468,7 +2518,7 @@ ArrowShape._StyleTypes = Object.create(null);
  * Determines the direction that the arrow or triangle will point. Acceptable values are "up", "down", "left", and "right".
  * Other styles are named as such when the Arrow is pointed "up". Styles do not change with orientation.
  */
-ArrowShape._StyleTypes.Direction = 						{inheritable:false};		// "up" || "down" || "left" || "right"
+ArrowShape._StyleTypes.Direction = 						StyleableBase.EStyleType.NORMAL;		// "up" || "down" || "left" || "right"
 
 /**
  * @style RectBaseWidth Number
@@ -2476,7 +2526,7 @@ ArrowShape._StyleTypes.Direction = 						{inheritable:false};		// "up" || "down"
  * The size in pixels used for the width of the rectangular base of the arrow. Setting this to zero creates a triangle.
  * It is preferrable to use RectBasePercentWidth so that the arrow can scale.
  */
-ArrowShape._StyleTypes.RectBaseWidth = 					{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBaseWidth = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RectBaseHeight Number
@@ -2484,7 +2534,7 @@ ArrowShape._StyleTypes.RectBaseWidth = 					{inheritable:false};		// number || n
  * The size in pixels used for the height of the rectangular base of the arrow. Setting this to zero creates a triangle.
  * It is preferrable to use RectBasePercentHeight so that the arrow can scale.
  */
-ArrowShape._StyleTypes.RectBaseHeight = 				{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBaseHeight = 				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RectBasePercentWidth Number
@@ -2492,7 +2542,7 @@ ArrowShape._StyleTypes.RectBaseHeight = 				{inheritable:false};		// number || n
  * The percentage of available width to use for the width of the rectangular base of the arrow. 
  * Acceptable values are between 0 and 100. Setting this to zero will create a triangle.
  */
-ArrowShape._StyleTypes.RectBasePercentWidth = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBasePercentWidth = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RectBasePercentHeight Number
@@ -2500,7 +2550,7 @@ ArrowShape._StyleTypes.RectBasePercentWidth = 			{inheritable:false};		// number
  * The percentage of available height to use for the height of the rectangular base of the arrow. 
  * Acceptable values are between 0 and 100. Setting this to zero will create a triangle.
  */
-ArrowShape._StyleTypes.RectBasePercentHeight = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBasePercentHeight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadius Number
@@ -2508,7 +2558,7 @@ ArrowShape._StyleTypes.RectBasePercentHeight = 			{inheritable:false};		// numbe
  * Radius size in pixels for the rectangular base's corners. 
  * CornerRadius effects all corners of the rectangular base. 
  */
-ArrowShape._StyleTypes.CornerRadius = 					{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadius = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopLeft Number
@@ -2516,7 +2566,7 @@ ArrowShape._StyleTypes.CornerRadius = 					{inheritable:false};		// number || nu
  * Radius size in pixels for the rectangular base's top left corner. 
  * This will override the CornerRadius style unless it is null.
  */
-ArrowShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopRight Number
@@ -2524,7 +2574,7 @@ ArrowShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};		// number 
  * Radius size in pixels for the rectangular base's top right corner. 
  * This will override the CornerRadius style unless it is null.
  */
-ArrowShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusTopRight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomLeft Number
@@ -2533,7 +2583,7 @@ ArrowShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};		// number
  * This will override the CornerRadius style unless it is null. Rounding both bottom corners
  * will give the effect of a rounded pointer. 
  */
-ArrowShape._StyleTypes.CornerRadiusBottomLeft = 		{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusBottomLeft = 		StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomRight Number
@@ -2542,7 +2592,7 @@ ArrowShape._StyleTypes.CornerRadiusBottomLeft = 		{inheritable:false};		// numbe
  * This will override the CornerRadius style unless it is null. Rounding both bottom corners
  * will give the effect of a rounded pointer. 
  */
-ArrowShape._StyleTypes.CornerRadiusBottomRight = 		{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusBottomRight = 		StyleableBase.EStyleType.NORMAL;		// number || null
 
 
 ////////////Default Styles///////////////////////////
@@ -3419,7 +3469,7 @@ CursorDefinition._StyleTypes = Object.create(null);
  * 
  * The CanvasElement constructor or browser string type to use for the cursor.
  */
-CursorDefinition._StyleTypes.CursorClass = 						{inheritable:false};		// CanvasElement() constructor
+CursorDefinition._StyleTypes.CursorClass = 						StyleableBase.EStyleType.NORMAL;		// CanvasElement() constructor
 
 /**
  * @style CursorStyle StyleDefinition
@@ -3427,21 +3477,21 @@ CursorDefinition._StyleTypes.CursorClass = 						{inheritable:false};		// Canvas
  * The StyleDefinition to apply to the cursor class. (Including Width and Height, unless you've implemented
  * the doMeasure() function into a custom CanvasElement subclass).
  */
-CursorDefinition._StyleTypes.CursorStyle = 						{inheritable:false};		// StyleDefinition
+CursorDefinition._StyleTypes.CursorStyle = 						StyleableBase.EStyleType.NORMAL;		// StyleDefinition
 
 /**
  * @style CursorOffsetX Number
  * 
  * The X offset from the actual mouse position the cursor should be rendered.
  */
-CursorDefinition._StyleTypes.CursorOffsetX = 					{inheritable:false};		// number
+CursorDefinition._StyleTypes.CursorOffsetX = 					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style CursorOffsetY Number
  * 
  * The Y offset from the actual mouse position the cursor should be rendered.
  */
-CursorDefinition._StyleTypes.CursorOffsetY = 					{inheritable:false};		// number
+CursorDefinition._StyleTypes.CursorOffsetY = 					StyleableBase.EStyleType.NORMAL;		// number
 
 
 ///////////Default Styles/////////////////////////////
@@ -3602,7 +3652,7 @@ function CanvasElement()
 	//This is *not* class based defaults. Its a default version of _styleDefinition.
 	//Used when the framework wants to apply a default definition that override class 
 	//based default styles but *not* user applied styles.
-	this._styleDefinitionDefault = null; 
+	this._styleDefinitionDefaults = []; 
 	
 	//Assigned style definitions
 	this._styleDefinitions = [];
@@ -3730,6 +3780,10 @@ function CanvasElement()
 	this._renderValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._renderValidateNode.data = this;
 	
+	this._redrawRegionInvalid = true;						//Dirty flag for redraw region
+	this._redrawRegionValidateNode = new CmLinkedNode();	//Reference to linked list iterator
+	this._redrawRegionValidateNode.data = this;
+	
 	//Off screen canvas for rendering this element.
 	this._graphicsCanvas = null;
 	this._graphicsCtx = null;
@@ -3840,15 +3894,14 @@ CanvasElement.prototype.constructor = CanvasElement;
 CanvasElement.base = StyleableBase;
 
 //Style priority enum
-CanvasElement.StylePriorities = 
+CanvasElement.EStylePriorities = 
 {
 	INSTANCE:0,
 	DEFINITION:1,
 	PROXY:2,
 	INHERITED:3,
 	DEFAULT_DEFINITION:4,
-	DEFAULT_PROXY:5,
-	CLASS:6
+	CLASS:5
 };
 
 ////////////Events/////////////////////////////////////
@@ -3942,30 +3995,30 @@ CanvasElement._StyleTypes = Object.create(null);
  * 
  * When false the element will not be rendered.
  */
-CanvasElement._StyleTypes.Visible = 				{inheritable:false};		// true || false
+CanvasElement._StyleTypes.Visible = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style BorderType String
  * 
  * Determines the border type the CanvasElement should render. Allowable values are
- * "none", "solid", "inset", or "outset". Note that borders are internal and drawn on the inside
+ * "solid", "inset", "outset" or "none" / null. Note that borders are internal and drawn on the inside
  * of the elements bounding area.
  */
-CanvasElement._StyleTypes.BorderType = 				{inheritable:false};		// "none" || "solid" || "inset" || "outset"
+CanvasElement._StyleTypes.BorderType = 				StyleableBase.EStyleType.NORMAL;		// "none"/null || "solid" || "inset" || "outset"
 
 /**
  * @style BorderColor String
  * 
  * Hex color value to be used when drawing the border. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.BorderColor = 			{inheritable:false};		// "#FF0000" or null
+CanvasElement._StyleTypes.BorderColor = 			StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
 
 /**
  * @style BorderThickness Number
  * 
  * Thickness in pixels to be used when drawing the border. 
  */
-CanvasElement._StyleTypes.BorderThickness = 		{inheritable:false};		// number
+CanvasElement._StyleTypes.BorderThickness = 		StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style BackgroundColor String
@@ -3973,7 +4026,7 @@ CanvasElement._StyleTypes.BorderThickness = 		{inheritable:false};		// number
  * Hex color value to be used when drawing the background. This may be set to null and no
  * background will be rendered. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.BackgroundColor = 		{inheritable:false};		// "#FF0000" or null
+CanvasElement._StyleTypes.BackgroundColor = 		StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
 
 /**
  * @style ShadowSize Number
@@ -3981,21 +4034,21 @@ CanvasElement._StyleTypes.BackgroundColor = 		{inheritable:false};		// "#FF0000"
  * Size in pixels that the drop shadow should be rendered. Note that the drop shadow may be rendered
  * outside the elements bounding area. This will cause the element to be composite rendered.
  */
-CanvasElement._StyleTypes.ShadowSize = 				{inheritable:false};		// number
+CanvasElement._StyleTypes.ShadowSize = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style ShadowOffsetX Number
  * 
  * X offset that the drop shadow will be rendered.
  */
-CanvasElement._StyleTypes.ShadowOffsetX = 			{inheritable:false};		// number
+CanvasElement._StyleTypes.ShadowOffsetX = 			StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style ShadowOffsetY Number
  * 
  * Y offset that the drop shadow will be rendered.
  */
-CanvasElement._StyleTypes.ShadowOffsetY = 			{inheritable:false};		// number
+CanvasElement._StyleTypes.ShadowOffsetY = 			StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style ShadowColor String
@@ -4003,7 +4056,7 @@ CanvasElement._StyleTypes.ShadowOffsetY = 			{inheritable:false};		// number
  * Hex color value to be used when drawing the drop shadow. This may be set to null and no
  * shadow will be rendered. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.ShadowColor = 			{inheritable:false};		// "#FF0000" or null
+CanvasElement._StyleTypes.ShadowColor = 			StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
 
 /**
  * @style Alpha Number
@@ -4012,7 +4065,7 @@ CanvasElement._StyleTypes.ShadowColor = 			{inheritable:false};		// "#FF0000" or
  * 0 being transparent and 1 being opaque. This causes the element to perform composite rendering
  * when a value between 1 and 0 is used.
  */
-CanvasElement._StyleTypes.Alpha = 					{inheritable:false};		// number
+CanvasElement._StyleTypes.Alpha = 					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style AutoGradientType String
@@ -4023,7 +4076,7 @@ CanvasElement._StyleTypes.Alpha = 					{inheritable:false};		// number
  * canvas itself regardless of rotation or transformation applied to the element. 
  * This is used to create effects like a consistent light source even if the element is rotating.
  */
-CanvasElement._StyleTypes.AutoGradientType = 		{inheritable:false};		// "none" || "linear" || "radial"
+CanvasElement._StyleTypes.AutoGradientType = 		StyleableBase.EStyleType.NORMAL;		// "none" || "linear" || "radial"
 
 /**
  * @style AutoGradientStart Number
@@ -4031,7 +4084,7 @@ CanvasElement._StyleTypes.AutoGradientType = 		{inheritable:false};		// "none" |
  * Color offset to apply to the start of the gradient. Allowable values are numbers between 
  * -1 (white) and +1 (black). 
  */
-CanvasElement._StyleTypes.AutoGradientStart = 		{inheritable:false};		// number (-1 to +1 values)
+CanvasElement._StyleTypes.AutoGradientStart = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
 
 /**
  * @style AutoGradientStop Number
@@ -4039,7 +4092,7 @@ CanvasElement._StyleTypes.AutoGradientStart = 		{inheritable:false};		// number 
  * Color offset to apply to the end of the gradient. Allowable values are numbers between 
  * -1 (white) and +1 (black). 
  */
-CanvasElement._StyleTypes.AutoGradientStop = 		{inheritable:false};		// number (-1 to +1 values)
+CanvasElement._StyleTypes.AutoGradientStop = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
 
 /**
  * @style ClipContent boolean
@@ -4047,7 +4100,7 @@ CanvasElement._StyleTypes.AutoGradientStop = 		{inheritable:false};		// number (
  * Determines if out of bounds rendering is allowed. If true the element will clip all rendering
  * and children's rendering to the elements bounding box. 
  */
-CanvasElement._StyleTypes.ClipContent = 			{inheritable:false};		// number (true || false)
+CanvasElement._StyleTypes.ClipContent = 			StyleableBase.EStyleType.NORMAL;		// number (true || false)
 
 /**
  * @style SkinState String
@@ -4055,14 +4108,14 @@ CanvasElement._StyleTypes.ClipContent = 			{inheritable:false};		// number (true
  * This is an internal style used to toggle an element's current skin for different states such
  * as normal, mouse-over, mouse-down, etc. Its also commonly used by skin classes to identify their skin state.
  */
-CanvasElement._StyleTypes.SkinState = 				{inheritable:false};		// "state"
+CanvasElement._StyleTypes.SkinState = 				StyleableBase.EStyleType.NORMAL;		// "state"
 
 /**
  * @style BackgroundShape ShapeBase
  * 
  * Shape to be used when rendering the elements background. May be any ShapeBase subclass instance.
  */
-CanvasElement._StyleTypes.BackgroundShape = 		{inheritable:false};		// ShapeBase()
+CanvasElement._StyleTypes.BackgroundShape = 		StyleableBase.EStyleType.NORMAL;		// ShapeBase()
 
 /**
  * @style FocusColor String
@@ -4071,7 +4124,7 @@ CanvasElement._StyleTypes.BackgroundShape = 		{inheritable:false};		// ShapeBase
  * Hex color value to be used when drawing the elements focus indicator. Format "#FF0000" (Red). 
  * The focus indicator is only rendered when the element gains focus due to a tab stop.
  */
-CanvasElement._StyleTypes.FocusColor = 				{inheritable:true};			// color ("#000000")
+CanvasElement._StyleTypes.FocusColor = 				StyleableBase.EStyleType.INHERITABLE;			// color ("#000000")
 
 /**
  * @style FocusThickness Number
@@ -4080,7 +4133,7 @@ CanvasElement._StyleTypes.FocusColor = 				{inheritable:true};			// color ("#000
  * Size in pixels that the focus ring should be rendered. Note that the focus ring is rendered
  * outside the elements bounding area.
  */
-CanvasElement._StyleTypes.FocusThickness =			{inheritable:true};			// number
+CanvasElement._StyleTypes.FocusThickness =			StyleableBase.EStyleType.INHERITABLE;			// number
 
 
 //Layout
@@ -4091,7 +4144,7 @@ CanvasElement._StyleTypes.FocusThickness =			{inheritable:true};			// number
  * Padding effects all sides of the element. Padding may be negative under certain circumstances like
  * expanding an inner child to allow border collapsing with its parent.
  */
-CanvasElement._StyleTypes.Padding = 				{inheritable:false};		// number
+CanvasElement._StyleTypes.Padding = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style PaddingTop Number
@@ -4099,7 +4152,7 @@ CanvasElement._StyleTypes.Padding = 				{inheritable:false};		// number
  * Size in pixels that inner content should be spaced from the upper bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingTop = 				{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingTop = 				StyleableBase.EStyleType.NORMAL;		// number or null
 
 /**
  * @style PaddingBottom Number
@@ -4107,7 +4160,7 @@ CanvasElement._StyleTypes.PaddingTop = 				{inheritable:false};		// number or nu
  * Size in pixels that inner content should be spaced from the lower bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingBottom = 			{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingBottom = 			StyleableBase.EStyleType.NORMAL;		// number or null
 
 /**
  * @style PaddingLeft Number
@@ -4115,7 +4168,7 @@ CanvasElement._StyleTypes.PaddingBottom = 			{inheritable:false};		// number or 
  * Size in pixels that inner content should be spaced from the left most bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingLeft = 			{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingLeft = 			StyleableBase.EStyleType.NORMAL;		// number or null
 
 /**
  * @style PaddingRight Number
@@ -4123,7 +4176,7 @@ CanvasElement._StyleTypes.PaddingLeft = 			{inheritable:false};		// number or nu
  * Size in pixels that inner content should be spaced from the right most bounds of the element. 
  * This will override the Padding style.
  */
-CanvasElement._StyleTypes.PaddingRight = 			{inheritable:false};		// number or null
+CanvasElement._StyleTypes.PaddingRight = 			StyleableBase.EStyleType.NORMAL;		// number or null
 
 
 //Functional
@@ -4133,14 +4186,14 @@ CanvasElement._StyleTypes.PaddingRight = 			{inheritable:false};		// number or n
  * 
  * When false disables user interaction with the element.
  */
-CanvasElement._StyleTypes.Enabled = 				{inheritable:false};		// true || false
+CanvasElement._StyleTypes.Enabled = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style MouseEnabled boolean
  * 
  * When false disables mouse events for the element.
  */
-CanvasElement._StyleTypes.MouseEnabled = 			{inheritable:false};		// true || false
+CanvasElement._StyleTypes.MouseEnabled = 			StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style Draggable boolean
@@ -4148,7 +4201,7 @@ CanvasElement._StyleTypes.MouseEnabled = 			{inheritable:false};		// true || fal
  * When true allows the element to be dragged by the user. This does not work for containers
  * that do not allow absolute positioning such as a ListContainer.
  */
-CanvasElement._StyleTypes.Draggable = 				{inheritable:false};		// true || false
+CanvasElement._StyleTypes.Draggable = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style Cursor CursorDefinition
@@ -4156,7 +4209,7 @@ CanvasElement._StyleTypes.Draggable = 				{inheritable:false};		// true || false
  * Specifies the cursor to be displayed when the mouse is over the element. A custom CursorDefinition
  * may be used or a browser type String ("text", "none", etc) may be used.
  */
-CanvasElement._StyleTypes.Cursor = 					{inheritable:false};		// CursorDefinition()
+CanvasElement._StyleTypes.Cursor = 					StyleableBase.EStyleType.NORMAL;		// CursorDefinition()
 
 /**
  * @style TabStop int
@@ -4165,7 +4218,7 @@ CanvasElement._StyleTypes.Cursor = 					{inheritable:false};		// CursorDefinitio
  * take focus, 0 is default and the element will be focused in the order it appears in the display chain.
  * Numbers higher than 0 indicate a specific order to be used (not yet implemented).
  */
-CanvasElement._StyleTypes.TabStop = 				{inheritable:false};		// number
+CanvasElement._StyleTypes.TabStop = 				StyleableBase.EStyleType.NORMAL;		// number
 
 
 //Container Placement
@@ -4175,7 +4228,7 @@ CanvasElement._StyleTypes.TabStop = 				{inheritable:false};		// number
  * The X position the element should be rendered relative to its parent container. This only
  * works if the element is a child of an AnchorContainer.
  */
-CanvasElement._StyleTypes.X =						{inheritable:false};		// number || null
+CanvasElement._StyleTypes.X =						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Y Number
@@ -4183,7 +4236,7 @@ CanvasElement._StyleTypes.X =						{inheritable:false};		// number || null
  * The Y position the element should be rendered relative to its parent container. This only
  * works if the element is a child of an AnchorContainer.
  */
-CanvasElement._StyleTypes.Y =						{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Y =						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Width Number
@@ -4191,7 +4244,7 @@ CanvasElement._StyleTypes.Y =						{inheritable:false};		// number || null
  * The Width the element should be rendered relative to its parent container. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.Width =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Width =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Height Number
@@ -4199,7 +4252,7 @@ CanvasElement._StyleTypes.Width =					{inheritable:false};		// number || null
  * The Height the element should be rendered relative to its parent container. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.Height =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Height =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Top Number
@@ -4207,7 +4260,7 @@ CanvasElement._StyleTypes.Height =					{inheritable:false};		// number || null
  * The distance the element should be positioned from the upper bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Top =						{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Top =						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Left Number
@@ -4215,7 +4268,7 @@ CanvasElement._StyleTypes.Top =						{inheritable:false};		// number || null
  * The distance the element should be positioned from the left most bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Left =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Left =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Bottom Number
@@ -4223,7 +4276,7 @@ CanvasElement._StyleTypes.Left =					{inheritable:false};		// number || null
  * The distance the element should be positioned from the lower bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Bottom =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Bottom =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style Right Number
@@ -4231,7 +4284,7 @@ CanvasElement._StyleTypes.Bottom =					{inheritable:false};		// number || null
  * The distance the element should be positioned from the right most bounds of the parent container. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.Right =					{inheritable:false};		// number || null
+CanvasElement._StyleTypes.Right =					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style PercentWidth Number
@@ -4244,7 +4297,7 @@ CanvasElement._StyleTypes.Right =					{inheritable:false};		// number || null
  * per the ratio of percent vs total percent used so it is perfectly reasonable to set 3 elements all
  * to 100 and allow them to split the real-estate by 3.
  */
-CanvasElement._StyleTypes.PercentWidth =			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.PercentWidth =			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style PercentHeight Number
@@ -4257,7 +4310,7 @@ CanvasElement._StyleTypes.PercentWidth =			{inheritable:false};		// number || nu
  * per the ratio of percent vs total percent used so it is perfectly reasonable to set 3 elements all
  * to 100 and allow them to split the real-estate by 3.
  */
-CanvasElement._StyleTypes.PercentHeight =			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.PercentHeight =			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MinWidth Number
@@ -4265,7 +4318,7 @@ CanvasElement._StyleTypes.PercentHeight =			{inheritable:false};		// number || n
  * The minimum width in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MinWidth =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MinWidth =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MinHeight Number
@@ -4273,7 +4326,7 @@ CanvasElement._StyleTypes.MinWidth =				{inheritable:false};		// number || null
  * The minimum height in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MinHeight =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MinHeight =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MaxWidth Number
@@ -4281,7 +4334,7 @@ CanvasElement._StyleTypes.MinHeight =				{inheritable:false};		// number || null
  * The maximum width in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MaxWidth =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MaxWidth =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MaxHeight Number
@@ -4289,7 +4342,7 @@ CanvasElement._StyleTypes.MaxWidth =				{inheritable:false};		// number || null
  * The maximum height in pixels the element should consume. This only
  * works if the element is a child of a Container element.
  */
-CanvasElement._StyleTypes.MaxHeight =				{inheritable:false};		// number || null
+CanvasElement._StyleTypes.MaxHeight =				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style HorizontalCenter Number
@@ -4298,7 +4351,7 @@ CanvasElement._StyleTypes.MaxHeight =				{inheritable:false};		// number || null
  * Negative numbers indicate left of center, positive right of center. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.HorizontalCenter =		{inheritable:false};		// number || null
+CanvasElement._StyleTypes.HorizontalCenter =		StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style VerticalCenter Number
@@ -4307,7 +4360,7 @@ CanvasElement._StyleTypes.HorizontalCenter =		{inheritable:false};		// number ||
  * Negative numbers indicate left of center, positive right of center. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.VerticalCenter =			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.VerticalCenter =			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RotateDegrees Number
@@ -4317,7 +4370,7 @@ CanvasElement._StyleTypes.VerticalCenter =			{inheritable:false};		// number || 
  * still positioned relative to their parent's coordinate plane after the transform has occurred.
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.RotateDegrees = 			{inheritable:false};		// number
+CanvasElement._StyleTypes.RotateDegrees = 			StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style RotateCenterX Number
@@ -4325,7 +4378,7 @@ CanvasElement._StyleTypes.RotateDegrees = 			{inheritable:false};		// number
  * The X position of the parent container the element should be rotated around. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.RotateCenterX = 			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.RotateCenterX = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RotateCenterY Number
@@ -4333,7 +4386,7 @@ CanvasElement._StyleTypes.RotateCenterX = 			{inheritable:false};		// number || 
  * The Y position of the parent container the element should be rotated around. 
  * This only works if the element is a child of an AnchorContainer. 
  */
-CanvasElement._StyleTypes.RotateCenterY = 			{inheritable:false};		// number || null
+CanvasElement._StyleTypes.RotateCenterY = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style IncludeInLayout boolean
@@ -4342,7 +4395,7 @@ CanvasElement._StyleTypes.RotateCenterY = 			{inheritable:false};		// number || 
  * Typically this is used in conjunction with Visible, however sometimes you may want to
  * hide an element, but still have it consume container space.
  */
-CanvasElement._StyleTypes.IncludeInLayout = 		{inheritable:false};		// true || false
+CanvasElement._StyleTypes.IncludeInLayout = 		StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style CompositeLayer boolean
@@ -4361,7 +4414,7 @@ CanvasElement._StyleTypes.IncludeInLayout = 		{inheritable:false};		// true || f
  * area. Composite elements/children changing will update the composite layer, then that region of the 
  * composite layer needs to be copied up to the parent, resulting in an additional buffer copy.
  */
-CanvasElement._StyleTypes.CompositeLayer = 					{inheritable:false};		//true || false
+CanvasElement._StyleTypes.CompositeLayer = 					StyleableBase.EStyleType.NORMAL;		//true || false
 
 //Text
 /**
@@ -4370,7 +4423,7 @@ CanvasElement._StyleTypes.CompositeLayer = 					{inheritable:false};		//true || 
  * 
  * Determines the style to render text. Available values are "normal", "bold", "italic", and "bold italic".
  */
-CanvasElement._StyleTypes.TextStyle =						{inheritable:true};		// "normal" || "bold" || "italic" || "bold italic"
+CanvasElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.INHERITABLE;		// "normal" || "bold" || "italic" || "bold italic"
 
 /**
  * @style TextFont String
@@ -4378,7 +4431,7 @@ CanvasElement._StyleTypes.TextStyle =						{inheritable:true};		// "normal" || "
  * 
  * Determines the font family to use when rendering text such as "Arial".
  */
-CanvasElement._StyleTypes.TextFont =						{inheritable:true};		// "Arial"
+CanvasElement._StyleTypes.TextFont =						StyleableBase.EStyleType.INHERITABLE;		// "Arial"
 
 /**
  * @style TextSize int
@@ -4386,7 +4439,7 @@ CanvasElement._StyleTypes.TextFont =						{inheritable:true};		// "Arial"
  * 
  * Determines the size in pixels to render text.
  */
-CanvasElement._StyleTypes.TextSize =						{inheritable:true};		// number
+CanvasElement._StyleTypes.TextSize =						StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style TextHorizontalAlign String
@@ -4394,7 +4447,7 @@ CanvasElement._StyleTypes.TextSize =						{inheritable:true};		// number
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-CanvasElement._StyleTypes.TextHorizontalAlign =						{inheritable:true};		// "left" || "center" || "right"
+CanvasElement._StyleTypes.TextHorizontalAlign =						StyleableBase.EStyleType.INHERITABLE;		// "left" || "center" || "right"
 
 /**
  * @style TextVerticalAlign String
@@ -4402,7 +4455,7 @@ CanvasElement._StyleTypes.TextHorizontalAlign =						{inheritable:true};		// "le
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-CanvasElement._StyleTypes.TextVerticalAlign =					{inheritable:true};  	// "top" || "middle" || "bottom"
+CanvasElement._StyleTypes.TextVerticalAlign =					StyleableBase.EStyleType.INHERITABLE;  	// "top" || "middle" || "bottom"
 
 /**
  * @style LinePaddingTop Number
@@ -4411,7 +4464,7 @@ CanvasElement._StyleTypes.TextVerticalAlign =					{inheritable:true};  	// "top"
  * Padding to apply to the top of each line of text. This also impacts the size of the highlight background.
  * This is useful when using strange fonts that exceed their typical vertical bounds.
  */
-CanvasElement._StyleTypes.TextLinePaddingTop = 				{inheritable:true};		// number
+CanvasElement._StyleTypes.TextLinePaddingTop = 				StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style LinePaddingBottom Number
@@ -4420,7 +4473,7 @@ CanvasElement._StyleTypes.TextLinePaddingTop = 				{inheritable:true};		// numbe
  * Padding to apply to the bottom of each line of text. This also impacts the size of the highlight background.
  * This is useful when using strange fonts that exceed their typical vertical bounds.
  */
-CanvasElement._StyleTypes.TextLinePaddingBottom = 			{inheritable:true};		// number
+CanvasElement._StyleTypes.TextLinePaddingBottom = 			StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style TextLineSpacing Number
@@ -4428,7 +4481,7 @@ CanvasElement._StyleTypes.TextLinePaddingBottom = 			{inheritable:true};		// num
  * 
  * Vertical line spacing in pixels.
  */
-CanvasElement._StyleTypes.TextLineSpacing = 				{inheritable:true};		// number
+CanvasElement._StyleTypes.TextLineSpacing = 				StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
  * @style TextColor String
@@ -4436,7 +4489,7 @@ CanvasElement._StyleTypes.TextLineSpacing = 				{inheritable:true};		// number
  * 
  * Hex color value to be used when drawing text. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextColor =						{inheritable:true};		// "#000000"
+CanvasElement._StyleTypes.TextColor =						StyleableBase.EStyleType.INHERITABLE;		// "#000000"
 
 /**
  * @style TextFillType String
@@ -4445,7 +4498,7 @@ CanvasElement._StyleTypes.TextColor =						{inheritable:true};		// "#000000"
  * Determines the fill type when rendering text. Available values are "fill" and "stroke".
  * Stroke draws a border around characters, while fill completely fills them.
  */
-CanvasElement._StyleTypes.TextFillType =					{inheritable:true};		// "fill" || "stroke"
+CanvasElement._StyleTypes.TextFillType =					StyleableBase.EStyleType.INHERITABLE;		// "fill" || "stroke"
 
 /**
  * @style TextHighlightedColor String
@@ -4453,7 +4506,7 @@ CanvasElement._StyleTypes.TextFillType =					{inheritable:true};		// "fill" || "
  * 
  * Hex color value to be used when drawing highlighted text. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextHighlightedColor = 			{inheritable:true};		// color "#000000"
+CanvasElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
 /**
  * @style TextHighlightedColor String
@@ -4461,7 +4514,7 @@ CanvasElement._StyleTypes.TextHighlightedColor = 			{inheritable:true};		// colo
  * 
  * Hex color value to be used when drawing highlighted text background. Format like "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:true};		// color "#000000"
+CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
 /**
  * @style TextCaretColor String
@@ -4469,7 +4522,7 @@ CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:true};	
  * 
  * Hex color value to be used when drawing blinking text caret. "#FF0000" (red)
  */
-CanvasElement._StyleTypes.TextCaretColor = 					{inheritable:true};		// color "#000000"
+CanvasElement._StyleTypes.TextCaretColor = 					StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
 
 /////////////Default Styles///////////////////////////////
@@ -4587,43 +4640,7 @@ CanvasElement.prototype.addStyleDefinition =
 CanvasElement.prototype.addStyleDefinitionAt = 
 	function (styleDefinition, index)
 	{
-		if (!(styleDefinition instanceof StyleDefinition))
-			return null;
-	
-		if (index < 0 || index > this._styleDefinitions.length)
-			return null;
-		
-		//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-		//Make sure this style definition is not already in the list (no adding duplicates)
-		if (this._styleDefinitions.indexOf(styleDefinition) != -1 || styleDefinition == this._styleDefinitionDefault)
-			return null;
-		
-		this._styleDefinitions.splice(index, 0, styleDefinition);
-		
-		if (this._manager != null) //Attached to display chain
-		{
-			styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
-			
-			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
-			var styleNamesMap = Object.create(null);
-			var styleName = null;
-			
-			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
-			//when we add a new one, so we need to invoke a style change on all associated styles.
-			
-			//Record relevant style names
-			for (var i = index; i >= 0; i--)
-			{
-				for (styleName in this._styleDefinitions[i]._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal handling.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		
-		return styleDefinition;
+		return this._addStyleDefinitionAt(styleDefinition, index, false);
 	};
 	
 /**
@@ -4661,40 +4678,7 @@ CanvasElement.prototype.removeStyleDefinition =
 CanvasElement.prototype.removeStyleDefinitionAt = 
 	function (index)
 	{
-		if (index < 0 || index > this._styleDefinitions.length - 1)
-			return null;
-		
-		var styleDefinition = null;
-		
-		if (this._manager != null) //Attached to display chain
-		{
-			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
-			var styleNamesMap = Object.create(null);
-			var styleName = null;
-			
-			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
-			//when we add a new one, so we need to invoke a style change on all associated styles.
-			
-			//Record relevant styles
-			for (var i = index; i >= 0; i--)
-			{
-				for (styleName in this._styleDefinitions[i]._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-			//Remove definition
-			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
-			styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-			
-			//Spoof style changed event for relevant styles.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached, just remove the definition
-			styleDefinition = this._styleDefinitions.splice(index, 1)[0]; //Returns array of removed items.
-		
-		return styleDefinition;
+		return this._removeStyleDefinitionAt(index, false);
 	};
 	
 /**
@@ -4705,34 +4689,7 @@ CanvasElement.prototype.removeStyleDefinitionAt =
 CanvasElement.prototype.clearStyleDefinitions = 
 	function ()
 	{
-		if (this._manager != null) //Attached to display chain
-		{
-			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
-			var styleNamesMap = Object.create(null);
-			var styleDefinition = null;
-			var styleName = null;
-			
-			for (var i = 0; i < this._styleDefinitions.length; i++)
-			{
-				styleDefinition = this._styleDefinitions[i];
-				
-				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in styleDefinition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Clear definitions
-			this._styleDefinitions.splice(0, this._styleDefinitions.length);
-			
-			//Spoof a style changed event on all the styles we removed.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached, just clear the definition list.
-			this._styleDefinitions.splice(0, this._styleDefinitions.length);
+		return this._setStyleDefinitions([], false);
 	};
 	
 /**
@@ -4746,88 +4703,10 @@ CanvasElement.prototype.clearStyleDefinitions =
 CanvasElement.prototype.setStyleDefinitions = 
 	function (styleDefinitions)
 	{
-		if (styleDefinitions == null)
-			styleDefinitions = [];
-		
-		if (Array.isArray(styleDefinitions) == false)
-			styleDefinitions = [styleDefinitions];
-		
-		var i = 0;
-		
-		//trim the definitions for duplicates
-		for (i = styleDefinitions.length - 1; i >= 0; i--)
-		{
-			//Make sure this style definition is not already in the list (no adding duplicates)
-			if (styleDefinitions.indexOf(styleDefinitions[i]) < i || styleDefinitions[i] == this._styleDefinitionDefault)
-				styleDefinitions.splice(i, 1);
-		}
-		
-		if (this._manager != null) //Attached to display chain
-		{
-			//Check if nothing changed before we do a bunch of work.
-			if (styleDefinitions.length == this._styleDefinitions.length)
-			{
-				var changed = false;
-				for (i = 0; i < styleDefinitions.length; i++)
-				{
-					if (styleDefinitions[i] != this._styleDefinitions[i])
-					{
-						changed = true;
-						break;
-					}
-				}
-				
-				//No changes.
-				if (changed == false)
-					return;
-			}
-			
-			var styleName = null;
-			var styleNamesMap = Object.create(null);
-			var styleDefinition = null;
-			
-			//Remove old
-			while (this._styleDefinitions.length > 0)
-			{
-				styleDefinition = this._styleDefinitions[this._styleDefinitions.length - 1];
-				this._styleDefinitions.splice(this._styleDefinitions.length - 1, 1);
-				
-				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-				styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in styleDefinition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Add new
-			for (i = 0; i < styleDefinitions.length; i++)
-			{
-				styleDefinition = styleDefinitions[i];
-				this._styleDefinitions.push(styleDefinition);
-				
-				//TODO: Allow duplicates, be more intelligent about adding / removing event listeners.
-				styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record added style names
-				for (styleName in styleDefinition._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal style changed handling.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
-		}
-		else //Not attached to display chain, just swap the definitions
-		{
-			//Clear the definition list
-			this._styleDefinitions.splice(0, this._styleDefinitions.length);
-			
-			//Add the new definitions.
-			for (i = 0; i < styleDefinitions.length; i++)
-				this._styleDefinitions.push(styleDefinitions[i]);
-		}
+		return this._setStyleDefinitions(styleDefinitions, false);
 	};
+	
+
 	
 /**
  * @function getNumStyleDefinitions
@@ -4839,8 +4718,27 @@ CanvasElement.prototype.setStyleDefinitions =
 CanvasElement.prototype.getNumStyleDefinitions = 
 	function ()
 	{
-		return this._styleDefinitions.length;
+		return this._getNumStyleDefinitions(false);
 	};
+	
+/**
+ * @function _getNumStyleDefinitions
+ * Gets the number of style definitions or default definitions associated with this element.
+ * 
+ * @param isDefault bool
+ * When true, returns the number of default definitions.
+ * 
+ * @returns int
+ * The number of style definitions.
+ */			
+CanvasElement.prototype._getNumStyleDefinitions = 
+	function (isDefault)
+	{
+		if (isDefault == true)
+			return this._styleDefinitionDefaults.length;
+
+		return this._styleDefinitions.length;
+	}
 	
 /**
  * @function getStyleDefinitionAt
@@ -4855,10 +4753,7 @@ CanvasElement.prototype.getNumStyleDefinitions =
 CanvasElement.prototype.getStyleDefinitionAt = 
 	function (index)
 	{
-		if (index < 0 || index >= this._styleDefinitions.length)
-			return null;
-		
-		return this._styleDefinitions[index];
+		return this._getStyleDefinitionAt(index, false);
 	};
 	
 /**
@@ -4920,13 +4815,12 @@ CanvasElement.prototype.getStyleData =
 		
 		if (styleData.value !== undefined)
 		{
-			styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
+			styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);
 			return styleData;
 		}
 		
 		//Counters (priority depth)
 		var ctr = 0;
-		var ctr2 = 0;
 		
 		//Check definitions
 		for (ctr = this._styleDefinitions.length - 1; ctr >= 0; ctr--)
@@ -4935,114 +4829,31 @@ CanvasElement.prototype.getStyleData =
 			
 			if (styleData.value !== undefined)
 			{
-				styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
+				styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
 				styleData.priority.push((this._styleDefinitions.length - 1) - ctr); //StyleDefinition depth
 				
 				return styleData;
 			}
 		}
 		
-		var proxy = null;
+		var thisStyleType = this._getStyleType(styleName);
+		
 		var styleType = null;
+		var proxy = null;
+		var ctr2 = 0;
 		
-		//Check proxy
-		proxy = this._styleProxy;
-		while (proxy != null)
+		//Proxy / Inheritable not allowed for sub styles.
+		if (thisStyleType != StyleableBase.EStyleType.SUBSTYLE)
 		{
-			styleType = proxy._proxyElement._getStyleType(styleName);
-			
-			if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
-				(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
-				break;
-			
-			//Check proxy instance
-			if (styleName in proxy._proxyElement._styleMap)
-				styleData.value = proxy._proxyElement._styleMap[styleName];
-			
-			if (styleData.value !== undefined)
-			{
-				styleData.priority.push(CanvasElement.StylePriorities.PROXY);		
-				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
-				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);	
-				
-				return styleData;
-			}
-			
-			//Check proxy definitions
-			for (ctr2 = proxy._proxyElement._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
-			{
-				styleData.value = proxy._proxyElement._styleDefinitions[ctr2].getStyle(styleName);
-				
-				if (styleData.value !== undefined)
-				{
-					styleData.priority.push(CanvasElement.StylePriorities.PROXY);
-					styleData.priority.push(ctr);	//Proxy depth (chained proxies)
-					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);	
-					styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
-					
-					return styleData;
-				}
-			}
-			
-			ctr++;
-			proxy = proxy._proxyElement._styleProxy;
-		}
-		
-		//Check inherited
-		proxy = null;
-		styleType = null;
-		ctr = 0;
-		ctr2 = 0;
-		
-		var parent = this;
-		var ctr3 = 0;
-		
-		while (true)
-		{
-			styleType = parent._getStyleType(styleName);
-			if (styleType == null || styleType.inheritable == false)
-				break;
-			
-			parent = parent._parent;
-			
-			if (parent == null)
-				break;
-			
-			//Check parent instance
-			if (styleName in parent._styleMap)
-				styleData.value = parent._styleMap[styleName];
-			
-			if (styleData.value !== undefined)
-			{
-				styleData.priority.push(CanvasElement.StylePriorities.INHERITED);	
-				styleData.priority.push(ctr);	//Parent depth
-				styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);
-				
-				return styleData;
-			}
-			
-			//Check style definitions
-			for (ctr2 = parent._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
-			{
-				styleData.value = parent._styleDefinitions[ctr2].getStyle(styleName);
-				
-				if (styleData.value !== undefined)
-				{
-					styleData.priority.push(CanvasElement.StylePriorities.INHERITED);	
-					styleData.priority.push(ctr);	//Parent depth
-					styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
-					styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
-					
-					return styleData;
-				}
-			}
-			
-			//Check parent proxy
-			proxy = parent._styleProxy;
-			ctr2 = 0;
+			//Check proxy
+			proxy =	this._styleProxy;
 			while (proxy != null)
 			{
 				styleType = proxy._proxyElement._getStyleType(styleName);
+				
+				//Proxy not allowed for sub styles.
+				if (styleType == StyleableBase.EStyleType.SUBSTYLE)
+					break;
 				
 				if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
 					(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
@@ -5054,79 +4865,152 @@ CanvasElement.prototype.getStyleData =
 				
 				if (styleData.value !== undefined)
 				{
-					styleData.priority.push(CanvasElement.StylePriorities.INHERITED);		
-					styleData.priority.push(ctr);	//Parent depth
-					styleData.priority.push(CanvasElement.StylePriorities.PROXY);		
-					styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
-					styleData.priority.push(CanvasElement.StylePriorities.INSTANCE);		
+					styleData.priority.push(CanvasElement.EStylePriorities.PROXY);		
+					styleData.priority.push(ctr);	//Proxy depth (chained proxies)
+					styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);	
 					
 					return styleData;
 				}
 				
-				//Check proxy definition
-				for (ctr3 = proxy._proxyElement._styleDefinitions.length - 1; ctr3 >= 0; ctr3--)
+				//Check proxy definitions
+				for (ctr2 = proxy._proxyElement._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
 				{
-					styleData.value = proxy._proxyElement._styleDefinitions[ctr3].getStyle(styleName);
+					styleData.value = proxy._proxyElement._styleDefinitions[ctr2].getStyle(styleName);
 					
 					if (styleData.value !== undefined)
 					{
-						styleData.priority.push(CanvasElement.StylePriorities.INHERITED);	
-						styleData.priority.push(ctr);	//Parent depth
-						styleData.priority.push(CanvasElement.StylePriorities.PROXY);	
-						styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
-						styleData.priority.push(CanvasElement.StylePriorities.DEFINITION);
-						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
+						styleData.priority.push(CanvasElement.EStylePriorities.PROXY);
+						styleData.priority.push(ctr);	//Proxy depth (chained proxies)
+						styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);	
+						styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
 						
 						return styleData;
 					}
 				}
-
-				ctr2++;
+				
+				ctr++;
 				proxy = proxy._proxyElement._styleProxy;
 			}
 			
-			ctr++;
+			//Check inherited
+			proxy = null;
+			styleType = thisStyleType;
+			var parent = this;
+			
+			ctr = 0;
+			ctr2 = 0;
+			var ctr3 = 0;
+			
+			while (styleType == StyleableBase.EStyleType.INHERITABLE)
+			{
+				parent = parent._parent;
+				
+				if (parent == null)
+					break;
+				
+				//Check parent instance
+				if (styleName in parent._styleMap)
+					styleData.value = parent._styleMap[styleName];
+				
+				if (styleData.value !== undefined)
+				{
+					styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
+					styleData.priority.push(ctr);	//Parent depth
+					styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);
+					
+					return styleData;
+				}
+				
+				//Check style definitions
+				for (ctr2 = parent._styleDefinitions.length - 1; ctr2 >= 0; ctr2--)
+				{
+					styleData.value = parent._styleDefinitions[ctr2].getStyle(styleName);
+					
+					if (styleData.value !== undefined)
+					{
+						styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
+						styleData.priority.push(ctr);	//Parent depth
+						styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
+						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
+						
+						return styleData;
+					}
+				}
+				
+				//Check parent proxy
+				proxy = parent._styleProxy;
+				ctr2 = 0;
+				while (proxy != null)
+				{
+					styleType = proxy._proxyElement._getStyleType(styleName);
+					
+					//Proxy not allowed for sub styles.
+					if (styleType == StyleableBase.EStyleType.SUBSTYLE)
+						break;
+					
+					if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
+						(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
+						break;
+					
+					//Check proxy instance
+					if (styleName in proxy._proxyElement._styleMap)
+						styleData.value = proxy._proxyElement._styleMap[styleName];
+					
+					if (styleData.value !== undefined)
+					{
+						styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);		
+						styleData.priority.push(ctr);	//Parent depth
+						styleData.priority.push(CanvasElement.EStylePriorities.PROXY);		
+						styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
+						styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);		
+						
+						return styleData;
+					}
+					
+					//Check proxy definition
+					for (ctr3 = proxy._proxyElement._styleDefinitions.length - 1; ctr3 >= 0; ctr3--)
+					{
+						styleData.value = proxy._proxyElement._styleDefinitions[ctr3].getStyle(styleName);
+						
+						if (styleData.value !== undefined)
+						{
+							styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
+							styleData.priority.push(ctr);	//Parent depth
+							styleData.priority.push(CanvasElement.EStylePriorities.PROXY);	
+							styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
+							styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
+							styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
+							
+							return styleData;
+						}
+					}
+	
+					ctr2++;
+					proxy = proxy._proxyElement._styleProxy;
+				}
+				
+				ctr++;
+				styleType = parent._getStyleType(styleName);
+			}
 		}
 		
-		//Check default definition
-		if (this._styleDefinitionDefault != null)
-			styleData.value = this._styleDefinitionDefault.getStyle(styleName);
-			
-		if (styleData.value !== undefined)
+		//Check default definitions
+		for (ctr = this._styleDefinitionDefaults.length - 1; ctr >= 0; ctr--)
 		{
-			styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_DEFINITION);
-			return styleData;
-		}	
-		
-		//Check default proxy
-		proxy = this._styleProxy;
-		ctr = 0;
-		while (proxy != null)
-		{
-			styleType = proxy._proxyElement._getStyleType(styleName);
-			
-			if ((styleType != null && styleName in proxy._proxyMap == false) ||		//Defined & not in proxy map
-				(styleType == null && "_Arbitrary" in proxy._proxyMap == false)) 	//Not defined and no _Arbitrary flag
-				break;
-			
-			if (proxy._proxyElement._styleDefinitionDefault != null)
-				styleData.value = proxy._proxyElement._styleDefinitionDefault.getStyle(styleName);
+			styleData.value = this._styleDefinitionDefaults[ctr].getStyle(styleName);
 			
 			if (styleData.value !== undefined)
 			{
-				styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_PROXY);
-				styleData.priority.push(ctr);	//Proxy depth (chained proxies)
+				styleData.priority.push(CanvasElement.EStylePriorities.DEFAULT_DEFINITION);
+				styleData.priority.push((this._styleDefinitionDefaults.length - 1) - ctr); //StyleDefinition depth
 				
 				return styleData;
 			}
-			
-			ctr++;
-			proxy = proxy._proxyElement._styleProxy;
 		}
-			
+		
 		//Check class
 		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(CanvasElement.StylePriorities.CLASS);
+		styleData.priority.push(CanvasElement.EStylePriorities.CLASS);
 		
 		return styleData;		
 	};
@@ -6231,6 +6115,277 @@ CanvasElement.prototype._onBackgroundShapeStyleChanged =
 		this._invalidateRender();
 	};
 	
+/**
+ * @function _addStyleDefinitionAt
+ * Inserts a style definition to this elements style definition or default definition lists.
+ * Adding style definitions to elements already attached to the display chain is expensive, 
+ * for better performance add definitions before attaching the element via addElement().
+ * Default definitions are used when styling sub components with sub styles. 
+ * 
+ * @param styleDefinition StyleDefinition
+ * StyleDefinition to be added to this elements definition list.
+ * 
+ * @param index int
+ * The index to insert the style definition within the elements definition list.
+ * 
+ * @param isDefault bool
+ * When true, inserts the definition into the element's default definition list.
+ * 
+ * @returns StyleDefinition
+ * Returns StyleDefinition just added when successfull, null if the StyleDefinition could not
+ * be added due to the index being out of range or other error.
+ */		
+CanvasElement.prototype._addStyleDefinitionAt = 
+	function (styleDefinition, index, isDefault)
+	{
+		if (!(styleDefinition instanceof StyleDefinition))
+			return null;
+	
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+		
+		if (index < 0 || index > styleDefArray)
+			return null;
+		
+		styleDefArray.splice(index, 0, styleDefinition);
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			styleDefinition.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+			
+			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
+			var styleNamesMap = Object.create(null);
+			var styleName = null;
+			
+			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
+			//when we add a new one, so we need to invoke a style change on all associated styles.
+			
+			//Record relevant style names
+			for (var i = index; i >= 0; i--)
+			{
+				for (styleName in styleDefArray[i]._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Spoof style changed events for normal handling.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		
+		return styleDefinition;
+	};	
+
+/**
+ * @function _removeStyleDefinitionAt
+ * Removes a style definition from this elements style definition or default definitions at the supplied index.
+ * Default definitions are used when styling sub components with sub styles. 
+ * 
+ * @param index int
+ * Index to be removed.
+ * 
+ * @param isDefault bool
+ * When true, removes the definition from the element's default definition list.
+ * 
+ * @returns StyleDefinition
+ * Returns the StyleDefinition just removed if successfull, null if the definition could
+ * not be removed due it it not being in this elements definition list, or index out of range.
+ */			
+CanvasElement.prototype._removeStyleDefinitionAt = 
+	function (index, isDefault)
+	{
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+	
+		if (index < 0 || index > styleDefArray - 1)
+			return null;
+		
+		var styleDefinition = null;
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			//_onExternalStyleChanged() is expensive! We use the map to make sure we only do each style once.
+			var styleNamesMap = Object.create(null);
+			var styleName = null;
+			
+			//We're shifting the priority of all existing style definitions with a lower index (previously added) 
+			//when we add a new one, so we need to invoke a style change on all associated styles.
+			
+			//Record relevant styles
+			for (var i = index; i >= 0; i--)
+			{
+				for (styleName in styleDefArray._styleMap)
+					styleNamesMap[styleName] = true;
+			}
+			
+			//Remove definition
+			styleDefinition = styleDefArray.splice(index, 1)[0]; //Returns array of removed items.
+			styleDefinition.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+			
+			//Spoof style changed event for relevant styles.
+			for (styleName in styleNamesMap)
+				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+		}
+		else //Not attached, just remove the definition
+			styleDefinition = styleDefArray.splice(index, 1)[0]; //Returns array of removed items.
+		
+		return styleDefinition;
+	};	
+
+/**
+ * @function _setStyleDefinitions
+ * Replaces the elements current style definition or default definition lists. 
+ * This is more effecient than removing or adding style definitions one at a time.
+ * Default definitions are used when styling sub components with sub styles. 
+ * 
+ * @param styleDefinitions StyleDefinition
+ * May be a StyleDefinition, or an Array of StyleDefinition
+ * 
+ * @param isDefault bool
+ * When true, replaces the default definition list.
+ * 
+ * @param styleNamesChangedMap Object
+ * Optional - A empty map object - Object.create(null) to populate style changes
+ * due to swapping definitions while this element is attached to the display chain. 
+ * When specified (not null), does not automatically invoke style changed events.
+ */	
+CanvasElement.prototype._setStyleDefinitions = 
+	function (styleDefinitions, isDefault, styleNamesChangedMap)
+	{
+		if (styleDefinitions == null)
+			styleDefinitions = [];
+		
+		if (Array.isArray(styleDefinitions) == false)
+			styleDefinitions = [styleDefinitions];
+		
+		var i;
+		
+		//Remove any null definitions
+		for (i = styleDefinitions.length - 1; i >= 0; i--)
+		{
+			if (styleDefinitions[i] == null)
+				styleDefinitions.splice(i, 1);
+		}
+		
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+		
+		if (this._manager != null) //Attached to display chain
+		{
+			var oldIndex = styleDefArray.length - 1;
+			var newIndex = styleDefinitions.length - 1;
+			
+			var styleName = null;
+			var changed = false;
+			
+			var styleNamesMap = styleNamesChangedMap;
+			if (styleNamesMap == null)
+				styleNamesMap = Object.create(null);
+			
+			//Compare styles from the ends of the arrays
+			while (oldIndex >= 0 || newIndex >= 0)
+			{
+				//Detect change
+				if (changed == false && (oldIndex < 0 || newIndex < 0 || styleDefinitions[newIndex] != styleDefArray[oldIndex]))
+					changed = true;
+				
+				//Change detected
+				if (changed == true)
+				{
+					if (oldIndex >= 0)
+					{
+						//Record removed style names
+						for (styleName in styleDefArray[oldIndex]._styleMap)
+							styleNamesMap[styleName] = true;
+					}
+					if (newIndex >= 0)
+					{
+						//Record removed style names
+						for (styleName in styleDefinitions[newIndex]._styleMap)
+							styleNamesMap[styleName] = true;
+					}
+				}
+				
+				oldIndex--;
+				newIndex--;
+			}
+			
+			//Bail no changes
+			if (changed == false)
+				return;
+			
+			//Clear the definition list
+			while (styleDefArray.length > 0)
+			{
+				styleDefArray[styleDefArray.length - 1].removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				styleDefArray.splice(styleDefArray.length - 1, 1);
+			}
+			
+			//Add the new definitions.
+			for (i = 0; i < styleDefinitions.length; i++)
+			{
+				styleDefinitions[i].addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+				styleDefArray.push(styleDefinitions[i]);
+			}
+			
+			//Spoof style changed events for normal style changed handling.
+			if (styleNamesChangedMap == null)
+			{
+				for (styleName in styleNamesMap)
+					this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+			}
+		}
+		else //Not attached to display chain, just swap the definitions
+		{
+			//Clear the definition list
+			styleDefArray.splice(0, styleDefArray.length);
+			
+			//Add the new definitions.
+			for (i = 0; i < styleDefinitions.length; i++)
+				styleDefArray.push(styleDefinitions[i]);
+		}
+	};	
+
+/**
+ * @function _getStyleDefinitionAt
+ * Gets the style definition or default definition at the supplied zero base index.
+ * 
+ * @param index int
+ * Index of the style definition to return;
+ * 
+ * @param isDefault bool
+ * When true, returns the default definition at the supplied index.
+ * 
+ * @returns StyleDefinition
+ * The style defenition at the supplied index, or null if index is out of range. 
+ */		
+CanvasElement.prototype._getStyleDefinitionAt = 
+	function (index, isDefault)
+	{
+		//Get the appropriate style definition storage array.
+		var styleDefArray;
+		if (isDefault == true)
+			styleDefArray = this._styleDefinitionDefaults;
+		else
+			styleDefArray = this._styleDefinitions;
+	
+		if (index < 0 || index >= styleDefArray.length)
+			return null;
+		
+		return styleDefArray[index];
+	};		
+	
 //@private	
 CanvasElement.prototype._onExternalStyleChanged = 
 	function (styleChangedEvent)
@@ -6252,8 +6407,11 @@ CanvasElement.prototype._onExternalStyleChanged =
 		
 		if (isProxy == true || isParent == true)
 		{
-			if ((isProxy == true && (styleName in this._styleProxy._proxyMap == true || this._styleProxy._proxyElement._getStyleType(styleName) == null)) ||
-				(isParent == true && styleType != null && styleType.inheritable == true))
+			//If coming from proxy, we cannot be a substyle, and style name must be in proxy map, or _Arbitrary specified and not in proxy map.
+			//If coming from parent, style must be inheritable.
+			if ((isProxy == true && styleType != StyleableBase.EStyleType.SUBSTYLE && 
+				(styleName in this._styleProxy._proxyMap == true || ("_Arbitrary" in this._styleProxy._proxyMap == true && this._styleProxy._proxyElement._getStyleType(styleName) == null))) ||
+				(isParent == true && styleType == StyleableBase.EStyleType.INHERITABLE))
 			{
 				validStyle = true;
 			}
@@ -6267,9 +6425,6 @@ CanvasElement.prototype._onExternalStyleChanged =
 		if (validStyle == false)
 			return;
 		
-		var oldStyleData = null;
-		var newStyleData = null;
-		
 		//Get the cache for this style.
 		var styleCache = this._stylesCache[styleName];
 		
@@ -6280,19 +6435,34 @@ CanvasElement.prototype._onExternalStyleChanged =
 			this._stylesCache[styleName] = styleCache;
 		}
 		
-		//Cache valid, copy it for later compare.
-		if (styleCache.cacheInvalid == false)
-			oldStyleData = styleCache.styleData.clone();
-		
-		//Invalidate the cache
-		styleCache.cacheInvalid = true;
-		
-		//Get updated data.
-		newStyleData = this.getStyleData(styleName);
-		
-		//No change, bail.
-		if (oldStyleData != null && oldStyleData.equals(newStyleData) == true)
-			return;
+		//Check if the StyleData changed (if we're not a sub style)
+		if (styleType != StyleableBase.EStyleType.SUBSTYLE)
+		{
+			var oldStyleData = null;
+			var newStyleData = null;
+			
+			//Cache valid, copy it for later compare.
+			if (styleCache.cacheInvalid == false)
+				oldStyleData = styleCache.styleData.clone();
+			
+			//Invalidate the cache
+			styleCache.cacheInvalid = true;
+			
+			//Get updated data.
+			newStyleData = this.getStyleData(styleName);
+			
+			//No change, bail.
+			if (oldStyleData != null && oldStyleData.equals(newStyleData) == true)
+				return;
+		}
+		else //Sub styles always invalidate (the entire chain is used)
+		{
+			//Invalidate the cache
+			styleCache.cacheInvalid = true;
+			
+			//Update data
+			this.getStyleData(styleName);
+		}
 		
 		if (styleType != null)
 			this._invalidateStyle(styleName);
@@ -6300,107 +6470,113 @@ CanvasElement.prototype._onExternalStyleChanged =
 		//Re-dispatch from ourself.
 		this._dispatchEvent(styleChangedEvent); 
 	};
-	
-//@override
-CanvasElement.prototype._getDefaultStyleData = 
-	function (styleName)
-	{
-		var styleData = new StyleData(styleName);
-		
-		//Check default definition
-		if (this._styleDefinitionDefault != null)
-			styleData.value = this._styleDefinitionDefault.getStyle(styleName);
-			
-		if (styleData.value !== undefined)
-		{
-			styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_DEFINITION);
-			return styleData;
-		}	
-		
-		//Check default proxy
-		var proxy = this._styleProxy;
-		var ctr = 0;
-		while (proxy != null)
-		{
-			if (styleName in proxy._proxyMap == false && proxy._proxyElement._getStyleType(styleName) != null)
-				break;
-			
-			if (proxy._proxyElement._styleDefinitionDefault != null)
-				styleData.value = proxy._proxyElement._styleDefinitionDefault.getStyle(styleName);
-			
-			if (styleData.value !== undefined)
-			{
-				styleData.priority.push(CanvasElement.StylePriorities.DEFAULT_PROXY);
-				styleData.priority.push(ctr);	//Proxy level (chained proxies)
-				
-				return styleData;
-			}
-			
-			ctr++;
-			proxy = proxy._proxyElement._styleProxy;
-		}
-			
-		//Check class
-		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(CanvasElement.StylePriorities.CLASS);
-		
-		return styleData;			
-	};	
 
 /**
- * @function _setStyleDefinitionDefault
+ * @function _getStyleList
  * 
- * Sets the default style definition. Use this when you need to supply a default definition 
- * to a sub component that differs from the class based definition but also need to allow 
- * the implementor to supply a style definition to the sub component. 
+ * Gets the style values for the supplied style name in this elements
+ * style definition list and instance styles for the supplied style name. 
+ * This is used for sub styles as all stub styles in the list are applied to sub components.
+ * This list should be supplied to the sub components style definition list.
+ *  
+ * @param styleName String
+ * String representing the style list to return.
  * 
- * @param styleDefinition StyleDefintion
- * The default style definiton to apply to the element.
- */
-CanvasElement.prototype._setStyleDefinitionDefault = 
-	function (styleDefinition)
+ * @returns Array
+ * Returns an array of all styles in this elements definition list and instance styles
+ * for the associated style name. 
+ */	
+CanvasElement.prototype._getStyleList = 
+	function (styleName)
 	{
-		if (this._manager != null) //Attached to display chain
+		var styleList = [];
+		
+		//Add definitions
+		for (var i = 0; i < this._styleDefinitions.length; i++)
 		{
-			//Bail if no change
-			if (this._styleDefinitionDefault == styleDefinition)
-				return;
+			styleValue = this._styleDefinitions[i].getStyle(styleName);
 			
-			var styleName = null;
-			var styleNamesMap = Object.create(null);
-			
-			if (this._styleDefinitionDefault != null)
-			{
-				this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record removed style names
-				for (styleName in this._styleDefinitionDefault._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			this._styleDefinitionDefault = styleDefinition;
-			
-			if (this._styleDefinitionDefault != null)
-			{
-				this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);
-				
-				//Record added style names
-				for (styleName in this._styleDefinitionDefault._styleMap)
-					styleNamesMap[styleName] = true;
-			}
-			
-			//Spoof style changed events for normal style changed handling.
-			for (styleName in styleNamesMap)
-				this._onExternalStyleChanged(new StyleChangedEvent(styleName));
+			if (styleValue !== undefined)
+				styleList.push(styleValue);
 		}
-		else //Not attached, just swap the definition
-			this._styleDefinitionDefault = styleDefinition;
+		
+		//Add instance
+		if (styleName in this._styleMap && this._styleMap[styleName] != null)
+			styleList.push(this._styleMap[styleName]);
+		
+		return styleList;
+	};
+	
+/**
+ * @function _getDefaultStyleList
+ * 
+ * Gets the style values for the supplied style name in this elements
+ * default style definition list and class list styles for the supplied style name. 
+ * This is used for sub styles as all stub styles in the list are applied to sub components.
+ * This list should be supplied to the sub components default style definition list.
+ *  
+ * @param styleName String
+ * String representing the default style list to return.
+ * 
+ * @returns Array
+ * Returns an array of all styles in this elements default definition and class list styles 
+ * for the associated style name. 
+ */	
+CanvasElement.prototype._getDefaultStyleList = 
+	function (styleName)
+	{
+		var styleValue = null;
+		
+		//Get class list
+		var styleList = this._getClassStyleList(styleName);
+		
+		//Check default definitions
+		for (var i = 0; i < this._styleDefinitionDefaults.length; i++)
+		{
+			styleValue = this._styleDefinitionDefaults[i].getStyle(styleName);
+			
+			if (styleValue !== undefined)
+				styleList.push(styleValue);
+		}
+		
+		return styleList;
+	};
+	
+/**
+ * @function _applySubStylesToElement
+ * @override
+ * 
+ * Convienence function for setting sub styles of sub components.
+ * Applies appropriate sub styling from this element to the 
+ * supplied elements definition and default definition style lists.
+ * You should call this on sub components from within the _doStylesUpdated()
+ * function when the associated sub style changes.
+ *  
+ * @param styleName String
+ * String representing the sub style to apply.
+ * 
+ * @param elementToApply CanvasElement
+ * The sub component element to apply sub styles.
+ */		
+CanvasElement.prototype._applySubStylesToElement = 
+	function (styleName, elementToApply)
+	{
+		var changedStyleName = null;
+		var styleNamesChangedMap = Object.create(null);
+	
+		elementToApply._setStyleDefinitions(this._getStyleList(styleName), false, styleNamesChangedMap);
+		elementToApply._setStyleDefinitions(this._getDefaultStyleList(styleName), true, styleNamesChangedMap);
+		
+		//Spoof style changed events for normal style changed handling.
+		for (changedStyleName in styleNamesChangedMap)
+			elementToApply._onExternalStyleChanged(new StyleChangedEvent(changedStyleName));
 	};
 	
 /**
  * @function _setStyleProxy
  * 
  * Sets the element which is to proxy styles to this element. See getStyle() and StyleProxy.
+ * This should be set prior to added this element to the display hierarchy via addElement() or _addChild().
  * 
  * @param styleProxy StyleProxy
  * The StyleProxy element wrapper to use to proxy styles from the proxy element to this element.
@@ -6442,8 +6618,11 @@ CanvasElement.prototype._onCanvasElementAdded =
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
-		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
-			this._styleDefinitionDefault.addEventListener("stylechanged", this._onExternalStyleChangedInstance);				
+		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
+		{
+			if (this._styleDefinitionDefaults[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+				this._styleDefinitionDefaults[i].addEventListener("stylechanged", this._onExternalStyleChangedInstance);
+		}
 		
 		//Add broadcast events to manager//
 		if ("enterframe" in this._eventListeners && this._eventListeners["enterframe"].length > 0)
@@ -6500,18 +6679,21 @@ CanvasElement.prototype._onCanvasElementRemoved =
 	
 		for (i = 0; i < this._styleDefinitions.length; i++)
 		{
-			if (this._styleDefinitions[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
+			if (this._styleDefinitions[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == true)
 				this._styleDefinitions[i].removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 		}
 		
 		if (this._styleProxy != null && this._styleProxy._proxyElement.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == true)
 			this._styleProxy._proxyElement.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
 		
-		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
+		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == true)
 			this._backgroundShape.removeEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
-		if (this._styleDefinitionDefault != null && this._styleDefinitionDefault.hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
-			this._styleDefinitionDefault.removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
+		{
+			if (this._styleDefinitionDefaults[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == true)
+				this._styleDefinitionDefaults[i].removeEventListener("stylechanged", this._onExternalStyleChangedInstance);
+		}
 		
 		if (this._rollOverCursorInstance != null)
 		{
@@ -6531,6 +6713,7 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		this._measureInvalid = true;
 		this._layoutInvalid = true;
 		this._renderInvalid = true;
+		this._redrawRegionInvalid = true;
 		
 		//Nuke graphics canvas
 		this._graphicsCanvas = null;
@@ -7014,6 +7197,9 @@ CanvasElement.prototype._propagateChildData =
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.removeNode(this._renderValidateNode, this._displayDepth);
 				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.removeNode(this._redrawRegionValidateNode, this._displayDepth);
+				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.removeNode(this._compositeRenderValidateNode, this._displayDepth);
 				
@@ -7061,6 +7247,9 @@ CanvasElement.prototype._propagateChildData =
 				
 				if (this._renderInvalid == true)
 					this._manager._updateRenderQueue.addNode(this._renderValidateNode, this._displayDepth);
+				
+				if (this._redrawRegionInvalid == true)
+					this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
 				
 				if (this._compositeRenderInvalid == true)
 					this._manager._compositeRenderQueue.addNode(this._compositeRenderValidateNode, this._displayDepth);
@@ -7598,21 +7787,22 @@ CanvasElement.prototype._getAutoGradientLinear =
 		
 		var gradientMetrics = this._getAutoGradientMetrics();
 		
-		var fillGradient = context.createLinearGradient(
-									gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
-									gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
 		try
 		{
+			var fillGradient = context.createLinearGradient(
+					gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
+					gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
+			
 			fillGradient.addColorStop(0, lighterFill);
 			fillGradient.addColorStop(1, darkerFill);
+			
+			return fillGradient;
 		}
 		catch (ex)
 		{
 			//Swallow, invalid color
 			return null;
 		}
-		
-		return fillGradient;
 	};	
 	
 /**
@@ -7643,16 +7833,24 @@ CanvasElement.prototype._getAutoGradientRadial =
 		var gradientPoint = {x:gradientMetrics.startPoint.x + (xSpan * .42), 
 							y:gradientMetrics.startPoint.y + (ySpan * .42)};
 		
-		var fillGradient = context.createRadialGradient(
-				gradientPoint.x, gradientPoint.y, 
-				(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
-				gradientPoint.x, gradientPoint.y, 
-				0);
-		
-		fillGradient.addColorStop(0, darkerFill);
-		fillGradient.addColorStop(1, lighterFill);
-		
-		return fillGradient;
+		try
+		{
+			var fillGradient = context.createRadialGradient(
+					gradientPoint.x, gradientPoint.y, 
+					(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
+					gradientPoint.x, gradientPoint.y, 
+					0);
+			
+			fillGradient.addColorStop(0, darkerFill);
+			fillGradient.addColorStop(1, lighterFill);
+			
+			return fillGradient;
+		}
+		catch (ex)
+		{
+			//Swallow, invalid color
+			return null;
+		}
 	};	
 
 /**
@@ -8408,8 +8606,13 @@ CanvasElement.prototype._invalidateRender =
 CanvasElement.prototype._invalidateRedrawRegion = 
 	function ()
 	{
-		if (this._manager != null)
-			this._manager._redrawRegionInvalid = true;
+		if (this._redrawRegionInvalid == false)
+		{
+			this._redrawRegionInvalid = true;
+			
+			if (this._manager != null)
+				this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
+		}
 	};	
 	
 //@private
@@ -8691,13 +8894,13 @@ CanvasElement.prototype._setListData =
  * Override this function to make any changes to the DataRenderer per the selection state.
  * Update any styles, states, add/remove children, call any necessary _invalidate() functions, etc.
  * 
- * @param selected boolean
- * True if the DataRenderer is selected, otherwise false.
+ * @param selectedData Any
+ * Selected data, differs per container.
  */	
 CanvasElement.prototype._setListSelected = 
-	function (selected)
+	function (selectedData)
 	{
-		this._listSelected = selected;
+		this._listSelected = selectedData;
 	};	
 	
 	
@@ -8773,41 +8976,57 @@ ViewportElement.base = CanvasElement;
 ViewportElement._StyleTypes = Object.create(null);
 
 /**
+ * @style MeasureContentWidth boolean
+ * When true, the viewport's measured width will use its content element's measured width. 
+ * Use this when you want the viewport to expand its width when possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+ViewportElement._StyleTypes.MeasureContentWidth = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style MeasureContentHeight boolean
+ * When true, the viewport's measured height will use its content element's measured height.
+ * Use this when you want the viewport to expand when its height possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+ViewportElement._StyleTypes.MeasureContentHeight = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
  * @style HorizontalScrollBarDisplay String
  * Determines the behavior of the horizontal scroll bar. Allowable values are "on", "off", or "auto".
  */
-ViewportElement._StyleTypes.HorizontalScrollBarDisplay = 		{inheritable:false};		// "on" || "off" || "auto"
+ViewportElement._StyleTypes.HorizontalScrollBarDisplay = 		StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
 
 /**
  * @style HorizontalScrollBarPlacement String
  * Determines the position of the horizontal scroll bar. Allowable values are "top" or "bottom".
  */
-ViewportElement._StyleTypes.HorizontalScrollBarPlacement = 		{inheritable:false};		// "top" || "bottom"
+ViewportElement._StyleTypes.HorizontalScrollBarPlacement = 		StyleableBase.EStyleType.NORMAL;		// "top" || "bottom"
 
 /**
  * @style VerticalScrollBarDisplay String
  * Determines the behavior of the vertical scroll bar. Allowable values are "on", "off", or "auto".
  */
-ViewportElement._StyleTypes.VerticalScrollBarDisplay = 			{inheritable:false};		// "on" || "off" || "auto"
+ViewportElement._StyleTypes.VerticalScrollBarDisplay = 			StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
 
 /**
  * @style VerticalScrollBarPlacement String
  * Determines the position of the vertical scroll bar. Allowable values are "left" or "right".
  */
-ViewportElement._StyleTypes.VerticalScrollBarPlacement = 		{inheritable:false};		// "left" || "right"
+ViewportElement._StyleTypes.VerticalScrollBarPlacement = 		StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 //ScrollBar styles.
 /**
  * @style HorizontalScrollBarStyle StyleDefinition
  * The StyleDefinition to be applied to the horizontal scroll bar.
  */
-ViewportElement._StyleTypes.HorizontalScrollBarStyle = 			{inheritable:false};		// StyleDefinition
+ViewportElement._StyleTypes.HorizontalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style VerticalScrollBarStyle StyleDefinition
  * The StyleDefinition to be applied to the vertical scroll bar.
  */
-ViewportElement._StyleTypes.VerticalScrollBarStyle = 			{inheritable:false};		// StyleDefinition
+ViewportElement._StyleTypes.VerticalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 
 ////////////Default Styles///////////////////////////////////////
@@ -8822,6 +9041,9 @@ ViewportElement.StyleDefault.setStyle("VerticalScrollBarPlacement", 					"right"
 
 ViewportElement.StyleDefault.setStyle("HorizontalScrollBarStyle", 						null);
 ViewportElement.StyleDefault.setStyle("VerticalScrollBarStyle", 						null);
+
+ViewportElement.StyleDefault.setStyle("MeasureContentWidth", 							false);
+ViewportElement.StyleDefault.setStyle("MeasureContentHeight", 							false);
 
 
 
@@ -8851,6 +9073,7 @@ ViewportElement.prototype.setElement =
 			this._viewPortContainer._addChild(this._viewElement);
 		}
 		
+		this._invalidateMeasure();
 		this._invalidateLayout();
 	};
 
@@ -8972,16 +9195,25 @@ ViewportElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 			this._invalidateMeasure();
 		}
-		else if ("HorizontalScrollBarPlacement" in stylesMap ||
+		else 
+		{	
+			if ("HorizontalScrollBarPlacement" in stylesMap ||
 				"VerticalScrollBarPlacement" in stylesMap)
-		{
-			this._invalidateLayout();
+			{
+				this._invalidateLayout();
+			}
+			
+			if ("MeasureContentWidth" in stylesMap || 
+				"MeasureContentHeight" in stylesMap)
+			{
+				this._invalidateMeasure();
+			}
 		}
 		
-		if ("HorizontalScrollBarStyle" && this._horizontalScrollBar != null)
-			this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
-		if ("VerticalScrollBarStyle" && this._verticalScrollBar != null)
-			this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
+		if ("HorizontalScrollBarStyle" in stylesMap && this._horizontalScrollBar != null)
+			this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
+		if ("VerticalScrollBarStyle" in stylesMap && this._verticalScrollBar != null)
+			this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
 	};
 
 //@Override
@@ -8994,6 +9226,18 @@ ViewportElement.prototype._doMeasure =
 		var hBarWidth = 0;
 		var hBarHeight = 0;
 		
+		var w = 0;
+		var h = 0;
+		
+		if (this._viewElement != null)
+		{
+			if (this.getStyle("MeasureContentWidth") == true)
+				w = this._viewElement._getStyledOrMeasuredWidth();
+			
+			if (this.getStyle("MeasureContentHeight") == true)
+				h = this._viewElement._getStyledOrMeasuredHeight();
+		}
+		
 		if (this._verticalScrollBar != null)
 		{
 			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
@@ -9004,8 +9248,16 @@ ViewportElement.prototype._doMeasure =
 			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
 			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		}
-	
-		return {width: Math.max(vBarWidth, hBarWidth) + padWidth, height: Math.max(vBarHeight, hBarHeight) + padHeight};
+		
+		if (w == 0)
+			w = hBarWidth;
+		if (h == 0)
+			h = vBarHeight;
+		
+		w += vBarWidth;
+		h += hBarHeight;
+		
+		return {width:w + padWidth, height:h + padHeight};
 	};
 	
 //@Override	
@@ -9065,8 +9317,8 @@ ViewportElement.prototype._doLayout =
 			if (this._horizontalScrollBar == null)
 			{
 				this._horizontalScrollBar = new ScrollBarElement();
-				this._horizontalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalScrollBarStyle"));
-				this._horizontalScrollBar.setStyleDefinitions(this.getStyle("HorizontalScrollBarStyle"));
+				this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
+
 				this._horizontalScrollBar.setStyle("LayoutDirection", "horizontal");
 				this._horizontalScrollBar.setScrollLineSize(25);
 				
@@ -9091,8 +9343,8 @@ ViewportElement.prototype._doLayout =
 			if (this._verticalScrollBar == null)
 			{
 				this._verticalScrollBar = new ScrollBarElement();
-				this._verticalScrollBar._setStyleDefinitionDefault(this._getDefaultStyle("VerticalScrollBarStyle"));
-				this._verticalScrollBar.setStyleDefinitions(this.getStyle("VerticalScrollBarStyle"));
+				this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
+				
 				this._verticalScrollBar.setStyle("LayoutDirection", "vertical");
 				this._verticalScrollBar.setScrollLineSize(25);
 				
@@ -9201,7 +9453,7 @@ ViewportElement.prototype._doLayout =
 		if (this._viewElement != null)
 		{
 			this._viewElement._setActualSize(Math.max(paneWidth, contentWidth), Math.max(paneHeight, contentHeight));
-			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1)
+			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1);
 		}
 	};
 	
@@ -9239,13 +9491,13 @@ TextFieldLineElement.base = CanvasElement;
 //we can utilize the parents cache rather than each line having to lookup and cache styles.
 //Parent also responsible for invalidating our render when styles changes.
 TextFieldLineElement._StyleTypes = Object.create(null);
-TextFieldLineElement._StyleTypes.TextStyle =						{inheritable:false};		
-TextFieldLineElement._StyleTypes.TextFont =							{inheritable:false};		
-TextFieldLineElement._StyleTypes.TextSize =							{inheritable:false};		
-TextFieldLineElement._StyleTypes.TextColor =						{inheritable:false};			
-TextFieldLineElement._StyleTypes.TextFillType =						{inheritable:false};			
-TextFieldLineElement._StyleTypes.TextHighlightedColor = 			{inheritable:false};			
-TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	{inheritable:false};			
+TextFieldLineElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextFont =							StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextSize =							StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextColor =						StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextFillType =						StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			
 
 
 TextFieldLineElement.prototype.setParentLineMetrics = 
@@ -9498,28 +9750,28 @@ TextFieldElement._StyleTypes = Object.create(null);
  * 
  * When true, the text can be highlighted and copied.
  */
-TextFieldElement._StyleTypes.Selectable = 				{inheritable:false};		// true || false
+TextFieldElement._StyleTypes.Selectable = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style MaxChars int
  * 
  * The maximum number of characters allowed for this TextField. When 0 unlimited characters are allowed.
  */
-TextFieldElement._StyleTypes.MaxChars = 				{inheritable:false};		// number
+TextFieldElement._StyleTypes.MaxChars = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style Multiline boolean
  * 
  * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
  */
-TextFieldElement._StyleTypes.Multiline = 				{inheritable:false};		// true || false
+TextFieldElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style WordWrap boolean
  * 
  * When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary. 
  */
-TextFieldElement._StyleTypes.WordWrap = 				{inheritable:false};		// true || false
+TextFieldElement._StyleTypes.WordWrap = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 
 ////////////Default Styles////////////////////////////
@@ -10616,8 +10868,8 @@ TextFieldElement.prototype._doMeasure =
 				//Measure last line
 				if (lineStartIndex < this._charMetrics.length - 1)
 				{
-					if (this._charMetrics[lineStartIndex].x - this._charMetrics[this._charMetrics.length - 1].x > widestLineSize)
-						widestLineSize = this._charMetrics[lineStartIndex].x - this._charMetrics[this._charMetrics.length - 1].x;
+					if (this._charMetrics[this._charMetrics.length - 1].x - this._charMetrics[lineStartIndex].x > widestLineSize)
+						widestLineSize = this._charMetrics[this._charMetrics.length - 1].x - this._charMetrics[lineStartIndex].x;
 				}
 					
 				textWidth = widestLineSize;
@@ -10693,8 +10945,11 @@ TextFieldElement.prototype._doLayout =
 				for (var i = spaceSpanIndex; i < this._spaceSpans.length; i++)
 				{
 					//Ignore spaces if wordwrap is off
-					if (this._spaceSpans.type == "space" && isWordWrap == false)
+					if (this._spaceSpans[i].type == "space" && isWordWrap == false)
+					{
+						spaceSpanIndex++;
 						continue;
+					}
 					
 					if (textAlign == "left")
 						lineEndCharIndex = this._spaceSpans[i].end;
@@ -10873,25 +11128,25 @@ TextElement._StyleTypes = Object.create(null);
  * @style Text String
  * Text to be rendered by the TextElement.
  */
-TextElement._StyleTypes.Text = 				{inheritable:false};		// "any string" || null
+TextElement._StyleTypes.Text = 				StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style Selectable boolean
  * When true, text can be highlighted and copied.
  */
-TextElement._StyleTypes.Selectable = 			{inheritable:false};		// true || false
+TextElement._StyleTypes.Selectable = 			StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style Multiline boolean
  * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
  */
-TextElement._StyleTypes.Multiline = 				{inheritable:false};		// true || false
+TextElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style WordWrap boolean
  * When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary. 
  */
-TextElement._StyleTypes.WordWrap = 				{inheritable:false};		// true || false
+TextElement._StyleTypes.WordWrap = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 
 ////////////Default Styles////////////////////////////
@@ -10903,12 +11158,15 @@ TextElement.StyleDefault.setStyle("PaddingTop", 					2);
 TextElement.StyleDefault.setStyle("PaddingBottom", 					2);
 TextElement.StyleDefault.setStyle("PaddingLeft", 					2);
 TextElement.StyleDefault.setStyle("PaddingRight", 					2);
+TextElement.StyleDefault.setStyle("TextHorizontalAlign", 			"left");
+TextElement.StyleDefault.setStyle("TextVerticalAlign", 				"top");
 
 //TextElement specific styles
 TextElement.StyleDefault.setStyle("Text", 							null);
 TextElement.StyleDefault.setStyle("Selectable", 					false);
 TextElement.StyleDefault.setStyle("Multiline", 						true);
 TextElement.StyleDefault.setStyle("WordWrap", 						true);
+
 
 
 /////////////Internal Functions///////////////////
@@ -10930,6 +11188,12 @@ TextElement.prototype._doStylesUpdated =
 		
 		if ("WordWrap" in stylesMap)
 			this._textField.setStyle("WordWrap", this.getStyle("WordWrap"));
+		
+		//Force the textField to use our defaults rather than inherited.
+		if ("TextHorizontalAlign" in stylesMap)
+			this._textField.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+		if ("TextVerticalAlign" in stylesMap)
+			this._textField.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
 		
 		//Proxy padding to TextField for proper mouse handling
 		if ("Padding" in stylesMap ||
@@ -11003,7 +11267,7 @@ ScrollButtonSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the arrow icon. Format like "#FF0000" (red).
  */
-ScrollButtonSkinElement._StyleTypes.ArrowColor =					{inheritable:false};		//"#000000"
+ScrollButtonSkinElement._StyleTypes.ArrowColor =					StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style ArrowDirection String
@@ -11011,7 +11275,7 @@ ScrollButtonSkinElement._StyleTypes.ArrowColor =					{inheritable:false};		//"#0
  * Determines the arrow direction. Allowable values are "up", "down", "left", "right". 
  * Note that ScrollBar sets this style directly to the parent button depending on the scroll bar orientation.
  */
-ScrollButtonSkinElement._StyleTypes.ArrowDirection =						{inheritable:false};	//"up" || "down" || "left" || "right"
+ScrollButtonSkinElement._StyleTypes.ArrowDirection =						StyleableBase.EStyleType.NORMAL;	//"up" || "down" || "left" || "right"
 
 
 ////////Default Styles//////////////////
@@ -11132,7 +11396,7 @@ RadioButtonSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the check icon. Format like "#FF0000" (red).
  */
-RadioButtonSkinElement._StyleTypes.CheckColor =						{inheritable:false};		//"#000000"
+RadioButtonSkinElement._StyleTypes.CheckColor =						StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style CheckSize Number
@@ -11140,7 +11404,7 @@ RadioButtonSkinElement._StyleTypes.CheckColor =						{inheritable:false};		//"#0
  * Value between 0 and 1 used to determine the size that the "selected" indicator 
  * should be rendered relative to this element's size.
  */
-RadioButtonSkinElement._StyleTypes.CheckSize = 						{inheritable:false};
+RadioButtonSkinElement._StyleTypes.CheckSize = 						StyleableBase.EStyleType.NORMAL;
 
 
 ////////Default Styles////////////////
@@ -11241,14 +11505,14 @@ DropdownArrowButtonSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the arrow. Format like "#FF0000" (red).
  */
-DropdownArrowButtonSkinElement._StyleTypes.ArrowColor =				{inheritable:false};		//"#000000"
+DropdownArrowButtonSkinElement._StyleTypes.ArrowColor =				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style LineColor String
  * 
  * Hex color value to be used for the divider line. Format like "#FF0000" (red).
  */
-DropdownArrowButtonSkinElement._StyleTypes.LineColor =				{inheritable:false};		//"#000000"
+DropdownArrowButtonSkinElement._StyleTypes.LineColor =				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 //////Default Styles///////////////////
@@ -11256,7 +11520,7 @@ DropdownArrowButtonSkinElement._StyleTypes.LineColor =				{inheritable:false};		
 DropdownArrowButtonSkinElement.StyleDefault = new StyleDefinition();
 
 DropdownArrowButtonSkinElement.StyleDefault.setStyle("ArrowColor", 				"#000000"); 		
-DropdownArrowButtonSkinElement.StyleDefault.setStyle("LineColor", 				"#000000"); 
+DropdownArrowButtonSkinElement.StyleDefault.setStyle("LineColor", 				"#000000");
 
 
 /////////Internal Functions////////////////////////
@@ -11291,31 +11555,36 @@ DropdownArrowButtonSkinElement.prototype._doRender =
 		var width = paddingMetrics.getWidth();
 		var height = paddingMetrics.getHeight();
 		
-		ctx.beginPath();
-		
-		ctx.moveTo(x + (width / 2), y + (height * .60));
-		ctx.lineTo(x + (width * .70), y + (height * .40));
-		ctx.lineTo(x + (width * .30), y + (height * .40));
-		
-		ctx.closePath();
-		
-		ctx.fillStyle = arrowColor;
-		ctx.fill();
-		
+		if (arrowColor != null)
+		{
+			ctx.beginPath();
+			
+			ctx.moveTo(x + (width / 2), y + (height * .60));
+			ctx.lineTo(x + (width * .70), y + (height * .40));
+			ctx.lineTo(x + (width * .30), y + (height * .40));
+			
+			ctx.closePath();
+			
+			ctx.fillStyle = arrowColor;
+			ctx.fill();
+		}
 
-		var lineHeight = height * .65;
-		
-		ctx.beginPath();
-
-		ctx.moveTo(x, y + (height / 2) - (lineHeight / 2));
-		ctx.lineTo(x, y + (height / 2) + (lineHeight / 2));
-		ctx.lineTo(x + 1, y + (height / 2) + (lineHeight / 2));
-		ctx.lineTo(x + 1, y + (height / 2) - (lineHeight / 2));
-		
-		ctx.closePath();
-		
-		ctx.fillStyle = lineColor;
-		ctx.fill();
+		if (lineColor != null)
+		{
+			var lineHeight = height * .65;
+			
+			ctx.beginPath();
+	
+			ctx.moveTo(x, y + (height / 2) - (lineHeight / 2));
+			ctx.lineTo(x, y + (height / 2) + (lineHeight / 2));
+			ctx.lineTo(x + 1, y + (height / 2) + (lineHeight / 2));
+			ctx.lineTo(x + 1, y + (height / 2) - (lineHeight / 2));
+			
+			ctx.closePath();
+			
+			ctx.fillStyle = lineColor;
+			ctx.fill();
+		}
 	};	
 	
 	
@@ -11357,14 +11626,14 @@ DataGridHeaderColumnDividerSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the divider line. Format like "#FF0000" (red).
  */
-DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerLineColor =			{inheritable:false};		//"#000000"
+DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerLineColor =			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style DividerArrowColor String
  * 
  * Hex color value to be used for the arrows. Format like "#FF0000" (red).
  */
-DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerArrowColor =			{inheritable:false};		//"up" || "down" || "left" || "right"
+DataGridHeaderColumnDividerSkinElement._StyleTypes.DividerArrowColor =			StyleableBase.EStyleType.NORMAL;		//"up" || "down" || "left" || "right"
 
 
 ////////Default Styles////////////////
@@ -11484,7 +11753,7 @@ CheckboxSkinElement._StyleTypes = Object.create(null);
  * 
  * Hex color value to be used for the check icon. Format like "#FF0000" (red).
  */
-CheckboxSkinElement._StyleTypes.CheckColor =				{inheritable:false};		//"#000000"
+CheckboxSkinElement._StyleTypes.CheckColor =				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style CheckSize Number
@@ -11492,7 +11761,7 @@ CheckboxSkinElement._StyleTypes.CheckColor =				{inheritable:false};		//"#000000
  * Value between 0 and 1 used to determine the size that the "selected" indicator 
  * should be rendered relative to this element's size.
  */
-CheckboxSkinElement._StyleTypes.CheckSize = 				{inheritable:false};
+CheckboxSkinElement._StyleTypes.CheckSize = 				StyleableBase.EStyleType.NORMAL;
 
 
 ////////Default Styles////////////////
@@ -11681,35 +11950,18 @@ SkinnableElement.prototype._getSkinClass =
 	};
 
 /**
- * @function _getSkinStyleDefinitions
- * Gets an array of StyleDefinitions to be applied to the skin class per the provided state.
- * Override this to return different StyleDefinitions for different states.
+ * @function _getSubStyleNameForSkinState
+ * Gets the style name of the sub style to be applied to the skin
+ * for the associated state. Override this to return the associated
+ * sub style name for the supplied state.
  * 
  * @param state String
- * The state for which to return an array of StyleDefinitions.
+ * The state for which to return a sub style name.
  * 
- * @returns Array
- * Return the appropriate array of StyleDefinitions for the provided state.
+ * @returns string
+ * Sub style name to apply to the skin of the associated state.
  */	
-SkinnableElement.prototype._getSkinStyleDefinitions = 
-	function (state)
-	{
-		return null;
-	};
-
-/**
- * @function _getSkinStyleDefinitionDefault
- * Gets the default StyleDefinition to be applied to the skin class per the provided state.
- * Override this to return different default StyleDefinitions for different states. Use 
- * _getDefaultStyle() to return the appropriate default style definition.
- * 
- * @param state String
- * The state for which to return a default StyleDefinition.
- * 
- * @returns StyleDefinition
- * Return the appropriate default StyleDefinition per _getDefaultStyle("MyStyleNameForMyState") for the provided state.
- */	
-SkinnableElement.prototype._getSkinStyleDefinitionDefault = 
+SkinnableElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		return null;
@@ -11752,7 +12004,10 @@ SkinnableElement.prototype._updateSkinStyleDefinitions =
 		if (skinElement == null)
 			return;
 	
-		skinElement.setStyleDefinitions(this._getSkinStyleDefinitions(state));
+		var subStyleName = this._getSubStyleNameForSkinState(state);
+		
+		if (subStyleName != null)
+			this._applySubStylesToElement(subStyleName, skinElement);
 	};
 	
 /**
@@ -11814,12 +12069,12 @@ SkinnableElement.prototype._createSkin =
 		
 		this._skins[state] = newSkin;
 		
-		newSkin._setStyleDefinitionDefault(this._getSkinStyleDefinitionDefault(state));
 		newSkin._setStyleProxy(new StyleProxy(this, this._getSkinStyleProxyMap()));
+		
+		this._updateSkinStyleDefinitions(state);
 		
 		newSkin.setStyle("MouseEnabled", false);
 		newSkin.setStyle("SkinState", state);
-		this._updateSkinStyleDefinitions(state);
 		
 		this._addChildAt(newSkin, 0);
 		
@@ -12027,7 +12282,7 @@ TextInputElement._StyleTypes = Object.create(null);
  * 
  * Maximum number of characters allowed.
  */
-TextInputElement._StyleTypes.MaxChars = 								{inheritable:false};		// number
+TextInputElement._StyleTypes.MaxChars = 								StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style SkinClass CanvasElement
@@ -12035,7 +12290,7 @@ TextInputElement._StyleTypes.MaxChars = 								{inheritable:false};		// number
  * The CanvasElement constructor type to apply to all skin states. 
  * Specific states such as UpSkinClass will override SkinClass.
  */
-TextInputElement._StyleTypes.SkinClass =								{inheritable:false};		//Element constructor()
+TextInputElement._StyleTypes.SkinClass =								StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinClass CanvasElement
@@ -12043,14 +12298,14 @@ TextInputElement._StyleTypes.SkinClass =								{inheritable:false};		//Element 
  * The CanvasElement constructor to be used for the skin when in the "up" state. 
  * This will override SkinClass.
  */
-TextInputElement._StyleTypes.UpSkinClass = 								{inheritable:false};		//Element constructor()
+TextInputElement._StyleTypes.UpSkinClass = 								StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "up" state skin element.
  */
-TextInputElement._StyleTypes.UpSkinStyle = 								{inheritable:false};		//StyleDefinition
+TextInputElement._StyleTypes.UpSkinStyle = 								StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style UpTextColor String
@@ -12058,7 +12313,7 @@ TextInputElement._StyleTypes.UpSkinStyle = 								{inheritable:false};		//Style
  * Hex color value to be used for the button TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextColor style.
  */
-TextInputElement._StyleTypes.UpTextColor = 								{inheritable:false};		// color "#000000"
+TextInputElement._StyleTypes.UpTextColor = 								StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
 /**
  * @style UpTextHighlightedColor String
@@ -12066,7 +12321,7 @@ TextInputElement._StyleTypes.UpTextColor = 								{inheritable:false};		// colo
  * Hex color value to be used for highlighted text when the TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextHighlightedColor style.
  */
-TextInputElement._StyleTypes.UpTextHighlightedColor = 					{inheritable:false};		// color "#FFFFFF"
+TextInputElement._StyleTypes.UpTextHighlightedColor = 					StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
 
 /**
  * @style UpTextHighlightedBackgroundColor String
@@ -12074,7 +12329,7 @@ TextInputElement._StyleTypes.UpTextHighlightedColor = 					{inheritable:false};	
  * Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextHighlightedBackgroundColor style.
  */
-TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	{inheritable:false};			// color "#000000"
+TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			// color "#000000"
 
 /**
  * @style DisabledSkinClass CanvasElement
@@ -12082,14 +12337,14 @@ TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	{inheritable:fa
  * The CanvasElement constructor to be used for the TextInput is in the "disabled" state.
  * When this is null, the base SkinClass style will be used.
  */
-TextInputElement._StyleTypes.DisabledSkinClass = 						{inheritable:false};		// Element constructor()
+TextInputElement._StyleTypes.DisabledSkinClass = 						StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style DisabledSkinStyle StyleDefinition
  * The StyleDefinition to apply to the "disabled" state skin element.
  * When this is null, the base SkinTyle will be used.
  */
-TextInputElement._StyleTypes.DisabledSkinStyle = 						{inheritable:false};		// StyleDefinition
+TextInputElement._StyleTypes.DisabledSkinStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style DisabledTextColor String
@@ -12097,7 +12352,7 @@ TextInputElement._StyleTypes.DisabledSkinStyle = 						{inheritable:false};		// 
  * Hex color value to be used for the button TextInput is in the "disabled" state. Format like "#FF0000" (red).
  * This will override the TextColor style.
  */
-TextInputElement._StyleTypes.DisabledTextColor = 						{inheritable:false};		// color "#000000"
+TextInputElement._StyleTypes.DisabledTextColor = 						StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
 /**
  * @style DisabledTextHighlightedColor String
@@ -12105,7 +12360,7 @@ TextInputElement._StyleTypes.DisabledTextColor = 						{inheritable:false};		// 
  * Hex color value to be used for highlighted text when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
  * When this is null, the base TextHighlightedColor style will be used.
  */
-TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			{inheritable:false};		// color "#FFFFFF"
+TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
 
 /**
  * @style DisabledTextHighlightedBackgroundColor String
@@ -12113,7 +12368,7 @@ TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			{inheritable:fals
  * Hex color value to be used for highlighted text background when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
  * When this is null, the base TextHighlightedBackgroundColor style will be used.
  */
-TextInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	{inheritable:false};		// color "#000000"
+TextInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
 
 /////////////Default Styles///////////////////////////
@@ -12293,28 +12548,16 @@ TextInputElement.prototype._getSkinClass =
 	};
 	
 //@override	
-TextInputElement.prototype._getSkinStyleDefinitions = 
-function (state)
-{
-	if (state == "up")
-		return this.getStyle("UpSkinStyle");
-	else if (state == "disabled")
-		return this.getStyle("DisabledSkinStyle");
-	
-	return TextInputElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-};	
-
-//@Override
-TextInputElement.prototype._getSkinStyleDefinitionDefault =
+TextInputElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "up")
-			return this._getDefaultStyle("UpSkinStyle");
-		else if (state == "disabled")
-			return this._getDefaultStyle("DisabledSkinStyle");
+			return "UpSkinStyle";
+		if (state == "disabled")
+			return "DisabledSkinStyle";
 		
-		return TextInputElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
-	};		
+		return TextInputElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
+	};			
 	
 /**
  * @function _updateState
@@ -12493,11 +12736,17 @@ TextInputElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 		}
 		
-		this._updateSkinClass("up");
-		this._updateSkinStyleDefinitions("up");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("disabled");
-		this._updateSkinStyleDefinitions("disabled");
+		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
+			this._updateSkinClass("disabled");
+		if ("DisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("disabled");
+
 		
 		this._updateState();
 		this._updateTextColors();
@@ -12571,13 +12820,13 @@ LabelElement._StyleTypes = Object.create(null);
  * @style Text String
  * Text to be rendered by the Label.
  */
-LabelElement._StyleTypes.Text = 				{inheritable:false};		// "any string" || null
+LabelElement._StyleTypes.Text = 				StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style TruncateToFit String
  * String to use when truncating a label that does not fit the available area. Defaults to "...".
  */
-LabelElement._StyleTypes.TruncateToFit = 		{inheritable:false};		// null || "string" ("...")
+LabelElement._StyleTypes.TruncateToFit = 		StyleableBase.EStyleType.NORMAL;		// null || "string" ("...")
 
 
 ////////////Default Styles////////////////////////////
@@ -12813,31 +13062,31 @@ ImageElement._StyleTypes = Object.create(null);
  * @style ImageSource String
  * Image to render. This may be a String URL, or a reference to a DOM image or canvas.
  */
-ImageElement._StyleTypes.ImageSource = 					{inheritable:false};		// null || image || "url" 
+ImageElement._StyleTypes.ImageSource = 					StyleableBase.EStyleType.NORMAL;		// null || image || "url" 
 
 /**
  * @style ImageSourceClipX Number
  * X position in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipX = 			{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipX = 			StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageSourceClipY Number
  * Y position in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipY = 			{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipY = 			StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageSourceClipWidth Number
  * Width in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipWidth = 		{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipWidth = 		StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageSourceClipHeight Number
  * Height in pixels of the clip area for the source image.
  */
-ImageElement._StyleTypes.ImageSourceClipHeight = 		{inheritable:false};		// null || number
+ImageElement._StyleTypes.ImageSourceClipHeight = 		StyleableBase.EStyleType.NORMAL;		// null || number
 
 /**
  * @style ImageScaleType String
@@ -12848,21 +13097,21 @@ ImageElement._StyleTypes.ImageSourceClipHeight = 		{inheritable:false};		// null
  * "tile" will not modify the original image but repeat it in both directions to fill the available area.
  * "tilefit" stretches the image but maintains the aspect ratio, any remaining space in the areas maximum width/height constraint is tiled with the stretched image.
  */
-ImageElement._StyleTypes.ImageScaleType = 				{inheritable:false};		// "none" || "fit" || "stretch" || "tile" || "tilefit"
+ImageElement._StyleTypes.ImageScaleType = 				StyleableBase.EStyleType.NORMAL;		// "none" || "fit" || "stretch" || "tile" || "tilefit"
 
 /**
  * @style ImageVerticalAlign String
  * Aligns the image vertically when using ImageScaleType "none" or "fit" and not all of the available space is consumed.
  * Allowable values are "top", "middle", "bottom".
  */
-ImageElement._StyleTypes.ImageVerticalAlign = 			{inheritable:false};		// "top" || "middle" || "bottom"
+ImageElement._StyleTypes.ImageVerticalAlign = 			StyleableBase.EStyleType.NORMAL;		// "top" || "middle" || "bottom"
 
 /**
  * @style ImageHorizontalAlign String
  * Aligns the image horizontally when using ImageScaleType "none" or "fit" and not all of the available space is consumed.
  * Allowable values are "left", "center", "right".
  */
-ImageElement._StyleTypes.ImageHorizontalAlign = 		{inheritable:false};		// "left" || "center" || "right"
+ImageElement._StyleTypes.ImageHorizontalAlign = 		StyleableBase.EStyleType.NORMAL;		// "left" || "center" || "right"
 
 
 ////////////Default Styles////////////////////////////
@@ -13126,7 +13375,7 @@ ImageElement.prototype._doRender =
 				}
 			}
 		}
-		else if (scaleType == "fit" || scaleType == "none")
+		else if (scaleType == "fit" || scaleType == "none" || scaleType == null)
 		{
 			var verticalAlign = this.getStyle("ImageVerticalAlign");
 			var horizontalAlign = this.getStyle("ImageHorizontalAlign");
@@ -13258,7 +13507,7 @@ DataRendererBaseElement._StyleTypes = Object.create(null);
  * The CanvasElement constructor type to apply to all skin states. 
  * Specific states such as UpSkinClass will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.SkinClass =					{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.SkinClass =					StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinClass CanvasElement
@@ -13266,14 +13515,14 @@ DataRendererBaseElement._StyleTypes.SkinClass =					{inheritable:false};		//Elem
  * The CanvasElement constructor to be used for the data renderer skin when in the "up" state. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.UpSkinClass = 				{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "up" state skin element.
  */
-DataRendererBaseElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style AltSkinClass CanvasElement
@@ -13282,14 +13531,14 @@ DataRendererBaseElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//St
  * This is used to create different styles for alternating rows. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.AltSkinClass = 				{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.AltSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style AltSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "alt" state skin element.
  */
-DataRendererBaseElement._StyleTypes.AltSkinStyle = 				{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.AltSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style OverSkinClass CanvasElement
@@ -13297,14 +13546,14 @@ DataRendererBaseElement._StyleTypes.AltSkinStyle = 				{inheritable:false};		//S
  * The CanvasElement constructor to be used for the data renderer skin when in the "over" state. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.OverSkinClass = 			{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.OverSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style OverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "over" state skin element.
  */
-DataRendererBaseElement._StyleTypes.OverSkinStyle = 			{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.OverSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedSkinClass CanvasElement
@@ -13312,14 +13561,14 @@ DataRendererBaseElement._StyleTypes.OverSkinStyle = 			{inheritable:false};		//S
  * The CanvasElement constructor to be used for the data renderer skin when in the "selected" state. 
  * This will override SkinClass.
  */
-DataRendererBaseElement._StyleTypes.SelectedSkinClass = 		{inheritable:false};		//Element constructor()
+DataRendererBaseElement._StyleTypes.SelectedSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selected" state skin element.
  */
-DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		{inheritable:false};		//StyleDefinition
+DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 //Proxied from DataList (intended only for reading)
 /**
@@ -13327,7 +13576,7 @@ DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		{inheritable:false};		
  * 
  * When false, prevents "over" and "selected" states. Proxied from parent DataList.
  */
-DataRendererBaseElement._StyleTypes.Selectable = 				{inheritable:false};		// true || false
+DataRendererBaseElement._StyleTypes.Selectable = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 
 ///////////Default Styles///////////////////////////////////////////
@@ -13415,35 +13664,19 @@ DataRendererBaseElement.prototype._getSkinClass =
 	};
 		
 //@override	
-DataRendererBaseElement.prototype._getSkinStyleDefinitions = 
+DataRendererBaseElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "up")
-			return this.getStyle("UpSkinStyle");
-		else if (state == "alt")
-			return this.getStyle("AltSkinStyle");
-		else if (state == "over")
-			return this.getStyle("OverSkinStyle");
-		else if (state == "selected")
-			return this.getStyle("SelectedSkinStyle");
+			return "UpSkinStyle";
+		if (state == "alt")
+			return "AltSkinStyle";
+		if (state == "over")
+			return "OverSkinStyle";
+		if (state == "selected")
+			return "SelectedSkinStyle";
 		
-		return DataRendererBaseElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};
-
-//@Override
-DataRendererBaseElement.prototype._getSkinStyleDefinitionDefault =
-	function (state)
-	{
-		if (state == "up")
-			return this._getDefaultStyle("UpSkinStyle");
-		else if (state == "alt")
-			return this._getDefaultStyle("AltSkinStyle");
-		else if (state == "over")
-			return this._getDefaultStyle("OverSkinStyle");
-		else if (state == "selected")
-			return this._getDefaultStyle("SelectedSkinStyle");
-		
-		return DataRendererBaseElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
+		return DataRendererBaseElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
 	};	
 	
 /**
@@ -13498,19 +13731,27 @@ DataRendererBaseElement.prototype._doStylesUpdated =
 	{
 		DataRendererBaseElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		//Always update these, they dont do anything if no changes
-		//and cheaper to call this than to check SkinClass inheritance.
-		this._updateSkinClass("up");
-		this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("alt");
-		this._updateSkinStyleDefinitions("alt");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("over");
-		this._updateSkinStyleDefinitions("over");
+		if ("SkinClass" in stylesMap || "AltSkinClass" in stylesMap)
+			this._updateSkinClass("alt");
+		if ("AltSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("alt");
 		
-		this._updateSkinClass("selected");
-		this._updateSkinStyleDefinitions("selected");
+		if ("SkinClass" in stylesMap || "OverSkinClass" in stylesMap)
+			this._updateSkinClass("over");
+		if ("OverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("over");
+		
+		if ("SkinClass" in stylesMap || "SelectedSkinClass" in stylesMap)
+			this._updateSkinClass("selected");
+		if ("SelectedSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selected");		
 		
 		if ("Selectable" in stylesMap)
 			this._updateState();
@@ -13563,7 +13804,7 @@ DataRendererLabelElement._StyleTypes = Object.create(null);
  * Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.UpTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style AltTextColor String
@@ -13571,7 +13812,7 @@ DataRendererLabelElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"
  * Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.AltTextColor = 			{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.AltTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style OverTextColor String
@@ -13579,7 +13820,7 @@ DataRendererLabelElement._StyleTypes.AltTextColor = 			{inheritable:false};		//"
  * Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.OverTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedTextColor String
@@ -13587,7 +13828,7 @@ DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//
  * Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.SelectedTextColor = 		{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.SelectedTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 ////////////Default Styles///////////////////////
@@ -13598,7 +13839,6 @@ DataRendererLabelElement.StyleDefault.setStyle("PaddingTop", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingBottom", 			4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingLeft", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingRight", 				4);
-DataRendererLabelElement.StyleDefault.setStyle("BorderType", 				"none");
 
 DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
@@ -13652,7 +13892,7 @@ DataRendererLabelElement.prototype._getTextColor =
 
 /**
  * @function _updateLabelTextColor
- * Updates the text color base on the current state.
+ * Updates the text color for the current state.
  */	
 DataRendererLabelElement.prototype._updateLabelTextColor = 
 	function ()
@@ -13775,26 +14015,29 @@ function DataListElement()
 		{
 			_self._onDataListCollectionChanged(collectionChangedEvent);
 		};
-		
 	this._onDataListScrollBarChangedInstance = 
 		function (elementEvent)
 		{
 			_self._onDataListScrollBarChanged(elementEvent);
 		};
-		
 	this._onDataListMouseWheelEventInstance = 
 		function (elementMouseWheelEvent)
 		{
 			_self._onDataListMouseWheelEvent(elementMouseWheelEvent);
 		};
-	
 	this._onDataListRendererClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataListRendererClick(elementMouseEvent);
 		};
+	this._onContentPaneMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onContentPaneMeasureComplete(event);
+		};	
 		
 	this.addEventListener("wheel", this._onDataListMouseWheelEventInstance);	
+	this._contentPane.addEventListener("measurecomplete", this._onContentPaneMeasureCompleteInstance);
 }
 
 //Inherit from SkinnableElement
@@ -13846,33 +14089,49 @@ DataListElement.DefaultItemLabelFunction =
 DataListElement._StyleTypes = Object.create(null);
 
 /**
- * @style ListDirection String
+ * @style LayoutDirection String
  * 
  * Determines the layout direction of this DataList. Allowable values are "horizontal" or "vertical".
  */
-DataListElement._StyleTypes.ListDirection = 					{inheritable:false};		// "horizontal" || "vertical
+DataListElement._StyleTypes.LayoutDirection = 					StyleableBase.EStyleType.NORMAL;		// "horizontal" || "vertical
 
 /**
- * @style ListAlign String
+ * @style LayoutGap Number
  * 
- * Determines the alignment of content when there is not enough data in the ListCollection to fill the DataList.
- * Allowable values are "left", "center", "right" for horizontal layout, and "top", "middle", "bottom" for vertical layout. 
+ * Space in pixels to leave between child elements. 
+ * (Not yet implemented)
  */
-DataListElement._StyleTypes.ListAlign = 						{inheritable:false};		// "left" || "center" || "right" / "top" || "middle" || "bottom"
+DataListElement._StyleTypes.LayoutGap = 						StyleableBase.EStyleType.NORMAL;		// number
+
+/**
+ * @style LayoutVerticalAlign String
+ * 
+ * Child vertical alignment to be used when children do not fill all available space. Allowable values are "top", "bottom", or "middle". 
+ * (Only partially implemented, depending on LayoutDirection)
+ */
+DataListElement._StyleTypes.LayoutVerticalAlign = 				StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" || "middle" 
+
+/**
+ * @style LayoutHorizontalAlign String
+ * 
+ * Child horizontal alignment to be used when children do not fill all available space. Allowable values are "left", "right", or "center". 
+ * (Only partially implemented, depending on LayoutDirection)
+ */
+DataListElement._StyleTypes.LayoutHorizontalAlign = 			StyleableBase.EStyleType.NORMAL;		//"left" || "right" || "center"
 
 /**
  * @style Selectable boolean
  * 
  * When true, list items can be selected and the DataList will dispatch "changed" events.
  */
-DataListElement._StyleTypes.Selectable = 						{inheritable:false};		// true || false
+DataListElement._StyleTypes.Selectable = 						StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style ScrollBarDisplay String
  * 
  * Determines the behavior of the scroll bar. Allowable values are "on", "off", and "auto".
  */
-DataListElement._StyleTypes.ScrollBarDisplay = 					{inheritable:false};		// "on" || "off" || "auto"
+DataListElement._StyleTypes.ScrollBarDisplay = 					StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
 
 /**
  * @style ScrollBarPlacement String
@@ -13880,14 +14139,14 @@ DataListElement._StyleTypes.ScrollBarDisplay = 					{inheritable:false};		// "on
  * Determines the placement of the scroll bar. 
  * Allowable values are "top" or "bottom" for horizontal layout and "left" or "right" for vertical layout.
  */
-DataListElement._StyleTypes.ScrollBarPlacement = 				{inheritable:false};		// "top" || "bottom" / "left || "right"
+DataListElement._StyleTypes.ScrollBarPlacement = 				StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" / "left || "right"
 
 /**
  * @style ScrollBarStyle StyleDefinition
  * 
  * The StyleDefinition to be applied to the scroll bar.
  */
-DataListElement._StyleTypes.ScrollBarStyle = 					{inheritable:false};		// StyleDefinition
+DataListElement._StyleTypes.ScrollBarStyle = 					StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 //Returns the string to use for the label per provided data.
 /**
@@ -13896,29 +14155,31 @@ DataListElement._StyleTypes.ScrollBarStyle = 					{inheritable:false};		// Style
  * A function that returns a text string per a supplied collection item.
  * function (itemData) { return "" }
  */
-DataListElement._StyleTypes.ItemLabelFunction = 				{inheritable:false}; 		// function (itemData) { return "" }
+DataListElement._StyleTypes.ItemLabelFunction = 				StyleableBase.EStyleType.NORMAL; 		// function (itemData) { return "" }
 
 /**
  * @style ListItemClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataRenderer.
  */
-DataListElement._StyleTypes.ListItemClass = 					{inheritable:false};		//DataRendererBaseElement constructor()
+DataListElement._StyleTypes.ListItemClass = 					StyleableBase.EStyleType.NORMAL;		//DataRendererBaseElement constructor()
 
 /**
  * @style ListItemStyle StyleDefinition
  * 
  * The StyleDefinition to be applied to the DataRenderer.
  */
-DataListElement._StyleTypes.ListItemStyle = 					{inheritable:false};		//StyleDefinition
+DataListElement._StyleTypes.ListItemStyle = 					StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 
 ///////////Default Styles////////////////////////////////////
 
 DataListElement.StyleDefault = new StyleDefinition();
 
-DataListElement.StyleDefault.setStyle("ListDirection", 				"vertical");								// "horizontal" || "vertical
-DataListElement.StyleDefault.setStyle("ListAlign", 					"top");										// "left" || "center" || "right" / "top" || "middle" || "bottom"
+DataListElement.StyleDefault.setStyle("LayoutDirection", 			"vertical");								// "horizontal" || "vertical
+DataListElement.StyleDefault.setStyle("LayoutVerticalAlign", 		"top");										//"top" || "middle" || "bottom"
+DataListElement.StyleDefault.setStyle("LayoutHorizontalAlign", 		"left");									//"left" || "center" || "right"
+DataListElement.StyleDefault.setStyle("LayoutGap", 					0);											//number
 
 DataListElement.StyleDefault.setStyle("ItemLabelFunction", 			DataListElement.DefaultItemLabelFunction);	// function (data) { return "" }
 
@@ -13949,12 +14210,15 @@ DataListElement._DataRendererProxyMap._Arbitrary = 				true;
  * 
  * @param index int
  * The collection index to be selected.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
  */	
 DataListElement.prototype.setSelectedIndex = 
 	function (index)
 	{
 		if (this._selectedIndex == index)
-			return true;
+			return false;
 		
 		if (index > this._listCollection.length -1)
 			return false;
@@ -14032,7 +14296,7 @@ DataListElement.prototype.getSelectedItem =
 DataListElement.prototype.setScrollIndex = 
 	function (scrollIndex)
 	{
-		scrollIndex = CanvasElement.roundToPrecision(scrollIndex, 6);
+		scrollIndex = CanvasElement.roundToPrecision(scrollIndex, 3);
 	
 		this._invalidateLayout();
 		
@@ -14177,12 +14441,20 @@ DataListElement.prototype._getContentSize =
 	{
 		var paddingSize = this._getPaddingSize();
 	
-		if (this.getStyle("ListDirection") == "vertical")
+		if (this.getStyle("LayoutDirection") == "vertical")
 			return this._contentSize + paddingSize.height;
-		else //if (this.getStyle("ListDirection") == "horizontal")
+		else //if (this.getStyle("LayoutDirection") == "horizontal")
 			return this._contentSize + paddingSize.width;
 	};
 
+//@private
+DataListElement.prototype._onContentPaneMeasureComplete = 
+	function (event)
+	{
+		this._invalidateMeasure();
+		this._invalidateLayout();
+	};
+	
 /**
  * @function _getNumRenderers
  * Gets the number of DataRenderers that are currently being rendered.
@@ -14214,7 +14486,7 @@ DataListElement.prototype._onDataListMouseWheelEvent =
 			return;
 	
 		var delta = 0;
-		var listDirection = this.getStyle("ListDirection");
+		var listDirection = this.getStyle("LayoutDirection");
 		
 		var minScrolled = false;
 		var maxScrolled = false;
@@ -14299,9 +14571,9 @@ DataListElement.prototype._onDataListScrollBarChanged =
 	function (elementEvent)
 	{
 		//Handle rounding errors
-		var scrollValue = CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6);
-		var scrollPageSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollPageSize(), 6);
-		var scrollViewSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollViewSize(), 6);
+		var scrollValue = CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 3);
+		var scrollPageSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollPageSize(), 3);
+		var scrollViewSize = CanvasElement.roundToPrecision(this._scrollBar.getScrollViewSize(), 3);
 		
 		//Fix for issue where last renderer is larger than first, resulting in exponential adjustments 
 		//due to view size shrinking / scroll range increasing at the same time as scroll. We check if the
@@ -14484,36 +14756,34 @@ DataListElement.prototype._doStylesUpdated =
 				this._invalidateLayout();
 			}
 		}
-		else if ("ListItemStyle" in stylesMap)
+		
+		if ("ListItemStyle" in stylesMap)
 		{
-			var listItemStyle = this.getStyle("ListItemStyle");
-			
 			for (var i = 0; i < this._contentPane._children.length; i++)
-				this._contentPane._children[i].setStyleDefinitions(listItemStyle);
+				this._applySubStylesToElement("ListItemStyle", this._contentPane._children[i]);
 			
 			this._invalidateLayout();
 		}
 		
-		if ("ListDirection" in stylesMap)
+		if ("LayoutDirection" in stylesMap)
 		{
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("ScrollBarPlacement" in stylesMap || "ScrollBarDisplay" in stylesMap ||  "ListAlign" in stylesMap)
+		else if ("ScrollBarPlacement" in stylesMap || 
+				"ScrollBarDisplay" in stylesMap ||  
+				"LayoutGap" in stylesMap ||
+				"LayoutHorizontalAlign" in stylesMap ||
+				"LayoutVerticalAlign" in stylesMap)
+		{
 			this._invalidateLayout();
+		}
 		
 		if ("ScrollBarStyle" in stylesMap && this._scrollBar != null)
-			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
+			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
 		
 		if ("ItemLabelFunction" in stylesMap)
 			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
-	};
-
-//@Override
-DataListElement.prototype._doMeasure = 
-	function(padWidth, padHeight)
-	{
-		return {width:16, height:16};
 	};
 
 /**
@@ -14560,10 +14830,9 @@ DataListElement.prototype._createRenderer =
 	function (itemIndex)
 	{
 		var newRenderer = new (this.getStyle("ListItemClass"))();
-		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
 		newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
 		
+		this._applySubStylesToElement("ListItemStyle", newRenderer);
 		this._updateRendererData(newRenderer, itemIndex);
 		
 		newRenderer.addEventListener("click", this._onDataListRendererClickInstance);
@@ -14605,7 +14874,15 @@ DataListElement.prototype._updateRendererData =
 			renderer._setListSelected(false);
 	};
 	
-//@Override	
+//@override
+DataListElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		//TODO: Sample text widths if label function is set.
+		return {width:16, height:16};
+	};	
+	
+//@override	
 DataListElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
@@ -14620,7 +14897,7 @@ DataListElement.prototype._doLayout =
 		var listItem = null;
 		var i;
 		
-		var listDirection = this.getStyle("ListDirection");
+		var listDirection = this.getStyle("LayoutDirection");
 		var itemIndex = Math.floor(this._scrollIndex);
 		
 		var collectionLength = 0;
@@ -14686,12 +14963,26 @@ DataListElement.prototype._doLayout =
 			
 			//Fix scroll index
 			if (listDirection == "horizontal")
-				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
+			{
+				itemSize = this._contentPane._children[0]._getStyledOrMeasuredWidth();
+				
+				if (itemSize != 0)
+					this._scrollIndex = itemIndex + (clipFirst / itemSize);
+				else
+					this._scrollIndex = itemIndex;
+			}
 			else // if (listDirection == "vertical")
-				this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+			{
+				itemSize = this._contentPane._children[0]._getStyledOrMeasuredHeight();
+				
+				if (itemSize != 0)
+					this._scrollIndex = itemIndex + (clipFirst / itemSize);
+				else
+					this._scrollIndex = itemIndex;
+			}
 			
 			//Handle rounding errors
-			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
+			this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 		}
 		
 		//Extra space - need another renderer or scroll shift
@@ -14704,7 +14995,6 @@ DataListElement.prototype._doLayout =
 				this._contentPane._addChild(newRenderer);
 				
 				//Wait for the new renderer to measure.
-				//Re-invalidate ourself, (content pane doesnt measure so wont do it for us).
 				this._invalidateLayout();
 				return;
 			}
@@ -14719,12 +15009,26 @@ DataListElement.prototype._doLayout =
 					clipFirst -= excessSize;
 					
 					if (listDirection == "horizontal")
-						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredWidth());
+					{
+						itemSize = this._contentPane._children[0]._getStyledOrMeasuredWidth();
+						
+						if (itemSize != 0)
+							this._scrollIndex = itemIndex + (clipFirst / itemSize);
+						else
+							this._scrollIndex = itemIndex;
+					}
 					else // if (listDirection == "vertical")
-						this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+					{
+						itemSize = this._contentPane._children[0]._getStyledOrMeasuredHeight();
+						
+						if (itemSize != 0)
+							this._scrollIndex = itemIndex + (clipFirst / this._contentPane._children[0]._getStyledOrMeasuredHeight());
+						else
+							this._scrollIndex = itemIndex;
+					}
 					
 					//Handle rounding errors
-					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 6);
+					this._scrollIndex = CanvasElement.roundToPrecision(this._scrollIndex, 3);
 				}
 				else if (clipFirst > 0 && collectionLength == this._contentPane._children.length)
 				{//We dont have enough clipping, but we're out of data (cannot make new renderer)
@@ -14759,9 +15063,9 @@ DataListElement.prototype._doLayout =
 		if (needsScrollBar == true && this._scrollBar == null)
 		{
 			this._scrollBar = new ScrollBarElement();
-			this._scrollBar._setStyleDefinitionDefault(this._getDefaultStyle("ScrollBarStyle"));
-			this._scrollBar.setStyleDefinitions(this.getStyle("ScrollBarStyle"));
-			this._scrollBar.setStyle("LayoutDirection", listDirection);
+			
+			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
+			
 			this._scrollBar.setScrollLineSize(1);
 			
 			this._scrollBar.addEventListener("changed", this._onDataListScrollBarChangedInstance);
@@ -14784,6 +15088,8 @@ DataListElement.prototype._doLayout =
 		//Size / Position the scroll bar and content pane.
 		if (this._scrollBar != null)
 		{
+			this._scrollBar.setStyle("LayoutDirection", listDirection);
+			
 			var scrollBarPlacement = this.getStyle("ScrollBarPlacement");
 			
 			if (listDirection == "horizontal")
@@ -14829,7 +15135,11 @@ DataListElement.prototype._doLayout =
 		var currentPosition = clipFirst * -1;
 		if (this._contentSize < availableSize)
 		{
-			var listAlign = this.getStyle("ListAlign");
+			var listAlign = null;
+			if (listDirection == "horizontal")
+				listAlign = this.getStyle("LayoutHorizontalAlign");
+			else //if (listDirection == "vertical")
+				listAlign = this.getStyle("LayoutVerticalAlign");
 			
 			if (listAlign == "top" || listAlign == "left")
 				currentPosition = 0;
@@ -14868,20 +15178,26 @@ DataListElement.prototype._doLayout =
 			{
 				if (listDirection == "horizontal")
 				{
-					viewSize -= clipFirst / this._contentPane._children[0]._width;
-					viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._width;
+					if (this._contentPane._children[0]._width != 0)
+						viewSize -= clipFirst / this._contentPane._children[0]._width;
+					
+					if (this._contentPane._children[this._contentPane._children.length - 1]._width != 0)
+						viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._width;
 				}
 				else // if (listDirection == "vertical")
 				{
-					viewSize -= clipFirst / this._contentPane._children[0]._height;
-					viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._height;
+					if (this._contentPane._children[0]._height != 0)
+						viewSize -= clipFirst / this._contentPane._children[0]._height;
+					
+					if (this._contentPane._children[this._contentPane._children.length - 1]._height != 0)
+						viewSize -= clipLast / this._contentPane._children[this._contentPane._children.length - 1]._height;
 				}
 			}
 			
 			this._scrollBar.setScrollPageSize(collectionLength);
 			this._scrollBar.setScrollViewSize(viewSize);
 			
-			if (CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 6) != this._scrollIndex)
+			if (CanvasElement.roundToPrecision(this._scrollBar.getScrollValue(), 3) != this._scrollIndex)
 			{
 				this._scrollBar.endScrollTween();
 				this._scrollBar.setScrollValue(this._scrollIndex);
@@ -14893,7 +15209,78 @@ DataListElement.prototype._doLayout =
 
 
 /**
- * @depends LabelElement.js
+ * @depends DataRendererBaseElement.js
+ */
+
+///////////////////////////////////////////////////////////////////////
+////////////////////DataGridItemRendererBase////////////////////////
+
+/**
+ * @class DataGridItemRendererBase
+ * @inherits DataRendererBaseElement
+ * 
+ * Abstract base class for DataGrid row item rendering. Any CanvasElement
+ * can be a data renderer. This class is just here for convenience as it
+ * implements some commonly used functionality if you wish to subclass it. 
+ * 
+ * Adds skin states and styles for "up", "alt", "over", and "selected" states. 
+ * 
+ * @constructor DataGridItemRendererBase 
+ * Creates new DataGridItemRendererBase instance.
+ */
+function DataGridItemRendererBase()
+{
+	DataGridItemRendererBase.base.prototype.constructor.call(this);
+}
+	
+//Inherit from DataRendererBaseElement
+DataGridItemRendererBase.prototype = Object.create(DataRendererBaseElement.prototype);
+DataGridItemRendererBase.prototype.constructor = DataGridItemRendererBase;
+DataGridItemRendererBase.base = DataRendererBaseElement;
+
+DataGridItemRendererBase.UpSkinStyleDefault = new StyleDefinition();
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+
+DataGridItemRendererBase.AltSkinStyleDefault = new StyleDefinition();
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+
+DataGridItemRendererBase.StyleDefault = new StyleDefinition();
+DataGridItemRendererBase.StyleDefault.setStyle("UpSkinStyle", DataGridItemRendererBase.UpSkinStyleDefault);
+DataGridItemRendererBase.StyleDefault.setStyle("AltSkinStyle", DataGridItemRendererBase.AltSkinStyleDefault);
+
+
+/////////////Internal///////////////////////////
+
+//@override
+DataGridItemRendererBase.prototype._updateState = 
+	function ()
+	{
+		DataGridItemRendererBase.base.prototype._updateState.call(this);
+		
+		if (this._listSelected != null && this._listSelected.selected == true)
+			newState = "selected";
+		else if (this._listSelected != null && this._listSelected.highlight == true)
+			newState = "over";
+		else
+		{
+			if (this._listData == null || this._listData._itemIndex % 2 == 0)
+				newState = "up";
+			else
+				newState = "alt";
+		}
+	
+		this.setStyle("SkinState", newState);
+	};
+
+
+
+
+
+
+/**
+ * @depends DataGridItemRendererBase.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -14901,12 +15288,10 @@ DataListElement.prototype._doLayout =
 	
 /**
  * @class DataGridLabelItemRenderer
- * @inherits LabelElement
+ * @inherits DataGridItemRendererBase
  * 
  * DataGrid ItemRenderer for a basic label. Updates label text via 
  * DataGridColumnDefiniton RowItemLabelFunction.
- * 
- * This class needs more work to add  text color styles for DataRenderer states.
  * 
  * @constructor DataGridLabelItemRenderer 
  * Creates new DataGridLabelItemRenderer instance.
@@ -14914,24 +15299,147 @@ DataListElement.prototype._doLayout =
 function DataGridLabelItemRenderer()
 {
 	DataGridLabelItemRenderer.base.prototype.constructor.call(this);
+	
+	this._labelElement = new LabelElement();
+	this._labelElement.setStyle("Padding", 0); //Wipe out default padding (no doubly padding, only this elements padding is necessary)
+	
+	this._addChild(this._labelElement);
 }
 
 //Inherit from LabelElement
-DataGridLabelItemRenderer.prototype = Object.create(LabelElement.prototype);
+DataGridLabelItemRenderer.prototype = Object.create(DataGridItemRendererBase.prototype);
 DataGridLabelItemRenderer.prototype.constructor = DataGridLabelItemRenderer;
-DataGridLabelItemRenderer.base = LabelElement;
+DataGridLabelItemRenderer.base = DataGridItemRendererBase;
 
 
-///////////Default Styles//////////////////////
+/////////////Style Types/////////////////////////
+
+DataGridLabelItemRenderer._StyleTypes = Object.create(null);
+
+/**
+ * @style UpTextColor String
+ * 
+ * Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.UpTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+/**
+ * @style AltTextColor String
+ * 
+ * Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.AltTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+/**
+ * @style OverTextColor String
+ * 
+ * Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.OverTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+/**
+ * @style SelectedTextColor String
+ * 
+ * Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataGridLabelItemRenderer._StyleTypes.SelectedTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
+
+
+////////////Default Styles///////////////////////
 
 DataGridLabelItemRenderer.StyleDefault = new StyleDefinition();
 
-DataGridLabelItemRenderer.StyleDefault.setStyle("Padding", 				5);			// Override
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingTop", 				4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingBottom", 			4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingLeft", 				4);
+DataGridLabelItemRenderer.StyleDefault.setStyle("PaddingRight", 			4);
+
+DataGridLabelItemRenderer.StyleDefault.setStyle("UpTextColor", 				"#000000");
+DataGridLabelItemRenderer.StyleDefault.setStyle("AltTextColor", 			"#000000");
+DataGridLabelItemRenderer.StyleDefault.setStyle("OverTextColor", 			"#000000");
+DataGridLabelItemRenderer.StyleDefault.setStyle("SelectedTextColor", 		"#000000");
 
 
-//////////////Internal//////////////////////////////////////////
+////////////Internal/////////////////////////////
 
 //@Override
+DataGridLabelItemRenderer.prototype._changeState = 
+	function (state)
+	{
+		DataGridLabelItemRenderer.base.prototype._changeState.call(this, state);
+		
+		this._updateLabelTextColor();
+	};
+	
+/**
+ * @function _getTextColor
+ * Gets the text color style for the supplied state.
+ * 
+ * @param state String
+ * The current state.
+ * 
+ * @returns String
+ * Text color style for the supplied state.
+ */	
+DataGridLabelItemRenderer.prototype._getTextColor = 
+	function (state)
+	{
+		var stateTextColor = null;
+		
+		if (state == "up")
+			stateTextColor = this.getStyleData("UpTextColor");
+		else if (state == "alt")
+			stateTextColor = this.getStyleData("AltTextColor");
+		else if (state == "over")
+			stateTextColor = this.getStyleData("OverTextColor");
+		else if (state == "selected")
+			stateTextColor = this.getStyleData("SelectedTextColor");
+	
+		var textColor = this.getStyleData("TextColor");
+		
+		//Shouldnt have null stateTextColor
+		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
+			return textColor.value;
+		
+		return stateTextColor.value;
+	};
+
+/**
+ * @function _updateLabelTextColor
+ * Updates the text color for the current state.
+ */	
+DataGridLabelItemRenderer.prototype._updateLabelTextColor = 
+	function ()
+	{
+		var color = this._getTextColor(this._currentSkinState);
+		if (color != null)
+			this._labelElement.setStyle("TextColor", color);
+	};
+	
+/**
+ * @function _updateLabelTextColor
+ * Updates the label text base on the DataGrid data and column RowItemLabelFunction.
+ */		
+DataGridLabelItemRenderer.prototype._updateLabelText = 
+	function ()
+	{
+		if (this._itemData == null || this._listData == null)
+			this._labelElement.setStyle("Text", "");
+		else
+		{
+			var parentGrid = this._listData._parentGrid;
+			var columnDefinition = parentGrid._gridColumns[this._listData._columnIndex];
+			var labelFunction = columnDefinition.getStyle("RowItemLabelFunction");
+			
+			this._labelElement.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
+		}
+	};
+	
+//@override
 DataGridLabelItemRenderer.prototype._setListData = 
 	function (listData, itemData)
 	{
@@ -14940,30 +15448,38 @@ DataGridLabelItemRenderer.prototype._setListData =
 		this._updateLabelText();
 	};
 
-/**
- * @function _updateLabelText
- * Updates the label text in response to list data changes using the associated parent grid column's RowItemLabelFunction.
- */	
-DataGridLabelItemRenderer.prototype._updateLabelText = 
-	function ()
+//@override
+DataGridLabelItemRenderer.prototype._doStylesUpdated =
+	function (stylesMap)
 	{
-		if (this._itemData == null || this._listData == null)
-			this.setStyle("Text", "");
-		else
-		{
-			var parentGrid = this._listData._parentGrid;
-			var columnDefinition = parentGrid._gridColumns[this._listData._columnIndex];
-			var labelFunction = columnDefinition.getStyle("RowItemLabelFunction");
-			
-			this.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
-		}
+		DataGridLabelItemRenderer.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		this._updateLabelTextColor();
+	};
+
+//@override
+DataGridLabelItemRenderer.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		return {width: this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
+				height: this._labelElement._getStyledOrMeasuredHeight() + padHeight};
+	};
+
+//@override	
+DataGridLabelItemRenderer.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		DataGridLabelItemRenderer.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		this._labelElement._setActualPosition(paddingMetrics.getX(), paddingMetrics.getY());
+		this._labelElement._setActualSize(paddingMetrics.getWidth(), paddingMetrics.getHeight());
 	};
 	
 	
 
 
 /**
- * @depends DataRendererBaseElement.js
+ * @depends CanvasElement.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -14971,7 +15487,7 @@ DataGridLabelItemRenderer.prototype._updateLabelText =
 
 /**
  * @class DataGridDataRenderer
- * @inherits DataRendererBaseElement
+ * @inherits CanvasElement
  * 
  * Default DataGrid ListItemClass used to render DataGrid rows. Renders
  * column items per the parent DataGrid's column definitions. 
@@ -14988,30 +15504,30 @@ function DataGridDataRenderer()
 	//Use a containing element for the renderers so we dont interfere with our skins.
 	this._itemRenderersContainer = new CanvasElement();
 	this._addChild(this._itemRenderersContainer);
+	
+	var _self = this;
+	
+	this._onItemRenderersContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self.__onItemRenderersContainerMeasureComplete(event);
+		};
+	
+	this._itemRenderersContainer.addEventListener("measurecomplete", this._onItemRenderersContainerMeasureCompleteInstance);
 }
 	
-//Inherit from DataRendererBaseElement
-DataGridDataRenderer.prototype = Object.create(DataRendererBaseElement.prototype);
+//Inherit from CanvasElement
+DataGridDataRenderer.prototype = Object.create(CanvasElement.prototype);
 DataGridDataRenderer.prototype.constructor = DataGridDataRenderer;
-DataGridDataRenderer.base = DataRendererBaseElement;
+DataGridDataRenderer.base = CanvasElement;
 
-//////////Default Styles/////////////////////////
-
-DataGridDataRenderer.StyleDefault = new StyleDefinition();
-
-//Skin Defaults///////
-DataGridDataRenderer.UpSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-
-DataGridDataRenderer.AltSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-/////////////////////
-
-DataGridDataRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridDataRenderer.UpSkinStyleDefault);	// StyleDefinition
-DataGridDataRenderer.StyleDefault.setStyle("AltSkinStyle", 						DataGridDataRenderer.AltSkinStyleDefault);	// StyleDefinition
-
+//@private
+DataGridDataRenderer.prototype.__onItemRenderersContainerMeasureComplete =
+	function (event)
+	{
+		this._invalidateMeasure();
+		this._invalidateLayout();
+	};
 
 //@Override
 DataGridDataRenderer.prototype._setListData = 
@@ -15051,10 +15567,69 @@ DataGridDataRenderer.prototype._setListData =
 		//Purge excess renderers.
 		while (this._itemRenderersContainer._children.length > this._listData._parentList._gridColumns.length)
 			this._itemRenderersContainer._removeChildAt(this._itemRenderersContainer._children.length - 1);
+	};
+	
+//@override	
+DataGridDataRenderer.prototype._setListSelected = 
+	function (selectedData)
+	{
+		DataGridDataRenderer.base.prototype._setListSelected.call(this, selectedData);
 		
-		//Invalidate, the item renderer container doesnt measure so wont do it for us.
-		this._invalidateMeasure();
-		this._invalidateLayout();
+		var columnData;
+		var columnSelectionType;
+		var columnSelectable;
+		var columnHighlightable;
+		var itemRenderer;
+		var itemRendererSelectedData;
+		
+		var overColumn = null;
+		if (selectedData.columnOverIndex >= 0 && selectedData.columnOverIndex < this._listData._parentList._gridColumns.length)
+			overColumn = this._listData._parentList._gridColumns[selectedData.columnOverIndex];
+		
+		var overColumnSelectionType = null;
+		if (overColumn != null)
+			overColumnSelectionType = overColumn.getStyle("SelectionType");
+		
+		for (var i = 0; i < this._itemRenderersContainer._children.length; i++)
+		{
+			columnData = this._listData._parentList._gridColumns[i];
+			columnSelectionType = columnData.getStyle("SelectionType");
+			columnSelectable = columnData.getStyle("Selectable");
+			columnHighlightable = columnData.getStyle("Highlightable");			
+			itemRenderer = this._itemRenderersContainer._getChildAt(i);
+
+			//Optimize, use existing data if available
+			itemRendererSelectedData = itemRenderer._listSelected;
+			if (itemRendererSelectedData == null)
+				itemRendererSelectedData = {highlight:false, selected:false};
+			else
+			{
+				itemRendererSelectedData.highlight = false;
+				itemRendererSelectedData.selected = false;
+			}
+			
+			if (columnSelectable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowIndex == this._listData._itemIndex && selectedData.columnIndex == -1) ||
+					(columnSelectionType == "column" && i == selectedData.columnIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnIndex && this._listData._itemIndex == selectedData.rowIndex))
+				{
+					itemRendererSelectedData.selected = true;
+				}
+			}
+			
+			if (columnHighlightable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowOverIndex == this._listData._itemIndex && overColumnSelectionType == "row") ||
+					(columnSelectionType == "column" && i == selectedData.columnOverIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnOverIndex && this._listData._itemIndex == selectedData.rowOverIndex))
+				{
+					itemRendererSelectedData.highlight = true;
+				}
+			}
+			
+			itemRenderer._setListSelected(itemRendererSelectedData);
+		}
 	};
 	
 //@Override
@@ -15610,28 +16185,28 @@ ListContainerElement._StyleTypes = Object.create(null);
  * 
  * Determines the layout direction of this ListContainer. Allowable values are "horizontal" or "vertical".
  */
-ListContainerElement._StyleTypes.LayoutDirection = 			{inheritable:false};		// "horizontal" || "vertical"
+ListContainerElement._StyleTypes.LayoutDirection = 			StyleableBase.EStyleType.NORMAL;		// "horizontal" || "vertical"
 
 /**
  * @style LayoutGap Number
  * 
  * Space in pixels to leave between child elements.
  */
-ListContainerElement._StyleTypes.LayoutGap = 				{inheritable:false};		// number
+ListContainerElement._StyleTypes.LayoutGap = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style LayoutVerticalAlign String
  * 
  * Child vertical alignment to be used when children do not fill all available space. Allowable values are "top", "bottom", or "middle". 
  */
-ListContainerElement._StyleTypes.LayoutVerticalAlign = 		{inheritable:false};		// "top" || "bottom" || "middle" 
+ListContainerElement._StyleTypes.LayoutVerticalAlign = 		StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" || "middle" 
 
 /**
  * @style LayoutHorizontalAlign String
  * 
  * Child horizontal alignment to be used when children do not fill all available space. Allowable values are "left", "right", or "center". 
  */
-ListContainerElement._StyleTypes.LayoutHorizontalAlign = 	{inheritable:false};		//"left" || "right" || "center"
+ListContainerElement._StyleTypes.LayoutHorizontalAlign = 	StyleableBase.EStyleType.NORMAL;		//"left" || "right" || "center"
 
 
 ////////////Default Styles////////////////////////////
@@ -15659,7 +16234,7 @@ ListContainerElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("LayoutAlign" in stylesMap)
+		else if ("LayoutVerticalAlign" in stylesMap || "LayoutHorizontalAlign" in stylesMap)
 			this._invalidateLayout();
 	};
 
@@ -16088,6 +16663,8 @@ function ScrollBarElement()
 	this._trackAndTabContainer.setStyle("MinWidth", 0);	//We dont want base measuring this container
 	this._trackAndTabContainer.setStyle("MinHeight", 0); //We dont want base measuring this container
 	
+	this.addElement(this._trackAndTabContainer);
+	
 	this._scrollPageSize = 0;
 	this._scrollViewSize = 0;
 	this._scrollLineSize = 1;
@@ -16144,35 +16721,37 @@ ScrollBarElement._StyleTypes = Object.create(null);
  * @style ScrollTweenDuration Number
  * Time in milliseconds the scroll tween animation should run.
  */
-ScrollBarElement._StyleTypes.ScrollTweenDuration =			{inheritable:false};		// number (milliseconds)
+ScrollBarElement._StyleTypes.ScrollTweenDuration =			StyleableBase.EStyleType.NORMAL;		// number (milliseconds)
 
 //ScrollButton / Button styles.
 /**
- * @style ScrollButtonIncrementStyle StyleDefinition
+ * @style ButtonIncrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll increment Button.
  */
-ScrollBarElement._StyleTypes.ScrollButtonIncrementStyle = 	{inheritable:false};		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
- * @style ScrollButtonDecrementStyle StyleDefinition
+ * @style ButtonDecrementStyle StyleDefinition
  * StyleDefinition to be applied to the Scroll decrement Button.
  */
-ScrollBarElement._StyleTypes.ScrollButtonDecrementStyle = 	{inheritable:false};		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTrackStyle StyleDefinition
  * StyleDefinition to be applied to the scroll bar track Button.
  */
-ScrollBarElement._StyleTypes.ButtonTrackStyle = 			{inheritable:false};		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonTrackStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTabStyle StyleDefinition
  * StyleDefinition to be applied to the scroll bar tab (draggable) Button.
  */
-ScrollBarElement._StyleTypes.ButtonTabStyle = 				{inheritable:false};		// StyleDefinition
+ScrollBarElement._StyleTypes.ButtonTabStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 
 ////////////Default Styles////////////////////////////
+
+//////TRACK
 
 //up/over/down skins of track
 ScrollBarElement.TrackSkinStyleDefault = new StyleDefinition();
@@ -16192,101 +16771,123 @@ ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientType", 		"l
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
 
-//Applied dynamically based on LayoutDirection (vertical)
+//track button
+ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("BorderType", 					"none");
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("MinHeight", 						15);
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault); 
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);
+ScrollBarElement.ButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledTrackSkinStyleDefault); 
+
+////Dynamically added based on LayoutDirection
+
+//track button
 ScrollBarElement.VButtonTrackStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonTrackStyleDefault.setStyle("BorderType", 					"none");
-ScrollBarElement.VButtonTrackStyleDefault.setStyle("MinWidth", 						15);
-ScrollBarElement.VButtonTrackStyleDefault.setStyle("MinHeight", 					15);
 ScrollBarElement.VButtonTrackStyleDefault.setStyle("PercentWidth", 					100);
-ScrollBarElement.VButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
-ScrollBarElement.VButtonTrackStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault); 
-ScrollBarElement.VButtonTrackStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault);
-ScrollBarElement.VButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.DisabledTrackSkinStyleDefault); 
 
-//Applied dynamically based on LayoutDirection (horizontal)
+//track button
 ScrollBarElement.HButtonTrackStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonTrackStyleDefault.setStyle("BorderType", 					"none");
-ScrollBarElement.HButtonTrackStyleDefault.setStyle("MinWidth", 						15);
-ScrollBarElement.HButtonTrackStyleDefault.setStyle("MinHeight", 					15);
 ScrollBarElement.HButtonTrackStyleDefault.setStyle("PercentHeight", 				100);
-ScrollBarElement.HButtonTrackStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.TrackSkinStyleDefault);  
-ScrollBarElement.HButtonTrackStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault); 
-ScrollBarElement.HButtonTrackStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.TrackSkinStyleDefault);
-ScrollBarElement.HButtonTrackStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.DisabledTrackSkinStyleDefault); 
 
-//disabled skin of arrow buttons (other states using Button defaults)
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault = new StyleDefinition();
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderType", 					"solid");
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderThickness", 				1);
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BorderColor", 					"#999999");
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("BackgroundColor", 				"#ECECEC");
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientType", 			"linear");
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("AutoGradientStop", 			(-.05));
-ScrollBarElement.DisabledButtonScrollArrowStyleDefault.setStyle("ArrowColor", 					"#777777");
+
+//////ARROWS
+
+//disabled skin of arrow buttons
+ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 			"#777777");
+
+//up / over / down skin of arrow buttons
+ScrollBarElement.ButtonScrollArraySkinStyleDefault = new StyleDefinition();
+ScrollBarElement.ButtonScrollArraySkinStyleDefault.setStyle("ArrowColor", 					"#000000");
+
+//arrow buttons common
+ScrollBarElement.ButtonScrollArrowStyleDefault = new StyleDefinition();
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("SkinClass", 						ScrollButtonSkinElement);	
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinHeight", 						15);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("UpSkinStyle", 						ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault);
+
+////Dynamically added based on LayoutDirection
+
+//arrow button (vertical increment)
+ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault.setStyle("ArrowDirection", 			"down");
+
+ScrollBarElement.VButtonScrollArrowIncStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("PercentWidth", 				100);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.VButtonScrollArrowIncSkinStyleDefault);
+
+//arrow button (vertical decrement)
+ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault.setStyle("ArrowDirection", 			"up");
+
+ScrollBarElement.VButtonScrollArrowDecStyleDefault = new StyleDefinition();
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("PercentWidth", 				100);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.VButtonScrollArrowDecSkinStyleDefault);
+
+//arrow button (horizontal increment)
+ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault.setStyle("ArrowDirection", 			"right");
+
+ScrollBarElement.HButtonScrollArrowIncStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("PercentHeight", 				100);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.HButtonScrollArrowIncSkinStyleDefault);
+
+//arrow button (horizontal decrement)
+ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault.setStyle("ArrowDirection", 			"left");
+
+ScrollBarElement.HButtonScrollArrowDecStyleDefault = new StyleDefinition();
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("PercentHeight", 				100);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("UpSkinStyle", 					ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("OverSkinStyle", 				ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DownSkinStyle", 				ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 			ScrollBarElement.HButtonScrollArrowDecSkinStyleDefault);
+
+
+//////TAB
 
 //Applied dynamically based on LayoutDirection (vertical)
 ScrollBarElement.VButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 		15);
-ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 		30);
-ScrollBarElement.VButtonTabStyleDefault.setStyle("PercentWidth", 	100);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinWidth", 						15);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("MinHeight", 						30);
+ScrollBarElement.VButtonTabStyleDefault.setStyle("PercentWidth", 					100);
 
 //Applied dynamically based on LayoutDirection (horizontal)
 ScrollBarElement.HButtonTabStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 		30);
-ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 		15);
-ScrollBarElement.HButtonTabStyleDefault.setStyle("PercentHeight", 	100);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinWidth", 						30);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("MinHeight", 						15);
+ScrollBarElement.HButtonTabStyleDefault.setStyle("PercentHeight", 					100);
 
-//Applied dynamically based on LayoutDirection (vertical)
-ScrollBarElement.VButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"down");
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("MinWidth", 			15);
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("MinHeight", 			15);
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("PercentWidth", 		100);
-ScrollBarElement.VButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
 
-//Applied dynamically based on LayoutDirection (vertical)
-ScrollBarElement.VButtonScrollArrowDecStyleDefault = new StyleDefinition();
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"up"); 
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("MinWidth", 			15);
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("MinHeight", 			15);
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("PercentWidth", 		100);
-ScrollBarElement.VButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
-
-//Applied dynamically based on LayoutDirection (horizontal)
-ScrollBarElement.HButtonScrollArrowIncStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowColor", 			"#000000"); 
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("ArrowDirection", 		"right");
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("MinWidth", 			15);
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("MinHeight", 			15);
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("PercentHeight", 		100);
-ScrollBarElement.HButtonScrollArrowIncStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
-
-//Applied dynamically based on LayoutDirection (horizontal)
-ScrollBarElement.HButtonScrollArrowDecStyleDefault = new StyleDefinition();
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("SkinClass", 			ScrollButtonSkinElement);			
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowColor", 			"#000000");
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("ArrowDirection", 		"left"); 
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("MinWidth", 			15);
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("MinHeight", 			15);
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("PercentHeight", 		100);
-ScrollBarElement.HButtonScrollArrowDecStyleDefault.setStyle("DisabledSkinStyle", 	ScrollBarElement.DisabledButtonScrollArrowStyleDefault);
+//////ROOT SCROLLBAR
 
 ScrollBarElement.StyleDefault = new StyleDefinition();
 ScrollBarElement.StyleDefault.setStyle("ScrollTweenDuration", 						180); 			// number (milliseconds)
 ScrollBarElement.StyleDefault.setStyle("LayoutDirection", 							"vertical");	// "vertical" || "horizontal"
 ScrollBarElement.StyleDefault.setStyle("ClipContent", 								false);
 ScrollBarElement.StyleDefault.setStyle("LayoutGap", 								-1); //Collapse borders
+ScrollBarElement.StyleDefault.setStyle("LayoutHorizontalAlign", 					"center");
+ScrollBarElement.StyleDefault.setStyle("LayoutVerticalAlign", 						"middle"); 
+ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 							ScrollBarElement.ButtonTrackStyleDefault);
+ScrollBarElement.StyleDefault.setStyle("ButtonIncrementStyle", 						ScrollBarElement.ButtonScrollArrowStyleDefault); 
+ScrollBarElement.StyleDefault.setStyle("ButtonDecrementStyle", 						ScrollBarElement.ButtonScrollArrowStyleDefault);
 
 //Applied dynamically based on LayoutDirection
-//ScrollBarElement.StyleDefault.setStyle("ButtonTrackStyle", 						ScrollBarElement.ButtonTrackStyleDefault);
-//ScrollBarElement.StyleDefault.setStyle("ScrollButtonIncrementStyle", 				ScrollBarElement.ButtonScrollArrowIncStyleDefault); 
-//ScrollBarElement.StyleDefault.setStyle("ScrollButtonDecrementStyle", 				ScrollBarElement.ButtonScrollArrowDecStyleDefault);
 //ScrollBarElement.StyleDefault.setStyle("ButtonTabStyle", 							ScrollBarElement.ButtonTabStyleDefault); 
 
 
@@ -16619,78 +17220,93 @@ ScrollBarElement.prototype._onScrollTabDrag =
 		this._invalidateLayout();
 	};
 
-/**
- * @function _createChildren
- * Creates the scroll bar child buttons when the ScrollBar is first added to the display hierarchy.
- */	
-ScrollBarElement.prototype._createChildren = 
-	function ()
-	{
-		//Add track to container
-		this._buttonTrack = new ButtonElement();
-		this._buttonTrack._setStyleDefinitionDefault(this._getDefaultStyle("ButtonTrackStyle"));
-		this._buttonTrack.addEventListener("click", this._onScrollButtonClickInstance);
-		this._trackAndTabContainer._addChild(this._buttonTrack);
-	
-		//Add tab to container
-		this._buttonTab = new ButtonElement();
-		this._buttonTab._setStyleDefinitionDefault(this._getDefaultStyle("ButtonTabStyle"));
-		this._buttonTab.setStyle("Draggable", true);
-		this._buttonTab.addEventListener("dragging", this._onScrollTabDragInstance);
-		this._trackAndTabContainer._addChild(this._buttonTab);
-	
-		this._buttonDecrement = new ButtonElement();
-		this._buttonDecrement.addEventListener("click", this._onScrollButtonClickInstance);
-		
-		this._buttonIncrement = new ButtonElement();
-		this._buttonIncrement.addEventListener("click", this._onScrollButtonClickInstance);
-		
-		this.addElement(this._buttonDecrement);
-		this.addElement(this._trackAndTabContainer);
-		this.addElement(this._buttonIncrement);
-	};
-	
-//@Override
+//@override
 ScrollBarElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
 		ScrollBarElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
+		//////Create Elements//////
+		if (this._buttonDecrement == null)
+		{
+			this._buttonDecrement = new ButtonElement();
+			this._buttonDecrement.addEventListener("click", this._onScrollButtonClickInstance);
+			this.addElementAt(this._buttonDecrement, 0);
+		}
+		
+		if (this._buttonTrack == null)
+		{
+			this._buttonTrack = new ButtonElement();
+			this._buttonTrack.addEventListener("click", this._onScrollButtonClickInstance);
+			this._trackAndTabContainer._addChild(this._buttonTrack);
+		}
+		
+		if (this._buttonTab == null)
+		{
+			this._buttonTab = new ButtonElement();
+			this._buttonTab.setStyle("Draggable", true);
+			this._buttonTab.addEventListener("dragging", this._onScrollTabDragInstance);
+			this._trackAndTabContainer._addChild(this._buttonTab);
+		}
+		
 		if (this._buttonIncrement == null)
-			this._createChildren();
+		{
+			this._buttonIncrement = new ButtonElement();
+			this._buttonIncrement.addEventListener("click", this._onScrollButtonClickInstance);
+			this.addElementAt(this._buttonIncrement, this.getNumElements());
+		}
 		
 		if ("LayoutDirection" in stylesMap)
 		{
-			if (this.getStyle("LayoutDirection") == "horizontal")
-			{
-				this._buttonIncrement._setStyleDefinitionDefault(ScrollBarElement.HButtonScrollArrowIncStyleDefault);
-				this._buttonDecrement._setStyleDefinitionDefault(ScrollBarElement.HButtonScrollArrowDecStyleDefault);
-				this._buttonTrack._setStyleDefinitionDefault(ScrollBarElement.HButtonTrackStyleDefault);
-				this._buttonTab._setStyleDefinitionDefault(ScrollBarElement.HButtonTabStyleDefault);
-			}
-			else //vertical
-			{
-				this._buttonIncrement._setStyleDefinitionDefault(ScrollBarElement.VButtonScrollArrowIncStyleDefault);
-				this._buttonDecrement._setStyleDefinitionDefault(ScrollBarElement.VButtonScrollArrowDecStyleDefault);
-				this._buttonTrack._setStyleDefinitionDefault(ScrollBarElement.VButtonTrackStyleDefault);
-				this._buttonTab._setStyleDefinitionDefault(ScrollBarElement.VButtonTabStyleDefault);
-			}
-			
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
+		else if ("Enabled" in stylesMap)
+			this._invalidateLayout();
 		
-		if ("ScrollButtonIncrementStyle" in stylesMap)
-			this._buttonIncrement.setStyleDefinitions(this.getStyle("ScrollButtonIncrementStyle"));
+
+		var layoutDirection = this.getStyle("LayoutDirection");
 		
-		if ("ScrollButtonDecrementStyle" in stylesMap)
-			this._buttonDecrement.setStyleDefinitions(this.getStyle("ScrollButtonDecrementStyle"));
+		//We need to inject the default styles specific to LayoutDirection before other styling.
+		if ("LayoutDirection" in stylesMap || "ButtonDecrementStyle" in stylesMap)
+		{
+			this._applySubStylesToElement("ButtonDecrementStyle", this._buttonDecrement);
+			
+			if (layoutDirection == "horizontal")
+				this._buttonDecrement._addStyleDefinitionAt(ScrollBarElement.HButtonScrollArrowDecStyleDefault, 0, true);
+			else
+				this._buttonDecrement._addStyleDefinitionAt(ScrollBarElement.VButtonScrollArrowDecStyleDefault, 0, true);
+		}
 		
-		if ("ButtonTrackStyle" in stylesMap)
-			this._buttonTrack.setStyleDefinitions(this.getStyle("ButtonTrackStyle"));
+		if ("LayoutDirection" in stylesMap || "ButtonTrackStyle" in stylesMap)
+		{
+			this._applySubStylesToElement("ButtonTrackStyle", this._buttonTrack);
+			
+			if (layoutDirection == "horizontal")
+				this._buttonTrack._addStyleDefinitionAt(ScrollBarElement.HButtonTrackStyleDefault, 0, true);
+			else
+				this._buttonTrack._addStyleDefinitionAt(ScrollBarElement.VButtonTrackStyleDefault, 0, true);
+		}
 		
-		if ("ButtonTabStyle" in stylesMap)
-			this._buttonTab.setStyleDefinitions(this.getStyle("ButtonTabStyle"));
+		if ("LayoutDirection" in stylesMap || "ButtonTabStyle" in stylesMap)
+		{
+			this._applySubStylesToElement("ButtonTabStyle", this._buttonTab);
+			
+			if (layoutDirection == "horizontal")
+				this._buttonTab._addStyleDefinitionAt(ScrollBarElement.HButtonTabStyleDefault, 0, true);
+			else
+				this._buttonTab._addStyleDefinitionAt(ScrollBarElement.VButtonTabStyleDefault, 0, true);
+		}
+		
+		if ("LayoutDirection" in stylesMap || "ButtonIncrementStyle" in stylesMap)
+		{
+			this._applySubStylesToElement("ButtonIncrementStyle", this._buttonIncrement);
+			
+			if (layoutDirection == "horizontal")
+				this._buttonIncrement._addStyleDefinitionAt(ScrollBarElement.HButtonScrollArrowIncStyleDefault, 0, true);
+			else
+				this._buttonIncrement._addStyleDefinitionAt(ScrollBarElement.VButtonScrollArrowIncStyleDefault, 0, true);
+		}
 		
 		if ("ScrollTweenDuration" in stylesMap && this.getStyle("ScrollTweenDuration") == 0)
 			this.endScrollTween();
@@ -16749,7 +17365,7 @@ ScrollBarElement.prototype._doLayout =
 		this._scrollValue = Math.max(this._scrollValue, 0);
 		
 		//Disable / Enable components
-		if (this._scrollViewSize >= this._scrollPageSize)
+		if (this._scrollViewSize >= this._scrollPageSize || this.getStyle("Enabled") == false)
 		{
 			this._buttonIncrement.setStyle("Enabled", false);
 			this._buttonDecrement.setStyle("Enabled", false);
@@ -16758,10 +17374,10 @@ ScrollBarElement.prototype._doLayout =
 		}
 		else
 		{
-			this._buttonIncrement.setStyle("Enabled", true);
-			this._buttonDecrement.setStyle("Enabled", true);
-			this._buttonTrack.setStyle("Enabled", true);
-			this._buttonTab.setStyle("Visible", true);
+			this._buttonIncrement.clearStyle("Enabled");
+			this._buttonDecrement.clearStyle("Enabled");
+			this._buttonTrack.clearStyle("Enabled");
+			this._buttonTab.clearStyle("Visible");
 		}
 		
 		var availableTrackSize;
@@ -16866,8 +17482,8 @@ ScrollBarElement.prototype._doLayout =
 			}
 			else if (hAlign == "center")
 			{
-				this._buttonTrack._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTrack._width / 2), 0));
-				this._buttonTab._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTab._width / 2), Math.round(this._scrollValue * pixelsPerScaleUnit)));
+				this._buttonTrack._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTrack._width / 2)), 0);
+				this._buttonTab._setActualPosition(Math.round((this._trackAndTabContainer._width / 2) - (this._buttonTab._width / 2)), Math.round(this._scrollValue * pixelsPerScaleUnit));
 			}
 			else //right
 			{
@@ -17017,7 +17633,7 @@ ButtonElement._StyleTypes = Object.create(null);
  * 
  * Text string to be displayed as the button label.
  */
-ButtonElement._StyleTypes.Text = 						{inheritable:false};		// "any string" || null
+ButtonElement._StyleTypes.Text = 						StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style SkinClass CanvasElement
@@ -17025,7 +17641,7 @@ ButtonElement._StyleTypes.Text = 						{inheritable:false};		// "any string" || 
  * The CanvasElement constructor type to apply to all skin states. 
  * Specific states such as UpSkinClass will override SkinClass when they are equal priority.
  */
-ButtonElement._StyleTypes.SkinClass =					{inheritable:false};	//Element constructor()
+ButtonElement._StyleTypes.SkinClass =					StyleableBase.EStyleType.NORMAL;	//Element constructor()
 
 /**
  * @style UpSkinClass CanvasElement
@@ -17033,14 +17649,14 @@ ButtonElement._StyleTypes.SkinClass =					{inheritable:false};	//Element constru
  * The CanvasElement constructor to be used for the button skin when the button is in the "up" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.UpSkinClass = 				{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "up" state skin element.
  */
-ButtonElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style UpTextColor String
@@ -17048,7 +17664,7 @@ ButtonElement._StyleTypes.UpSkinStyle = 				{inheritable:false};		//StyleDefinit
  * Hex color value to be used for the button label when the button is in the "up" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.UpTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style OverSkinClass CanvasElement
@@ -17056,14 +17672,14 @@ ButtonElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
  * The CanvasElement constructor to be used for the button skin when the button is in the "over" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.OverSkinClass = 				{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.OverSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style OverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "over" state skin element.
  */
-ButtonElement._StyleTypes.OverSkinStyle = 				{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.OverSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style OverTextColor String
@@ -17071,7 +17687,7 @@ ButtonElement._StyleTypes.OverSkinStyle = 				{inheritable:false};		//StyleDefin
  * Hex color value to be used for the button label when the button is in the "over" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.OverTextColor = 				{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.OverTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style DownSkinClass CanvasElement
@@ -17079,14 +17695,14 @@ ButtonElement._StyleTypes.OverTextColor = 				{inheritable:false};		//"#000000"
  * The CanvasElement constructor to be used for the button skin when the button is in the "down" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.DownSkinClass = 				{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.DownSkinClass = 				StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style DownSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "down" state skin element.
  */
-ButtonElement._StyleTypes.DownSkinStyle = 				{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.DownSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style DownTextColor String
@@ -17094,7 +17710,7 @@ ButtonElement._StyleTypes.DownSkinStyle = 				{inheritable:false};		//StyleDefin
  * Hex color value to be used for the button label when the button is in the "down" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.DownTextColor = 				{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.DownTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style DisabledSkinClass CanvasElement
@@ -17102,14 +17718,14 @@ ButtonElement._StyleTypes.DownTextColor = 				{inheritable:false};		//"#000000"
  * The CanvasElement constructor to be used for the button skin when the button is in the "disabled" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ButtonElement._StyleTypes.DisabledSkinClass = 			{inheritable:false};		//Element constructor()
+ButtonElement._StyleTypes.DisabledSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style DisabledSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "disabled" state skin element.
  */
-ButtonElement._StyleTypes.DisabledSkinStyle = 			{inheritable:false};		//StyleDefinition
+ButtonElement._StyleTypes.DisabledSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style DisabledTextColor String
@@ -17117,7 +17733,7 @@ ButtonElement._StyleTypes.DisabledSkinStyle = 			{inheritable:false};		//StyleDe
  * Hex color value to be used for the button label when the button is in the "disabled" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ButtonElement._StyleTypes.DisabledTextColor = 			{inheritable:false};		//"#000000"
+ButtonElement._StyleTypes.DisabledTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 //Change some of the text styles not to inherit, we'll set these to the label 
@@ -17128,14 +17744,14 @@ ButtonElement._StyleTypes.DisabledTextColor = 			{inheritable:false};		//"#00000
  * 
  * Determines alignment when rendering text. Available values are "left", "center", and "right".
  */
-ButtonElement._StyleTypes.TextHorizontalAlign =					{inheritable:false};		// "left" || "center" || "right"
+ButtonElement._StyleTypes.TextHorizontalAlign =			StyleableBase.EStyleType.NORMAL;		// "left" || "center" || "right"
 
 /**
  * @style TextVerticalAlign String
  * 
  * Determines the baseline when rendering text. Available values are "top", "middle", or "bottom".
  */
-ButtonElement._StyleTypes.TextVerticalAlign =				{inheritable:false};  		// "top" || "middle" || "bottom"
+ButtonElement._StyleTypes.TextVerticalAlign =			StyleableBase.EStyleType.NORMAL;  		// "top" || "middle" || "bottom"
 
 
 /////////Default Styles//////////////////////////////
@@ -17337,38 +17953,22 @@ ButtonElement.prototype._getSkinClass =
 		
 		return stateSkinClass.value;
 	};
-	
-//@override	
-ButtonElement.prototype._getSkinStyleDefinitions = 
-	function (state)
-	{
-		if (state == "up")
-			return this.getStyle("UpSkinStyle");
-		else if (state == "over")
-			return this.getStyle("OverSkinStyle");
-		else if (state == "down")
-			return this.getStyle("DownSkinStyle");
-		else if (state == "disabled")
-			return this.getStyle("DisabledSkinStyle");
-		
-		return ButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};
 
-//@override
-ButtonElement.prototype._getSkinStyleDefinitionDefault =
+//@override	
+ButtonElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "up")
-			return this._getDefaultStyle("UpSkinStyle");
-		else if (state == "over")
-			return this._getDefaultStyle("OverSkinStyle");
-		else if (state == "down")
-			return this._getDefaultStyle("DownSkinStyle");
-		else if (state == "disabled")
-			return this._getDefaultStyle("DisabledSkinStyle");
+			return "UpSkinStyle";
+		if (state == "over")
+			return "OverSkinStyle";
+		if (state == "down")
+			return "DownSkinStyle";
+		if (state == "disabled")
+			return "DisabledSkinStyle";
 		
-		return ButtonElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
-	};
+		return ButtonElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
+	};	
 	
 //@override
 ButtonElement.prototype._changeState = 
@@ -17465,19 +18065,26 @@ ButtonElement.prototype._doStylesUpdated =
 	{
 		ButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
-		//Always update these, they dont do anything if no changes
-		//and cheaper to call this than to check SkinClass inheritance.
-		this._updateSkinClass("up");
-		this._updateSkinStyleDefinitions("up");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("over");
-		this._updateSkinStyleDefinitions("over");
+		if ("SkinClass" in stylesMap || "OverSkinClass" in stylesMap)
+			this._updateSkinClass("over");
+		if ("OverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("over");
 		
-		this._updateSkinClass("down");
-		this._updateSkinStyleDefinitions("down");
+		if ("SkinClass" in stylesMap || "DownSkinClass" in stylesMap)
+			this._updateSkinClass("down");
+		if ("DownSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("down");
 		
-		this._updateSkinClass("disabled");
-		this._updateSkinStyleDefinitions("disabled");
+		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
+			this._updateSkinClass("disabled");
+		if ("DisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("disabled");
 		
 		//Create / Destroy and proxy text to label.
 		if ("Text" in stylesMap)
@@ -17612,7 +18219,7 @@ ToggleButtonElement._StyleTypes = Object.create(null);
  * When false, the ToggleButton cannot be de-selected by the user and the "selectedOver" and "selectedDown" states are not used, 
  * as with the case for most tab or radio button type elements.
  */
-ToggleButtonElement._StyleTypes.AllowDeselect = 				{inheritable:false};		// true || false
+ToggleButtonElement._StyleTypes.AllowDeselect = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style SelectedUpSkinClass CanvasElement
@@ -17620,14 +18227,14 @@ ToggleButtonElement._StyleTypes.AllowDeselect = 				{inheritable:false};		// tru
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedUp" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedUpSkinClass = 			{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedUpSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedUpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedUp" state skin element.
  */
-ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedUpTextColor String
@@ -17635,7 +18242,7 @@ ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			{inheritable:false};		/
  * Hex color value to be used for the button label when the button is in the "selectedUp" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedUpTextColor = 			{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedUpTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedOverSkinClass CanvasElement
@@ -17643,14 +18250,14 @@ ToggleButtonElement._StyleTypes.SelectedUpTextColor = 			{inheritable:false};		/
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedOver" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedOverSkinClass = 		{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedOverSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedOverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedOver" state skin element. 
  */
-ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedOverTextColor String
@@ -17658,7 +18265,7 @@ ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the button label when the button is in the "selectedOver" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedOverTextColor = 		{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedOverTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedDownSkinClass CanvasElement
@@ -17666,14 +18273,14 @@ ToggleButtonElement._StyleTypes.SelectedOverTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedDown" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedDownSkinClass = 		{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedDownSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedDownSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedDown" state skin element. 
  */
-ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedDownTextColor String
@@ -17681,7 +18288,7 @@ ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the button label when the button is in the "selectedDown" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedDownTextColor = 		{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedDownTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedDisabledSkinClass CanvasElement
@@ -17689,14 +18296,14 @@ ToggleButtonElement._StyleTypes.SelectedDownTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the button skin when the button is in the "selectedDisabled" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-ToggleButtonElement._StyleTypes.SelectedDisabledSkinClass = 	{inheritable:false};		//Element constructor()
+ToggleButtonElement._StyleTypes.SelectedDisabledSkinClass = 	StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style SelectedDisabledSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "selectedDisabled" state skin element. 
  */
-ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	{inheritable:false};		//StyleDefinition
+ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style SelectedDisabledTextColor String
@@ -17704,7 +18311,7 @@ ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	{inheritable:false}
  * Hex color value to be used for the button label when the button is in the "selectedDisabled" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-ToggleButtonElement._StyleTypes.SelectedDisabledTextColor = 	{inheritable:false};		//"#000000"
+ToggleButtonElement._StyleTypes.SelectedDisabledTextColor = 	StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 ////////////Default Styles/////////////////////////////
@@ -17886,36 +18493,20 @@ ToggleButtonElement.prototype._getSkinClass =
 	};	
 	
 //@override	
-ToggleButtonElement.prototype._getSkinStyleDefinitions = 
+ToggleButtonElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "selectedUp")
-			return this.getStyle("SelectedUpSkinStyle");
-		else if (state == "selectedOver")
-			return this.getStyle("SelectedOverSkinStyle");
-		else if (state == "selectedDown")
-			return this.getStyle("SelectedDownSkinStyle");
-		else if (state == "selectedDisabled")
-			return this.getStyle("SelectedDisabledSkinStyle");
+			return "SelectedUpSkinStyle";
+		if (state == "selectedOver")
+			return "SelectedOverSkinStyle";
+		if (state == "selectedDown")
+			return "SelectedDownSkinStyle";
+		if (state == "selectedDisabled")
+			return "SelectedDisabledSkinStyle";
 		
-		return ToggleButtonElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};	
-	
-//@Override
-ToggleButtonElement.prototype._getSkinStyleDefinitionDefault =
-	function (state)
-	{
-		if (state == "selectedUp")
-			return this._getDefaultStyle("SelectedUpSkinStyle");
-		else if (state == "selectedOver")
-			return this._getDefaultStyle("SelectedOverSkinStyle");
-		else if (state == "selectedDown")
-			return this._getDefaultStyle("SelectedDownSkinStyle");
-		else if (state == "selectedDisabled")
-			return this._getDefaultStyle("SelectedDisabledSkinStyle");
-		
-		return ToggleButtonElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
-	};	
+		return ToggleButtonElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
+	};		
 	
 //@Override
 ToggleButtonElement.prototype._getTextColor = 
@@ -17948,19 +18539,26 @@ ToggleButtonElement.prototype._doStylesUpdated =
 	{
 		ToggleButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
-		//Always update these, they dont do anything if no changes
-		//and cheaper to call this than to check SkinClass inheritance.
-		this._updateSkinClass("selectedUp");
-		this._updateSkinStyleDefinitions("selectedUp");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "SelectedUpSkinClass" in stylesMap)
+			this._updateSkinClass("selectedUp");
+		if ("SelectedUpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedUp");
 		
-		this._updateSkinClass("selectedOver");
-		this._updateSkinStyleDefinitions("selectedOver");
+		if ("SkinClass" in stylesMap || "SelectedOverSkinClass" in stylesMap)
+			this._updateSkinClass("selectedOver");
+		if ("SelectedOverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedOver");
 		
-		this._updateSkinClass("selectedDown");
-		this._updateSkinStyleDefinitions("selectedDown");
+		if ("SkinClass" in stylesMap || "SelectedDownSkinClass" in stylesMap)
+			this._updateSkinClass("selectedDown");
+		if ("SelectedDownSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedDown");
 		
-		this._updateSkinClass("selectedDisabled");
-		this._updateSkinStyleDefinitions("selectedDisabled");
+		if ("SkinClass" in stylesMap || "SelectedDisabledSkinClass" in stylesMap)
+			this._updateSkinClass("selectedDisabled");
+		if ("SelectedDisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("selectedDisabled");
 		
 		if ("AllowDeselect" in stylesMap)
 			this._updateState();
@@ -18025,14 +18623,14 @@ RadioButtonElement._StyleTypes = Object.create(null);
  * Determines if the label should be placed to the left or right of the skin. 
  * Allowable values are "left" or "right".
  */
-RadioButtonElement._StyleTypes.LabelPlacement =						{inheritable:false};		// "left" || "right"
+RadioButtonElement._StyleTypes.LabelPlacement =						StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 /**
  * @style LabelGap Number
  * 
  * Determines distance in pixels the label should be placed from the skin.
  */
-RadioButtonElement._StyleTypes.LabelGap =							{inheritable:false};		// number
+RadioButtonElement._StyleTypes.LabelGap =							StyleableBase.EStyleType.NORMAL;		// number
 
 
 
@@ -18211,7 +18809,6 @@ RadioButtonElement.prototype._doLayout =
 /**
  * @depends ButtonElement.js
  * @depends DropdownArrowButtonSkinElement.js
- * @depends DataGridDataRenderer.js
  * @depends DataRendererLabelElement.js
  * @depends Tween.js
  * @depends DataListElement.js
@@ -18335,27 +18932,27 @@ DropdownElement._StyleTypes = Object.create(null);
  * A function that returns a text string per a supplied collection item.
  * function (itemData) { return "" }
  */
-DropdownElement._StyleTypes.ItemLabelFunction = 			{inheritable:false}; 		// function (itemData) { return "" }
+DropdownElement._StyleTypes.ItemLabelFunction = 			StyleableBase.EStyleType.NORMAL; 		// function (itemData) { return "" }
 
 /**
  * @style PopupDataListClass DataListElement
  * 
  * The DataListElement or subclass constructor to be used for the pop up list. 
  */
-DropdownElement._StyleTypes.PopupDataListClass =			{inheritable:false};		// DataListElement constructor.
+DropdownElement._StyleTypes.PopupDataListClass =			StyleableBase.EStyleType.NORMAL;		// DataListElement constructor.
 
 /**
  * @style PopupDataListStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the pop up list element.
  */
-DropdownElement._StyleTypes.PopupDataListStyle = 			{inheritable:false}; 		// StyleDefinition
+DropdownElement._StyleTypes.PopupDataListStyle = 			StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
 /**
  * @style MaxPopupHeight Number
  * Maximum height in pixels of the pop up list element.
  */
-DropdownElement._StyleTypes.MaxPopupHeight = 				{inheritable:false}; 		// number
+DropdownElement._StyleTypes.MaxPopupHeight = 				StyleableBase.EStyleType.NORMAL; 		// number
 
 /**
  * @style ArrowButtonClass CanvasElement
@@ -18363,28 +18960,28 @@ DropdownElement._StyleTypes.MaxPopupHeight = 				{inheritable:false}; 		// numbe
  * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
  * Note that Dropdown proxies its SkinState style to the arrow button so the arrow will change states with the Dropdown.
  */
-DropdownElement._StyleTypes.ArrowButtonClass = 				{inheritable:false}; 		// CanvasElement constructor
+DropdownElement._StyleTypes.ArrowButtonClass = 				StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
 
 /**
  * @style ArrowButtonStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the arrow icon class.
  */
-DropdownElement._StyleTypes.ArrowButtonStyle = 				{inheritable:false}; 		// StyleDefinition
+DropdownElement._StyleTypes.ArrowButtonStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
 /**
  * @style OpenCloseTweenDuration Number
  * 
  * Duration in milliseconds the open and close animation should run.
  */
-DropdownElement._StyleTypes.OpenCloseTweenDuration = 		{inheritable:false}; 		// number (milliseconds)
+DropdownElement._StyleTypes.OpenCloseTweenDuration = 		StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
 
 /**
  * @style OpenCloseTweenEasingFunction Function
  * 
  * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
  */
-DropdownElement._StyleTypes.OpenCloseTweenEasingFunction = 	{inheritable:false}; 		// function (fraction) { return fraction} - see Tween.easing
+DropdownElement._StyleTypes.OpenCloseTweenEasingFunction = 	StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
 
 /**
  * @style PopupDataListClipTopOrBottom Number
@@ -18392,26 +18989,27 @@ DropdownElement._StyleTypes.OpenCloseTweenEasingFunction = 	{inheritable:false};
  * Size in pixels to clip off the pop up list. Clips top when opening down, bottom when opening up. 
  * Defaults to 1 to collapse pop up list and dropdown default borders.
  */
-DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	{inheritable:false}; 		// number
+DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyleType.NORMAL; 		// number
 
 
 ////////////Default Styles////////////////////
 
 
+DropdownElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundColor", 			null);
+
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
-DropdownElement.ArrowButtonStyleDefault.setStyle("BorderType", 					"none");
-DropdownElement.ArrowButtonStyleDefault.setStyle("BackgroundColor", 			null);
 DropdownElement.ArrowButtonStyleDefault.setStyle("SkinClass", 					DropdownArrowButtonSkinElement);
 
 //Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Dropdown (unless you turn mouse back on)
 DropdownElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 				false);
 
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				null);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			null);
+DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			DropdownElement.ArrowButtonSkinStyleDefault);
 ///////////////////////////////
 
 /////Dropdown DataList Style//////
@@ -18420,10 +19018,18 @@ DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			null);
 DropdownElement.DataListScrollBarStyleDefault = new StyleDefinition();
 DropdownElement.DataListScrollBarStyleDefault.setStyle("Padding", -1);			//Expand by 1px to share borders
 
+DropdownElement.DataListItemUpSkinStyleDefault = new StyleDefinition();
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("BackgroundColor", 		"#FFFFFF");
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+
+DropdownElement.DataListItemAltSkinStyleDefault = new StyleDefinition();
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("BackgroundColor", 	"#F0F0F0");
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+
 //DataList ListItem style
 DropdownElement.DataListItemStyleDefault = new StyleDefinition();
-DropdownElement.DataListItemStyleDefault.setStyle("UpSkinStyle", 				DataGridDataRenderer.UpSkinStyleDefault);
-DropdownElement.DataListItemStyleDefault.setStyle("AltSkinStyle", 				DataGridDataRenderer.AltSkinStyleDefault);
+DropdownElement.DataListItemStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.DataListItemUpSkinStyleDefault);
+DropdownElement.DataListItemStyleDefault.setStyle("AltSkinStyle", 				DropdownElement.DataListItemAltSkinStyleDefault);
 
 //DataList style
 DropdownElement.DataListStyleDefault = new StyleDefinition();
@@ -18439,8 +19045,8 @@ DropdownElement.DataListStyleDefault.setStyle("PaddingRight",					1);
 ///////////////////////////////////
 
 DropdownElement.StyleDefault = new StyleDefinition();
-DropdownElement.StyleDefault.setStyle("PaddingTop",								4);
-DropdownElement.StyleDefault.setStyle("PaddingBottom",							4);
+DropdownElement.StyleDefault.setStyle("PaddingTop",								3);
+DropdownElement.StyleDefault.setStyle("PaddingBottom",							3);
 DropdownElement.StyleDefault.setStyle("PaddingRight",							4);
 DropdownElement.StyleDefault.setStyle("PaddingLeft",							4);
 
@@ -18951,9 +19557,9 @@ DropdownElement.prototype._createDataListPopup =
 		//TODO: Use PopupDataListClass style.
 	
 		var dataListPopup = new DataListElement();
-		dataListPopup._setStyleDefinitionDefault(this._getDefaultStyle("PopupDataListStyle"));
+		
 		dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
-		dataListPopup.setStyleDefinitions(this.getStyle("PopupDataListStyle"));
+		this._applySubStylesToElement("PopupDataListStyle", dataListPopup);
 		
 		dataListPopup.setListCollection(this._listCollection);
 		dataListPopup.setSelectedIndex(this._selectedIndex);
@@ -19099,10 +19705,9 @@ DropdownElement.prototype._createArrowButton =
 	function (arrowClass)
 	{
 		var newIcon = new (arrowClass)();
-		newIcon._setStyleDefinitionDefault(this._getDefaultStyle("ArrowButtonStyle"));
 		newIcon._setStyleProxy(new StyleProxy(this, DropdownElement._ArrowButtonProxyMap));
-		newIcon.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
-		
+		this._applySubStylesToElement("ArrowButtonStyle", newIcon);
+	
 		return newIcon;
 	};
 	
@@ -19134,7 +19739,7 @@ DropdownElement.prototype._updateArrowButton =
 				this._addChild(this._arrowButton);
 			}
 			else
-				this._arrowButton.setStyleDefinitions(this.getStyle("ArrowButtonStyle"));
+				this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
 		}
 	};
 	
@@ -19152,7 +19757,7 @@ DropdownElement.prototype._doStylesUpdated =
 		}
 		
 		if ("PopupDataListStyle" in stylesMap && this._dataListPopup != null)
-			this._dataListPopup.setStyleDefinitions(this.getStyle("PopupListStyle"));
+			this._applySubStylesToElement("PopupDataListStyle", this._dataListPopup);
 		
 		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
 			this._updateArrowButton();
@@ -19250,6 +19855,9 @@ DropdownElement.prototype._doLayout =
 			//This is here so that when the Dropdown is using measured width, and the collection changes,
 			//it may change the width of the dropdown button, so we need to make sure we keep the widths in sync.
 			this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
+			this._dataListPopupClipContainer.setStyle("X", this._dropdownManagerMetrics._x);
+			this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y + this._dropdownManagerMetrics._height);
+			
 			this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, this._dataListPopup._height);
 		}
 		
@@ -19329,14 +19937,14 @@ DataGridHeaderItemRenderer._StyleTypes = Object.create(null);
  * Defaults to Button. HeaderItemRenderer proxies its SkinState style to the sort icons so
  * the sort icons will change state along with the HeaderItemRenderer.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			{inheritable:false};		// CanvasElement constructor
+DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			StyleableBase.EStyleType.NORMAL;		// CanvasElement constructor
 
 /**
  * @style SortAscIconStyle StyleDefinition
  * 
  * The StyleDefinition to apply ascending sort icon element.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			{inheritable:false};		// StyleDefinition
+DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style SortDescIconClass CanvasElement
@@ -19345,81 +19953,90 @@ DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			{inheritable:false};
  * Defaults to Button. HeaderItemRenderer proxies its SkinState style to the sort icons so
  * the sort icons will change state along with the HeaderItemRenderer.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			{inheritable:false};		// CanvasElement constructor
+DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			StyleableBase.EStyleType.NORMAL;		// CanvasElement constructor
 
 /**
  * @style SortDescIconStyle StyleDefinition
  * 
  * The StyleDefinition to apply descending sort icon element.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			{inheritable:false};		// StyleDefinition
+DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
- * @style IconGap Number
+ * @style SortIconGap Number
  * 
  * Distance in pixels between the sort icon and the header label.
  */
-DataGridHeaderItemRenderer._StyleTypes.IconGap =					{inheritable:false};		// number
+DataGridHeaderItemRenderer._StyleTypes.SortIconGap =					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
- * @style IconPlacement String
+ * @style SortIconPlacement String
  * 
  * Determines placement of the sort icon. Allowable values are "left" or "right".
  */
-DataGridHeaderItemRenderer._StyleTypes.IconPlacement =				{inheritable:false};		// "left" || "right"
+DataGridHeaderItemRenderer._StyleTypes.SortIconPlacement =				StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 
 /////////Default Styles///////////////
 
+//Make disabled skin look like "up" skin (just not click-able)
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#EBEBEB");
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BorderType", 				null);
+
+//Other up/over/down skins (kill border)
+DataGridHeaderItemRenderer.SkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SkinStyleDefault.setStyle("BorderType", 						null);
+
+
 DataGridHeaderItemRenderer.StyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("OverSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DownSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 					DataGridHeaderItemRenderer.DisabledSkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 					"#000000");
 
-//Override disabled styles, make them same as "up" state styles.
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 		ButtonElement.UpSkinStyleDefault);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 		null);
-
-DataGridHeaderItemRenderer.StyleDefault.setStyle("BorderType", 				"none");		
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextSize", 				12);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 	"left");
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",				3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",			3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",				8);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",			8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 				"left");
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",							4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",						4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",							8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",						8);
 
 /////Sort Icon default styles //////
 
 //Ascending Sort Icon
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault.setStyle("Direction", "up");
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault.setStyle("Direction", 				"up");
+
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundColor", 			"#444444");
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortAscIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundColor", 			"#444444");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 					DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 			false);
-
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 				null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 				false);
 
 //Descending Sort Icon
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault.setStyle("Direction", "down");
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault.setStyle("Direction", 			"down");
+
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundColor", 		"#444444");
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortDescIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundColor", 		"#444444");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
 DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 			false);
 
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
 ///////////////////////////////////
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",					ButtonElement);											// CanvasElement constructor
@@ -19427,8 +20044,8 @@ DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconStyle",					DataGri
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconClass",					ButtonElement);											// CanvasElement constructor
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconStyle",					DataGridHeaderItemRenderer.SortDescIconStyleDefault);	// StyleDefinition
 
-DataGridHeaderItemRenderer.StyleDefault.setStyle("IconGap",								3);			// number
-DataGridHeaderItemRenderer.StyleDefault.setStyle("IconPlacement",						"right");	// "left" || "right"
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconGap",								3);			// number
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconPlacement",						"right");	// "left" || "right"
 
 
 
@@ -19456,26 +20073,19 @@ DataGridHeaderItemRenderer.prototype._createSortIcon =
 	function (isDecending)
 	{
 		var iconClass = null;
-		var iconDefaultStyle = null;
-		var iconStyle = null;
 		
 		if (isDecending == true)
-		{
 			iconClass = this.getStyle("SortDescIconClass");
-			iconDefaultStyle = this._getDefaultStyle("SortDescIconStyle");
-			iconStyle = this.getStyle("SortDescIconStyle");
-		}
 		else
-		{
 			iconClass = this.getStyle("SortAscIconClass");
-			iconDefaultStyle = this._getDefaultStyle("SortAscIconStyle");
-			iconStyle = this.getStyle("SortAscIconStyle");
-		}
 		
 		var newIcon = new (iconClass)();
-		newIcon._setStyleDefinitionDefault(iconDefaultStyle);
 		newIcon._setStyleProxy(new StyleProxy(this,DataGridHeaderItemRenderer._SortIconProxyMap));
-		newIcon.setStyleDefinitions(iconStyle);
+		
+		if (isDecending == true)
+			this._applySubStylesToElement("SortDescIconStyle", newIcon);
+		else
+			this._applySubStylesToElement("SortAscIconStyle", newIcon);
 		
 		return newIcon;
 	};
@@ -19544,7 +20154,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortAscIcon);
 				}
 				else
-					this._sortAscIcon.setStyleDefinitions(this.getStyle("SortAscIconStyle"));
+					this._applySubStylesToElement("SortAscIconStyle", this._sortAscIcon);
 				
 				if (this._sortDescIcon != null)
 					this._sortDescIcon.setStyle("Visible", false);
@@ -19578,7 +20188,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortDescIcon);
 				}
 				else
-					this._sortDescIcon.setStyleDefinitions(this.getStyle("SortDescIconStyle"));
+					this._applySubStylesToElement("SortDescIconStyle", this._sortDescIcon);
 				
 				if (this._sortAscIcon != null)
 					this._sortAscIcon.setStyle("Visible", false);
@@ -19597,7 +20207,7 @@ DataGridHeaderItemRenderer.prototype._setListData =
 		if (listData == null)
 			return;
 		
-		this.setStyle("Text", listData._parentGrid._gridColumns[listData._columnIndex].getStyle("HeaderLabel"));
+		this.setStyle("Text", listData._parentGrid._gridColumns[listData._columnIndex].getStyle("HeaderText"));
 		this._updateSortIcons();
 	};
 
@@ -19615,7 +20225,7 @@ DataGridHeaderItemRenderer.prototype._doStylesUpdated =
 			this._updateSortIcons();
 		}
 		
-		if ("IconGap" in stylesMap || "IconPlacement" in stylesMap)
+		if ("SortIconGap" in stylesMap || "SortIconPlacement" in stylesMap)
 			this._invalidateLayout();
 	};	
 	
@@ -19656,8 +20266,8 @@ DataGridHeaderItemRenderer.prototype._doLayout =
 				}
 				else
 				{
-					var gap = this.getStyle("IconGap");
-					var iconPlacement = this.getStyle("IconPlacement");
+					var gap = this.getStyle("SortIconGap");
+					var iconPlacement = this.getStyle("SortIconPlacement");
 					
 					if (iconPlacement == "left")
 					{
@@ -19729,7 +20339,7 @@ DataGridHeaderElement._StyleTypes = Object.create(null);
  * 
  * The CanvasElement constructor to be used for the draggable column divider (defaults to Button). 
  */
-DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		{inheritable:false}; 	// Element constructor()
+DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		StyleableBase.EStyleType.NORMAL; 	// Element constructor()
 
 /**
  * @style ColumnDividerStyle StyleDefinition
@@ -19739,39 +20349,44 @@ DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		{inheritable:false}; 	/
  * 
  * @seealso DataGridHeaderColumnDividerSkinElement
  */
-DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		{inheritable:false}; 	// StyleDefinition
+DataGridHeaderElement._StyleTypes.ColumnDividerStyle = 		StyleableBase.EStyleType.SUBSTYLE; 	// StyleDefinition
 
 /**
  * @style DraggableColumns boolean
  * 
  * When true, column dividers are draggable.
  */
-DataGridHeaderElement._StyleTypes.DraggableColumns = 		{inheritable:false}; 	// StyleDefinition
+DataGridHeaderElement._StyleTypes.DraggableColumns = 		StyleableBase.EStyleType.NORMAL; 	// StyleDefinition
 
 
 ////////////Default Styles////////////////////
 
 DataGridHeaderElement.StyleDefault = new StyleDefinition();
-
-DataGridHeaderElement.StyleDefault.setStyle("BorderType", 				"solid");
-DataGridHeaderElement.StyleDefault.setStyle("BorderThickness", 			1);
-DataGridHeaderElement.StyleDefault.setStyle("PaddingBottom", 			1);
+DataGridHeaderElement.StyleDefault.setStyle("PaddingBottom", 				1);
+DataGridHeaderElement.StyleDefault.setStyle("BorderType", 					"solid");
+DataGridHeaderElement.StyleDefault.setStyle("BorderThickness", 				1);
+DataGridHeaderElement.StyleDefault.setStyle("BorderColor", 					"#000000");
 
 //Column Divider button style
-DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerSkinStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerLineColor", 		"#777777");
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerArrowColor", 		"#444444");
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BackgroundColor", 		null);
 
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); //
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DividerLineColor", 		"#777777");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DividerArrowColor", 		"#444444");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("BackgroundColor", 		null);
+DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); 
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("Width", 					11);
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("TabStop", 				-1);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("UpSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("OverSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DownSkinStyle", 			DataGridHeaderElement.ColumnDividerSkinStyleDefault);
+DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("DisabledSkinStyle", 		DataGridHeaderElement.ColumnDividerSkinStyleDefault);
 
+DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerClass", 					ButtonElement);
+DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerStyle", 					DataGridHeaderElement.ColumnDividerStyleDefault); 
 
-DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerClass", 			ButtonElement);
-DataGridHeaderElement.StyleDefault.setStyle("ColumnDividerStyle", 			DataGridHeaderElement.ColumnDividerStyleDefault); 
-DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 			true);
+DataGridHeaderElement.StyleDefault.setStyle("DraggableColumns", 					true);
 
 
 
@@ -20032,17 +20647,21 @@ DataGridHeaderElement.prototype._setListData =
 			if (renderer == null)
 			{
 				renderer = new (dividerClass)();
-				renderer._setStyleDefinitionDefault(this._getDefaultStyle("ColumnDividerStyle"));
-				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
+				this._applySubStylesToElement("ColumnDividerStyle", renderer);
 				renderer.setStyle("Draggable", draggableColumns);
 				
 				if (draggableColumns == true)
+				{
 					renderer.addEventListener("dragging", this._onColumnDividerDragInstance);
+					renderer.setStyle("Enabled", true);
+				}
+				else
+					renderer.setStyle("Enabled", false);
 				
 				this._itemRenderersContainer._addChildAt(renderer, i2);
 			}
 			else
-				renderer.setStyleDefinitions(this.getStyle("ColumnDividerStyle"));
+				this._applySubStylesToElement("ColumnDividerStyle", renderer);
 		}
 		
 		//Purge excess renderers.
@@ -20083,7 +20702,6 @@ DataGridHeaderElement.prototype._doLayout =
 			dividerRenderer._setActualPosition(currentPosition - (dividerRenderer._getStyledOrMeasuredWidth() / 2), (this._itemRenderersContainer._height / 2) - (dividerRenderer._height / 2));
 		}
 	};
-	
 	
 	
 
@@ -20139,6 +20757,11 @@ function DataGridElement()
 	this._columnSizes = [];
 	this._columnPercents = [];	
 	
+	this._selectedColumnIndex = -1;
+	
+	this._overIndex = -1; //row index
+	this._overColumnIndex = -1;
+	
 	this._gridHeader = null;
 	
 	this._gridLineContainer = new CanvasElement();
@@ -20154,18 +20777,34 @@ function DataGridElement()
 		{
 			_self._onDataGridColumnDefinitionChanged(styleChangedEvent);
 		};
-		
 	this._onDataGridRowItemClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataGridRowItemClick(elementMouseEvent);
 		};
-		
+	this._onDataGridRowItemRolloverInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollover(event);
+		};
+	this._onDataGridRowItemRolloutInstance = 
+		function (event)
+		{
+			_self._onDataGridRowItemRollout(event);
+		};	
 	this._onDataGridHeaderItemClickInstance = 
 		function (elementMouseEvent)
 		{
 			_self._onDataGridHeaderItemClick(elementMouseEvent);
 		};
+	this._onGridLineContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self._onGridLineContainerMeasureComplete(event);
+		};
+		
+	
+	this._gridLineContainer.addEventListener("measurecomplete", this._onGridLineContainerMeasureCompleteInstance);	
 }
 
 //Inherit from DataListElement
@@ -20192,49 +20831,49 @@ DataGridElement._StyleTypes = Object.create(null);
  * 
  * @seealso DataGridHeaderElement
  */
-DataGridElement._StyleTypes.HeaderClass = 						{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.HeaderClass = 						StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HeaderStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the header element.
  */
-DataGridElement._StyleTypes.HeaderStyle = 						{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.HeaderStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style GridLinesPriority String
  * 
  * Determines which set of grid lines will be rendered first. Allowable values are "vertical" or "horizontal".
  */
-DataGridElement._StyleTypes.GridLinesPriority = 				{inheritable:false};		// "vertical" || "horizontal" (Which lines are drawn first / below)
+DataGridElement._StyleTypes.GridLinesPriority = 				StyleableBase.EStyleType.NORMAL;		// "vertical" || "horizontal" (Which lines are drawn first / below)
 
 /**
  * @style VerticalGridLinesClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataGrid vertical grid lines. Default is CanvasElement.
  */
-DataGridElement._StyleTypes.VerticalGridLinesClass = 			{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.VerticalGridLinesClass = 			StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style VerticalGridLinesStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the vertical grid line elements.
  */
-DataGridElement._StyleTypes.VerticalGridLinesStyle = 			{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.VerticalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style HorizontalGridLinesClass CanvasElement
  * 
  * The CanvasElement constructor to be used for the DataGrid horizontal grid lines. Default is null.
  */
-DataGridElement._StyleTypes.HorizontalGridLinesClass = 			{inheritable:false};		// Element constructor()
+DataGridElement._StyleTypes.HorizontalGridLinesClass = 			StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HorizontalGridLinesStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the horizontal grid line elements.
  */
-DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			{inheritable:false};		// StyleDefinition
+DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 
 ////////////Default Styles/////////////////////////////////////////
@@ -20274,7 +20913,7 @@ DataGridElement.StyleDefault.setStyle("GridLinesPriority", 				"vertical"); 				
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("VerticalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 
-DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		null); 									// Element constructor()
+DataGridElement.StyleDefault.setStyle("HorizontalGridLinesClass", 		CanvasElement); 						// Element constructor()
 DataGridElement.StyleDefault.setStyle("HorizontalGridLinesStyle", 		DataGridElement.GridLineStyleDefault); 	// StyleDefinition
 DataGridElement.StyleDefault.setStyle("TabStop", 						0);
 
@@ -20398,8 +21037,74 @@ DataGridElement.prototype.getNumColumns =
 		return this._gridColumns.length;
 	};
 	
+/**
+ * @function setSelectedIndex
+ * @override
+ * 
+ * Sets the selected collection (row) index and column index. 
+ * When both row and column is specified the associated cell is selected.
+ * 
+ * @param rowIndex int
+ * The collection (row) index to be selected or -1 for none.
+ * 
+ * @param columnIndex int
+ * the column index to be selected or -1 for none.
+ * 
+ * @returns bool
+ * Returns true if the selection changed.
+ */	
+DataGridElement.prototype.setSelectedIndex = 
+	function (rowIndex, columnIndex)
+	{
+		if (this._selectedIndex == rowIndex && this._selectedColumnIndex == columnIndex)
+			return false;
+		
+		if (rowIndex > this._listCollection.length -1)
+			return false;
+		
+		if (columnIndex > this._gridColumns.length - 1)
+			return false;
+		
+		if (rowIndex < -1)
+			rowIndex = -1;
+		
+		if (columnIndex < -1)
+			columnIndex = -1;
+		
+		this._selectedIndex = rowIndex;
+		this._selectedColumnIndex = columnIndex;
+		
+		var selectionData = {rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex};
+		
+		for (var i = 0; i < this._contentPane._children.length; i++)
+			this._contentPane._children[i]._setListSelected(selectionData);
+		
+		return true;
+	};	
+	
+/**
+ * @function getSelectedIndex
+ * @override
+ * Gets the selected collection (row) and column index. 
+ * 
+ * @returns Object
+ * Returns and object containing row and column indexes {row:-1, column:-1}
+ */		
+DataGridElement.prototype.getSelectedIndex = 
+	function ()
+	{
+		return {row:this._selectedIndex, column:this._selectedColumnIndex};
+	};	
+	
 	
 ///////////Internal////////////////////////////////
+	
+//@private
+DataGridElement.prototype._onGridLineContainerMeasureComplete = 
+	function (event)
+	{
+		this._invalidateLayout();
+	};
 	
 /**
  * @function _onDataGridColumnDefinitionChanged
@@ -20450,16 +21155,13 @@ DataGridElement.prototype._columnsChanged =
 		for (var i = 0; i < this._contentPane._children.length; i++)
 		{
 			renderer = this._contentPane._children[i];
-			
-			renderer._setListData(
-				renderer._listData,
-				renderer._itemData);
+			this._updateRendererData(renderer, renderer._listData._itemIndex);
 		}
 		
 		this._invalidateLayout();
 	};
 
-//Override	
+//@override	
 DataGridElement.prototype._onDataListCollectionChanged = 
 	function (collectionChangedEvent)
 	{
@@ -20475,7 +21177,7 @@ DataGridElement.prototype._onDataListCollectionChanged =
 		}
 	};
 	
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementAdded = 
 	function (addedRemovedEvent)
 	{
@@ -20485,7 +21187,7 @@ DataGridElement.prototype._onCanvasElementAdded =
 			this._gridColumns[i].addEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};
 
-//@Override	
+//@override	
 DataGridElement.prototype._onCanvasElementRemoved = 
 	function (addedRemovedEvent)
 	{
@@ -20495,62 +21197,12 @@ DataGridElement.prototype._onCanvasElementRemoved =
 			this._gridColumns[i].removeEventListener("stylechanged", this._onDataGridColumnDefinitionChangedInstance);
 	};		
 	
-//@Override
-DataGridElement.prototype._doStylesUpdated =
-	function (stylesMap)
-	{
-		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-		
-		if ("HeaderClass" in stylesMap)
-		{
-			var headerClass = this.getStyle("HeaderClass");
-			
-			//Destroy if class is null or does not match existing
-			if ((headerClass == null && this._gridHeader != null) ||
-				this._gridHeader != null && this._gridHeader.constructor != headerClass)
-			{
-				this._removeChild(this._gridHeader);
-				this._gridHeader = null;
-			}
-			
-			//Create
-			if (headerClass != null && this._gridHeader == null)
-			{
-				this._gridHeader = new (headerClass)();
-				this._gridHeader._setStyleDefinitionDefault(this._getDefaultStyle("HeaderStyle"));
-				
-				this._gridHeader._setListData(
-					new DataListData(this, -1),
-					null);
-				
-				this._addChild(this._gridHeader);
-			}
-			
-			this._invalidateLayout();
-		}
-		
-		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
-			this._gridHeader.setStyleDefinitions(this.getStyle("HeaderStyle"));
-		
-		if ("GridLinesPriority" in stylesMap ||
-			"VerticalGridLinesClass" in stylesMap ||
-			"VerticalGridLinesStyle" in stylesMap ||
-			"HorizontalGridLinesClass" in stylesMap ||
-			"HorizontalGridLinesStyle" in stylesMap)
-		{
-			this._invalidateLayout();
-		}
-	};	
-	
-//@Override		
+//@override		
 DataGridElement.prototype._createRenderer = 
 	function (itemIndex)
 	{
 		var newRenderer = new (this.getStyle("ListItemClass"))();
-		newRenderer._setStyleDefinitionDefault(this._getDefaultStyle("ListItemStyle"));
-		//newRenderer._setStyleProxy(new StyleProxy(this, DataListElement._DataRendererProxyMap));
-		newRenderer.setStyleDefinitions(this.getStyle("ListItemStyle"));
-		
+		this._applySubStylesToElement("ListItemStyle", newRenderer);
 		this._updateRendererData(newRenderer, itemIndex);
 		
 		return newRenderer;
@@ -20573,7 +21225,7 @@ DataGridElement.prototype._createHeaderItemRenderer =
 		
 		var headerItemClass = columnDefinition.getStyle("HeaderItemClass");
 		var newRenderer = new (headerItemClass)();
-		newRenderer._setStyleDefinitionDefault(columnDefinition._getDefaultStyle("HeaderItemStyle"));
+		columnDefinition._applySubStylesToElement("HeaderItemStyle", newRenderer);
 		
 		this._updateHeaderItemRendererData(newRenderer, columnIndex);		
 		
@@ -20604,7 +21256,7 @@ DataGridElement.prototype._updateHeaderItemRendererData =
 		else
 			listData = new DataGridItemData(this, -1, columnIndex);
 		
-		renderer.setStyleDefinitions(columnDefinition.getStyle("HeaderItemStyle"));
+		columnDefinition._applySubStylesToElement("HeaderItemStyle", renderer);
 		
 		renderer._setListData(
 			listData,
@@ -20663,15 +21315,112 @@ DataGridElement.prototype._createRowItemRenderer =
 	
 		var rowItemClass = columnDefinition.getStyle("RowItemClass");
 		var newRenderer = new (rowItemClass)();
-		newRenderer._setStyleDefinitionDefault(columnDefinition._getDefaultStyle("RowItemStyle"));
+		columnDefinition._applySubStylesToElement("RowItemStyle", newRenderer);
 		
 		this._updateRowItemRendererData(newRenderer, itemIndex, columnIndex);		
 		
 		newRenderer.addEventListener("click", this._onDataGridRowItemClickInstance);
+		newRenderer.addEventListener("rollover", this._onDataGridRowItemRolloverInstance);
+		newRenderer.addEventListener("rollout", this._onDataGridRowItemRolloutInstance);
 		
 		return newRenderer;
 	};
 
+DataGridElement.prototype._onDataGridRowItemRollover = 
+	function (event)
+	{
+		this._overIndex = event.getCurrentTarget()._listData._itemIndex;
+		this._columnOverIndex = event.getCurrentTarget()._listData._columnIndex;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
+	};
+	
+DataGridElement.prototype._onDataGridRowItemRollout = 
+	function (event)
+	{
+		this._overIndex = -1;
+		this._columnOverIndex = -1;
+		
+		var renderer = null;
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			renderer = this._contentPane._children[i];
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		}
+	};	
+	
+//@override	
+DataGridElement.prototype._updateRendererData = 
+	function (renderer, itemIndex)
+	{
+		var listData = null;
+		
+		//Optimize, dont create new data unless its actually changed.
+		if (renderer._listData != null && renderer._listData._itemIndex == itemIndex)
+			listData = renderer._listData;
+		else
+			listData = new DataListData(this, itemIndex);
+	
+		//Always call the function even if data has not changed, this indicates to the
+		//renderer to inspect its parent related data and it may make changes even if
+		//this data is the same. An example is changes to a DataGrid's columns.
+		renderer._setListData(
+			listData,
+			this._listCollection.getItemAt(itemIndex));
+		
+		renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+	};	
+	
+/**
+ * @function _onDataGridRowItemClick
+ * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */
+DataGridElement.prototype._onDataGridRowItemClick = 
+	function (elementMouseEvent)
+	{
+		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
+		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
+		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
+		
+		var columnDef = this._gridColumns[columnIndex];
+		
+		var gridSelectable = this.getStyle("Selectable");
+		var columnSelectable = columnDef.getStyle("Selectable");
+		var elementSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable"); 
+		
+		if (elementSelectable === "undefined")
+			elementSelectable = true;
+		
+		var dispatchChanged = false;
+		
+		if (gridSelectable && columnSelectable && elementSelectable)
+		{
+			var selectRow = itemIndex;
+			var selectColumn = columnIndex;
+			
+			if (columnDef.getStyle("SelectionType") == "row")
+				selectColumn = -1;
+			else if (columnDef.getStyle("SelectionType") == "column")
+				selectRow = -1;
+			
+			if (this.setSelectedIndex(selectRow, selectColumn) == true)
+				dispatchChanged = true;
+		}
+		
+		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
+		
+		if (dispatchChanged == true)
+			this._dispatchEvent(new ElementEvent("changed", false));
+	};	
+	
 /**
  * @function _updateRowItemRendererData
  * Updates the row ItemRenderer list data.
@@ -20697,39 +21446,60 @@ DataGridElement.prototype._updateRowItemRendererData =
 		else
 			listData = new DataGridItemData(this, itemIndex, columnIndex);
 		
-		renderer.setStyleDefinitions(columnDefinition.getStyle("RowItemStyle"));
+		columnDefinition._applySubStylesToElement("RowItemStyle", renderer);
 	
 		renderer._setListData(
 			listData,
 			this._listCollection.getItemAt(itemIndex));
 	};
 	
-/**
- * @function _onDataGridRowItemClick
- * Event handler for the row ItemRenderer "click" event. Updates selected index/item and dispatches "listitemclick" and "changed" events.
- * 
- * @param elementMouseEvent ElementMouseEvent
- * The ElementMouseEvent to process.
- */
-DataGridElement.prototype._onDataGridRowItemClick = 
-	function (elementMouseEvent)
+//@override
+DataGridElement.prototype._doStylesUpdated =
+	function (stylesMap)
 	{
-		var itemIndex = elementMouseEvent.getCurrentTarget()._listData._itemIndex;
-		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
-		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
+		DataGridElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		var dispatchChanged = false;
+		if ("HeaderClass" in stylesMap)
+		{
+			var headerClass = this.getStyle("HeaderClass");
+			
+			//Destroy if class is null or does not match existing
+			if ((headerClass == null && this._gridHeader != null) ||
+				this._gridHeader != null && this._gridHeader.constructor != headerClass)
+			{
+				this._removeChild(this._gridHeader);
+				this._gridHeader = null;
+			}
+			
+			//Create
+			if (headerClass != null && this._gridHeader == null)
+			{
+				this._gridHeader = new (headerClass)();
+				
+				this._gridHeader._setListData(
+					new DataListData(this, -1),
+					null);
+				
+				this._addChild(this._gridHeader);
+			}
+			
+			this._invalidateLayout();
+		}
 		
-		if (this.getStyle("Selectable") == true && this.setSelectedIndex(itemIndex) == true)
-			dispatchChanged = true;
+		if ("HeaderStyle" in stylesMap && this._gridHeader != null)
+			this._applySubStylesToElement("HeaderStyle", this._gridHeader);
 		
-		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
-		
-		if (dispatchChanged == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
-	};
+		if ("GridLinesPriority" in stylesMap ||
+			"VerticalGridLinesClass" in stylesMap ||
+			"VerticalGridLinesStyle" in stylesMap ||
+			"HorizontalGridLinesClass" in stylesMap ||
+			"HorizontalGridLinesStyle" in stylesMap)
+		{
+			this._invalidateLayout();
+		}
+	};		
 	
-//@Override
+//@override
 DataGridElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
@@ -20753,14 +21523,12 @@ DataGridElement.prototype._createGridLine =
 		if (direction == "vertical")
 		{
 			line = new (this.getStyle("VerticalGridLinesClass"))();
-			line._setStyleDefinitionDefault(this._getDefaultStyle("VerticalGridLinesStyle"));
-			line.setStyleDefinitions(this.getStyle("VerticalGridLinesStyle"));
+			this._applySubStylesToElement("VerticalGridLinesStyle", line);
 		}
 		else
 		{
 			line = new (this.getStyle("HorizontalGridLinesClass"))();
-			line._setStyleDefinitionDefault(this._getDefaultStyle("HorizontalGridLinesStyle"));
-			line.setStyleDefinitions(this.getStyle("HorizontalGridLinesStyle"));
+			this._applySubStylesToElement("HorizontalGridLinesStyle", line);
 		}
 		
 		return line;
@@ -20854,9 +21622,7 @@ DataGridElement.prototype._doLayout =
 		var horizontalComplete = false;
 		var linePriority = this.getStyle("GridLinesPriority");
 		var verticalClass = this.getStyle("VerticalGridLinesClass");
-		var verticalStyle = this.getStyle("VerticalGridLinesStyle");
 		var horizontalClass = this.getStyle("HorizontalGridLinesClass");
-		var horizontalStyle = this.getStyle("HorizontalGridLinesStyle");
 		
 		while (verticalComplete == false || horizontalComplete == false)
 		{
@@ -20884,7 +21650,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinitions(horizontalStyle);
+							this._applySubStylesToElement("HorizontalGridLinesStyle", gridLine);
 						
 						gridLine._setActualSize(this._gridLineContainer._width, gridLine.getStyle("Height"));
 						gridLine._setActualPosition(0, rowRenderer._y - (gridLine._height / 2));
@@ -20918,7 +21684,7 @@ DataGridElement.prototype._doLayout =
 							this._gridLineContainer._addChildAt(gridLine, lineIndex);
 						}
 						else
-							gridLine.setStyleDefinitions(verticalStyle);
+							this._applySubStylesToElement("VerticalGridLinesStyle", gridLine);
 						
 						gridLine._setActualSize(gridLine.getStyle("Width"), this._gridLineContainer._height);
 						gridLine._setActualPosition(linePosition - (gridLine._width / 2), 0);
@@ -20987,55 +21753,55 @@ DataGridColumnDefinition._StyleTypes = Object.create(null);
  * The percentage of available space the column should consume. Percentages
  * are allowed to add to more than 100 and will consume all of the available space. 
  */
-DataGridColumnDefinition._StyleTypes.PercentSize = 					{inheritable:false};		// number || null
+DataGridColumnDefinition._StyleTypes.PercentSize = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style MinSize Number
  * 
  * Minimum number of pixels the column should consume.
  */
-DataGridColumnDefinition._StyleTypes.MinSize = 						{inheritable:false};		// number || null
+DataGridColumnDefinition._StyleTypes.MinSize = 						StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
- * @style HeaderLabel String
+ * @style HeaderText String
  * Text label to be used for the column header.
  */
-DataGridColumnDefinition._StyleTypes.HeaderLabel = 					{inheritable:false};		// "string"
+DataGridColumnDefinition._StyleTypes.HeaderText = 					StyleableBase.EStyleType.NORMAL;		// "string"
 
 /**
  * @style HeaderItemClass CanvasElement
  * 
  * The DataRenderer CanvasElement constructor to be used for the column header. 
  */
-DataGridColumnDefinition._StyleTypes.HeaderItemClass = 				{inheritable:false};		// Element constructor()
+DataGridColumnDefinition._StyleTypes.HeaderItemClass = 				StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style HeaderItemStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the HeaderItem DataRenderer.
  */
-DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				{inheritable:false};		// StyleDefinition
+DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style CollectionSort CollectionSort
  * 
  * CollectionSort to be used to sort the column.
  */
-DataGridColumnDefinition._StyleTypes.CollectionSort = 				{inheritable:false};		// CollectionSort() 
+DataGridColumnDefinition._StyleTypes.CollectionSort = 				StyleableBase.EStyleType.NORMAL;		// CollectionSort() 
 
 /**
  * @style RowItemClass CanvasElement
  * 
  * The DataRenderer CanvasElement constructor to be used for this columns rows. 
  */
-DataGridColumnDefinition._StyleTypes.RowItemClass = 				{inheritable:false};		// Element constructor()
+DataGridColumnDefinition._StyleTypes.RowItemClass = 				StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style RowItemStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the RowItem DataRenderer.
  */
-DataGridColumnDefinition._StyleTypes.RowItemStyle = 				{inheritable:false};		// StyleDefinition
+DataGridColumnDefinition._StyleTypes.RowItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style RowItemLabelFunction Function
@@ -21043,7 +21809,32 @@ DataGridColumnDefinition._StyleTypes.RowItemStyle = 				{inheritable:false};		//
  * A function that returns a text string per a supplied collection item and columnIndex. 
  * function (itemData, columnIndex) { return "" }
  */
-DataGridColumnDefinition._StyleTypes.RowItemLabelFunction = 		{inheritable:false};		// function (data, columnIndex) { return "" }
+DataGridColumnDefinition._StyleTypes.RowItemLabelFunction = 		StyleableBase.EStyleType.NORMAL;		// function (data, columnIndex) { return "" }
+
+/**
+ * @style SelectionType string
+ * 
+ * Determines the selection type that the column will use. Allowable values are "row", "column", or "cell".
+ * Row selection will only affect other columns also set to "row".
+ */
+DataGridColumnDefinition._StyleTypes.SelectionType = 				StyleableBase.EStyleType.NORMAL;		
+
+/**
+ * @style Selectable boolean
+ * 
+ * When true, items in this column can be selected and the DataGrid will dispatch "changed" events.
+ * When SelectionType is set to "row" or "column", related items will also be set to a "selected" state.
+ */
+DataGridColumnDefinition._StyleTypes.Selectable = 					StyleableBase.EStyleType.NORMAL;	// true || false
+
+/**
+ * @style Highlightable boolean
+ * 
+ * When true, items in this column will be highlighted on mouseover, "over" state. 
+ * When SelectionType is set to "row" or "column", related items will also be set to an "over" state.
+ */
+DataGridColumnDefinition._StyleTypes.Highlightable = 				StyleableBase.EStyleType.NORMAL;	// true || false
+
 
 
 /////////Default Styles///////////////////////////////
@@ -21052,8 +21843,11 @@ DataGridColumnDefinition.StyleDefault = new StyleDefinition();
 
 DataGridColumnDefinition.StyleDefault.setStyle("PercentSize", 				100);							// number || null
 DataGridColumnDefinition.StyleDefault.setStyle("MinSize", 					12);							// number || null
+DataGridColumnDefinition.StyleDefault.setStyle("SelectionType", 			"row");							// "row" || "column" || "cell"
+DataGridColumnDefinition.StyleDefault.setStyle("Selectable", 				true);							// true || false
+DataGridColumnDefinition.StyleDefault.setStyle("Highlightable", 			true);							// true || false
 
-DataGridColumnDefinition.StyleDefault.setStyle("HeaderLabel", 				"");							// "string"
+DataGridColumnDefinition.StyleDefault.setStyle("HeaderText", 				"");							// "string"
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemClass", 			DataGridHeaderItemRenderer);	// Element constructor()
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemStyle", 			null);							// StyleDefinition
 DataGridColumnDefinition.StyleDefault.setStyle("CollectionSort", 			null);							// CollectionSort()
@@ -21116,14 +21910,14 @@ CheckboxElement._StyleTypes = Object.create(null);
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedUp" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedUpSkinClass = 			{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedUpSkinClass = 			StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedUpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedUp" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedUpTextColor String
@@ -21131,7 +21925,7 @@ CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			{inheritable:false};		/
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedUp" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedUpTextColor = 			{inheritable:false};		//"#000000"
+CheckboxElement._StyleTypes.HalfSelectedUpTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style HalfSelectedOverSkinClass CanvasElement
@@ -21139,14 +21933,14 @@ CheckboxElement._StyleTypes.HalfSelectedUpTextColor = 			{inheritable:false};		/
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedOver" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedOverSkinClass = 		{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedOverSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedOverSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedOver" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedOverTextColor String
@@ -21154,7 +21948,7 @@ CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedOver" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedOverTextColor = 		{inheritable:false};		//"#000000"
+CheckboxElement._StyleTypes.HalfSelectedOverTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style HalfSelectedDownSkinClass CanvasElement
@@ -21162,14 +21956,14 @@ CheckboxElement._StyleTypes.HalfSelectedOverTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedDown" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedDownSkinClass = 		{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedDownSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedDownSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedDown" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedDownTextColor String
@@ -21177,7 +21971,7 @@ CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		{inheritable:false};		
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedDown" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedDownTextColor = 		{inheritable:false};		//"#000000"
+CheckboxElement._StyleTypes.HalfSelectedDownTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style HalfSelectedDisabledSkinClass CanvasElement
@@ -21185,14 +21979,14 @@ CheckboxElement._StyleTypes.HalfSelectedDownTextColor = 		{inheritable:false};		
  * The CanvasElement constructor to be used for the checkbox skin when the checkbox is in the "halfSelectedDisabled" state. 
  * This will override SkinClass when equal or higher priority than SkinClass.
  */
-CheckboxElement._StyleTypes.HalfSelectedDisabledSkinClass = 	{inheritable:false};		//Element constructor()
+CheckboxElement._StyleTypes.HalfSelectedDisabledSkinClass = 	StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style HalfSelectedDisabledSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "halfSelectedDisabled" state skin element.
  */
-CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	{inheritable:false};		//StyleDefinition
+CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style HalfSelectedDisabledTextColor String
@@ -21200,7 +21994,7 @@ CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	{inheritable:false}
  * Hex color value to be used for the checkbox label when the checkbox is in the "halfSelectedDisabled" state. Format like "#FF0000" (red).
  * This will override TextColor when equal or higher priority than TextColor.
  */
-CheckboxElement._StyleTypes.HalfSelectedDisabledTextColor = 	{inheritable:false};		//"#000000"	
+CheckboxElement._StyleTypes.HalfSelectedDisabledTextColor = 	StyleableBase.EStyleType.NORMAL;		//"#000000"	
 
 
 ////////////Default Styles//////////////////////
@@ -21235,6 +22029,7 @@ CheckboxElement.StyleDefault.setStyle("HalfSelectedDisabledTextColor", 			"#8888
 //Skin Defaults
 CheckboxElement.UpSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundShape",					null);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderType", 						"solid");
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#333333");
@@ -21246,6 +22041,7 @@ CheckboxElement.UpSkinStyleDefault.setStyle("CheckColor", 						"#000000");
 
 CheckboxElement.OverSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderColor", 					"#333333");
@@ -21257,6 +22053,7 @@ CheckboxElement.OverSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DownSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderColor", 					"#333333");
@@ -21268,6 +22065,7 @@ CheckboxElement.DownSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DisabledSkinStyleDefault = new StyleDefinition();
 
+CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundShape",			null);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderType", 				"solid");
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 			1);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderColor", 				"#999999");
@@ -21367,35 +22165,19 @@ CheckboxElement.prototype._getSkinClass =
 	};
 	
 //@override	
-CheckboxElement.prototype._getSkinStyleDefinitions = 
+CheckboxElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "halfSelectedUp")
-			return this.getStyle("HalfSelectedUpSkinStyle");
-		else if (state == "halfSelectedOver")
-			return this.getStyle("HalfSelectedOverSkinStyle");
-		else if (state == "halfSelectedDown")
-			return this.getStyle("HalfSelectedDownSkinStyle");
-		else if (state == "halfSelectedDisabled")
-			return this.getStyle("HalfSelectedDisabledSkinStyle");
+			return "HalfSelectedUpSkinStyle";
+		if (state == "halfSelectedOver")
+			return "HalfSelectedOverSkinStyle";
+		if (state == "halfSelectedDown")
+			return "HalfSelectedDownSkinStyle";
+		if (state == "halfSelectedDisabled")
+			return "HalfSelectedDisabledSkinStyle";
 		
-		return CheckboxElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-	};
-
-//@override
-CheckboxElement.prototype._getSkinStyleDefinitionDefault =
-	function (state)
-	{
-		if (state == "halfSelectedUp")
-			return this._getDefaultStyle("HalfSelectedUpSkinStyle");
-		else if (state == "halfSelectedOver")
-			return this._getDefaultStyle("HalfSelectedOverSkinStyle");
-		else if (state == "halfSelectedDown")
-			return this._getDefaultStyle("HalfSelectedDownSkinStyle");
-		else if (state == "halfSelectedDisabled")
-			return this._getDefaultStyle("HalfSelectedDisabledSkinStyle");
-		
-		return CheckboxElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
+		return CheckboxElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
 	};	
 	
 //@override
@@ -21428,20 +22210,27 @@ CheckboxElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
 		CheckboxElement.base.prototype._doStylesUpdated.call(this, stylesMap);
-	
-		//Always update these, they don't do anything if no changes, and
-		//this already maps our current state to our skin class.
-		this._updateSkinClass("halfSelectedUp");
-		this._updateSkinStyleDefinitions("halfSelectedUp");
+
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "HalfSelectedUpSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedUp");
+		if ("HalfSelectedUpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedUp");
 		
-		this._updateSkinClass("halfSelectedOver");
-		this._updateSkinStyleDefinitions("halfSelectedOver");
+		if ("SkinClass" in stylesMap || "HalfSelectedOverSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedOver");
+		if ("HalfSelectedOverSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedOver");
 		
-		this._updateSkinClass("halfSelectedDown");
-		this._updateSkinStyleDefinitions("halfSelectedDown");
+		if ("SkinClass" in stylesMap || "HalfSelectedDownSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedDown");
+		if ("HalfSelectedDownSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedDown");
 		
-		this._updateSkinClass("HalfSelectedDisabled");
-		this._updateSkinStyleDefinitions("halfSelectedDisabled");
+		if ("SkinClass" in stylesMap || "HalfSelectedDisabledSkinClass" in stylesMap)
+			this._updateSkinClass("halfSelectedDisabled");
+		if ("HalfSelectedDisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("halfSelectedDisabled");
 	};	
 	
 	
@@ -21849,7 +22638,7 @@ function CanvasManager()
 	this._updateMeasureQueue = new CmDepthQueue();
 	this._updateLayoutQueue = new CmDepthQueue();
 	this._updateRenderQueue = new CmDepthQueue();
-
+	this._updateRedrawRegionQueue = new CmDepthQueue();
 	this._compositeRenderQueue = new CmDepthQueue();
 	
 	//Used to store the add/remove events we need to dispatch after elements are added/removed from the display chain.
@@ -21885,7 +22674,6 @@ function CanvasManager()
 	
 	this._currentLocale = "en-us";
 	
-	this._redrawRegionInvalid = true;
 	this._redrawRegionPrevMetrics = null;
 	
 	//Now call base
@@ -22325,7 +23113,7 @@ CanvasManager._StyleTypes = Object.create(null);
  * 
  * When true the canvas redraw region will be displayed.
  */
-CanvasManager._StyleTypes.ShowRedrawRegion = 								{inheritable:false};		
+CanvasManager._StyleTypes.ShowRedrawRegion = 								StyleableBase.EStyleType.NORMAL;		
 
 
 /////////////Default Styles///////////////////////////////
@@ -22716,10 +23504,14 @@ CanvasManager.prototype.updateNow =
 			}
 		}
 		
-		if (this._redrawRegionInvalid == true)
+		var queuedElement = null;
+		while (this._updateRedrawRegionQueue.length > 0)
 		{
-			this._validateRedrawRegion(this, false);
-			this._redrawRegionInvalid = false;
+			queuedElement = this._updateRedrawRegionQueue.removeLargest().data;
+			
+			//Dont re-validate children of parents that have already been validated.
+			if (queuedElement._redrawRegionInvalid == true)
+				this._validateRedrawRegion(queuedElement, false);
 		}
 		
 		//Render composite layers.
@@ -22798,6 +23590,8 @@ CanvasManager.prototype._updateCompositeCanvas =
 CanvasManager.prototype._validateRedrawRegion = 
 	function (element, forceRegionUpdate)
 	{
+		element._redrawRegionInvalid = false;
+	
 		var newCompositeMetrics = [];
 		var oldVisible = element._renderVisible;
 		

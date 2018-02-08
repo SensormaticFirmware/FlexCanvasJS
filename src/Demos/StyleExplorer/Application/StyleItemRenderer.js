@@ -1,11 +1,14 @@
 
-function StyleItemRenderer()
+//Renders style editing row & substyle StyleListRenderer if applicable.
+
+function StyleItemRenderer() //extends ListContainer
 {
 	StyleItemRenderer.base.prototype.constructor.call(this);
 	
 	////Layout
 	this.setStyle("PercentWidth", 100);
 	this.setStyle("LayoutGap", 4);
+	this.setStyle("LayoutDirection", "vertical");
 	
 		this._styleSelectBox = new ListContainerElement();
 		this._styleSelectBox.setStyle("LayoutDirection", "horizontal");
@@ -16,20 +19,22 @@ function StyleItemRenderer()
 	
 			this._labelStyleName = new LabelElement();
 			this._labelStyleName.setStyle("PercentWidth", 100);
+			this._labelStyleName.setStyle("PaddingRight", 20);
 			
 			this._buttonClearStyle = new ButtonElement();
 			this._buttonClearStyle.setStyleDefinitions(clearStyleButtonStyle);
 			
 			this._styleNullCheckbox = null;		//null checkbox
-			this._styleChangeControl = null; 	//Dynamic
+			this._styleChangeControl = null; 	//Dynamic (Dropdown, TextInput, etc)
 			
 		this._styleSelectBox.addElement(this._labelStyleName);
 		this._styleSelectBox.addElement(this._buttonClearStyle);
 	
-		this._styleListRenderer = null; 	//Renders our list of substyles
-		
 	this.addElement(this._styleSelectBox);
 	
+		this._styleListRenderer = null; 	//Renders list of substyles
+	
+	//this.addElement(this._styleListRenderer); //Added dynamically
 	
 	////Event handlers
 	var _self = this;
@@ -56,8 +61,8 @@ function StyleItemRenderer()
 	
 	
 	////Functional
-	this._styleControlType = null;
 	
+	this._styleControlType = null;	
 }
 
 //Inherit from ListContainer
@@ -72,9 +77,9 @@ StyleItemRenderer.prototype.setStyleControlType =
 	
 		this._labelStyleName.setStyle("Text", styleControlType.styleName);
 		
-		//Remove elements and clean up listener.
+		//Remove existing elements (except label and clear button)
 		while (this._styleSelectBox.getNumElements() > 2)
-			this._styleSelectBox.removeElementAt(1).removeEventListener("changed", this._onValueChangedInstance);
+			this._styleSelectBox.removeElementAt(1);
 		
 		var currentValue = undefined;
 		if (styleControlType.styleName in styleControlType.styleDefinition._styleMap)
@@ -175,9 +180,10 @@ StyleItemRenderer.prototype._onValueChanged =
 	{
 		var value;
 		
+		//Only 1 available value
 		if (this._styleControlType.allowValues != null && this._styleControlType.allowValues.length == 1)
 			value = this._styleControlType.allowValues[0].value;
-		else
+		else //Get value from control
 		{
 			if (this._styleChangeControl instanceof TextInputElement)
 				value = this._styleChangeControl.getText();
@@ -199,6 +205,14 @@ StyleItemRenderer.prototype._updateStyleValue =
 			parent = parent.parent;
 		}
 
+		//Trim out all the "Style" text except for at the end. (Reduce ridiculously long substyle names)
+		var sIndexOf = styleDefName.indexOf("Style");
+		while (sIndexOf != -1 && sIndexOf != styleDefName.length - 5)
+		{
+			styleDefName = (styleDefName.substring(0, sIndexOf) + styleDefName.substring(sIndexOf + 5));
+			sIndexOf = styleDefName.indexOf("Style");
+		}
+		
 		this._styleControlType.styleListCodeString = "";
 		this._styleControlType.styleItemCodeString = (styleDefName + ".setStyle(\"" + this._styleControlType.styleName + "\", ");
 		
@@ -211,8 +225,18 @@ StyleItemRenderer.prototype._updateStyleValue =
 			}
 			else if (this._styleControlType.styleType == "class")
 			{
-				this._styleControlType.styleListCodeString = "var " + styleDefName + this._styleControlType.styleName + " = new " + value.name + "();\n";
-				this._styleControlType.styleItemCodeString += (styleDefName + this._styleControlType.styleName + ");"); 
+				var subStyleName = styleDefName + this._styleControlType.styleName;
+				
+				//Trim sub style name of excessive "Style" text.
+				sIndexOf = subStyleName.indexOf("Style");
+				while (sIndexOf != -1 && sIndexOf != subStyleName.length - 5)
+				{
+					subStyleName = (subStyleName.substring(0, sIndexOf) + subStyleName.substring(sIndexOf + 5));
+					sIndexOf = subStyleName.indexOf("Style");
+				}
+				
+				this._styleControlType.styleListCodeString = "var " + subStyleName + " = new " + value.toString().match(/function ([A-Z]{1}[a-zA-Z]*)/)[1] + "();\r\n";
+				this._styleControlType.styleItemCodeString += (subStyleName + ");"); 
 				
 				var existingInstance = undefined;
 				if (this._styleControlType.styleName in this._styleControlType.styleDefinition._styleMap)
@@ -239,13 +263,14 @@ StyleItemRenderer.prototype._updateStyleValue =
 		else
 			this._styleControlType.styleItemCodeString += "null);"; 
 		
-		this._styleControlType.styleItemCodeString += "\n";
+		this._styleControlType.styleItemCodeString += "\r\n";
 		
 		this._styleControlType.styleDefinition.setStyle(this._styleControlType.styleName, value);
 		
-		if (value instanceof StyleDefinition)
+		if (value instanceof StyleDefinition) //Substyle
 		{
 			this._styleControlType.buildControlStyleTypeLists();
+			
 			if (this._styleControlType.styleList.getLength() > 0)
 			{
 				this._labelStyleName.setStyle("TextStyle", "bold");

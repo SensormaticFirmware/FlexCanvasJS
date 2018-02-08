@@ -36,7 +36,7 @@ ArrowShape._StyleTypes = Object.create(null);
  * Determines the direction that the arrow or triangle will point. Acceptable values are "up", "down", "left", and "right".
  * Other styles are named as such when the Arrow is pointed "up". Styles do not change with orientation.
  */
-ArrowShape._StyleTypes.Direction = 						{inheritable:false};		// "up" || "down" || "left" || "right"
+ArrowShape._StyleTypes.Direction = 						StyleableBase.EStyleType.NORMAL;		// "up" || "down" || "left" || "right"
 
 /**
  * @style RectBaseWidth Number
@@ -44,7 +44,7 @@ ArrowShape._StyleTypes.Direction = 						{inheritable:false};		// "up" || "down"
  * The size in pixels used for the width of the rectangular base of the arrow. Setting this to zero creates a triangle.
  * It is preferrable to use RectBasePercentWidth so that the arrow can scale.
  */
-ArrowShape._StyleTypes.RectBaseWidth = 					{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBaseWidth = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RectBaseHeight Number
@@ -52,7 +52,7 @@ ArrowShape._StyleTypes.RectBaseWidth = 					{inheritable:false};		// number || n
  * The size in pixels used for the height of the rectangular base of the arrow. Setting this to zero creates a triangle.
  * It is preferrable to use RectBasePercentHeight so that the arrow can scale.
  */
-ArrowShape._StyleTypes.RectBaseHeight = 				{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBaseHeight = 				StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RectBasePercentWidth Number
@@ -60,7 +60,7 @@ ArrowShape._StyleTypes.RectBaseHeight = 				{inheritable:false};		// number || n
  * The percentage of available width to use for the width of the rectangular base of the arrow. 
  * Acceptable values are between 0 and 100. Setting this to zero will create a triangle.
  */
-ArrowShape._StyleTypes.RectBasePercentWidth = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBasePercentWidth = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style RectBasePercentHeight Number
@@ -68,7 +68,7 @@ ArrowShape._StyleTypes.RectBasePercentWidth = 			{inheritable:false};		// number
  * The percentage of available height to use for the height of the rectangular base of the arrow. 
  * Acceptable values are between 0 and 100. Setting this to zero will create a triangle.
  */
-ArrowShape._StyleTypes.RectBasePercentHeight = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.RectBasePercentHeight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadius Number
@@ -76,7 +76,7 @@ ArrowShape._StyleTypes.RectBasePercentHeight = 			{inheritable:false};		// numbe
  * Radius size in pixels for the rectangular base's corners. 
  * CornerRadius effects all corners of the rectangular base. 
  */
-ArrowShape._StyleTypes.CornerRadius = 					{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadius = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopLeft Number
@@ -84,7 +84,7 @@ ArrowShape._StyleTypes.CornerRadius = 					{inheritable:false};		// number || nu
  * Radius size in pixels for the rectangular base's top left corner. 
  * This will override the CornerRadius style unless it is null.
  */
-ArrowShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopRight Number
@@ -92,7 +92,7 @@ ArrowShape._StyleTypes.CornerRadiusTopLeft = 			{inheritable:false};		// number 
  * Radius size in pixels for the rectangular base's top right corner. 
  * This will override the CornerRadius style unless it is null.
  */
-ArrowShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusTopRight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomLeft Number
@@ -101,7 +101,7 @@ ArrowShape._StyleTypes.CornerRadiusTopRight = 			{inheritable:false};		// number
  * This will override the CornerRadius style unless it is null. Rounding both bottom corners
  * will give the effect of a rounded pointer. 
  */
-ArrowShape._StyleTypes.CornerRadiusBottomLeft = 		{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusBottomLeft = 		StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusBottomRight Number
@@ -110,7 +110,7 @@ ArrowShape._StyleTypes.CornerRadiusBottomLeft = 		{inheritable:false};		// numbe
  * This will override the CornerRadius style unless it is null. Rounding both bottom corners
  * will give the effect of a rounded pointer. 
  */
-ArrowShape._StyleTypes.CornerRadiusBottomRight = 		{inheritable:false};		// number || null
+ArrowShape._StyleTypes.CornerRadiusBottomRight = 		StyleableBase.EStyleType.NORMAL;		// number || null
 
 
 ////////////Default Styles///////////////////////////

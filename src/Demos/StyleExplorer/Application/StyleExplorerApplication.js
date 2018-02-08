@@ -1,4 +1,6 @@
 
+//Root application.
+
 function StyleExplorerApplication() //extends CanvasManager
 {
 	//Call base constructor
@@ -10,6 +12,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	//Using indentation to help visualize nest level of elements.
 	
 	this.setStyleDefinitions(canvasManagerStyle); //Set root styles
+	this.setStyle("TextSize", 12);
 	
 		this._applicationViewport = new ViewportElement();
 		this._applicationViewport.setStyle("PercentWidth", 100);
@@ -27,19 +30,35 @@ function StyleExplorerApplication() //extends CanvasManager
 					this._textTitle.setStyle("PercentWidth", 100);
 					this._textTitle.addStyleDefinition(textTitleStyle);
 					
-					this._languageSelectContainer = new ListContainerElement();
-					this._languageSelectContainer.setStyle("LayoutDirection", "horizontal");
-					this._languageSelectContainer.setStyle("LayoutVerticalAlign", "middle");
-					this._languageSelectContainer.setStyle("LayoutGap", 6);
+					this._settingsSelectContainer = new ListContainerElement();
+					this._settingsSelectContainer.setStyle("LayoutDirection", "horizontal");
+					this._settingsSelectContainer.setStyle("LayoutVerticalAlign", "middle");
+					this._settingsSelectContainer.setStyle("LayoutGap", 2);
 					
 						this._labelLanguage = new LabelElement();
+						this._labelLanguage.setStyle("PaddingLeft", 20);
 						this._dropdownLocale = new DropdownElement();
 						
-					this._languageSelectContainer.addElement(this._labelLanguage);
-					this._languageSelectContainer.addElement(this._dropdownLocale);
+						this._labelFontSize = new LabelElement();
+						this._labelFontSize.setStyle("PaddingLeft", 20);
+						
+						this._buttonFontSmaller = new ButtonElement();
+						this._buttonFontSmaller.setStyleDefinitions(fontSizeButtonStyle);
+						this._buttonFontSmaller.setStyle("ArrowDirection", "down");
+						this._buttonFontSmaller.setStyle("Enabled", false);
+					
+						this._buttonFontLarger = new ButtonElement();
+						this._buttonFontLarger.setStyleDefinitions(fontSizeButtonStyle);
+						this._buttonFontLarger.setStyle("ArrowDirection", "up");
+					
+					this._settingsSelectContainer.addElement(this._labelLanguage);
+					this._settingsSelectContainer.addElement(this._dropdownLocale);
+					this._settingsSelectContainer.addElement(this._labelFontSize);
+					this._settingsSelectContainer.addElement(this._buttonFontSmaller);
+					this._settingsSelectContainer.addElement(this._buttonFontLarger);					
 					
 				this._headerContainer.addElement(this._textTitle);
-				this._headerContainer.addElement(this._languageSelectContainer);
+				this._headerContainer.addElement(this._settingsSelectContainer);
 				
 				this._dividerHeader = new CanvasElement();
 				this._dividerHeader.setStyleDefinitions(hDividerLineStyle);
@@ -84,7 +103,6 @@ function StyleExplorerApplication() //extends CanvasManager
 					
 					this._styleSelectOuterContainer = new AnchorContainerElement();
 					this._styleSelectOuterContainer.setStyle("PercentHeight", 100);
-					this._styleSelectOuterContainer.setStyle("Width", 450);
 					
 						this._styleSelectPanelBackground = new CanvasElement();
 						this._styleSelectPanelBackground.setStyleDefinitions(panelBackgroundStyle);
@@ -105,9 +123,11 @@ function StyleExplorerApplication() //extends CanvasManager
 							this._stylesControlViewport = new ViewportElement();
 							this._stylesControlViewport.setStyle("PercentWidth", 100);
 							this._stylesControlViewport.setStyle("PercentHeight", 100);
+							this._stylesControlViewport.setStyle("MinWidth", 450);
+							this._stylesControlViewport.setStyle("MeasureContentWidth", true); //Allow horizontal expansion
 							
+								//Stores the root StyleListRenderer
 								this._stylesControlContainer = new ListContainerElement();
-								this._stylesControlContainer.setStyle("PaddingRight", 5);
 								
 							this._stylesControlViewport.setElement(this._stylesControlContainer);
 							
@@ -197,13 +217,15 @@ function StyleExplorerApplication() //extends CanvasManager
 								
 								this._sandboxCopyCodeContainer = new ListContainerElement();
 								this._sandboxCopyCodeContainer.setStyle("PercentWidth", 100);
+								this._sandboxCopyCodeContainer.setStyle("MinWidth", 200);	
 								this._sandboxCopyCodeContainer.setStyle("PaddingLeft", 5);
 								this._sandboxCopyCodeContainer.setStyle("PaddingRight", 5);
 								
-									this._buttonCopyCode = new ButtonElement();
-									this._buttonCopyCode.setStyle("PercentWidth", 100);
+									this._toggleButtonCopyCode = new ToggleButtonElement();
+									this._toggleButtonCopyCode.setStyle("PercentWidth", 100);
+									this._toggleButtonCopyCode.setStyle("AllowDeselect", false);
 								
-								this._sandboxCopyCodeContainer.addElement(this._buttonCopyCode);
+								this._sandboxCopyCodeContainer.addElement(this._toggleButtonCopyCode);
 									
 							this._sandboxControlOuterContainer.addElement(this._sandboxControlAndCodeContainer);
 							this._sandboxControlOuterContainer.addElement(this._sandboxCopyCodeContainer);
@@ -289,6 +311,52 @@ function StyleExplorerApplication() //extends CanvasManager
 		{
 			_self._onEnterFrameStyleCodeUpdate(event);
 		};
+	this._onButtonFontClickInstance = 
+		function (event)
+		{
+			if (event.getTarget() == _self._buttonFontSmaller)
+				_self._onButtonFontSmallerClick(event);
+			else
+				_self._onButtonFontLargerClick(event);
+		};
+		
+	//////Handle code copy... (Multi-line text highlight / copy is not yet implemented)	
+	this._onToggleButtonCopyCodeEventHandlerInstance = 
+		function (event)
+		{
+			if (event.getType() == "changed")
+				_self._onToggleButtonCopyCodeChanged(event);
+			else if (event.getType() == "keydown")
+				_self._onToggleButtonCopyCodeKeydown(event);
+			else if (event.getType() == "focusout")
+				_self._onToggleButtonCopyCodeFocusout(event);
+		};	
+ 	this._onCopyCutCodeInstance = //Handles *browser* event (FF, Chrome, Webkit)
+ 		function (event)
+ 		{
+	 		window.removeEventListener("copy", _self._onCopyCutCodeInstance);
+			
+			try
+			{
+				if (event.clipboardData)
+					_self._onCopyCutCode(event.clipboardData);
+				
+				if (event.preventDefault)
+					event.preventDefault();
+				
+				return false;
+			}
+			catch (ex)
+			{
+				
+			}
+ 		};
+	this._onCopyCutCodeEnterFrameCleanupInstance = 
+		function (event)
+		{
+			_self.removeEventListener("enterframe", _self._onCopyCutCodeEnterFrameCleanupInstance);
+			window.removeEventListener("copy", _self._onCopyCutCodeInstance);
+		};	
 		
 	//Add event listeners	
 	this.addEventListener("localechanged", this._onLocaleChangedInstance);
@@ -296,11 +364,30 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._dropdownLocale.addEventListener("changed", this._onDropdownLocaleChangedInstance);
 	this._dataListControls.addEventListener("changed", this._onDataListControlsChangedInstance);
 	this._sandboxHeaderRadioButtonGroup.addEventListener("changed", this._onSandboxHeaderRadioButtonGroupChangedInstance);
+	this._buttonFontSmaller.addEventListener("click", this._onButtonFontClickInstance);
+	this._buttonFontLarger.addEventListener("click", this._onButtonFontClickInstance);
+	
+	//Handle code copy... (Multi-line text highlight / copy is not yet implemented)
+	this._toggleButtonCopyCode.addEventListener("changed", this._onToggleButtonCopyCodeEventHandlerInstance);
+	this._toggleButtonCopyCode.addEventListener("keydown", this._onToggleButtonCopyCodeEventHandlerInstance);
+	this._toggleButtonCopyCode.addEventListener("focusout", this._onToggleButtonCopyCodeEventHandlerInstance);
 	
 	
 	/////////////////FUNCTIONAL///////////////////////////////
 	
+	var i = 0;
+	
+	//Select style list we're currently displaying.
 	this._currentListRenderer = null;
+	
+	//Build locale Dropdown data
+	this._dropdownLocaleCollection = new ListCollection();
+	this._dropdownLocaleCollection.addItem({key:"en-us", label:"English"});
+	this._dropdownLocaleCollection.addItem({key:"es-es", label:"Español"});
+	
+	//Apply data to Dropdown.
+	this._dropdownLocale.setListCollection(this._dropdownLocaleCollection);
+	this._dropdownLocale.setSelectedIndex(0);
 	
 	//////Build controls and style data//////
 	this._dataListControlsCollection = new ListCollection();
@@ -313,30 +400,32 @@ function StyleExplorerApplication() //extends CanvasManager
 	buttonControl.setStyleDefinitions(buttonDef);
 	
 	var buttonControlStyleType = new ControlStyleType("", "ButtonStyle", "root", false, false, buttonControl, null, null, null);
-	buttonControlStyleType.styleListCodeString = "var ButtonStyle = new StyleDefinition();\n";
+	buttonControlStyleType.styleListCodeString = "var ButtonStyle = new StyleDefinition();\r\n";
 	
-	buttonControlStyleType.buildControlStyleTypeLists();
+	buttonControlStyleType.buildControlStyleTypeLists(buttonDef);
 	
 	this._dataListControlsCollection.addItem({label:"Button", 
 											control:buttonControl, 
-											rootControlStyleType:buttonControlStyleType});
+											rootControlStyleType:buttonControlStyleType,
+											list:null});
 	//CanvasElement
 	var canvasElementDef = new StyleDefinition();
 	canvasElementDef.setStyle("BackgroundColor", "#FFFF00");
-	canvasElementDef.setStyle("MinWidth", 75);
-	canvasElementDef.setStyle("MinHeight", 75);
+	canvasElementDef.setStyle("Width", 75);
+	canvasElementDef.setStyle("Height", 75);
 	
 	var canvasElementControl = new CanvasElement();
 	canvasElementControl.setStyleDefinitions(canvasElementDef);
 	
 	var canvasElementControlStyleType = new ControlStyleType("", "CanvasElementStyle", "root", false, false, canvasElementControl, null, null, null);
-	canvasElementControlStyleType.styleListCodeString = "var CanvasElementStyle = new StyleDefinition();\n";
+	canvasElementControlStyleType.styleListCodeString = "var CanvasElementStyle = new StyleDefinition();\r\n";
 	
-	canvasElementControlStyleType.buildControlStyleTypeLists();
+	canvasElementControlStyleType.buildControlStyleTypeLists(canvasElementDef);
 	
 	this._dataListControlsCollection.addItem({label:"CanvasElement", 
 											control:canvasElementControl, 
-											rootControlStyleType:canvasElementControlStyleType});
+											rootControlStyleType:canvasElementControlStyleType,
+											list:null});
 	//ToggleButtonElement
 	var toggleButtonDef = new StyleDefinition();
 	toggleButtonDef.setStyle("Text", "My Text");
@@ -345,13 +434,14 @@ function StyleExplorerApplication() //extends CanvasManager
 	toggleButtonControl.setStyleDefinitions(toggleButtonDef);
 	
 	var toggleButtonControlStyleType = new ControlStyleType("", "ToggleButtonStyle", "root", false, false, toggleButtonControl, null, null, null);
-	toggleButtonControlStyleType.styleListCodeString = "var ToggleButtonStyle = new StyleDefinition();\n";
+	toggleButtonControlStyleType.styleListCodeString = "var ToggleButtonStyle = new StyleDefinition();\r\n";
 	
-	toggleButtonControlStyleType.buildControlStyleTypeLists();
+	toggleButtonControlStyleType.buildControlStyleTypeLists(toggleButtonDef);
 	
 	this._dataListControlsCollection.addItem({label:"ToggleButton", 
 											control:toggleButtonControl, 
-											rootControlStyleType:toggleButtonControlStyleType});
+											rootControlStyleType:toggleButtonControlStyleType,
+											list:null});
 	//RadioButtonElement
 	var radioButtonDef = new StyleDefinition();
 	radioButtonDef.setStyle("Text", "My Text");
@@ -360,13 +450,14 @@ function StyleExplorerApplication() //extends CanvasManager
 	radioButtonControl.setStyleDefinitions(radioButtonDef);
 	
 	var radioButtonControlStyleType = new ControlStyleType("", "RadioButtonStyle", "root", false, false, radioButtonControl, null, null, null);
-	radioButtonControlStyleType.styleListCodeString = "var RadioButtonStyle = new StyleDefinition();\n";
+	radioButtonControlStyleType.styleListCodeString = "var RadioButtonStyle = new StyleDefinition();\r\n";
 	
-	radioButtonControlStyleType.buildControlStyleTypeLists();
+	radioButtonControlStyleType.buildControlStyleTypeLists(radioButtonDef);
 	
 	this._dataListControlsCollection.addItem({label:"RadioButton", 
 											control:radioButtonControl, 
-											rootControlStyleType:radioButtonControlStyleType});
+											rootControlStyleType:radioButtonControlStyleType,
+											list:null});
 	//CheckboxElement
 	var checkboxDef = new StyleDefinition();
 	checkboxDef.setStyle("Text", "My Text");
@@ -375,13 +466,14 @@ function StyleExplorerApplication() //extends CanvasManager
 	checkboxControl.setStyleDefinitions(checkboxDef);
 	
 	var checkboxControlStyleType = new ControlStyleType("", "CheckboxStyle", "root", false, false, checkboxControl, null, null, null);
-	checkboxControlStyleType.styleListCodeString = "var CheckboxStyle = new StyleDefinition();\n";
+	checkboxControlStyleType.styleListCodeString = "var CheckboxStyle = new StyleDefinition();\r\n";
 	
-	checkboxControlStyleType.buildControlStyleTypeLists();
+	checkboxControlStyleType.buildControlStyleTypeLists(checkboxDef);
 	
 	this._dataListControlsCollection.addItem({label:"Checkbox", 
 											control:checkboxControl, 
-											rootControlStyleType:checkboxControlStyleType});
+											rootControlStyleType:checkboxControlStyleType,
+											list:null});
 	//TextInputElement
 	var textInputDef = new StyleDefinition();
 	
@@ -389,27 +481,72 @@ function StyleExplorerApplication() //extends CanvasManager
 	textInputControl.setStyleDefinitions(textInputDef);
 	
 	var textInputControlStyleType = new ControlStyleType("", "TextInputStyle", "root", false, false, textInputControl, null, null, null);
-	textInputControlStyleType.styleListCodeString = "var TextInputStyle = new StyleDefinition();\n";
+	textInputControlStyleType.styleListCodeString = "var TextInputStyle = new StyleDefinition();\r\n";
 	
-	textInputControlStyleType.buildControlStyleTypeLists();
+	textInputControlStyleType.buildControlStyleTypeLists(textInputDef);
 	
 	this._dataListControlsCollection.addItem({label:"TextInput", 
 											control:textInputControl, 
-											rootControlStyleType:textInputControlStyleType});
+											rootControlStyleType:textInputControlStyleType,
+											list:null});
 	//LabelElement
 	var labelDef = new StyleDefinition();
+	labelDef.setStyle("Text", "My Text");
 	
 	var labelControl = new LabelElement();
 	labelControl.setStyleDefinitions(labelDef);
 	
 	var labelControlStyleType = new ControlStyleType("", "LabelStyle", "root", false, false, labelControl, null, null, null);
-	labelControlStyleType.styleListCodeString = "var LabelStyle = new StyleDefinition();\n";
+	labelControlStyleType.styleListCodeString = "var LabelStyle = new StyleDefinition();\r\n";
 	
-	labelControlStyleType.buildControlStyleTypeLists();
+	labelControlStyleType.buildControlStyleTypeLists(labelDef);
 	
 	this._dataListControlsCollection.addItem({label:"Label", 
 											control:labelControl, 
-											rootControlStyleType:labelControlStyleType});
+											rootControlStyleType:labelControlStyleType,
+											list:null});
+	//LabelElement
+	var imageDef = new StyleDefinition();
+	imageDef.setStyle("ImageSource", urlImgBlueMarble);
+	
+	var imageControl = new ImageElement();
+	imageControl.setStyleDefinitions(imageDef);
+	
+	var imageControlStyleType = new ControlStyleType("", "ImageStyle", "root", false, false, imageControl, null, null, null);
+	imageControlStyleType.styleListCodeString = "var ImageStyle = new StyleDefinition();\r\n";
+	
+	imageControlStyleType.buildControlStyleTypeLists(imageDef);
+	
+	this._dataListControlsCollection.addItem({label:"Image", 
+											control:imageControl, 
+											rootControlStyleType:imageControlStyleType,
+											list:null});
+	//TextElement
+	var textDef = new StyleDefinition();
+	textDef.setStyle("PercentWidth", 100);
+	textDef.setStyle("WordWrap", true);
+	textDef.setStyle("Multiline", true);
+	textDef.setStyle("Text", 
+		"1) Lorem ipsum dolor sit amet, consectetur adipiscing elit.\r\n" +
+		"2) Cras posuere sem varius, luctus erat id, tincidunt nibh.\r\n" +
+		"3) Nam nec augue imperdiet massa porta ultricies nec vel eros.\r\n" +
+		"4) Nulla tincidunt quam vitae nisi hendrerit, ut commodo mauris pretium.\r\n" +
+		"5) Maecenas mattis ante in sapien lacinia, in consectetur urna vulputate.\r\n" +
+		"\r\n" +
+		"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam feugiat ultricies ante et semper. Quisque eget vulputate massa. In hac habitasse platea dictumst. Cras consequat leo nec mauris facilisis, vel bibendum dui vulputate. Nulla facilisi.");
+	
+	var textControl = new TextElement();
+	textControl.setStyleDefinitions(textDef);
+	
+	var textControlStyleType = new ControlStyleType("", "TextStyle", "root", false, false, textControl, null, null, null);
+	textControlStyleType.styleListCodeString = "var TextStyle = new StyleDefinition();\r\n";
+	
+	textControlStyleType.buildControlStyleTypeLists(textDef);
+	
+	this._dataListControlsCollection.addItem({label:"Text", 
+											control:textControl, 
+											rootControlStyleType:textControlStyleType,
+											list:null});
 	//ScrollBarElement
 	var scrollBarDef = new StyleDefinition();
 	scrollBarDef.setStyle("LayoutDirection", "vertical");
@@ -419,22 +556,182 @@ function StyleExplorerApplication() //extends CanvasManager
 	var scrollBarControl = new ScrollBarElement();
 	scrollBarControl.setStyleDefinitions(scrollBarDef);
 	
-	var scrollBarControlStyleType = new ControlStyleType("", "ScrollBarStyle", "root", false, false, scrollBarControl, null, null, null);
-	scrollBarControlStyleType.styleListCodeString = "var ScrollBarStyle = new StyleDefinition();\n";
+	//Set some arbitrary page / view size so bar is not disabled. 
+	scrollBarControl.setScrollPageSize(1000);
+	scrollBarControl.setScrollViewSize(150);
+	scrollBarControl.setScrollLineSize(50);
 	
-	scrollBarControlStyleType.buildControlStyleTypeLists();
+	var scrollBarControlStyleType = new ControlStyleType("", "ScrollBarStyle", "root", false, false, scrollBarControl, null, null, null);
+	scrollBarControlStyleType.styleListCodeString = "var ScrollBarStyle = new StyleDefinition();\r\n";
+	
+	scrollBarControlStyleType.buildControlStyleTypeLists(scrollBarDef);
 	
 	this._dataListControlsCollection.addItem({label:"ScrollBar", 
 											control:scrollBarControl, 
-											rootControlStyleType:scrollBarControlStyleType});
+											rootControlStyleType:scrollBarControlStyleType,
+											list:null});
+	//DataListElement
+	var dataListScrollBarDef = new StyleDefinition();
+	dataListScrollBarDef.setStyle("PaddingTop", -1);
+	dataListScrollBarDef.setStyle("PaddingBottom", -1);
 	
+	var dataListDef = new StyleDefinition();
+	dataListDef.setStyle("LayoutDirection", "vertical");
+	dataListDef.setStyle("PercentHeight", 100);
+	dataListDef.setStyle("Width", 200);
+	dataListDef.setStyle("BackgroundColor", "#FAFAFA");
+	dataListDef.setStyle("BorderType", "solid");
+	dataListDef.setStyle("BorderThickness", 1);
+	dataListDef.setStyle("PaddingTop", 1);
+	dataListDef.setStyle("PaddingLeft", 1);
+	dataListDef.setStyle("PaddingBottom", 1);
+	dataListDef.setStyle("ScrollBarStyle", dataListScrollBarDef);
 	
-	//Set static collection sort
-	if (StyleExplorerApplication.LabelSort == null)
-		StyleExplorerApplication.LabelSort = new CollectionSort(StyleExplorerApplication.LabelSortFunction, false);
+	var dataListControl = new DataListElement();
+	dataListControl.setStyleDefinitions(dataListDef);
 	
-	//Apply sort
-	this._dataListControlsCollection.setCollectionSort(StyleExplorerApplication.LabelSort);
+	//Set some arbitrary data. 
+	var dataListCollection = new ListCollection();
+	for (i = 1; i <= 500; i++)
+		dataListCollection.addItem("Data Item - " + i);
+	
+	dataListControl.setListCollection(dataListCollection);
+	
+	var dataListControlStyleType = new ControlStyleType("", "DataListStyle", "root", false, false, dataListControl, null, null, null);
+	dataListControlStyleType.styleListCodeString = "var DataListStyle = new StyleDefinition();\r\n";
+	
+	dataListControlStyleType.buildControlStyleTypeLists(dataListDef);
+	
+	this._dataListControlsCollection.addItem({label:"DataList", 
+											control:dataListControl, 
+											rootControlStyleType:dataListControlStyleType,
+											list:null});
+	//DropdownElement
+	var dropdownDef = new StyleDefinition();
+	dropdownDef.setStyle("Text", "My Text");
+	
+	var dropdownControl = new DropdownElement();
+	dropdownControl.setStyleDefinitions(dropdownDef);
+	
+	//Set some arbitrary data. 
+	var dropdownListCollection = new ListCollection();
+	for (i = 1; i <= 50; i++)
+		dropdownListCollection.addItem("Data Item - " + i);
+	
+	dropdownControl.setListCollection(dropdownListCollection);
+	
+	var dropdownControlStyleType = new ControlStyleType("", "DropdownStyle", "root", false, false, dropdownControl, null, null, null);
+	dropdownControlStyleType.styleListCodeString = "var DropdownStyle = new StyleDefinition();\r\n";
+	
+	dropdownControlStyleType.buildControlStyleTypeLists(dropdownDef);
+	
+	this._dataListControlsCollection.addItem({label:"Dropdown", 
+											control:dropdownControl, 
+											rootControlStyleType:dropdownControlStyleType,
+											list:null});
+	//ListContainerElement
+	var listContainerDef = new StyleDefinition();
+	listContainerDef.setStyle("PercentWidth", 75);
+	listContainerDef.setStyle("PercentHeight", 50);
+	listContainerDef.setStyle("BackgroundColor", "#FFFFFF");
+	listContainerDef.setStyle("LayoutDirection", "vertical");
+	
+	var listContainerControl = new ListContainerElement();
+	listContainerControl.setStyleDefinitions(listContainerDef);
+	
+	//Add some arbitrary controls.
+	var listContainerButton1 = new ButtonElement();
+	listContainerButton1.setStyle("Text", "Measured X Measured");
+	
+	var listContainerButton2 = new ButtonElement();
+	listContainerButton2.setStyle("Text", "25% X 25%");
+	listContainerButton2.setStyle("PercentWidth", 25);
+	listContainerButton2.setStyle("PercentHeight", 25);
+	
+	var listContainerButton3 = new ButtonElement();
+	listContainerButton3.setStyle("Text", "50% X 50%");
+	listContainerButton3.setStyle("PercentWidth", 50);
+	listContainerButton3.setStyle("PercentHeight", 50);
+	
+	listContainerControl.addElement(listContainerButton1);
+	listContainerControl.addElement(listContainerButton2);
+	listContainerControl.addElement(listContainerButton3);
+	
+	var listContainerControlStyleType = new ControlStyleType("", "ListContainerStyle", "root", false, false, listContainerControl, null, null, null);
+	listContainerControlStyleType.styleListCodeString = "var ListContainerStyle = new StyleDefinition();\r\n";
+	
+	listContainerControlStyleType.buildControlStyleTypeLists(listContainerDef);
+	
+	this._dataListControlsCollection.addItem({label:"ListContainer", 
+											control:listContainerControl, 
+											rootControlStyleType:listContainerControlStyleType,
+											list:null});
+	//DataGridElement
+	var dataGridDef = new StyleDefinition();
+	dataGridDef.setStyle("PercentWidth", 100);
+	dataGridDef.setStyle("PercentHeight", 100);
+	
+	var dataGridControl = new DataGridElement();
+	dataGridControl.setStyleDefinitions(dataGridDef);
+	
+	//Set some arbitrary columns & data.
+	var column1 = new DataGridColumnDefinition();
+	column1.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col1; });
+	column1.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col1 < objB.col1 ? -1 : objA.col1 > objB.col1 ? 1 : 0; }));
+	column1.setStyle("HeaderText", "Column1");
+	dataGridControl.addColumnDefinition(column1);
+	
+	var column2 = new DataGridColumnDefinition();
+	column2.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col2; });
+	column2.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col2 < objB.col2 ? -1 : objA.col2 > objB.col2 ? 1 : 0; }));
+	column2.setStyle("HeaderText", "Column2");
+	dataGridControl.addColumnDefinition(column2);
+	
+	var column3HeaderItemStyle = new StyleDefinition();
+	column3HeaderItemStyle.setStyle("TextHorizontalAlign", "right");
+	column3HeaderItemStyle.setStyle("PaddingRight", 18);
+	
+	var column3RowItemStyle = new StyleDefinition();
+	column3RowItemStyle.setStyle("TextHorizontalAlign", "right");
+	
+	var column3 = new DataGridColumnDefinition();
+	column3.setStyle("RowItemLabelFunction", function (data, columnIndex) { return data.col3; });
+	column3.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return Number(objA.col3) < Number(objB.col3) ? -1 : Number(objA.col3) > Number(objB.col3) ? 1 : 0; }));
+	column3.setStyle("HeaderText", "Column3");
+	column3.setStyle("HeaderItemStyle", column3HeaderItemStyle);
+	column3.setStyle("RowItemStyle", column3RowItemStyle);
+	dataGridControl.addColumnDefinition(column3);
+	
+	var dataGridListCollection = new ListCollection();
+	for (i = 1; i <= 500; i++)
+		dataGridListCollection.addItem({col1:"Column1 Data " + i, col2:"Column2 Data " + i, col3:i.toString()});
+	
+	dataGridControl.setListCollection(dataGridListCollection);
+	
+	var dataGridControlStyleType = new ControlStyleType("", "DataGridStyle", "root", false, false, dataGridControl, null, null, null);
+	dataGridControlStyleType.styleListCodeString = "var DataGridStyle = new StyleDefinition();\r\n";
+	dataGridControlStyleType.buildControlStyleTypeLists(dataGridDef);
+	
+	var dataGridColumn1ControlStyleType = new ControlStyleType("", "DataGridColumn1Style", "class", false, false, dataGridControl, null, null, null);
+	dataGridColumn1ControlStyleType.styleListCodeString = "var DataGridColumn1Style = new DataGridColumnDefinition();\r\n";
+	dataGridColumn1ControlStyleType.buildControlStyleTypeLists(column1);
+	
+	var dataGridColumn2ControlStyleType = new ControlStyleType("", "DataGridColumn2Style", "class", false, false, dataGridControl, null, null, null);
+	dataGridColumn2ControlStyleType.styleListCodeString = "var DataGridColumn2Style = new DataGridColumnDefinition();\r\n";
+	dataGridColumn2ControlStyleType.buildControlStyleTypeLists(column2);
+	
+	var dataGridColumn3ControlStyleType = new ControlStyleType("", "DataGridColumn3Style", "class", false, false, dataGridControl, null, null, null);
+	dataGridColumn3ControlStyleType.styleListCodeString = "var DataGridColumn3Style = new DataGridColumnDefinition();\r\n";
+	dataGridColumn3ControlStyleType.buildControlStyleTypeLists(column3);
+	
+	this._dataListControlsCollection.addItem({label:"DataGrid", 
+											control:dataGridControl, 
+											rootControlStyleType:[dataGridControlStyleType, dataGridColumn1ControlStyleType, dataGridColumn2ControlStyleType, dataGridColumn3ControlStyleType],
+											list:null});
+	////////////////////////////////////
+	
+	//Associate sort with controls collection
+	this._dataListControlsCollection.setCollectionSort(new CollectionSort(StyleExplorerApplication.LabelSortFunction));
 	
 	//Do sort
 	this._dataListControlsCollection.sort();
@@ -444,15 +741,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	//////
 	
-	//Build locale Dropdown data
-	this._dropdownLocaleCollection = new ListCollection();
-	this._dropdownLocaleCollection.addItem({key:"en-us", label:"English"});
-	this._dropdownLocaleCollection.addItem({key:"es-es", label:"Español"});
-	
-	//Apply data to Dropdown.
-	this._dropdownLocale.setListCollection(this._dropdownLocaleCollection);
-	this._dropdownLocale.setSelectedIndex(0);
-	
+	//Setup Sandbox / Code views (spoof event)
 	this._onSandboxHeaderRadioButtonGroupChanged(null);
 }
 
@@ -461,7 +750,7 @@ StyleExplorerApplication.prototype = Object.create(CanvasManager.prototype);
 StyleExplorerApplication.prototype.constructor = StyleExplorerApplication;
 StyleExplorerApplication.base = CanvasManager;
 
-//Static
+/////Static
 StyleExplorerApplication.LabelSortFunction = 
 	function (objA, objB)
 	{
@@ -472,24 +761,16 @@ StyleExplorerApplication.LabelSortFunction =
 		
 		return 0;
 	};
-	
-StyleExplorerApplication.LabelSort = null; //Set via constructor (avoid file ordering dependencies)
 
-//Internal
+/////Internal
 StyleExplorerApplication.prototype._onLocaleChanged = 
 	function (event)
 	{
-		//Bail if not attached to manager.
-		//This is not necessary here (it'll never happen), but its possible
-		//under other scenarios when an element is added and immediately removed
-		//before this event gets to fire. Best always to check.
-		if (this.getManager() == null) 
-			return;
-	
 		//Get locale from manager
 		var currentLocale = this.getManager().getLocale();
 		
 		//Update text per current locale
+		this._labelFontSize.setStyle("Text", 				localeStrings[currentLocale]["Text Size"]);
 		this._textTitle.setStyle("Text", 					localeStrings["all"]["FlexCanvasJS"] + " " + localeStrings["all"]["Style Explorer"]);
 		this._labelLanguage.setStyle("Text", 				localeStrings[currentLocale]["Language"]);
 		this._labelPoweredBy.setStyle("Text", 				localeStrings[currentLocale]["Powered By"] + " ");
@@ -498,9 +779,35 @@ StyleExplorerApplication.prototype._onLocaleChanged =
 		this._labelSelectStyle.setStyle("Text", 			localeStrings[currentLocale]["Select Styles"]);
 		this._radioButtonSandbox.setStyle("Text", 			localeStrings[currentLocale]["Sandbox"] + " (AnchorContainer)");
 		this._radioButtonStyleCode.setStyle("Text", 		localeStrings[currentLocale]["Style Code"]);
-		this._buttonCopyCode.setStyle("Text", 				localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
+		this._toggleButtonCopyCode.setStyle("Text", 		localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
 	};
 
+StyleExplorerApplication.prototype._onButtonFontLargerClick =
+	function (event)
+	{
+		var currentSize = this.getStyle("TextSize");
+		this.setStyle("TextSize", currentSize + 2);
+		
+		if (currentSize + 2 == 16)
+			this._buttonFontLarger.setStyle("Enabled", false);
+		
+		this._buttonFontSmaller.setStyle("Enabled", true);
+	};	
+	
+StyleExplorerApplication.prototype._onButtonFontSmallerClick =
+	function (event)
+	{
+		var currentSize = this.getStyle("TextSize");
+		this.setStyle("TextSize", currentSize - 2);
+		
+		if (currentSize - 2 == 12)
+			this._buttonFontSmaller.setStyle("Enabled", false);
+		
+		this._buttonFontLarger.setStyle("Enabled", true);
+	};
+	
+//Toggle visibility and layout of sandbox / style code. For best performance, 
+//always turn layout off with visibility unless you *want* the item to consume container space.
 StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
 	function (event)
 	{
@@ -536,27 +843,57 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 		while (this._sandboxControlContainer.getNumElements() > 0)
 			this._sandboxControlContainer.removeElementAt(0);
 		
-		//Purge style code
-		this._textSandboxStyleCode.setStyle("Text", "");
-		
 		//Bail if no selection
 		if (this._dataListControls.getSelectedIndex() == -1)
+		{
+			//Purge style code
+			this._textSandboxStyleCode.setStyle("Text", "");
+			
 			return;
+		}
 		
 		var controlData = this._dataListControls.getSelectedItem();
 		
 		//Add control to sandbox
 		this._sandboxControlContainer.addElement(controlData.control);
 		
-		//Create select style root list if does not exist.
+		//Create Select Style root StyleListRenderer if does not exist.
 		if (controlData.list == null)
 		{
-			controlData.list = new StyleListRenderer();
-			controlData.list.setStyleControlType(controlData.rootControlStyleType);
+			if (Array.isArray(controlData.rootControlStyleType))
+			{
+				controlData.list = new ListContainerElement();
+				controlData.list.setStyle("PercentWidth", 100);
+				controlData.list.setStyle("LayoutGap", 4);
+				
+				for (var i = 0; i < controlData.rootControlStyleType.length; i++)
+				{
+					var subList = new StyleListRenderer();
+					subList.setStyleControlType(controlData.rootControlStyleType[i]);
+					controlData.list.addElement(subList);
+					
+					//Add some gap between lists.
+					if (i != controlData.rootControlStyleType.length - 1)
+						subList.setStyle("PaddingBottom", 12);
+					
+					if (i < controlData.rootControlStyleType.length - 1)
+					{
+						var divider = new CanvasElement();
+						divider.setStyleDefinitions(hDividerLineStyle);
+						controlData.list.addElement(divider);
+					}
+				}
+			}
+			else
+			{
+				controlData.list = new StyleListRenderer();
+				controlData.list.setStyleControlType(controlData.rootControlStyleType);
+			}
+			
 			this._stylesControlContainer.addElement(controlData.list);
 		}
 		
-		//Hide old list
+		//Hide old list (its much more expensive to re-build the list than just hide/show it).
 		if (this._currentListRenderer != null)
 		{
 			this._currentListRenderer.setStyle("Visible", false);
@@ -572,14 +909,14 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 			this._currentListRenderer.setStyle("IncludeInLayout", true);
 		}
 		
+		//Update style code (spoof event).
 		this._onStylingChanged(null);
 	};
 	
 StyleExplorerApplication.prototype._onStylingChanged = 
 	function (event)
 	{
-		//We might get lots of stylingchanged events in a row when changing controls. 
-		//Updating the style code is expensive, so we defer till the next frame so we only process once.
+		//Updating the style code is expensive, so we defer till the next frame to spread the load.
 		if (this.hasEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance) == false)
 			this.addEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance);
 	};
@@ -591,7 +928,66 @@ StyleExplorerApplication.prototype._onEnterFrameStyleCodeUpdate =
 		this.removeEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance);
 		
 		//Update style code
-		this._textSandboxStyleCode.setStyle("Text", this._dataListControls.getSelectedItem().rootControlStyleType.generateStylingCode());
+		var rootControlStyleTypes = this._dataListControls.getSelectedItem().rootControlStyleType;
+		if (Array.isArray(rootControlStyleTypes))
+		{
+			var text = "";
+			for (var i = 0; i < rootControlStyleTypes.length; i++)
+				text += rootControlStyleTypes[i].generateStylingCode();
+		}
+		else
+			text = rootControlStyleTypes.generateStylingCode();
+			
+		this._textSandboxStyleCode.setStyle("Text", text);
 	};
 	
+	
+///////Handle code copy... (Multi-line text highlight / copy is not yet implemented)
+StyleExplorerApplication.prototype._onToggleButtonCopyCodeChanged = 
+	function (event)
+	{
+		this._toggleButtonCopyCode.setStyle("Text", localeStrings[this.getManager().getLocale()]["Press Ctrl C"]);
+	};
+	
+StyleExplorerApplication.prototype._onToggleButtonCopyCodeKeydown = 
+	function (elementKeyboardEvent)
+	{
+		var keyString = elementKeyboardEvent.getKey();
+		
+		if (keyString == "c" && elementKeyboardEvent.getCtrl() == true)
+		{
+			//IE
+			if (window.clipboardData)
+			{
+				this._onCopyCutCode(window.clipboardData);
+				elementKeyboardEvent.preventDefault();
+			} 
+			else //FF, Chrome, Webkit (Allow keyboard event to invoke the copy / paste listener)
+			{
+				window.addEventListener("copy", this._onCopyCutCodeInstance);
+				
+				//This is just to make sure we clean up the window "copy" listener.
+				//If the keyboard event gets canceled up stream the "copy" event wont fire and we 
+				//still need to remove the listener.
+				this.addEventListener("enterframe", this._onCopyCutCodeEnterFrameCleanupInstance);
+			}
+		}
+	};	
+	
+StyleExplorerApplication.prototype._onToggleButtonCopyCodeFocusout = 
+	function (event)
+	{
+		var locale = this.getManager().getLocale();
+	
+		this._toggleButtonCopyCode.setSelected(false);
+		this._toggleButtonCopyCode.setStyle("Text", localeStrings[locale]["Copy"] + " " + localeStrings[locale]["Style Code"]);
+	};	
+	
+StyleExplorerApplication.prototype._onCopyCutCode = 
+	function (clipboardData)
+	{
+		clipboardData.setData("Text", this._textSandboxStyleCode.getStyle("Text"));
+		
+		this._onToggleButtonCopyCodeFocusout(null);
+	};	
 	

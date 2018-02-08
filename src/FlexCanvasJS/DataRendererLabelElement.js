@@ -43,7 +43,7 @@ DataRendererLabelElement._StyleTypes = Object.create(null);
  * Hex color value to be used for the label when in the "up" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.UpTextColor = 				StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style AltTextColor String
@@ -51,7 +51,7 @@ DataRendererLabelElement._StyleTypes.UpTextColor = 				{inheritable:false};		//"
  * Hex color value to be used for the label when in the "alt" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.AltTextColor = 			{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.AltTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style OverTextColor String
@@ -59,7 +59,7 @@ DataRendererLabelElement._StyleTypes.AltTextColor = 			{inheritable:false};		//"
  * Hex color value to be used for the label when in the "over" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.OverTextColor = 			StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 /**
  * @style SelectedTextColor String
@@ -67,7 +67,7 @@ DataRendererLabelElement._StyleTypes.OverTextColor = 			{inheritable:false};		//
  * Hex color value to be used for the label when in the "selected" state. Format like "#FF0000" (red).
  * This will override the TextColor style of equal priority.
  */
-DataRendererLabelElement._StyleTypes.SelectedTextColor = 		{inheritable:false};		//"#000000"
+DataRendererLabelElement._StyleTypes.SelectedTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
 
 ////////////Default Styles///////////////////////
@@ -78,7 +78,6 @@ DataRendererLabelElement.StyleDefault.setStyle("PaddingTop", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingBottom", 			4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingLeft", 				4);
 DataRendererLabelElement.StyleDefault.setStyle("PaddingRight", 				4);
-DataRendererLabelElement.StyleDefault.setStyle("BorderType", 				"none");
 
 DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
@@ -132,7 +131,7 @@ DataRendererLabelElement.prototype._getTextColor =
 
 /**
  * @function _updateLabelTextColor
- * Updates the text color base on the current state.
+ * Updates the text color for the current state.
  */	
 DataRendererLabelElement.prototype._updateLabelTextColor = 
 	function ()

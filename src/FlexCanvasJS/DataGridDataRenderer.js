@@ -1,6 +1,6 @@
 
 /**
- * @depends DataRendererBaseElement.js
+ * @depends CanvasElement.js
  */
 
 ///////////////////////////////////////////////////////////////////////
@@ -8,7 +8,7 @@
 
 /**
  * @class DataGridDataRenderer
- * @inherits DataRendererBaseElement
+ * @inherits CanvasElement
  * 
  * Default DataGrid ListItemClass used to render DataGrid rows. Renders
  * column items per the parent DataGrid's column definitions. 
@@ -25,30 +25,30 @@ function DataGridDataRenderer()
 	//Use a containing element for the renderers so we dont interfere with our skins.
 	this._itemRenderersContainer = new CanvasElement();
 	this._addChild(this._itemRenderersContainer);
+	
+	var _self = this;
+	
+	this._onItemRenderersContainerMeasureCompleteInstance = 
+		function (event)
+		{
+			_self.__onItemRenderersContainerMeasureComplete(event);
+		};
+	
+	this._itemRenderersContainer.addEventListener("measurecomplete", this._onItemRenderersContainerMeasureCompleteInstance);
 }
 	
-//Inherit from DataRendererBaseElement
-DataGridDataRenderer.prototype = Object.create(DataRendererBaseElement.prototype);
+//Inherit from CanvasElement
+DataGridDataRenderer.prototype = Object.create(CanvasElement.prototype);
 DataGridDataRenderer.prototype.constructor = DataGridDataRenderer;
-DataGridDataRenderer.base = DataRendererBaseElement;
+DataGridDataRenderer.base = CanvasElement;
 
-//////////Default Styles/////////////////////////
-
-DataGridDataRenderer.StyleDefault = new StyleDefinition();
-
-//Skin Defaults///////
-DataGridDataRenderer.UpSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
-DataGridDataRenderer.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-
-DataGridDataRenderer.AltSkinStyleDefault = new StyleDefinition();
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
-DataGridDataRenderer.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
-/////////////////////
-
-DataGridDataRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridDataRenderer.UpSkinStyleDefault);	// StyleDefinition
-DataGridDataRenderer.StyleDefault.setStyle("AltSkinStyle", 						DataGridDataRenderer.AltSkinStyleDefault);	// StyleDefinition
-
+//@private
+DataGridDataRenderer.prototype.__onItemRenderersContainerMeasureComplete =
+	function (event)
+	{
+		this._invalidateMeasure();
+		this._invalidateLayout();
+	};
 
 //@Override
 DataGridDataRenderer.prototype._setListData = 
@@ -88,10 +88,69 @@ DataGridDataRenderer.prototype._setListData =
 		//Purge excess renderers.
 		while (this._itemRenderersContainer._children.length > this._listData._parentList._gridColumns.length)
 			this._itemRenderersContainer._removeChildAt(this._itemRenderersContainer._children.length - 1);
+	};
+	
+//@override	
+DataGridDataRenderer.prototype._setListSelected = 
+	function (selectedData)
+	{
+		DataGridDataRenderer.base.prototype._setListSelected.call(this, selectedData);
 		
-		//Invalidate, the item renderer container doesnt measure so wont do it for us.
-		this._invalidateMeasure();
-		this._invalidateLayout();
+		var columnData;
+		var columnSelectionType;
+		var columnSelectable;
+		var columnHighlightable;
+		var itemRenderer;
+		var itemRendererSelectedData;
+		
+		var overColumn = null;
+		if (selectedData.columnOverIndex >= 0 && selectedData.columnOverIndex < this._listData._parentList._gridColumns.length)
+			overColumn = this._listData._parentList._gridColumns[selectedData.columnOverIndex];
+		
+		var overColumnSelectionType = null;
+		if (overColumn != null)
+			overColumnSelectionType = overColumn.getStyle("SelectionType");
+		
+		for (var i = 0; i < this._itemRenderersContainer._children.length; i++)
+		{
+			columnData = this._listData._parentList._gridColumns[i];
+			columnSelectionType = columnData.getStyle("SelectionType");
+			columnSelectable = columnData.getStyle("Selectable");
+			columnHighlightable = columnData.getStyle("Highlightable");			
+			itemRenderer = this._itemRenderersContainer._getChildAt(i);
+
+			//Optimize, use existing data if available
+			itemRendererSelectedData = itemRenderer._listSelected;
+			if (itemRendererSelectedData == null)
+				itemRendererSelectedData = {highlight:false, selected:false};
+			else
+			{
+				itemRendererSelectedData.highlight = false;
+				itemRendererSelectedData.selected = false;
+			}
+			
+			if (columnSelectable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowIndex == this._listData._itemIndex && selectedData.columnIndex == -1) ||
+					(columnSelectionType == "column" && i == selectedData.columnIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnIndex && this._listData._itemIndex == selectedData.rowIndex))
+				{
+					itemRendererSelectedData.selected = true;
+				}
+			}
+			
+			if (columnHighlightable == true)
+			{
+				if ((columnSelectionType == "row" && selectedData.rowOverIndex == this._listData._itemIndex && overColumnSelectionType == "row") ||
+					(columnSelectionType == "column" && i == selectedData.columnOverIndex) ||
+					(columnSelectionType == "cell" && i == selectedData.columnOverIndex && this._listData._itemIndex == selectedData.rowOverIndex))
+				{
+					itemRendererSelectedData.highlight = true;
+				}
+			}
+			
+			itemRenderer._setListSelected(itemRendererSelectedData);
+		}
 	};
 	
 //@Override

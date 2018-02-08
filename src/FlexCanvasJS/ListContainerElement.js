@@ -41,28 +41,28 @@ ListContainerElement._StyleTypes = Object.create(null);
  * 
  * Determines the layout direction of this ListContainer. Allowable values are "horizontal" or "vertical".
  */
-ListContainerElement._StyleTypes.LayoutDirection = 			{inheritable:false};		// "horizontal" || "vertical"
+ListContainerElement._StyleTypes.LayoutDirection = 			StyleableBase.EStyleType.NORMAL;		// "horizontal" || "vertical"
 
 /**
  * @style LayoutGap Number
  * 
  * Space in pixels to leave between child elements.
  */
-ListContainerElement._StyleTypes.LayoutGap = 				{inheritable:false};		// number
+ListContainerElement._StyleTypes.LayoutGap = 				StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style LayoutVerticalAlign String
  * 
  * Child vertical alignment to be used when children do not fill all available space. Allowable values are "top", "bottom", or "middle". 
  */
-ListContainerElement._StyleTypes.LayoutVerticalAlign = 		{inheritable:false};		// "top" || "bottom" || "middle" 
+ListContainerElement._StyleTypes.LayoutVerticalAlign = 		StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" || "middle" 
 
 /**
  * @style LayoutHorizontalAlign String
  * 
  * Child horizontal alignment to be used when children do not fill all available space. Allowable values are "left", "right", or "center". 
  */
-ListContainerElement._StyleTypes.LayoutHorizontalAlign = 	{inheritable:false};		//"left" || "right" || "center"
+ListContainerElement._StyleTypes.LayoutHorizontalAlign = 	StyleableBase.EStyleType.NORMAL;		//"left" || "right" || "center"
 
 
 ////////////Default Styles////////////////////////////
@@ -90,7 +90,7 @@ ListContainerElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 			this._invalidateLayout();
 		}
-		else if ("LayoutAlign" in stylesMap)
+		else if ("LayoutVerticalAlign" in stylesMap || "LayoutHorizontalAlign" in stylesMap)
 			this._invalidateLayout();
 	};
 

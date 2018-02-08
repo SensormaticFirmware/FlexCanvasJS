@@ -8,7 +8,7 @@ FlexCanvasJS provides highly customizable user interactive canvas display elemen
 
 Most typical UI events including capture and bubbling phases are supported including but not limited to mouse, keyboard, focus, rollover, etc... 
 
-Complex scalable layouts are easily achieved by nesting container elements. Data driven containers such as DataList and DataGrid allow displaying very large data sets while only rendering what is visible on screen to maintain excellent performance and will bind to and automatically update as their associated data collection changes. 
+Complex scalable layouts are easily achieved by nesting container elements. Data driven containers such as DataList and DataGrid allow displaying very large data sets while only rendering what is visible on screen to maintain excellent performance and will bind too and automatically update as their associated data collection changes. 
 
 A robust styling and skinning system is provided allowing you to easily modify and customize the appearance and behaviour of any UI control. 
 

@@ -76,7 +76,7 @@ TextInputElement._StyleTypes = Object.create(null);
  * 
  * Maximum number of characters allowed.
  */
-TextInputElement._StyleTypes.MaxChars = 								{inheritable:false};		// number
+TextInputElement._StyleTypes.MaxChars = 								StyleableBase.EStyleType.NORMAL;		// number
 
 /**
  * @style SkinClass CanvasElement
@@ -84,7 +84,7 @@ TextInputElement._StyleTypes.MaxChars = 								{inheritable:false};		// number
  * The CanvasElement constructor type to apply to all skin states. 
  * Specific states such as UpSkinClass will override SkinClass.
  */
-TextInputElement._StyleTypes.SkinClass =								{inheritable:false};		//Element constructor()
+TextInputElement._StyleTypes.SkinClass =								StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinClass CanvasElement
@@ -92,14 +92,14 @@ TextInputElement._StyleTypes.SkinClass =								{inheritable:false};		//Element 
  * The CanvasElement constructor to be used for the skin when in the "up" state. 
  * This will override SkinClass.
  */
-TextInputElement._StyleTypes.UpSkinClass = 								{inheritable:false};		//Element constructor()
+TextInputElement._StyleTypes.UpSkinClass = 								StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
 /**
  * @style UpSkinStyle StyleDefinition
  * 
  * The StyleDefinition to apply to the "up" state skin element.
  */
-TextInputElement._StyleTypes.UpSkinStyle = 								{inheritable:false};		//StyleDefinition
+TextInputElement._StyleTypes.UpSkinStyle = 								StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
 /**
  * @style UpTextColor String
@@ -107,7 +107,7 @@ TextInputElement._StyleTypes.UpSkinStyle = 								{inheritable:false};		//Style
  * Hex color value to be used for the button TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextColor style.
  */
-TextInputElement._StyleTypes.UpTextColor = 								{inheritable:false};		// color "#000000"
+TextInputElement._StyleTypes.UpTextColor = 								StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
 /**
  * @style UpTextHighlightedColor String
@@ -115,7 +115,7 @@ TextInputElement._StyleTypes.UpTextColor = 								{inheritable:false};		// colo
  * Hex color value to be used for highlighted text when the TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextHighlightedColor style.
  */
-TextInputElement._StyleTypes.UpTextHighlightedColor = 					{inheritable:false};		// color "#FFFFFF"
+TextInputElement._StyleTypes.UpTextHighlightedColor = 					StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
 
 /**
  * @style UpTextHighlightedBackgroundColor String
@@ -123,7 +123,7 @@ TextInputElement._StyleTypes.UpTextHighlightedColor = 					{inheritable:false};	
  * Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextHighlightedBackgroundColor style.
  */
-TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	{inheritable:false};			// color "#000000"
+TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			// color "#000000"
 
 /**
  * @style DisabledSkinClass CanvasElement
@@ -131,14 +131,14 @@ TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	{inheritable:fa
  * The CanvasElement constructor to be used for the TextInput is in the "disabled" state.
  * When this is null, the base SkinClass style will be used.
  */
-TextInputElement._StyleTypes.DisabledSkinClass = 						{inheritable:false};		// Element constructor()
+TextInputElement._StyleTypes.DisabledSkinClass = 						StyleableBase.EStyleType.NORMAL;		// Element constructor()
 
 /**
  * @style DisabledSkinStyle StyleDefinition
  * The StyleDefinition to apply to the "disabled" state skin element.
  * When this is null, the base SkinTyle will be used.
  */
-TextInputElement._StyleTypes.DisabledSkinStyle = 						{inheritable:false};		// StyleDefinition
+TextInputElement._StyleTypes.DisabledSkinStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style DisabledTextColor String
@@ -146,7 +146,7 @@ TextInputElement._StyleTypes.DisabledSkinStyle = 						{inheritable:false};		// 
  * Hex color value to be used for the button TextInput is in the "disabled" state. Format like "#FF0000" (red).
  * This will override the TextColor style.
  */
-TextInputElement._StyleTypes.DisabledTextColor = 						{inheritable:false};		// color "#000000"
+TextInputElement._StyleTypes.DisabledTextColor = 						StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
 /**
  * @style DisabledTextHighlightedColor String
@@ -154,7 +154,7 @@ TextInputElement._StyleTypes.DisabledTextColor = 						{inheritable:false};		// 
  * Hex color value to be used for highlighted text when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
  * When this is null, the base TextHighlightedColor style will be used.
  */
-TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			{inheritable:false};		// color "#FFFFFF"
+TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
 
 /**
  * @style DisabledTextHighlightedBackgroundColor String
@@ -162,7 +162,7 @@ TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			{inheritable:fals
  * Hex color value to be used for highlighted text background when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
  * When this is null, the base TextHighlightedBackgroundColor style will be used.
  */
-TextInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	{inheritable:false};		// color "#000000"
+TextInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
 
 /////////////Default Styles///////////////////////////
@@ -342,28 +342,16 @@ TextInputElement.prototype._getSkinClass =
 	};
 	
 //@override	
-TextInputElement.prototype._getSkinStyleDefinitions = 
-function (state)
-{
-	if (state == "up")
-		return this.getStyle("UpSkinStyle");
-	else if (state == "disabled")
-		return this.getStyle("DisabledSkinStyle");
-	
-	return TextInputElement.base.prototype._getSkinStyleDefinitions.call(this, state);
-};	
-
-//@Override
-TextInputElement.prototype._getSkinStyleDefinitionDefault =
+TextInputElement.prototype._getSubStyleNameForSkinState = 
 	function (state)
 	{
 		if (state == "up")
-			return this._getDefaultStyle("UpSkinStyle");
-		else if (state == "disabled")
-			return this._getDefaultStyle("DisabledSkinStyle");
+			return "UpSkinStyle";
+		if (state == "disabled")
+			return "DisabledSkinStyle";
 		
-		return TextInputElement.base.prototype._getSkinStyleDefinitionDefault.call(this, state);
-	};		
+		return TextInputElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
+	};			
 	
 /**
  * @function _updateState
@@ -542,11 +530,17 @@ TextInputElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 		}
 		
-		this._updateSkinClass("up");
-		this._updateSkinStyleDefinitions("up");
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
 		
-		this._updateSkinClass("disabled");
-		this._updateSkinStyleDefinitions("disabled");
+		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
+			this._updateSkinClass("disabled");
+		if ("DisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("disabled");
+
 		
 		this._updateState();
 		this._updateTextColors();

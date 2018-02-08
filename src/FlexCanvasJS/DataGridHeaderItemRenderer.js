@@ -40,14 +40,14 @@ DataGridHeaderItemRenderer._StyleTypes = Object.create(null);
  * Defaults to Button. HeaderItemRenderer proxies its SkinState style to the sort icons so
  * the sort icons will change state along with the HeaderItemRenderer.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			{inheritable:false};		// CanvasElement constructor
+DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			StyleableBase.EStyleType.NORMAL;		// CanvasElement constructor
 
 /**
  * @style SortAscIconStyle StyleDefinition
  * 
  * The StyleDefinition to apply ascending sort icon element.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			{inheritable:false};		// StyleDefinition
+DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style SortDescIconClass CanvasElement
@@ -56,81 +56,90 @@ DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			{inheritable:false};
  * Defaults to Button. HeaderItemRenderer proxies its SkinState style to the sort icons so
  * the sort icons will change state along with the HeaderItemRenderer.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			{inheritable:false};		// CanvasElement constructor
+DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			StyleableBase.EStyleType.NORMAL;		// CanvasElement constructor
 
 /**
  * @style SortDescIconStyle StyleDefinition
  * 
  * The StyleDefinition to apply descending sort icon element.
  */
-DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			{inheritable:false};		// StyleDefinition
+DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
- * @style IconGap Number
+ * @style SortIconGap Number
  * 
  * Distance in pixels between the sort icon and the header label.
  */
-DataGridHeaderItemRenderer._StyleTypes.IconGap =					{inheritable:false};		// number
+DataGridHeaderItemRenderer._StyleTypes.SortIconGap =					StyleableBase.EStyleType.NORMAL;		// number
 
 /**
- * @style IconPlacement String
+ * @style SortIconPlacement String
  * 
  * Determines placement of the sort icon. Allowable values are "left" or "right".
  */
-DataGridHeaderItemRenderer._StyleTypes.IconPlacement =				{inheritable:false};		// "left" || "right"
+DataGridHeaderItemRenderer._StyleTypes.SortIconPlacement =				StyleableBase.EStyleType.NORMAL;		// "left" || "right"
 
 
 /////////Default Styles///////////////
 
+//Make disabled skin look like "up" skin (just not click-able)
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#EBEBEB");
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BorderType", 				null);
+
+//Other up/over/down skins (kill border)
+DataGridHeaderItemRenderer.SkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SkinStyleDefault.setStyle("BorderType", 						null);
+
+
 DataGridHeaderItemRenderer.StyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.StyleDefault.setStyle("UpSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("OverSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DownSkinStyle", 						DataGridHeaderItemRenderer.SkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 					DataGridHeaderItemRenderer.DisabledSkinStyleDefault);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 					"#000000");
 
-//Override disabled styles, make them same as "up" state styles.
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledSkinStyle", 		ButtonElement.UpSkinStyleDefault);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("DisabledTextColor", 		null);
-
-DataGridHeaderItemRenderer.StyleDefault.setStyle("BorderType", 				"none");		
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextSize", 				12);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 	"left");
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",				3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",			3);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",				8);
-DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",			8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("TextHorizontalAlign", 				"left");
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingTop",							4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingBottom",						4);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingLeft",							8);
+DataGridHeaderItemRenderer.StyleDefault.setStyle("PaddingRight",						8);
 
 /////Sort Icon default styles //////
 
 //Ascending Sort Icon
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortAscIconBgShapeDefault.setStyle("Direction", "up");
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault.setStyle("Direction", 				"up");
+
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundColor", 			"#444444");
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortAscIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundColor", 			"#444444");
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 					DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault);
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 			false);
-
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("UpSkinStyle", 				null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
+DataGridHeaderItemRenderer.SortAscIconStyleDefault.setStyle("MouseEnabled", 				false);
 
 //Descending Sort Icon
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault = new ArrowShape();
-DataGridHeaderItemRenderer.SortDescIconBgShapeDefault.setStyle("Direction", "down");
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault = new ArrowShape();
+DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault.setStyle("Direction", 			"down");
+
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault = new StyleDefinition();
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BorderType", 				null);
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundColor", 		"#444444");
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortDescIconStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BorderType", 				"none");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundColor", 		"#444444");
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconBgShapeDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
+
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
 DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 			false);
 
-//Wipe out the skin styles provided by button (we're currently just using the base state for all skins).
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("UpSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 			null);
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DisabledSkinStyle", 		null);
 ///////////////////////////////////
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",					ButtonElement);											// CanvasElement constructor
@@ -138,8 +147,8 @@ DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconStyle",					DataGri
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconClass",					ButtonElement);											// CanvasElement constructor
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconStyle",					DataGridHeaderItemRenderer.SortDescIconStyleDefault);	// StyleDefinition
 
-DataGridHeaderItemRenderer.StyleDefault.setStyle("IconGap",								3);			// number
-DataGridHeaderItemRenderer.StyleDefault.setStyle("IconPlacement",						"right");	// "left" || "right"
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconGap",								3);			// number
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconPlacement",						"right");	// "left" || "right"
 
 
 
@@ -167,26 +176,19 @@ DataGridHeaderItemRenderer.prototype._createSortIcon =
 	function (isDecending)
 	{
 		var iconClass = null;
-		var iconDefaultStyle = null;
-		var iconStyle = null;
 		
 		if (isDecending == true)
-		{
 			iconClass = this.getStyle("SortDescIconClass");
-			iconDefaultStyle = this._getDefaultStyle("SortDescIconStyle");
-			iconStyle = this.getStyle("SortDescIconStyle");
-		}
 		else
-		{
 			iconClass = this.getStyle("SortAscIconClass");
-			iconDefaultStyle = this._getDefaultStyle("SortAscIconStyle");
-			iconStyle = this.getStyle("SortAscIconStyle");
-		}
 		
 		var newIcon = new (iconClass)();
-		newIcon._setStyleDefinitionDefault(iconDefaultStyle);
 		newIcon._setStyleProxy(new StyleProxy(this,DataGridHeaderItemRenderer._SortIconProxyMap));
-		newIcon.setStyleDefinitions(iconStyle);
+		
+		if (isDecending == true)
+			this._applySubStylesToElement("SortDescIconStyle", newIcon);
+		else
+			this._applySubStylesToElement("SortAscIconStyle", newIcon);
 		
 		return newIcon;
 	};
@@ -255,7 +257,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortAscIcon);
 				}
 				else
-					this._sortAscIcon.setStyleDefinitions(this.getStyle("SortAscIconStyle"));
+					this._applySubStylesToElement("SortAscIconStyle", this._sortAscIcon);
 				
 				if (this._sortDescIcon != null)
 					this._sortDescIcon.setStyle("Visible", false);
@@ -289,7 +291,7 @@ DataGridHeaderItemRenderer.prototype._updateSortIcons =
 					this._addChild(this._sortDescIcon);
 				}
 				else
-					this._sortDescIcon.setStyleDefinitions(this.getStyle("SortDescIconStyle"));
+					this._applySubStylesToElement("SortDescIconStyle", this._sortDescIcon);
 				
 				if (this._sortAscIcon != null)
 					this._sortAscIcon.setStyle("Visible", false);
@@ -308,7 +310,7 @@ DataGridHeaderItemRenderer.prototype._setListData =
 		if (listData == null)
 			return;
 		
-		this.setStyle("Text", listData._parentGrid._gridColumns[listData._columnIndex].getStyle("HeaderLabel"));
+		this.setStyle("Text", listData._parentGrid._gridColumns[listData._columnIndex].getStyle("HeaderText"));
 		this._updateSortIcons();
 	};
 
@@ -326,7 +328,7 @@ DataGridHeaderItemRenderer.prototype._doStylesUpdated =
 			this._updateSortIcons();
 		}
 		
-		if ("IconGap" in stylesMap || "IconPlacement" in stylesMap)
+		if ("SortIconGap" in stylesMap || "SortIconPlacement" in stylesMap)
 			this._invalidateLayout();
 	};	
 	
@@ -367,8 +369,8 @@ DataGridHeaderItemRenderer.prototype._doLayout =
 				}
 				else
 				{
-					var gap = this.getStyle("IconGap");
-					var iconPlacement = this.getStyle("IconPlacement");
+					var gap = this.getStyle("SortIconGap");
+					var iconPlacement = this.getStyle("SortIconPlacement");
 					
 					if (iconPlacement == "left")
 					{

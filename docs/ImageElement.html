@@ -2914,6 +2914,87 @@ Returns the element just added when successfull, null if the element could not<b
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_addStyleDefinitionAt(styleDefinition, index, isDefault)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Inserts a style definition to this elements style definition or default definition lists.<br>
+Adding style definitions to elements already attached to the display chain is expensive,<br>
+for better performance add definitions before attaching the element via addElement().<br>
+Default definitions are used when styling sub components with sub styles.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleDefinition</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
+StyleDefinition to be added to this elements definition list.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The index to insert the style definition within the elements definition list.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isDefault</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
+When true, inserts the definition into the element's default definition list.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
+Returns StyleDefinition just added when successfull, null if the StyleDefinition could not<br>be added due to the index being out of range or other error.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_applySubStylesToElement(styleName, elementToApply)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Override] <a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Convienence function for setting sub styles of sub components.<br>
+Applies appropriate sub styling from this element to the<br>
+supplied elements definition and default definition style lists.<br>
+You should call this on sub components from within the _doStylesUpdated()<br>
+function when the associated sub style changes.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the sub style to apply.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementToApply</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The sub component element to apply sub styles.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_dispatchEvent(event)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3445,7 +3526,7 @@ Returns the child index or -1 if the element is not<br>a child of this element.<
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getDefaultStyle(styleName)</span>
+<span style="font-weight: bold;">_getClassStyle(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;"><a href="StyleableBase.html">StyleableBase</a></span>
@@ -3453,7 +3534,8 @@ Returns the child index or -1 if the element is not<br>a child of this element.<
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets default value for the supplied style.<br>
+Gets the default style value for the supplied style name specified on this<br>
+classes StyleDefault map. Subclasses override base class values.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -3466,7 +3548,7 @@ String representing the default style to return.<br>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
-Returns the associated default style value if found, otherwise undefined.<br>
+Returns the associated default style value or undefined if none specified.<br>
 </td>
 </tr>
 </table>
@@ -3475,7 +3557,7 @@ Returns the associated default style value if found, otherwise undefined.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getDefaultStyleData(styleName)</span>
+<span style="font-weight: bold;">_getClassStyleList(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;"><a href="StyleableBase.html">StyleableBase</a></span>
@@ -3483,20 +3565,55 @@ Returns the associated default style value if found, otherwise undefined.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets default StyleData for the supplied style.<br>
+Gets the default style values for the supplied style name specified on this<br>
+classes and base classes StyleDefault maps. This is used for sub styles as all<br>
+stub styles in the inheritance chain are applied to sub components.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-String representing the default style to return.<br>
+String representing the default style list to return.<br>
 </td>
 </tr>
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleData.html">StyleData</a><br>
-Returns the associated default StyleData.<br>
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array<br>
+Returns an array of all default styles on this class, and base classes<br>for the supplied styleName.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getDefaultStyleList(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the style values for the supplied style name in this elements<br>
+default style definition list and class list styles for the supplied style name.<br>
+This is used for sub styles as all stub styles in the list are applied to sub components.<br>
+This list should be supplied to the sub components default style definition list.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the default style list to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array<br>
+Returns an array of all styles in this elements default definition and class list styles<br>for the associated style name.<br>
 </td>
 </tr>
 </table>
@@ -3554,6 +3671,36 @@ Canvas context used when rendering this element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getInstanceStyle(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="StyleableBase.html">StyleableBase</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the assigned style value for the supplied style name specified.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the style to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
+Returns the associated style value or undefined if none specified.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_getNumChildren()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3569,6 +3716,36 @@ Gets this elements number of children.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
 The number of child elements.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getNumStyleDefinitions(isDefault)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the number of style definitions or default definitions associated with this element.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isDefault</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
+When true, returns the number of default definitions.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The number of style definitions.<br>
 </td>
 </tr>
 </table>
@@ -3623,6 +3800,43 @@ Returns an object containing<br>{width:paddingWidth, height:paddingHeight,<br>pa
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getStyleDefinitionAt(index, isDefault)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the style definition or default definition at the supplied zero base index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Index of the style definition to return;<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isDefault</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
+When true, returns the default definition at the supplied index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
+The style defenition at the supplied index, or null if index is out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_getStyledOrMeasuredHeight()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3663,6 +3877,39 @@ called from within a parent containers layout phase.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number<br>
 The elements width.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getStyleList(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the style values for the supplied style name in this elements<br>
+style definition list and instance styles for the supplied style name.<br>
+This is used for sub styles as all stub styles in the list are applied to sub components.<br>
+This list should be supplied to the sub components style definition list.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the style list to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array<br>
+Returns an array of all styles in this elements definition list and instance styles<br>for the associated style name.<br>
 </td>
 </tr>
 </table>
@@ -3864,6 +4111,44 @@ Index to be removed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 Returns the element just removed if successfull, null if the element could<br>not be removed due it it not being a child of this element, or index out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_removeStyleDefinitionAt(index, isDefault)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes a style definition from this elements style definition or default definitions at the supplied index.<br>
+Default definitions are used when styling sub components with sub styles.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Index to be removed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isDefault</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
+When true, removes the definition from the element's default definition list.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
+Returns the StyleDefinition just removed if successfull, null if the definition could<br>not be removed due it it not being in this elements definition list, or index out of range.<br>
 </td>
 </tr>
 </table>
@@ -4111,7 +4396,7 @@ The CanvasElement to move this element relative too.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_setStyleDefinitionDefault(styleDefinition)</span>
+<span style="font-weight: bold;">_setStyleDefinitions(styleDefinitions, isDefault, styleNamesChangedMap)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
@@ -4119,15 +4404,29 @@ The CanvasElement to move this element relative too.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sets the default style definition. Use this when you need to supply a default definition<br>
-to a sub component that differs from the class based definition but also need to allow<br>
-the implementor to supply a style definition to the sub component.<br>
+Replaces the elements current style definition or default definition lists.<br>
+This is more effecient than removing or adding style definitions one at a time.<br>
+Default definitions are used when styling sub components with sub styles.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">styleDefinition</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;StyleDefintion<br>
-The default style definiton to apply to the element.<br>
+<span style="font-weight: bold;">styleDefinitions</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
+May be a StyleDefinition, or an Array of StyleDefinition<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isDefault</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
+When true, replaces the default definition list.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleNamesChangedMap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+Optional - A empty map object - Object.create(null) to populate style changes<br>due to swapping definitions while this element is attached to the display chain.<br>When specified (not null), does not automatically invoke style changed events.<br>
 </td>
 </tr>
 </table>
@@ -4145,6 +4444,7 @@ The default style definiton to apply to the element.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Sets the element which is to proxy styles to this element. See getStyle() and StyleProxy.<br>
+This should be set prior to added this element to the display hierarchy via addElement() or _addChild().<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>

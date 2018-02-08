@@ -134,12 +134,12 @@ Subclasses can add new styles and override the style types or defaults of their 
 classes by creating their own _StyleTypes and StyleDefault objects.<br>
 Example:<br>
 StylableBaseSubclass._StyleTypes = Object.create(null);<br>
-StylableBaseSubclass._StyleTypes.Visible = 				{inheritable:false};<br>
-StylableBaseSubclass._StyleTypes.BorderType = 			{inheritable:false};<br>
-StylableBaseSubclass._StyleTypes.SkinStyle = 			{inheritable:false};<br>
-StylableBaseSubclass._StyleTypes.TextStyle =				{inheritable:true};<br>
-StylableBaseSubclass._StyleTypes.TextFont =				{inheritable:true};<br>
-StylableBaseSubclass._StyleTypes.TextSize =				{inheritable:true};<br>
+StylableBaseSubclass._StyleTypes.Visible = 				StyleableBase.EStyleType.NORMAL;<br>
+StylableBaseSubclass._StyleTypes.BorderType = 			StyleableBase.EStyleType.NORMAL;<br>
+StylableBaseSubclass._StyleTypes.SkinStyle = 			StyleableBase.EStyleType.NORMAL;<br>
+StylableBaseSubclass._StyleTypes.TextStyle =				StyleableBase.EStyleType.INHERITABLE;<br>
+StylableBaseSubclass._StyleTypes.TextFont =				StyleableBase.EStyleType.INHERITABLE;<br>
+StylableBaseSubclass._StyleTypes.TextSize =				StyleableBase.EStyleType.INHERITABLE;<br>
 StylableBaseSubclass.StyleDefault = new StyleDefinition();<br>
 StylableBaseSubclass.StyleDefault.setStyle("Visible", 				true);<br>
 StylableBaseSubclass.StyleDefault.setStyle("BorderType", 			"none");<br>
@@ -489,7 +489,7 @@ The value to store. This may be null or undefined.<br>Note that a null style is 
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getDefaultStyle(styleName)</span>
+<span style="font-weight: bold;">_applySubStylesToElement(styleName, elementToApply)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;">StyleableBase</span>
@@ -497,7 +497,40 @@ The value to store. This may be null or undefined.<br>Note that a null style is 
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets default value for the supplied style.<br>
+Convienence function for setting sub styles of sub components.<br>
+Applies appropriate sub styling from this Styleable to the<br>
+supplied elements definition and default definition style lists.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the sub style to apply.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementToApply</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The sub component element to apply sub styles.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getClassStyle(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">StyleableBase</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the default style value for the supplied style name specified on this<br>
+classes StyleDefault map. Subclasses override base class values.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -510,7 +543,7 @@ String representing the default style to return.<br>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
-Returns the associated default style value if found, otherwise undefined.<br>
+Returns the associated default style value or undefined if none specified.<br>
 </td>
 </tr>
 </table>
@@ -519,7 +552,7 @@ Returns the associated default style value if found, otherwise undefined.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getDefaultStyleData(styleName)</span>
+<span style="font-weight: bold;">_getClassStyleList(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;">StyleableBase</span>
@@ -527,20 +560,52 @@ Returns the associated default style value if found, otherwise undefined.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets default StyleData for the supplied style.<br>
+Gets the default style values for the supplied style name specified on this<br>
+classes and base classes StyleDefault maps. This is used for sub styles as all<br>
+stub styles in the inheritance chain are applied to sub components.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-String representing the default style to return.<br>
+String representing the default style list to return.<br>
 </td>
 </tr>
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleData.html">StyleData</a><br>
-Returns the associated default StyleData.<br>
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array<br>
+Returns an array of all default styles on this class, and base classes<br>for the supplied styleName.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getInstanceStyle(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">StyleableBase</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the assigned style value for the supplied style name specified.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the style to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
+Returns the associated style value or undefined if none specified.<br>
 </td>
 </tr>
 </table>
@@ -552,6 +617,38 @@ Returns the associated default StyleData.<br>
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
 <td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_applySubStylesToElement(styleName, elementToApply)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">StyleableBase</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Convienence function for setting sub styles of sub components.<br>
+Applies appropriate sub styling from this Styleable to the<br>
+supplied elements definition and default definition style lists.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the sub style to apply.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementToApply</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The sub component element to apply sub styles.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
@@ -581,7 +678,7 @@ The DispatcherEvent class or subclass to be dispatched.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getDefaultStyle(styleName)</span>
+<span style="font-weight: bold;">_getClassStyle(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;">StyleableBase</span>
@@ -589,7 +686,8 @@ The DispatcherEvent class or subclass to be dispatched.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets default value for the supplied style.<br>
+Gets the default style value for the supplied style name specified on this<br>
+classes StyleDefault map. Subclasses override base class values.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -602,7 +700,7 @@ String representing the default style to return.<br>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
-Returns the associated default style value if found, otherwise undefined.<br>
+Returns the associated default style value or undefined if none specified.<br>
 </td>
 </tr>
 </table>
@@ -611,7 +709,7 @@ Returns the associated default style value if found, otherwise undefined.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getDefaultStyleData(styleName)</span>
+<span style="font-weight: bold;">_getClassStyleList(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;">StyleableBase</span>
@@ -619,20 +717,52 @@ Returns the associated default style value if found, otherwise undefined.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets default StyleData for the supplied style.<br>
+Gets the default style values for the supplied style name specified on this<br>
+classes and base classes StyleDefault maps. This is used for sub styles as all<br>
+stub styles in the inheritance chain are applied to sub components.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-String representing the default style to return.<br>
+String representing the default style list to return.<br>
 </td>
 </tr>
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleData.html">StyleData</a><br>
-Returns the associated default StyleData.<br>
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array<br>
+Returns an array of all default styles on this class, and base classes<br>for the supplied styleName.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getInstanceStyle(styleName)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">StyleableBase</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the assigned style value for the supplied style name specified.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleName</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String representing the style to return.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
+Returns the associated style value or undefined if none specified.<br>
 </td>
 </tr>
 </table>

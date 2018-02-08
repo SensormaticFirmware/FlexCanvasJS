@@ -1,5 +1,7 @@
 
-function StyleListRenderer()
+//Renders an Add Style dropdown and a list of StyleItemRenderer(s).
+
+function StyleListRenderer() //extends ListContainer
 {
 	StyleListRenderer.base.prototype.constructor.call(this);
 	
@@ -36,6 +38,8 @@ function StyleListRenderer()
 		};
 		
 	this.addEventListener("localechanged", this._onLocaleChangedInstance);
+	
+	//Manually handling the dropdown listitemclick, because we're disabling the list's normal selection mechanism via styling.
 	this._dropdownAdd.addEventListener("listitemclick", this._onDropdownAddListItemClickInstance);
 	
 	
@@ -48,6 +52,7 @@ StyleListRenderer.prototype = Object.create(ListContainerElement.prototype);
 StyleListRenderer.prototype.constructor = StyleListRenderer;
 StyleListRenderer.base = ListContainerElement;
 
+
 //////STATIC//////////////////// 
 
 StyleListRenderer.addStyleDropdownLabelFunction = 
@@ -59,16 +64,25 @@ StyleListRenderer.addStyleDropdownLabelFunction =
 		return itemData.category;
 	};
 
+	
 //////INTERNAL/////////////////
 
 StyleListRenderer.prototype._onLocaleChanged = 
 	function (event)
 	{
-		if (this._styleControlType == null || this.getManager() == null)
+		//Sometimes we're null depending on if we set data, or add to display first.
+		if (this.getManager() == null || this._styleControlType == null)
 			return;
 	
 		var currentLocale = this.getManager().getLocale();
-		this._dropdownAdd.setStyle("Text", localeStrings[currentLocale]["Add"] + " " + this._styleControlType.styleName + " " + localeStrings[currentLocale]["Styles"]);
+		
+		var dropdownText = localeStrings[currentLocale]["Add"] + " " + this._styleControlType.styleName;
+		
+		//Most substyles end with "Style", the ones that dont like "BackgroundShape" we add it to the end for consistency.
+		if (dropdownText.indexOf("Style") != dropdownText.length - 5)
+			dropdownText = dropdownText + "Style";
+		
+		this._dropdownAdd.setStyle("Text", dropdownText);
 	};
 
 StyleListRenderer.prototype._onDropdownAddListItemClick = 
@@ -99,38 +113,43 @@ StyleListRenderer.prototype._onDropdownAddListItemClick =
 		{
 			itemRenderer = new StyleItemRenderer();
 			itemRenderer.addEventListener("cleared", this._onItemRendererClearedInstance);
+			itemRenderer.setStyleControlType(styleControlType);
 			
 			this.addElementAt(itemRenderer, 1);
-			itemRenderer.setStyleControlType(styleControlType);
 			
 			this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(styleControlType));
 		}
 	};
 
+//Clear button clicked on StyleItemRenderer	
 StyleListRenderer.prototype._onItemRendererCleared = 
 	function (event)
 	{
 		this._clearItemRenderer(event.getTarget());		
-	}	;
+	};
 	
 StyleListRenderer.prototype._clearItemRenderer = 
 	function (itemRenderer)
 	{
-		var styleControlType = itemRenderer._styleControlType;
+		//This is one of the values in our this._styleControlType.styleList (which is bound to the Add Style dropdown)
+		var rendererStyleControlType = itemRenderer._styleControlType;
 		
-		styleControlType.styleDefinition.clearStyle(styleControlType.styleName);
-		styleControlType.styleListCodeString = "";
-		styleControlType.styleItemCodeString = "";
+		//Wipe out the style & code string cache
+		rendererStyleControlType.styleDefinition.clearStyle(rendererStyleControlType.styleName);
+		rendererStyleControlType.styleListCodeString = "";
+		rendererStyleControlType.styleItemCodeString = "";
 		
-		itemRenderer.removeEventListener("cleared", this._onItemRendererClearedInstance);
-		this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(styleControlType));
+		//Fire an indexUpdated event (Update the Add Style dropdown checked state for this style).
+		this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(rendererStyleControlType));
 		
+		//Purge StyleItemRenderer
 		this.removeElement(itemRenderer);
 		
 		//Dispatch an event from the manager to fire the styling code re-build.
 		this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
 	};
 
+	
 //////PUBLIC///////////////////
 
 StyleListRenderer.prototype.setStyleControlType = 

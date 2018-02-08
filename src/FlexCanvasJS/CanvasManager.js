@@ -30,7 +30,7 @@ function CanvasManager()
 	this._updateMeasureQueue = new CmDepthQueue();
 	this._updateLayoutQueue = new CmDepthQueue();
 	this._updateRenderQueue = new CmDepthQueue();
-
+	this._updateRedrawRegionQueue = new CmDepthQueue();
 	this._compositeRenderQueue = new CmDepthQueue();
 	
 	//Used to store the add/remove events we need to dispatch after elements are added/removed from the display chain.
@@ -66,7 +66,6 @@ function CanvasManager()
 	
 	this._currentLocale = "en-us";
 	
-	this._redrawRegionInvalid = true;
 	this._redrawRegionPrevMetrics = null;
 	
 	//Now call base
@@ -506,7 +505,7 @@ CanvasManager._StyleTypes = Object.create(null);
  * 
  * When true the canvas redraw region will be displayed.
  */
-CanvasManager._StyleTypes.ShowRedrawRegion = 								{inheritable:false};		
+CanvasManager._StyleTypes.ShowRedrawRegion = 								StyleableBase.EStyleType.NORMAL;		
 
 
 /////////////Default Styles///////////////////////////////
@@ -897,10 +896,14 @@ CanvasManager.prototype.updateNow =
 			}
 		}
 		
-		if (this._redrawRegionInvalid == true)
+		var queuedElement = null;
+		while (this._updateRedrawRegionQueue.length > 0)
 		{
-			this._validateRedrawRegion(this, false);
-			this._redrawRegionInvalid = false;
+			queuedElement = this._updateRedrawRegionQueue.removeLargest().data;
+			
+			//Dont re-validate children of parents that have already been validated.
+			if (queuedElement._redrawRegionInvalid == true)
+				this._validateRedrawRegion(queuedElement, false);
 		}
 		
 		//Render composite layers.
@@ -979,6 +982,8 @@ CanvasManager.prototype._updateCompositeCanvas =
 CanvasManager.prototype._validateRedrawRegion = 
 	function (element, forceRegionUpdate)
 	{
+		element._redrawRegionInvalid = false;
+	
 		var newCompositeMetrics = [];
 		var oldVisible = element._renderVisible;
 		

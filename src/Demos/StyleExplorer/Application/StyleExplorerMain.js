@@ -20,6 +20,8 @@ localeStrings["en-us"]["Add"] = 					"Add";
 localeStrings["en-us"]["Styles"] = 					"Styles";
 localeStrings["en-us"]["Style Code"] = 				"Style Code";
 localeStrings["en-us"]["Copy"] = 					"Copy";
+localeStrings["en-us"]["Text Size"] = 				"Text Size";
+localeStrings["en-us"]["Press Ctrl C"] = 			"Press CTRL + C";
 
 
 //es-es////////
@@ -33,11 +35,18 @@ localeStrings["es-es"]["Add"] = 					"Añadir";
 localeStrings["es-es"]["Styles"] = 					"Estilos";
 localeStrings["es-es"]["Style Code"] = 				"Código De Estilo";
 localeStrings["es-es"]["Copy"] = 					"Copiar";
+localeStrings["es-es"]["Text Size"] = 				"Tamano Del Texto";
+localeStrings["es-es"]["Press Ctrl C"] = 			"Presione CTRL + C";
 
 
 //////IMAGES///////////////////////
 
+//ImageElement loads image from URL when added to display.
+var urlImgBlueMarble = "BlueMarble.jpg";
 
+//Pre-load images (good for skins)
+//var imgBlueMarble = new Image();
+//imgBlueMarble.src = "BlueMarble.jpg";
 
 
 //////STYLES//////////////////////
@@ -76,11 +85,13 @@ panelInnerContainerStyle.setStyle("PercentHeight",			100);
 var hDividerLineStyle = new StyleDefinition();				
 hDividerLineStyle.setStyle("Height", 						1); 
 hDividerLineStyle.setStyle("PercentWidth", 					100);
-hDividerLineStyle.setStyle("BackgroundColor", 				"#999999")
+hDividerLineStyle.setStyle("BackgroundColor", 				"#999999");
+
 
 //////Clear Style Button
 var clearStyleButtonStyle = new StyleDefinition();
 
+//Skin styles
 var clearStyleButtonUpSkinStyleDef = new StyleDefinition();
 clearStyleButtonUpSkinStyleDef.setStyle("BackgroundColor", "#FF7777");
 
@@ -93,10 +104,11 @@ clearStyleButtonDownSkinStyleDef.setStyle("BackgroundColor", "#DD3333");
 clearStyleButtonStyle.setStyle("UpSkinStyle", clearStyleButtonUpSkinStyleDef);
 clearStyleButtonStyle.setStyle("OverSkinStyle", clearStyleButtonOverSkinStyleDef);
 clearStyleButtonStyle.setStyle("DownSkinStyle", clearStyleButtonDownSkinStyleDef);
-clearStyleButtonStyle.setStyle("SkinClass", CloseButtonSkinElement);
+clearStyleButtonStyle.setStyle("SkinClass", CloseButtonSkinElement);	//Draws an "X" across the button.
 clearStyleButtonStyle.setStyle("Width", 15);
 clearStyleButtonStyle.setStyle("Height", 15);
 clearStyleButtonStyle.setStyle("BackgroundShape", new EllipseShape());
+
 
 //////Add Style Dropdown
 var addStyleDropdownListStyle = new StyleDefinition();
@@ -106,13 +118,20 @@ addStyleDropdownListStyle.setStyle("Selectable", false); //Disable the list's no
 var addStyleDropdownStyle = new StyleDefinition();
 addStyleDropdownStyle.setStyle("PopupDataListStyle", addStyleDropdownListStyle);
 
+////Font size buttons
+var fontSizeButtonStyle = new StyleDefinition();
+fontSizeButtonStyle.setStyle("SkinClass", ScrollButtonSkinElement);
+fontSizeButtonStyle.setStyle("Width", 14);
+fontSizeButtonStyle.setStyle("PercentHeight", 100);
+
+
 
 //////APPLICATION////////////////
 
 //Globals go here...//
 
 //Root application
-var styleExplorer = null; //Best not to initialize here, avoid dependencies.
+var styleExplorer = null; //Best not to initialize here, avoid file ordering dependencies.
 
 //Run application
 function init()
