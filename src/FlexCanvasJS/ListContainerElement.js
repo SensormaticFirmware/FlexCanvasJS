@@ -115,6 +115,9 @@ ListContainerElement.prototype._doMeasure =
 		
 		var insertGap = false;
 		
+		//TODO: Measure is incorrect when using percent sized elements that total < 100%
+		//		Need to account for unused space.
+		
 		for (var i = 0; i < this._elements.length; i++)
 		{
 			child = this._elements[i];

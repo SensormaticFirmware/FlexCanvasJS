@@ -138,14 +138,14 @@ DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 		
 DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
 
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 			false);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 				false);
 
 ///////////////////////////////////
 
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",					ButtonElement);											// CanvasElement constructor
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconStyle",					DataGridHeaderItemRenderer.SortAscIconStyleDefault);	// StyleDefinition
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconClass",					ButtonElement);											// CanvasElement constructor
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconStyle",					DataGridHeaderItemRenderer.SortDescIconStyleDefault);	// StyleDefinition
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",						ButtonElement);											// CanvasElement constructor
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconStyle",						DataGridHeaderItemRenderer.SortAscIconStyleDefault);	// StyleDefinition
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconClass",						ButtonElement);											// CanvasElement constructor
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconStyle",						DataGridHeaderItemRenderer.SortDescIconStyleDefault);	// StyleDefinition
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconGap",								3);			// number
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconPlacement",						"right");	// "left" || "right"

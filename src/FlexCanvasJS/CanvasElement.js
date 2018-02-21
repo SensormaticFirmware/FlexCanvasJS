@@ -1119,7 +1119,7 @@ CanvasElement.prototype._getNumStyleDefinitions =
 			return this._styleDefinitionDefaults.length;
 
 		return this._styleDefinitions.length;
-	}
+	};
 	
 /**
  * @function getStyleDefinitionAt
