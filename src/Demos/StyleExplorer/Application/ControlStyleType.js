@@ -341,7 +341,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" || 
 			this.styleName == "TextInputStyle" ||
-			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
+			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
@@ -358,7 +358,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "TextInputStyle" ||
-			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
+			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "HeaderItemStyle" ||
 			this.styleName == "RowItemStyle")
@@ -404,7 +404,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
-			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
+			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
@@ -420,7 +420,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
-			(this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle")) ||
+			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "HeaderItemStyle" ||
 			this.styleName == "RowItemStyle")
@@ -467,7 +467,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ArrowButtonStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 		}
 		
-		if (this.styleName == "ListItemStyle" && this.hasParentStyleName("DataListStyle") ||
+		if ((this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "RowItemStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AltSkinStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
