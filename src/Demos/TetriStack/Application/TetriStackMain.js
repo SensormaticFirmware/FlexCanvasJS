@@ -25,9 +25,9 @@ localeStrings["es-es"]["Powered By"] = 				"Desarrollado Por";
 
 //////STYLES//////////////////////
 
-var canvasManagerStyle = new StyleDefinition();
+//var canvasManagerStyle = new StyleDefinition();
 //canvasManagerStyle.setStyle("BackgroundColor", 			"#CCDD99");
-canvasManagerStyle.setStyle("BackgroundColor", 				"#D9C7A6");
+//canvasManagerStyle.setStyle("BackgroundColor", 				"#D9C7A6");
 
 
 
