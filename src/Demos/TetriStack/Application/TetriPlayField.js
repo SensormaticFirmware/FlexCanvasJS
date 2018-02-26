@@ -3,8 +3,8 @@ function TetriPlayField()
 {
 	TetriPlayField.base.prototype.constructor.call(this);
 	
-	this.setStyle("Width", 455);
-	this.setStyle("Height", 620);
+	//this.setStyle("Width", 455);
+	//this.setStyle("Height", 620);
 	//this.setStyle("BorderType", "solid");
 	//this.setStyle("BorderColor", "#FFFFFF");
 	
