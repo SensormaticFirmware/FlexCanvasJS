@@ -267,8 +267,6 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 					this._suspendLock = true;
 				else
 				{
-					//TODO: Clear lines
-					
 					var i;
 					var currentYPositions = [];
 					var gridPosition;
@@ -368,7 +366,8 @@ TetriPlayField.prototype._clearLines =
 		this._lineCount += this._currentLines.length;
 		this._lineCountLabel.setStyle("Text", this._lineCount.toString());
 		
-		this._level = Math.floor(this._lineCount / 10);
+		if (Math.ceil(this._lineCount / 10) > this._level)
+			this._level = Math.ceil(this._lineCount / 10)
 		
 		this._currentLines.splice(0, this._currentLines.length);
 	};
