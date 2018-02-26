@@ -8,13 +8,7 @@ function TetriBlock()
 	this._gridY = -1;
 	
 	this._blockType = "normal"; //"normal" || "ghost"
-	this._blockColor = "#0055FF";
-	
-	//Temporary, till we do the actual block rendering.
-	this.setStyle("BorderType", "solid");
-	this.setStyle("BackgroundColor", this._blockColor);
-	
-	//this.setStyle("BorderColor", "#FF0000");
+	this._blockColor = TetriStackApplication.BlockColors.BLACK;
 }
 
 //Inherit from CanvasElement
@@ -29,7 +23,6 @@ TetriBlock.prototype.setBlockColor =
 			return;
 		
 		this._blockColor = color;
-		
 		this._invalidateRender();
 	};
 	
@@ -55,6 +48,10 @@ TetriBlock.prototype._doRender =
 		var w = this._width;
 		var h = this._height;
 		
+		var base = this._blockColor.base;
+		var lighter = this._blockColor.lighter;
+		var darker = this._blockColor.darker;
+		
 		ctx.beginPath();
 		ctx.moveTo(x, y);
 		ctx.lineTo(x + w, y);
@@ -62,7 +59,7 @@ TetriBlock.prototype._doRender =
 		ctx.lineTo(x, y + h);
 		ctx.closePath();
 		
-		ctx.fillStyle = this._blockColor;
+		ctx.fillStyle = base;
 		ctx.fill();
 		
 		x = .5;
@@ -88,21 +85,6 @@ TetriBlock.prototype._doRender =
 		var bevelWidth = Math.ceil(w / 5);
 		var bevelHeight = Math.ceil(h / 5);
 		
-		var lighterFill = null;
-		var darkerFill = null;
-		
-		if (this._blockColor == "#202020")
-		{
-			lighterFill = CanvasElement.adjustColorLight(this._blockColor, +.03);
-			darkerFill = CanvasElement.adjustColorLight(this._blockColor, -.04);
-		}
-		else
-		{
-			lighterFill = CanvasElement.adjustColorLight(this._blockColor, +.12);
-			darkerFill = CanvasElement.adjustColorLight(this._blockColor, -.12);
-		}
-		
-		
 		ctx.beginPath();
 		ctx.moveTo(x, y);
 		ctx.lineTo(x + w, y);
@@ -112,7 +94,7 @@ TetriBlock.prototype._doRender =
 		ctx.lineTo(x, y + h);
 		ctx.closePath();
 		
-		ctx.fillStyle = lighterFill;
+		ctx.fillStyle = lighter;
 		ctx.fill();
 		
 		
@@ -125,7 +107,7 @@ TetriBlock.prototype._doRender =
 		ctx.lineTo(x + w, y);
 		ctx.closePath();
 		
-		ctx.fillStyle = darkerFill;
+		ctx.fillStyle = darker;
 		ctx.fill();
 		
 	};

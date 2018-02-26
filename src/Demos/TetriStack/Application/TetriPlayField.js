@@ -3,11 +3,6 @@ function TetriPlayField()
 {
 	TetriPlayField.base.prototype.constructor.call(this);
 	
-	//this.setStyle("Width", 455);
-	//this.setStyle("Height", 620);
-	//this.setStyle("BorderType", "solid");
-	//this.setStyle("BorderColor", "#FFFFFF");
-	
 		var gridRoundedBorderShape = new RoundedRectangleShape();
 		gridRoundedBorderShape.setStyle("CornerRadius", 5);
 		
@@ -171,7 +166,7 @@ function TetriPlayField()
 		for (i2 = 0; i2 < 10; i2++)
 		{
 			tetriBlock = new TetriBlock();
-			tetriBlock.setBlockColor("#202020");
+			tetriBlock.setBlockColor(TetriStackApplication.BlockColors.BLACK);
 			tetriBlock.setStyle("Width", 30);
 			tetriBlock.setStyle("Height", 30);
 			tetriBlock.setStyle("X", i2 * 30);
@@ -288,7 +283,7 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 						{
 							block = this._getBlockAtGridPosition(x, currentYPositions[i]);
 							
-							if (block.getBlockColor() == "#202020")
+							if (block.getBlockColor() == TetriStackApplication.BlockColors.BLACK)
 							{
 								lineComplete = false;
 								break;
@@ -302,7 +297,7 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 							for (x = 0; x < 10; x++)
 							{
 								block = this._getBlockAtGridPosition(x, currentYPositions[i]);
-								block.setBlockColor("#DDDDDD");
+								block.setBlockColor(TetriStackApplication.BlockColors.WHITE);
 							}
 						}
 					}
@@ -356,7 +351,7 @@ TetriPlayField.prototype._clearLines =
 					block2 = this._getBlockAtGridPosition(x, y + offsetY);
 					
 					if (block1 == null)
-						block2.setBlockColor("#202020");
+						block2.setBlockColor(TetriStackApplication.BlockColors.BLACK);
 					else
 						block2.setBlockColor(block1.getBlockColor());
 				}
@@ -387,13 +382,13 @@ TetriPlayField.prototype._updateNextPiece =
 		var block;
 		var point;
 		var blockPoints = TetriStackApplication.PieceData[this._nextPiece][0];
+		var blockColor = TetriStackApplication.GetBlockColor(this._nextPiece);
 		
 		for (var i = 0; i < blockPoints.length; i++)
 		{
 			if (this._nextPieceBlockContainer.getNumElements() < i + 1)
 			{
 				block = new TetriBlock();
-				block.setBlockColor("#0055FF");
 				block.setStyle("Width", 25);
 				block.setStyle("Height", 25);
 				
@@ -404,6 +399,7 @@ TetriPlayField.prototype._updateNextPiece =
 			
 			point = blockPoints[i];
 			
+			block.setBlockColor(blockColor);
 			block.setStyle("X", point.x * 25);
 			
 			if (this._nextPiece != 0)
@@ -656,7 +652,7 @@ TetriPlayField.prototype._testPosition =
 				return null;
 			
 			//Existing block (not ourself)
-			if (newBlocks[i].getBlockColor() != "#202020" && this._currentBlocks.indexOf(newBlocks[i]) == -1)
+			if (newBlocks[i].getBlockColor() != TetriStackApplication.BlockColors.BLACK && this._currentBlocks.indexOf(newBlocks[i]) == -1)
 				return null;
 		}
 		
@@ -696,11 +692,13 @@ TetriPlayField.prototype._updatePosition =
 		for (i = this._currentBlocks.length - 1; i >= 0; i--)
 		{
 			if (newBlocks.indexOf(this._currentBlocks[i]) == -1)
-				this._currentBlocks[i].setBlockColor("#202020");
+				this._currentBlocks[i].setBlockColor(TetriStackApplication.BlockColors.BLACK);
 		}
 		
+		var blockColor = TetriStackApplication.GetBlockColor(this._currentPiece);
+		
 		for (i = 0; i < newBlocks.length; i++)
-			newBlocks[i].setBlockColor("#0055FF");
+			newBlocks[i].setBlockColor(blockColor);
 		
 		this._currentBlocks = newBlocks;
 		this._currentOriginX = originX;

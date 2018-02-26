@@ -70,7 +70,44 @@ TetriStackApplication.prototype._onButtonPlayClick =
 		playField.startGame(Date.now(), 1);
 	};
 
+	
+////ENUM/////
+	
+TetriStackApplication.BlockColors = 
+	{
+		BLACK:{base:"#202020", lighter:CanvasElement.adjustColorLight("#202020", +.03), darker:CanvasElement.adjustColorLight("#202020", -.04)},
+		WHITE:{base:"#DDDDDD", lighter:CanvasElement.adjustColorLight("#DDDDDD", +.12), darker:CanvasElement.adjustColorLight("#DDDDDD", -.12)},
+		YELLOW:{base:"#BDBD00", lighter:CanvasElement.adjustColorLight("#BDBD00", +.18), darker:CanvasElement.adjustColorLight("#BDBD00", -.06)},
+		LIGHTBLUE:{base:"#3F8FFF", lighter:CanvasElement.adjustColorLight("#3F8FFF", +.12), darker:CanvasElement.adjustColorLight("#3F8FFF", -.12)},
+		DARKBLUE:{base:"#0033CC", lighter:CanvasElement.adjustColorLight("#0033CC", +.12), darker:CanvasElement.adjustColorLight("#0033CC", -.12)},
+		ORANGE:{base:"#EA7A11", lighter:CanvasElement.adjustColorLight("#EA7A11", +.16), darker:CanvasElement.adjustColorLight("#EA7A11", -.08)},
+		PURPLE:{base:"#9932CC", lighter:CanvasElement.adjustColorLight("#9932CC", +.12), darker:CanvasElement.adjustColorLight("#9932CC", -.12)},
+		GREEN:{base:"#20B520", lighter:CanvasElement.adjustColorLight("#20B520", +.18), darker:CanvasElement.adjustColorLight("#20B520", -.08)},
+		RED:{base:"#CC3333", lighter:CanvasElement.adjustColorLight("#CC3333", +.12), darker:CanvasElement.adjustColorLight("#CC3333", -.12)}
+	};
+	
 ////STATIC////
+
+TetriStackApplication.GetBlockColor = 
+	function (piece)
+	{
+		if (piece == 0)
+			return TetriStackApplication.BlockColors.LIGHTBLUE;
+		if (piece == 1)
+			return TetriStackApplication.BlockColors.YELLOW;
+		if (piece == 2)
+			return TetriStackApplication.BlockColors.PURPLE;
+		if (piece == 3)
+			return TetriStackApplication.BlockColors.GREEN;
+		if (piece == 4)
+			return TetriStackApplication.BlockColors.RED;
+		if (piece == 5)
+			return TetriStackApplication.BlockColors.DARKBLUE;
+		if (piece == 6)
+			return TetriStackApplication.BlockColors.ORANGE;
+		
+		return TetriStackApplication.BlockColors.BLACK;
+	};
 
 TetriStackApplication.GetKickTable = 
 	function (piece, orientStart, orientEnd)
@@ -145,7 +182,7 @@ TetriStackApplication.PieceRotateData = [
 //Standard guideline spawn and basic rotation tables
 TetriStackApplication.PieceData = [	//[piece][orientation][point]
                                     	
-      [	 //XXXX
+      [	 //XXXX //0
 	 	
            [{x:0, y:1},		//OOOO
            {x:1, y:1},		//XXXX
@@ -167,7 +204,7 @@ TetriStackApplication.PieceData = [	//[piece][orientation][point]
            {x:1, y:2},		//OXOO
            {x:1, y:3}]		//OXOO
      ],
-     [	//XX
+     [	//XX //1
       	//XX
 			[{x:0, y:0},	
 			{x:1, y:0},
@@ -189,7 +226,7 @@ TetriStackApplication.PieceData = [	//[piece][orientation][point]
 			{x:0, y:1},
 			{x:1, y:1}],                                 
 	 ],
-	 [	// X
+	 [	// X 	//2
 	  	//XXX
 			[{x:1, y:0},	//OXO
 			{x:0, y:1},		//XXX
@@ -211,7 +248,7 @@ TetriStackApplication.PieceData = [	//[piece][orientation][point]
 			{x:1, y:1},		//OXO
 			{x:1, y:2}],                                 
 	 ],
-	 [	// XX
+	 [	// XX  //3
 	  	//XX
 			[{x:1, y:0},	//OXX
 			{x:2, y:0},		//XXO
@@ -233,7 +270,7 @@ TetriStackApplication.PieceData = [	//[piece][orientation][point]
 			{x:1, y:1},		//OXO
 			{x:1, y:2}],                                 
 	 ],
-	 [	//XX
+	 [	//XX	//4
 	  	// XX
 			[{x:0, y:0},	//XXO
 			{x:1, y:0},		//OXX
@@ -255,7 +292,7 @@ TetriStackApplication.PieceData = [	//[piece][orientation][point]
 			{x:1, y:1},		//XOO
 			{x:0, y:2}],                                 
 	 ],
-	 [	//X
+	 [	//X		//5
 	  	//XXX
 			[{x:0, y:0},	//XOO
 			{x:0, y:1},		//XXX
@@ -277,7 +314,7 @@ TetriStackApplication.PieceData = [	//[piece][orientation][point]
 			{x:0, y:2},		//XXO
 			{x:1, y:2}],                                 
 	 ],
-	 [	//  X
+	 [	//  X	//6
 	  	//XXX
 			[{x:2, y:0},	//OOX
 			{x:0, y:1},		//XXX
