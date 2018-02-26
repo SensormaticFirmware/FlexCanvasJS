@@ -219,7 +219,7 @@ TetriPlayField.prototype.constructor = TetriPlayField;
 TetriPlayField.base = AnchorContainerElement;
 
 TetriPlayField.KeyholdDelay1 = 150;
-TetriPlayField.KeyholdDelay2 = 75;
+TetriPlayField.KeyholdDelay2 = 50;
 
 TetriPlayField.prototype._onPlayFieldEnterFrame = 
 	function (event)
