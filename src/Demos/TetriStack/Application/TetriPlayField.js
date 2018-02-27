@@ -166,7 +166,6 @@ function TetriPlayField()
 		for (i2 = 0; i2 < 10; i2++)
 		{
 			tetriBlock = new TetriBlock();
-			tetriBlock.setBlockColor(TetriStackApplication.BlockColors.BLACK);
 			tetriBlock.setStyle("Width", 30);
 			tetriBlock.setStyle("Height", 30);
 			tetriBlock.setStyle("X", i2 * 30);
@@ -179,22 +178,15 @@ function TetriPlayField()
 	this._randomBag = [];
 	this._level = 1;
 	this._lineCount = 0;
-	this._phase = "fall";
 	
 	this._fallTime = -1;
 	this._lockTime = -1;
 	this._suspendLock = false;
 	
+	//Key state tracking
 	this._rightTime = -1;
 	this._leftTime = -1;
 	this._downTime = -1;
-	
-	//this._currentState = null;
-	
-	//Key state tracking
-	this._left = false;
-	this._right = false;
-	this._down = false;
 	this._drop = false;
 	this._rotateRight = false;
 	this._rotateLeft = false;
@@ -790,12 +782,6 @@ TetriPlayField.prototype._updatePosition =
 		this._currentOrient = orient;
 		
 		return true;
-	};
-	
-TetriPlayField.prototype._getRandomPiece = 
-	function ()
-	{
-		return Math.floor(Math.random() * 7);
 	};
 	
 	

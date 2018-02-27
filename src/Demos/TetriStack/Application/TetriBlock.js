@@ -4,9 +4,6 @@ function TetriBlock()
 {
 	TetriBlock.base.prototype.constructor.call(this);
 	
-	this._gridX = -1;
-	this._gridY = -1;
-	
 	this._isGhost = false;
 	this._blockColor = TetriStackApplication.BlockColors.BLACK;
 }
@@ -127,7 +124,6 @@ TetriBlock.prototype._doRender =
 		
 		ctx.fillStyle = lighter;
 		ctx.fill();
-		
 		
 		ctx.beginPath();
 		ctx.moveTo(x + w, y + h);
