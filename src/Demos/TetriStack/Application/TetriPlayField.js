@@ -207,6 +207,8 @@ function TetriPlayField()
 	
 	this._currentResetLockY = -1;
 	
+	this._ghostBlocks = [];
+	
 	this._currentLines = [];
 	this._linesClearTime = -1;
 	
@@ -218,7 +220,7 @@ TetriPlayField.prototype = Object.create(AnchorContainerElement.prototype);
 TetriPlayField.prototype.constructor = TetriPlayField;
 TetriPlayField.base = AnchorContainerElement;
 
-TetriPlayField.KeyholdDelay1 = 150;
+TetriPlayField.KeyholdDelay1 = 200;
 TetriPlayField.KeyholdDelay2 = 50;
 
 TetriPlayField.prototype._onPlayFieldEnterFrame = 
@@ -228,29 +230,27 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 		
 		if (this._currentLines.length == 0)
 		{
-			if (this._leftTime != -1 && this._rightTime == -1 && currentTime >= this._leftTime)
+			while (this._leftTime != -1 && this._rightTime == -1 && currentTime >= this._leftTime)
 			{
 				this._movePiece(this._leftTime, "left");
 				this._leftTime += TetriPlayField.KeyholdDelay2;
 			}
 			
-			if (this._rightTime != -1 && this._leftTime == -1 && currentTime >= this._rightTime)
+			while (this._rightTime != -1 && this._leftTime == -1 && currentTime >= this._rightTime)
 			{
 				this._movePiece(this._rightTime, "right");
 				this._rightTime += TetriPlayField.KeyholdDelay2;
 			}
 			
-			if (this._downTime != -1 && currentTime >= this._downTime)
+			while (this._downTime != -1 && currentTime >= this._downTime)
 			{
+				this._downTime += Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
 				this._movePiece(this._downTime, "down");
-				this._downTime += TetriPlayField.KeyholdDelay2;
 			}
-			else if (this._fallTime != -1 && currentTime >= this._fallTime)
+			
+			while (this._fallTime != -1 && currentTime >= this._fallTime)
 			{
 				this._movePiece(this._fallTime, "down");
-				
-				if (this._downTime != -1)
-					this._downTime = this._fallTime + KeyholdDelay2;
 			}
 			
 			if (this._lockTime != -1 && 
@@ -362,7 +362,7 @@ TetriPlayField.prototype._clearLines =
 		this._lineCountLabel.setStyle("Text", this._lineCount.toString());
 		
 		if (Math.ceil(this._lineCount / 10) > this._level)
-			this._level = Math.ceil(this._lineCount / 10)
+			this._level = Math.ceil(this._lineCount / 10);
 		
 		this._currentLines.splice(0, this._currentLines.length);
 	};
@@ -371,6 +371,7 @@ TetriPlayField.prototype.startGame =
 	function (currentTime, startLevel)
 	{
 		this._level = startLevel;
+		//this._level = 12;
 		this._nextPiece = this._getNextPiece();
 		
 		this._generatePiece(currentTime);
@@ -435,6 +436,7 @@ TetriPlayField.prototype._generatePiece =
 			return; //TODO: Game over
 		
 		this._movePiece(fromTime, "down");
+		this._updateGhost();
 	};
 	
 TetriPlayField.prototype._getNextPiece = 
@@ -463,12 +465,12 @@ TetriPlayField.prototype._movePiece =
 		else if (direction == "down")
 			originY += 1;
 		
-		this._updatePosition(this._currentPiece, this._currentOrient, originX, originY);
+		result = this._updatePosition(this._currentPiece, this._currentOrient, originX, originY);
 		this._suspendLock = false;
 		
 		if (direction == "down")
 		{
-			this._fallTime = fromTime + TetriStackApplication.GetFallSpeed(this._level);
+			this._fallTime = fromTime + Math.ceil(TetriStackApplication.GetFallSpeed(this._level));
 			
 			if (this._currentResetLockY < this._currentOriginY)
 			{
@@ -478,11 +480,17 @@ TetriPlayField.prototype._movePiece =
 			}
 		}
 		
+		//Initial fall piece may not actually move, still need to start lock timer.
 		if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) == null)
 		{
 			if (this._lockTime == -1)
 				this._lockTime = fromTime + 500;
 		}
+		
+		if (result == true && (direction == "right" || direction == "left"))
+			this._updateGhost();
+		
+		return result;
 	};
 	
 TetriPlayField.prototype._rotatePiece = 
@@ -502,22 +510,32 @@ TetriPlayField.prototype._rotatePiece =
 		var originX = 0;
 		var originY = 0;
 		
+		var result = false;
+		
 		for (var i = 0; i < kickTable.length; i++)
 		{
 			originX = this._currentOriginX + kickTable[i].x;
 			originY = this._currentOriginY + kickTable[i].y;
 			
 			if (this._updatePosition(this._currentPiece, newOrient, originX, originY) == true)
-				return true;
+			{
+				result = true;
+				break;
+			}
 		}
 		
-		if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) == null)
+		if (result == true)
 		{
-			if (this._lockTime == -1)
-				this._lockTime = fromTime + 500;
+			if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) == null)
+			{
+				if (this._lockTime == -1)
+					this._lockTime = fromTime + 500;
+			}
+			
+			this._updateGhost();
 		}
 		
-		return false;
+		return result;
 	};
 	
 TetriPlayField.prototype._onApplicationKeyup = 
@@ -589,37 +607,24 @@ TetriPlayField.prototype._onApplicationKeydown =
 			if (this._downTime != -1)
 				return;
 			
-			this._downTime = currentTime + TetriPlayField.KeyholdDelay1;
+			this._downTime = currentTime + Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
 			this._movePiece(currentTime, "down");
 			
 			return;
 		}
 		
-		
-		
-		
-		if (keycode == 81 || keycode == 69)
-		{ 
-			if (keycode == 81)
-				newOrient = this._currentOrient - 1;
-			else
-				newOrient = this._currentOrient + 1;
+		if (keycode == 81)
+		{
+			this._rotatePiece("left");
 			
-			if (newOrient < 0)
-				newOrient = 3;
-			if (newOrient > 3)
-				newOrient = 0;
+			return;
+		}
+		
+		if (keycode == 69)
+		{
+			this._rotatePiece("right");
 			
-			var kickTable = TetriStackApplication.GetKickTable(this._currentPiece, this._currentOrient, newOrient);
-			
-			for (i = 0; i < kickTable.length; i++)
-			{
-				newOriginX = this._currentOriginX + kickTable[i].x;
-				newOriginY = this._currentOriginY + kickTable[i].y;
-				
-				if (this._updatePosition(this._currentPiece, newOrient, newOriginX, newOriginY) == true)
-					return;
-			}
+			return;
 		}
 	};
 	
@@ -651,9 +656,13 @@ TetriPlayField.prototype._testPosition =
 			if (newBlocks[i] == null)
 				return null;
 			
-			//Existing block (not ourself)
-			if (newBlocks[i].getBlockColor() != TetriStackApplication.BlockColors.BLACK && this._currentBlocks.indexOf(newBlocks[i]) == -1)
+			//Existing block (not ourself & not a ghost)
+			if (newBlocks[i].getBlockColor() != TetriStackApplication.BlockColors.BLACK && 
+				newBlocks[i].getIsGhost() == false &&
+				this._currentBlocks.indexOf(newBlocks[i]) == -1)
+			{
 				return null;
+			}
 		}
 		
 		return newBlocks;
@@ -680,6 +689,69 @@ TetriPlayField.prototype._getGridPositionFromBlock =
 		return result;
 	};
 	
+TetriPlayField.prototype._updateGhost = 
+	function ()
+	{
+		var i;
+		var y = this._currentOriginY;
+	
+		var ghostBlocks = null;
+		var ghostBlocks2 = null;
+		
+		while (true)
+		{
+			y++;
+			ghostBlocks2 = this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, y);
+			
+			if (ghostBlocks2 != null)
+				ghostBlocks = ghostBlocks2;
+			else
+				break;
+		}
+		
+		if (ghostBlocks == null)
+		{
+			for (i = 0; i < this._ghostBlocks.length; i++)
+			{
+				this._ghostBlocks[i].setIsGhost(false);
+				this._ghostBlocks[i].setBlockColor(TetriStackApplication.BlockColors.BLACK);
+			}
+			
+			this._ghostBlocks.splice(0, this._ghostBlocks.length);
+		}
+		else
+		{
+			var blockColor = TetriStackApplication.GetBlockColor(this._currentPiece);
+			
+			for (i = ghostBlocks.length - 1; i >= 0; i--)
+			{	
+				if (this._currentBlocks.indexOf(ghostBlocks[i]) > -1)
+				{	
+					//Purge any ghost blocks that overlap actual blocks
+					ghostBlocks.splice(i, 1);
+				}
+				else
+				{
+					//Apply ghost color
+					ghostBlocks[i].setBlockColor(blockColor);
+					ghostBlocks[i].setIsGhost(true);
+				}
+			}
+			
+			//Shut off any old ghost blocks
+			for (i = this._ghostBlocks.length - 1; i >= 0; i--)
+			{
+				if (ghostBlocks.indexOf(this._ghostBlocks[i]) == -1)
+				{
+					this._ghostBlocks[i].setBlockColor(TetriStackApplication.BlockColors.BLACK);
+					this._ghostBlocks[i].setIsGhost(false);
+				}
+			}
+			
+			this._ghostBlocks = ghostBlocks;
+		}
+	};	
+	
 TetriPlayField.prototype._updatePosition = 
 	function (piece, orient, originX, originY)
 	{
@@ -692,13 +764,25 @@ TetriPlayField.prototype._updatePosition =
 		for (i = this._currentBlocks.length - 1; i >= 0; i--)
 		{
 			if (newBlocks.indexOf(this._currentBlocks[i]) == -1)
+			{
 				this._currentBlocks[i].setBlockColor(TetriStackApplication.BlockColors.BLACK);
+				this._currentBlocks[i].setIsGhost(false);
+			}
 		}
 		
 		var blockColor = TetriStackApplication.GetBlockColor(this._currentPiece);
+		var ghostIndex = -1;
 		
 		for (i = 0; i < newBlocks.length; i++)
+		{
 			newBlocks[i].setBlockColor(blockColor);
+			newBlocks[i].setIsGhost(false);
+			
+			//Purge ghost block if we just overlapped it.
+			ghostIndex = this._ghostBlocks.indexOf(newBlocks[i]);
+			if (ghostIndex > -1)
+				this._ghostBlocks.splice(ghostIndex, 1);
+		}
 		
 		this._currentBlocks = newBlocks;
 		this._currentOriginX = originX;
