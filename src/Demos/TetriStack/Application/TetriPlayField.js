@@ -54,7 +54,7 @@ function TetriPlayField()
 				this._nextLabel.setStyle("Text", "Next");
 				this._nextLabel.setStyle("TextSize", 24);
 				this._nextLabel.setStyle("TextStyle", "bold");
-				this._nextLabel.setStyle("TextFont", "Roboto");
+				this._nextLabel.setStyle("TextFont", "Audiowide");
 				this._nextLabel.setStyle("TextColor", "#DDDDDD");
 				this._nextLabel.setStyle("Y", 4);
 				this._nextLabel.setStyle("HorizontalCenter", 0);
@@ -95,7 +95,7 @@ function TetriPlayField()
 				this._linesLabel.setStyle("Text", "Lines");
 				this._linesLabel.setStyle("TextSize", 24);
 				this._linesLabel.setStyle("TextStyle", "bold");
-				this._linesLabel.setStyle("TextFont", "Roboto");
+				this._linesLabel.setStyle("TextFont", "Audiowide");
 				this._linesLabel.setStyle("TextColor", "#DDDDDD");
 				this._linesLabel.setStyle("Y", 4);
 				this._linesLabel.setStyle("HorizontalCenter", 0);
@@ -104,7 +104,7 @@ function TetriPlayField()
 				this._lineCountLabel.setStyle("Text", "0");
 				this._lineCountLabel.setStyle("TextSize", 24);
 				this._lineCountLabel.setStyle("TextStyle", "bold");
-				this._lineCountLabel.setStyle("TextFont", "Roboto");
+				this._lineCountLabel.setStyle("TextFont", "Audiowide");
 				this._lineCountLabel.setStyle("TextColor", "#DDDDDD");
 				this._lineCountLabel.setStyle("Y", 38);
 				this._lineCountLabel.setStyle("HorizontalCenter", 0);
