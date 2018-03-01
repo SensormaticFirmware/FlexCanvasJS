@@ -40,9 +40,14 @@ buttonPlayStyle.setStyle("BackgroundShape", buttonPlayBackgroundShape);
 
 var labelControlsStyle = new StyleDefinition();
 labelControlsStyle.setStyle("TextSize", 17);
-//labelControlsStyle.setStyle("TextStyle", "bold");
 labelControlsStyle.setStyle("TextFont", "Audiowide");
 labelControlsStyle.setStyle("TextColor", "#DDDDDD");
+labelControlsStyle.setStyle("TextHorizontalAlign", "center");
+
+var labelControlsDividerStyle = new StyleDefinition();
+labelControlsDividerStyle.setStyle("PercentHeight", 70);
+labelControlsDividerStyle.setStyle("Width", 1);
+labelControlsDividerStyle.setStyle("BackgroundColor", "#DDDDDD");
 
 
 

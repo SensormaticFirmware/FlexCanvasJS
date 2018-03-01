@@ -37,7 +37,7 @@ function TetriStackApplication() //extends CanvasManager
 					this._labelSelectLevel.setStyle("TextStyle", "bold");
 					this._labelSelectLevel.setStyle("TextFont", "Audiowide");
 					this._labelSelectLevel.setStyle("TextColor", "#DDDDDD");
-					this._labelSelectLevel.setStyle("PaddingTop", 10);
+					this._labelSelectLevel.setStyle("PaddingTop", 20);
 					
 					this._levelSelectContainer = new ListContainerElement();
 					this._levelSelectContainer.setStyle("LayoutDirection", "horizontal");
@@ -56,9 +56,11 @@ function TetriStackApplication() //extends CanvasManager
 						
 						this._labelSelectedLevel = new LabelElement();
 						this._labelSelectedLevel.setStyle("Text", "1");
+						this._labelSelectedLevel.setStyle("Width", 35);
 						this._labelSelectedLevel.setStyle("TextSize", 22);
+						this._labelSelectedLevel.setStyle("TextHorizontalAlign", "center");
 						this._labelSelectedLevel.setStyle("TextStyle", "bold");
-						this._labelSelectedLevel.setStyle("TextFont", "Roboto");
+						this._labelSelectedLevel.setStyle("TextFont", "Audiowide");
 						this._labelSelectedLevel.setStyle("TextColor", "#DDDDDD");
 						
 						var arrowRightShape = new ArrowShape();
@@ -78,133 +80,301 @@ function TetriStackApplication() //extends CanvasManager
 					this._buttonPlay.setStyleDefinitions([buttonBackgroundColors, buttonPlayStyle]);
 					
 					this._controlsContainer = new ListContainerElement();
-					this._controlsContainer.setStyle("PaddingTop", 20);
+					this._controlsContainer.setStyle("PaddingTop", 30);
 					this._controlsContainer.setStyle("LayoutGap", 5);
 					this._controlsContainer.setStyle("LayoutHorizontalAlign", "center");
 					
 						this._controlsDivider = new CanvasElement();
 						this._controlsDivider.setStyle("Height", 1);
-						this._controlsDivider.setStyle("Width", 450);
+						this._controlsDivider.setStyle("Width", 520);
 						this._controlsDivider.setStyle("BackgroundColor", "#DDDDDD");
 						
 						this._controlMoveLeftContainer = new ListContainerElement();
 						this._controlMoveLeftContainer.setStyle("LayoutDirection", "horizontal");
+						this._controlMoveLeftContainer.setStyle("LayoutVerticalAlign", "middle");
 						this._controlMoveLeftContainer.setStyle("PercentWidth", 100);
 						
 							this._labelControlMoveLeft = new LabelElement();
 							this._labelControlMoveLeft.setStyle("Text", "Move Left:");
+							this._labelControlMoveLeft.setStyle("TextStyle", "bold");
 							this._labelControlMoveLeft.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveLeft.setStyle("PercentWidth", 100);
+							this._labelControlMoveLeft.setStyle("TextHorizontalAlign", "left");
 							
-							this._labelControlMoveLeftKeys = new LabelElement();
-							this._labelControlMoveLeftKeys.setStyle("Text", "A  |   ArrowLeft   |  NumPad 4");
-							this._labelControlMoveLeftKeys.setStyleDefinitions(labelControlsStyle);
-							this._labelControlMoveLeftKeys.setStyle("TextHorizontalAlign", "right");
-							this._labelControlMoveLeftKeys.setStyle("PercentWidth", 100);
+							this._labelControlMoveLeftKey1 = new LabelElement();
+							this._labelControlMoveLeftKey1.setStyle("Text", "A");
+							this._labelControlMoveLeftKey1.setStyle("Width", 100);
+							this._labelControlMoveLeftKey1.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlMoveLeftDivider1 = new CanvasElement();
+							this._labelControlMoveLeftDivider1.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlMoveLeftKey2 = new LabelElement();
+							this._labelControlMoveLeftKey2.setStyle("Text", "Arrow Left");
+							this._labelControlMoveLeftKey2.setStyle("Width", 150);
+							this._labelControlMoveLeftKey2.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlMoveLeftDivider2 = new CanvasElement();
+							this._labelControlMoveLeftDivider2.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlMoveLeftKey3 = new LabelElement();
+							this._labelControlMoveLeftKey3.setStyle("Text", "NumPad 4");
+							this._labelControlMoveLeftKey3.setStyle("Width", 120);
+							this._labelControlMoveLeftKey3.setStyle("TextHorizontalAlign", "right");
+							this._labelControlMoveLeftKey3.setStyleDefinitions(labelControlsStyle);
 							
 						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeft);
-						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeftKeys);
+						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeftKey1);
+						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeftDivider1);
+						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeftKey2);
+						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeftDivider2);
+						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeftKey3);
 						
 						this._controlMoveRightContainer = new ListContainerElement();
 						this._controlMoveRightContainer.setStyle("LayoutDirection", "horizontal");
+						this._controlMoveRightContainer.setStyle("LayoutVerticalAlign", "middle");
 						this._controlMoveRightContainer.setStyle("PercentWidth", 100);
 						
 							this._labelControlMoveRight = new LabelElement();
 							this._labelControlMoveRight.setStyle("Text", "Move Right:");
+							this._labelControlMoveRight.setStyle("TextStyle", "bold");
 							this._labelControlMoveRight.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveRight.setStyle("PercentWidth", 100);
+							this._labelControlMoveRight.setStyle("TextHorizontalAlign", "left");
 							
-							this._labelControlMoveRightKeys = new LabelElement();
-							this._labelControlMoveRightKeys.setStyle("Text", "D  |   ArrowRight  |  NumPad 6");
-							this._labelControlMoveRightKeys.setStyleDefinitions(labelControlsStyle);
-							this._labelControlMoveRightKeys.setStyle("TextHorizontalAlign", "right");
-							this._labelControlMoveRightKeys.setStyle("PercentWidth", 100);
+							this._labelControlMoveRightKey1 = new LabelElement();
+							this._labelControlMoveRightKey1.setStyle("Text", "D");
+							this._labelControlMoveRightKey1.setStyle("Width", 100);
+							this._labelControlMoveRightKey1.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlMoveRightDivider1 = new CanvasElement();
+							this._labelControlMoveRightDivider1.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlMoveRightKey2 = new LabelElement();
+							this._labelControlMoveRightKey2.setStyle("Text", "Arrow Right");
+							this._labelControlMoveRightKey2.setStyle("Width", 150);
+							this._labelControlMoveRightKey2.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlMoveRightDivider2 = new CanvasElement();
+							this._labelControlMoveRightDivider2.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlMoveRightKey3 = new LabelElement();
+							this._labelControlMoveRightKey3.setStyle("Text", "NumPad 6");
+							this._labelControlMoveRightKey3.setStyle("Width", 120);
+							this._labelControlMoveRightKey3.setStyle("TextHorizontalAlign", "right");
+							this._labelControlMoveRightKey3.setStyleDefinitions(labelControlsStyle);
 							
 						this._controlMoveRightContainer.addElement(this._labelControlMoveRight);
-						this._controlMoveRightContainer.addElement(this._labelControlMoveRightKeys);
+						this._controlMoveRightContainer.addElement(this._labelControlMoveRightKey1);
+						this._controlMoveRightContainer.addElement(this._labelControlMoveRightDivider1);
+						this._controlMoveRightContainer.addElement(this._labelControlMoveRightKey2);
+						this._controlMoveRightContainer.addElement(this._labelControlMoveRightDivider2);
+						this._controlMoveRightContainer.addElement(this._labelControlMoveRightKey3);
 						
 						this._controlSoftDropContainer = new ListContainerElement();
 						this._controlSoftDropContainer.setStyle("LayoutDirection", "horizontal");
+						this._controlSoftDropContainer.setStyle("LayoutVerticalAlign", "middle");
 						this._controlSoftDropContainer.setStyle("PercentWidth", 100);
 						
 							this._labelControlSoftDrop = new LabelElement();
 							this._labelControlSoftDrop.setStyle("Text", "Soft Drop:");
+							this._labelControlSoftDrop.setStyle("TextStyle", "bold");
 							this._labelControlSoftDrop.setStyleDefinitions(labelControlsStyle);
+							this._labelControlSoftDrop.setStyle("PercentWidth", 100);
+							this._labelControlSoftDrop.setStyle("TextHorizontalAlign", "left");
 							
-							this._labelControlSoftDropKeys = new LabelElement();
-							this._labelControlSoftDropKeys.setStyle("Text", "S  |  ArrowDown  |  NumPad 5");
-							this._labelControlSoftDropKeys.setStyleDefinitions(labelControlsStyle);
-							this._labelControlSoftDropKeys.setStyle("TextHorizontalAlign", "right");
-							this._labelControlSoftDropKeys.setStyle("PercentWidth", 100);
+							this._labelControlSoftDropKey1 = new LabelElement();
+							this._labelControlSoftDropKey1.setStyle("Text", "S");
+							this._labelControlSoftDropKey1.setStyle("Width", 100);
+							this._labelControlSoftDropKey1.setStyleDefinitions(labelControlsStyle);
 							
+							this._labelControlSoftDropDivider1 = new CanvasElement();
+							this._labelControlSoftDropDivider1.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlSoftDropKey2 = new LabelElement();
+							this._labelControlSoftDropKey2.setStyle("Text", "Arrow Down");
+							this._labelControlSoftDropKey2.setStyle("Width", 150);
+							this._labelControlSoftDropKey2.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlSoftDropDivider2 = new CanvasElement();
+							this._labelControlSoftDropDivider2.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlSoftDropKey3 = new LabelElement();
+							this._labelControlSoftDropKey3.setStyle("Text", "NumPad 5");
+							this._labelControlSoftDropKey3.setStyle("Width", 120);
+							this._labelControlSoftDropKey3.setStyle("TextHorizontalAlign", "right");
+							this._labelControlSoftDropKey3.setStyleDefinitions(labelControlsStyle);
+						
 						this._controlSoftDropContainer.addElement(this._labelControlSoftDrop);
-						this._controlSoftDropContainer.addElement(this._labelControlSoftDropKeys);
+						this._controlSoftDropContainer.addElement(this._labelControlSoftDropKey1);
+						this._controlSoftDropContainer.addElement(this._labelControlSoftDropDivider1);
+						this._controlSoftDropContainer.addElement(this._labelControlSoftDropKey2);
+						this._controlSoftDropContainer.addElement(this._labelControlSoftDropDivider2);
+						this._controlSoftDropContainer.addElement(this._labelControlSoftDropKey3);
 						
 						this._controlHardDropContainer = new ListContainerElement();
 						this._controlHardDropContainer.setStyle("LayoutDirection", "horizontal");
+						this._controlHardDropContainer.setStyle("LayoutVerticalAlign", "middle");
 						this._controlHardDropContainer.setStyle("PercentWidth", 100);
 						
 							this._labelControlHardDrop = new LabelElement();
 							this._labelControlHardDrop.setStyle("Text", "Hard Drop:");
+							this._labelControlHardDrop.setStyle("TextStyle", "bold");
 							this._labelControlHardDrop.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHardDrop.setStyle("PercentWidth", 100);
+							this._labelControlHardDrop.setStyle("TextHorizontalAlign", "left");
 							
-							this._labelControlHardDropKeys = new LabelElement();
-							this._labelControlHardDropKeys.setStyle("Text", "W  |     ArrowUp    |  NumPad 8");
-							this._labelControlHardDropKeys.setStyleDefinitions(labelControlsStyle);
-							this._labelControlHardDropKeys.setStyle("TextHorizontalAlign", "right");
-							this._labelControlHardDropKeys.setStyle("PercentWidth", 100);
+							this._labelControlHardDropKey1 = new LabelElement();
+							this._labelControlHardDropKey1.setStyle("Text", "W");
+							this._labelControlHardDropKey1.setStyle("Width", 100);
+							this._labelControlHardDropKey1.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlHardDropDivider1 = new CanvasElement();
+							this._labelControlHardDropDivider1.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlHardDropKey2 = new LabelElement();
+							this._labelControlHardDropKey2.setStyle("Text", "Arrow Up");
+							this._labelControlHardDropKey2.setStyle("Width", 150);
+							this._labelControlHardDropKey2.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlHardDropDivider2 = new CanvasElement();
+							this._labelControlHardDropDivider2.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlHardDropKey3 = new LabelElement();
+							this._labelControlHardDropKey3.setStyle("Text", "NumPad 8");
+							this._labelControlHardDropKey3.setStyle("Width", 120);
+							this._labelControlHardDropKey3.setStyle("TextHorizontalAlign", "right");
+							this._labelControlHardDropKey3.setStyleDefinitions(labelControlsStyle);
 							
 						this._controlHardDropContainer.addElement(this._labelControlHardDrop);
-						this._controlHardDropContainer.addElement(this._labelControlHardDropKeys);
+						this._controlHardDropContainer.addElement(this._labelControlHardDropKey1);
+						this._controlHardDropContainer.addElement(this._labelControlHardDropDivider1);
+						this._controlHardDropContainer.addElement(this._labelControlHardDropKey2);
+						this._controlHardDropContainer.addElement(this._labelControlHardDropDivider2);
+						this._controlHardDropContainer.addElement(this._labelControlHardDropKey3);
 						
 						this._controlRotateLeftContainer = new ListContainerElement();
 						this._controlRotateLeftContainer.setStyle("LayoutDirection", "horizontal");
+						this._controlRotateLeftContainer.setStyle("LayoutVerticalAlign", "middle");
 						this._controlRotateLeftContainer.setStyle("PercentWidth", 100);
 						
 							this._labelControlRotateLeft = new LabelElement();
 							this._labelControlRotateLeft.setStyle("Text", "Rotate Left:");
+							this._labelControlRotateLeft.setStyle("TextStyle", "bold");
 							this._labelControlRotateLeft.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateLeft.setStyle("PercentWidth", 100);
+							this._labelControlRotateLeft.setStyle("TextHorizontalAlign", "left");
 							
-							this._labelControlRotateLeftKeys = new LabelElement();
-							this._labelControlRotateLeftKeys.setStyle("Text", "Q  |      J      |  NumPad 7");
-							this._labelControlRotateLeftKeys.setStyleDefinitions(labelControlsStyle);
-							this._labelControlRotateLeftKeys.setStyle("TextHorizontalAlign", "right");
-							this._labelControlRotateLeftKeys.setStyle("PercentWidth", 100);
+							this._labelControlRotateLeftKey1 = new LabelElement();
+							this._labelControlRotateLeftKey1.setStyle("Text", "Q");
+							this._labelControlRotateLeftKey1.setStyle("Width", 100);
+							this._labelControlRotateLeftKey1.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlRotateLeftDivider1 = new CanvasElement();
+							this._labelControlRotateLeftDivider1.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlRotateLeftKey2 = new LabelElement();
+							this._labelControlRotateLeftKey2.setStyle("Text", "J");
+							this._labelControlRotateLeftKey2.setStyle("Width", 150);
+							this._labelControlRotateLeftKey2.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlRotateLeftDivider2 = new CanvasElement();
+							this._labelControlRotateLeftDivider2.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlRotateLeftKey3 = new LabelElement();
+							this._labelControlRotateLeftKey3.setStyle("Text", "NumPad 7");
+							this._labelControlRotateLeftKey3.setStyle("Width", 120);
+							this._labelControlRotateLeftKey3.setStyle("TextHorizontalAlign", "right");
+							this._labelControlRotateLeftKey3.setStyleDefinitions(labelControlsStyle);
 							
 						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeft);
-						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeftKeys);
+						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeftKey1);
+						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeftDivider1);
+						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeftKey2);
+						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeftDivider2);
+						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeftKey3);
 						
 						this._controlRotateRightContainer = new ListContainerElement();
 						this._controlRotateRightContainer.setStyle("LayoutDirection", "horizontal");
+						this._controlRotateRightContainer.setStyle("LayoutVerticalAlign", "middle");
 						this._controlRotateRightContainer.setStyle("PercentWidth", 100);
 						
 							this._labelControlRotateRight = new LabelElement();
 							this._labelControlRotateRight.setStyle("Text", "Rotate Right:");
+							this._labelControlRotateRight.setStyle("TextStyle", "bold");
 							this._labelControlRotateRight.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateRight.setStyle("PercentWidth", 100);
+							this._labelControlRotateRight.setStyle("TextHorizontalAlign", "left");
 							
-							this._labelControlRotateRightKeys = new LabelElement();
-							this._labelControlRotateRightKeys.setStyle("Text", "E  |      L      |  NumPad 9");
-							this._labelControlRotateRightKeys.setStyleDefinitions(labelControlsStyle);
-							this._labelControlRotateRightKeys.setStyle("TextHorizontalAlign", "right");
-							this._labelControlRotateRightKeys.setStyle("PercentWidth", 100);
+							this._labelControlRotateRightKey1 = new LabelElement();
+							this._labelControlRotateRightKey1.setStyle("Text", "E");
+							this._labelControlRotateRightKey1.setStyle("Width", 100);
+							this._labelControlRotateRightKey1.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlRotateRightDivider1 = new CanvasElement();
+							this._labelControlRotateRightDivider1.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlRotateRightKey2 = new LabelElement();
+							this._labelControlRotateRightKey2.setStyle("Text", "L");
+							this._labelControlRotateRightKey2.setStyle("Width", 150);
+							this._labelControlRotateRightKey2.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlRotateRightDivider2 = new CanvasElement();
+							this._labelControlRotateRightDivider2.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlRotateRightKey3 = new LabelElement();
+							this._labelControlRotateRightKey3.setStyle("Text", "NumPad 9");
+							this._labelControlRotateRightKey3.setStyle("Width", 120);
+							this._labelControlRotateRightKey3.setStyle("TextHorizontalAlign", "right");
+							this._labelControlRotateRightKey3.setStyleDefinitions(labelControlsStyle);
 							
 						this._controlRotateRightContainer.addElement(this._labelControlRotateRight);
-						this._controlRotateRightContainer.addElement(this._labelControlRotateRightKeys);
+						this._controlRotateRightContainer.addElement(this._labelControlRotateRightKey1);
+						this._controlRotateRightContainer.addElement(this._labelControlRotateRightDivider1);
+						this._controlRotateRightContainer.addElement(this._labelControlRotateRightKey2);
+						this._controlRotateRightContainer.addElement(this._labelControlRotateRightDivider2);
+						this._controlRotateRightContainer.addElement(this._labelControlRotateRightKey3);
 						
 						this._controlHoldContainer = new ListContainerElement();
 						this._controlHoldContainer.setStyle("LayoutDirection", "horizontal");
+						this._controlHoldContainer.setStyle("LayoutVerticalAlign", "middle");
 						this._controlHoldContainer.setStyle("PercentWidth", 100);
 						
 							this._labelControlHold = new LabelElement();
 							this._labelControlHold.setStyle("Text", "Hold:");
+							this._labelControlHold.setStyle("TextStyle", "bold");
 							this._labelControlHold.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHold.setStyle("PercentWidth", 100);
+							this._labelControlHold.setStyle("TextHorizontalAlign", "left");
 							
-							this._labelControlHoldKeys = new LabelElement();
-							this._labelControlHoldKeys.setStyle("Text", "Space  |      K      |  NumPad 0");
-							this._labelControlHoldKeys.setStyleDefinitions(labelControlsStyle);
-							this._labelControlHoldKeys.setStyle("TextHorizontalAlign", "right");
-							this._labelControlHoldKeys.setStyle("PercentWidth", 100);
+							this._labelControlHoldKey1 = new LabelElement();
+							this._labelControlHoldKey1.setStyle("Text", "Space");
+							this._labelControlHoldKey1.setStyle("Width", 100);
+							this._labelControlHoldKey1.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlHoldDivider1 = new CanvasElement();
+							this._labelControlHoldDivider1.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlHoldKey2 = new LabelElement();
+							this._labelControlHoldKey2.setStyle("Text", "K");
+							this._labelControlHoldKey2.setStyle("Width", 150);
+							this._labelControlHoldKey2.setStyleDefinitions(labelControlsStyle);
+							
+							this._labelControlHoldDivider2 = new CanvasElement();
+							this._labelControlHoldDivider2.setStyleDefinitions(labelControlsDividerStyle);
+							
+							this._labelControlHoldKey3 = new LabelElement();
+							this._labelControlHoldKey3.setStyle("Text", "NumPad 0");
+							this._labelControlHoldKey3.setStyle("Width", 120);
+							this._labelControlHoldKey3.setStyle("TextHorizontalAlign", "right");
+							this._labelControlHoldKey3.setStyleDefinitions(labelControlsStyle);
 							
 						this._controlHoldContainer.addElement(this._labelControlHold);
-						this._controlHoldContainer.addElement(this._labelControlHoldKeys);
+						this._controlHoldContainer.addElement(this._labelControlHoldKey1);
+						this._controlHoldContainer.addElement(this._labelControlHoldDivider1);
+						this._controlHoldContainer.addElement(this._labelControlHoldKey2);
+						this._controlHoldContainer.addElement(this._labelControlHoldDivider2);
+						this._controlHoldContainer.addElement(this._labelControlHoldKey3);
 						
 					this._controlsContainer.addElement(this._controlsDivider);
 					this._controlsContainer.addElement(this._controlMoveLeftContainer);
@@ -274,11 +444,27 @@ function TetriStackApplication() //extends CanvasManager
 		{
 			_self._onButtonPlayClick(event);
 		};
+	this._onButtonLowerLevelClickInstance = 
+		function (event)
+		{
+			_self._onButtonLowerLevelClick(event);
+		};
+	this._onButtonHigherLevelClickInstance = 
+		function (event)
+		{
+			_self._onButtonHigherLevelClick(event);
+		};
 	
 	this._buttonPlay.addEventListener("click", this._onButtonPlayClickInstance);
+	this._buttonLowerLevel.addEventListener("click", this._onButtonLowerLevelClickInstance);
+	this._buttonHigherLevel.addEventListener("click", this._onButtonHigherLevelClickInstance);
 	
 	//////////////////////////////////////////////////////////
 	
+	this._selectedLevel = 1;
+	
+	
+	////Build Tetristack logo////////////////
 	var i;
 	var i2;
 	for (i = 0; i < 7; i++)
@@ -364,9 +550,37 @@ TetriStackApplication.prototype._onButtonPlayClick =
 		var playField = new TetriPlayField();
 		this._gameView.addElement(playField);
 		
-		playField.startGame(Date.now(), 1);
+		playField.startGame(Date.now(), this._selectedLevel);
 	};
 
+TetriStackApplication.prototype._onButtonLowerLevelClick = 
+	function (event)
+	{
+		this._selectedLevel--;
+		this._labelSelectedLevel.setStyle("Text", this._selectedLevel.toString());
+		
+		this._buttonHigherLevel.setStyle("Enabled", true);
+		
+		if (this._selectedLevel == 1)
+			this._buttonLowerLevel.setStyle("Enabled", false);
+		else
+			this._buttonLowerLevel.setStyle("Enabled", true);
+	};
+	
+TetriStackApplication.prototype._onButtonHigherLevelClick = 
+	function (event)
+	{
+		this._selectedLevel++;
+		this._labelSelectedLevel.setStyle("Text", this._selectedLevel.toString());
+		
+		this._buttonLowerLevel.setStyle("Enabled", true);
+		
+		if (this._selectedLevel == 10)
+			this._buttonHigherLevel.setStyle("Enabled", false);
+		else
+			this._buttonHigherLevel.setStyle("Enabled", true);
+	};	
+	
 	
 ////STATIC////
 
