@@ -75,48 +75,168 @@ function TetriPlayField()
 			
 		this._nextRoundedBorder.addElement(this._nextContainer);
 		
+		this._holdRoundedBorder = new AnchorContainerElement();
+		this._holdRoundedBorder.setStyle("X", 315);
+		this._holdRoundedBorder.setStyle("Y", 125);
+		this._holdRoundedBorder.setStyle("Width", 140);
+		this._holdRoundedBorder.setStyle("Height", 120);
+		this._holdRoundedBorder.setStyle("BackgroundColor", "#DDDDDD");
+		this._holdRoundedBorder.setStyle("BackgroundShape", gridRoundedBorderShape);	
 		
-		this._linesRoundedBorder = new AnchorContainerElement();
-		this._linesRoundedBorder.setStyle("X", 315);
-		this._linesRoundedBorder.setStyle("Y", 125);
-		this._linesRoundedBorder.setStyle("Width", 140);
-		this._linesRoundedBorder.setStyle("Height", 80);
-		this._linesRoundedBorder.setStyle("BackgroundColor", "#DDDDDD");
-		this._linesRoundedBorder.setStyle("BackgroundShape", gridRoundedBorderShape);	
+			this._holdContainer = new AnchorContainerElement();
+			this._holdContainer.setStyle("BackgroundColor", "#202020");
+			this._holdContainer.setStyle("X", 3);
+			this._holdContainer.setStyle("Y", 3);
+			this._holdContainer.setStyle("Width", 134);
+			this._holdContainer.setStyle("Height", 114);
+			
+				this._holdLabel = new LabelElement();
+				this._holdLabel.setStyle("Text", "Hold");
+				this._holdLabel.setStyle("TextSize", 24);
+				this._holdLabel.setStyle("TextStyle", "bold");
+				this._holdLabel.setStyle("TextFont", "Audiowide");
+				this._holdLabel.setStyle("TextColor", "#DDDDDD");
+				this._holdLabel.setStyle("Y", 4);
+				this._holdLabel.setStyle("HorizontalCenter", 0);
+				
+				this._holdPieceContainer = new AnchorContainerElement();
+				this._holdPieceContainer.setStyle("PercentWidth", 100);
+				this._holdPieceContainer.setStyle("Top", 30);
+				this._holdPieceContainer.setStyle("Bottom", 5);
+				
+					this._holdPieceBlockContainer = new AnchorContainerElement();
+					this._holdPieceBlockContainer.setStyle("HorizontalCenter", 0);
+					this._holdPieceBlockContainer.setStyle("VerticalCenter", 0);
+					
+				this._holdPieceContainer.addElement(this._holdPieceBlockContainer);
+				
+			this._holdContainer.addElement(this._holdLabel);
+			this._holdContainer.addElement(this._holdPieceContainer);
+			
+		this._holdRoundedBorder.addElement(this._holdContainer);
 		
-			this._linesContainer = new AnchorContainerElement();
-			this._linesContainer.setStyle("BackgroundColor", "#202020");
-			this._linesContainer.setStyle("X", 3);
-			this._linesContainer.setStyle("Y", 3);
-			this._linesContainer.setStyle("Width", 134);
-			this._linesContainer.setStyle("Height", 74);
+		this._scoreRoundedBorder = new AnchorContainerElement();
+		this._scoreRoundedBorder.setStyle("X", 315);
+		this._scoreRoundedBorder.setStyle("Y", 250);
+		this._scoreRoundedBorder.setStyle("Width", 140);
+		this._scoreRoundedBorder.setStyle("Height", 320);
+		this._scoreRoundedBorder.setStyle("BackgroundColor", "#DDDDDD");
+		this._scoreRoundedBorder.setStyle("BackgroundShape", gridRoundedBorderShape);	
+		
+			this._scoreContainer = new ListContainerElement();
+			this._scoreContainer.setStyle("BackgroundColor", "#202020");
+			this._scoreContainer.setStyle("Left", 3);
+			this._scoreContainer.setStyle("Top", 3);
+			this._scoreContainer.setStyle("Bottom", 3);
+			this._scoreContainer.setStyle("Right", 3);
+			this._scoreContainer.setStyle("LayoutHorizontalAlign", "center");
 			
-				this._linesLabel = new LabelElement();
-				this._linesLabel.setStyle("Text", "Lines");
-				this._linesLabel.setStyle("TextSize", 24);
-				this._linesLabel.setStyle("TextStyle", "bold");
-				this._linesLabel.setStyle("TextFont", "Audiowide");
-				this._linesLabel.setStyle("TextColor", "#DDDDDD");
-				this._linesLabel.setStyle("Y", 4);
-				this._linesLabel.setStyle("HorizontalCenter", 0);
-				
-				this._lineCountLabel = new LabelElement();
-				this._lineCountLabel.setStyle("Text", "0");
-				this._lineCountLabel.setStyle("TextSize", 24);
-				this._lineCountLabel.setStyle("TextStyle", "bold");
-				this._lineCountLabel.setStyle("TextFont", "Audiowide");
-				this._lineCountLabel.setStyle("TextColor", "#DDDDDD");
-				this._lineCountLabel.setStyle("Y", 38);
-				this._lineCountLabel.setStyle("HorizontalCenter", 0);
-				
-			this._linesContainer.addElement(this._linesLabel);
-			this._linesContainer.addElement(this._lineCountLabel);
+				this._scoreContainerSpacer0 = new CanvasElement();
+				this._scoreContainerSpacer0.setStyle("PercentHeight", 100);
 			
-		this._linesRoundedBorder.addElement(this._linesContainer);
+				this._labelLevel = new LabelElement();
+				this._labelLevel.setStyle("Text", "Level");
+				this._labelLevel.setStyle("TextSize", 24);
+				this._labelLevel.setStyle("TextStyle", "bold");
+				this._labelLevel.setStyle("TextFont", "Audiowide");
+				this._labelLevel.setStyle("TextColor", "#DDDDDD");
+				
+				this._labelLevelValue = new LabelElement();
+				this._labelLevelValue.setStyle("Text", "0");
+				this._labelLevelValue.setStyle("TextSize", 20);
+				this._labelLevelValue.setStyle("TextStyle", "normal");
+				this._labelLevelValue.setStyle("TextFont", "Audiowide");
+				this._labelLevelValue.setStyle("TextColor", "#DDDDDD");
+				this._labelLevelValue.setStyle("PaddingTop", 8);
+			
+				this._scoreContainerSpacer1 = new CanvasElement();
+				this._scoreContainerSpacer1.setStyle("PercentHeight", 100);
+			
+				this._scoreContainerDivider1 = new CanvasElement();
+				this._scoreContainerDivider1.setStyle("PercentWidth", 80);
+				this._scoreContainerDivider1.setStyle("Height", 1);
+				this._scoreContainerDivider1.setStyle("BackgroundColor", "#DDDDDD");
+				
+				this._scoreContainerSpacer2 = new CanvasElement();
+				this._scoreContainerSpacer2.setStyle("PercentHeight", 100);
+				
+				this._labelLines = new LabelElement();
+				this._labelLines.setStyle("Text", "Lines");
+				this._labelLines.setStyle("TextSize", 24);
+				this._labelLines.setStyle("TextStyle", "bold");
+				this._labelLines.setStyle("TextFont", "Audiowide");
+				this._labelLines.setStyle("TextColor", "#DDDDDD");
+				
+				this._labelLineCount = new LabelElement();
+				this._labelLineCount.setStyle("Text", "0");
+				this._labelLineCount.setStyle("TextSize", 20);
+				this._labelLineCount.setStyle("TextStyle", "normal");
+				this._labelLineCount.setStyle("TextFont", "Audiowide");
+				this._labelLineCount.setStyle("TextColor", "#DDDDDD");
+				this._labelLineCount.setStyle("PaddingTop", 8);
+				
+				this._scoreContainerSpacer3 = new CanvasElement();
+				this._scoreContainerSpacer3.setStyle("PercentHeight", 100);
+				
+				this._scoreContainerDivider2 = new CanvasElement();
+				this._scoreContainerDivider2.setStyle("PercentWidth", 80);
+				this._scoreContainerDivider2.setStyle("Height", 1);
+				this._scoreContainerDivider2.setStyle("BackgroundColor", "#DDDDDD");
+				
+				this._scoreContainerSpacer4 = new CanvasElement();
+				this._scoreContainerSpacer4.setStyle("PercentHeight", 100);
+				
+				this._labelScore = new LabelElement();
+				this._labelScore.setStyle("Text", "Score");
+				this._labelScore.setStyle("TextSize", 24);
+				this._labelScore.setStyle("TextStyle", "bold");
+				this._labelScore.setStyle("TextFont", "Audiowide");
+				this._labelScore.setStyle("TextColor", "#DDDDDD");
+				
+				this._labelScoreValue = new LabelElement();
+				this._labelScoreValue.setStyle("Text", "0");
+				this._labelScoreValue.setStyle("TextSize", 20);
+				this._labelScoreValue.setStyle("TextStyle", "normal");
+				this._labelScoreValue.setStyle("TextFont", "Audiowide");
+				this._labelScoreValue.setStyle("TextColor", "#DDDDDD");
+				this._labelScoreValue.setStyle("PaddingTop", 8);
+				
+				this._scoreContainerSpacer5 = new CanvasElement();
+				this._scoreContainerSpacer5.setStyle("PercentHeight", 100);
+			
+			this._scoreContainer.addElement(this._scoreContainerSpacer0);	
+			this._scoreContainer.addElement(this._labelLevel);
+			this._scoreContainer.addElement(this._labelLevelValue);
+			this._scoreContainer.addElement(this._scoreContainerSpacer1);
+			this._scoreContainer.addElement(this._scoreContainerDivider1);
+			this._scoreContainer.addElement(this._scoreContainerSpacer2);
+			this._scoreContainer.addElement(this._labelLines);
+			this._scoreContainer.addElement(this._labelLineCount);
+			this._scoreContainer.addElement(this._scoreContainerSpacer3);
+			this._scoreContainer.addElement(this._scoreContainerDivider2);
+			this._scoreContainer.addElement(this._scoreContainerSpacer4);
+			this._scoreContainer.addElement(this._labelScore);
+			this._scoreContainer.addElement(this._labelScoreValue);
+			this._scoreContainer.addElement(this._scoreContainerSpacer5);
+			
+		this._scoreRoundedBorder.addElement(this._scoreContainer);
+		
+		this._pauseButton = new ButtonElement();
+		this._pauseButton.setStyle("Text", "MENU");
+		this._pauseButton.setStyle("TextFont", "Audiowide");
+		this._pauseButton.setStyle("TextSize", 22);
+		this._pauseButton.setStyle("TextStyle", "bold");
+		this._pauseButton.setStyleDefinitions([buttonBackgroundColors]);
+		this._pauseButton.setStyle("Width", 140);
+		this._pauseButton.setStyle("Height", 45);
+		this._pauseButton.setStyle("X", 315);
+		this._pauseButton.setStyle("Y", 575);
 		
 	this.addElement(this._gridRoundedBorder);
 	this.addElement(this._nextRoundedBorder);
-	this.addElement(this._linesRoundedBorder);
+	this.addElement(this._holdRoundedBorder);
+	this.addElement(this._scoreRoundedBorder);
+	this.addElement(this._pauseButton);
 
 
 	////Event Handling////////
@@ -176,20 +296,30 @@ function TetriPlayField()
 	}
 	
 	this._randomBag = [];
-	this._level = 1;
+	this._level = 0;
 	this._lineCount = 0;
 	
 	this._fallTime = -1;
 	this._lockTime = -1;
 	this._suspendLock = false;
 	
-	//Key state tracking
-	this._rightTime = -1;
+	
+	////Key state tracking////
+	
+	//Key hold / repeat timers
 	this._leftTime = -1;
-	this._downTime = -1;
-	this._drop = false;
-	this._rotateRight = false;
-	this._rotateLeft = false;
+	this._rightTime = -1;
+	this._softDropTime = -1;
+	
+	//Prevent repeat key press / hold (record key first pressed, ignore all keys till released)
+	this._rotateRightKey = null;
+	this._rotateLeftKey = null;
+	this._hardDropKey = null;
+	this._holdKey = null;
+	
+	//Allow key hold, respect any keys while pressed, most recent key if left/right
+	this._softDropKeys = [];
+	this._leftRightKeys = [];
 	
 	this._currentBlocks = [];
 	this._currentPiece = 0;
@@ -205,6 +335,8 @@ function TetriPlayField()
 	this._linesClearTime = -1;
 	
 	this._nextPiece = 0;
+	this._holdPiece = null;
+	this._holdAvailable = true;
 }
 
 //Inherit from AnchorContainerElement
@@ -220,7 +352,7 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 	{
 		var currentTime = Date.now();
 		
-		if (this._currentLines.length == 0)
+		if (this._currentPiece != null)
 		{
 			while (this._leftTime != -1 && this._rightTime == -1 && currentTime >= this._leftTime)
 			{
@@ -234,10 +366,10 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 				this._rightTime += TetriPlayField.KeyholdDelay2;
 			}
 			
-			while (this._downTime != -1 && currentTime >= this._downTime)
+			while (this._softDropTime != -1 && currentTime >= this._softDropTime)
 			{
-				this._downTime += Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
-				this._movePiece(this._downTime, "down");
+				this._softDropTime += Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
+				this._movePiece(this._softDropTime, "down");
 			}
 			
 			while (this._fallTime != -1 && currentTime >= this._fallTime)
@@ -295,7 +427,10 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 					}
 					
 					if (this._currentLines.length > 0)
+					{
 						this._linesClearTime = this._lockTime + 300;
+						this._currentPiece = null;
+					}
 					else
 						this._generatePiece(this._lockTime);
 				}
@@ -351,10 +486,10 @@ TetriPlayField.prototype._clearLines =
 		}
 		
 		this._lineCount += this._currentLines.length;
-		this._lineCountLabel.setStyle("Text", this._lineCount.toString());
+		this._labelLineCount.setStyle("Text", this._lineCount.toString());
 		
 		if (Math.ceil(this._lineCount / 10) > this._level)
-			this._level = Math.ceil(this._lineCount / 10);
+			this._setLevel(Math.ceil(this._lineCount / 10));
 		
 		this._currentLines.splice(0, this._currentLines.length);
 	};
@@ -362,11 +497,20 @@ TetriPlayField.prototype._clearLines =
 TetriPlayField.prototype.startGame = 
 	function (currentTime, startLevel)
 	{
-		this._level = startLevel;
-		//this._level = 12;
+		this._setLevel(startLevel);
 		this._nextPiece = this._getNextPiece();
 		
 		this._generatePiece(currentTime);
+	};
+	
+TetriPlayField.prototype._setLevel = 
+	function (level)
+	{
+		if (this._level == level)
+			return;
+		
+		this._level = level;
+		this._labelLevelValue.setStyle("Text", level.toString());
 	};
 	
 TetriPlayField.prototype._updateNextPiece = 
@@ -402,13 +546,50 @@ TetriPlayField.prototype._updateNextPiece =
 		}
 	};
 	
-TetriPlayField.prototype._generatePiece = 
-	function (fromTime)
+TetriPlayField.prototype._updateHoldPiece = 
+	function ()
 	{
-		this._currentPiece = this._nextPiece;
-		this._nextPiece = this._getNextPiece();
+		var block;
+		var point;
+		var blockPoints = TetriStackApplication.PieceData[this._holdPiece][0];
+		var blockColor = TetriStackApplication.GetBlockColor(this._holdPiece);
 		
-		this._updateNextPiece();
+		for (var i = 0; i < blockPoints.length; i++)
+		{
+			if (this._holdPieceBlockContainer.getNumElements() < i + 1)
+			{
+				block = new TetriBlock();
+				block.setStyle("Width", 25);
+				block.setStyle("Height", 25);
+				
+				this._holdPieceBlockContainer.addElement(block);
+			}
+			else
+				block = this._holdPieceBlockContainer.getElementAt(i);
+			
+			point = blockPoints[i];
+			
+			block.setBlockColor(blockColor);
+			block.setStyle("X", point.x * 25);
+			
+			if (this._holdPiece != 0)
+				block.setStyle("Y", point.y * 25);
+			else
+				block.setStyle("Y", 0);
+		}
+	};	
+	
+TetriPlayField.prototype._generatePiece = 
+	function (fromTime, useHoldPiece)
+	{
+		if (useHoldPiece == true && this._holdPiece != null)
+			this._currentPiece = this._holdPiece;
+		else
+		{
+			this._currentPiece = this._nextPiece;
+			this._nextPiece = this._getNextPiece();
+			this._updateNextPiece();
+		}
 		
 		this._currentOrient = 0;
 		this._currentOriginX = 3;
@@ -420,6 +601,7 @@ TetriPlayField.prototype._generatePiece =
 		this._lockTime = -1;
 		this._linesClearTime = -1;
 		this._suspendLock = false;
+		this._holdAvailable = true;
 		
 		if (this._currentPiece == 1)
 			this._currentOriginX = 4;
@@ -447,6 +629,9 @@ TetriPlayField.prototype._getNextPiece =
 TetriPlayField.prototype._movePiece = 
 	function (fromTime, direction)
 	{
+		if (this._currentPiece == null)
+			return;
+	
 		var originX = this._currentOriginX;
 		var originY = this._currentOriginY;
 	
@@ -486,8 +671,11 @@ TetriPlayField.prototype._movePiece =
 	};
 	
 TetriPlayField.prototype._rotatePiece = 
-	function (direction)
+	function (direction, fromTime)
 	{
+		if (this._currentPiece == null)
+			return;
+	
 		if (direction == "left")
 			newOrient = this._currentOrient - 1;
 		else //if (direction == "right")
@@ -530,91 +718,247 @@ TetriPlayField.prototype._rotatePiece =
 		return result;
 	};
 	
+TetriPlayField.prototype._holdCurrentPiece = 
+	function (fromTime)
+	{
+		if (this._currentPiece == null || this._holdAvailable == false)
+			return;
+		
+		var block = null;
+		for (var i = 0; i < this._currentBlocks.length; i++)
+		{
+			block = this._currentBlocks[i];
+			block.setBlockColor(TetriStackApplication.BlockColors.BLACK);
+		}
+		
+		var currentPiece = this._currentPiece;
+		this._generatePiece(fromTime, true);
+		
+		this._holdPiece = currentPiece;
+		this._updateHoldPiece();
+		this._holdAvailable = false;
+	};
+	
+TetriPlayField.prototype._hardDropCurrentPiece = 
+	function (fromTime)
+	{
+		if (this._currentPiece == null)
+			return;
+		
+		var y = this._currentOriginY + 1;
+		var blocks = null;
+		
+		while (true)
+		{
+			blocks = this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, y);
+			
+			if (blocks == null)
+			{
+				y--;
+				break;
+			}
+			
+			y++;
+		}
+		
+		this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, y);
+		this._lockTime = fromTime;
+	};
+	
 TetriPlayField.prototype._onApplicationKeyup = 
 	function (keyboardEvent)
 	{
 		var keycode = keyboardEvent.getKeyCode();
 		
-		if (keycode == 65)
+		if (keycode == this._hardDropKey)
 		{
-			this._leftTime = -1;
+			this._hardDropKey = null;
+			return;
+		}
+		if (keycode == this._rotateLeftKey)
+		{
+			this._rotateLeftKey = null;
+			return;
+		}
+		if (keycode == this._rotateRightKey)
+		{
+			this._rotateRightKey = null;
+			return;
+		}
+		if (keycode == this._holdKey)
+		{
+			this._holdKey = null;
 			return;
 		}
 		
-		if (keycode == 68)
+		if (this._softDropKeys.indexOf(keycode) != -1)
 		{
-			this._rightTime = -1;
+			this._softDropKeys.splice(this._softDropKeys.indexOf(keycode), 1);
+			
+			if (this._softDropKeys.length == 0)
+				this._softDropTime = -1;
+			
 			return;
 		}
 		
-		if (keycode == 83)
+		if (this._leftRightKeys.indexOf(keycode) != -1)
 		{
-			this._downTime = -1;
-			return;
+			this._leftRightKeys.splice(this._leftRightKeys.indexOf(keycode), 1);
+			
+			if (this._leftRightKeys.length == 0)
+			{
+				this._leftTime = -1;
+				this._rightTime = -1;
+			}
+			else
+			{
+				var keytype = null;
+				var keycode = this._leftRightKeys[this._leftRightKeys.length - 1];
+				
+				if (keycode == 65 || keycode == 37 || keycode == 100)
+					keytype = "left";
+				else
+					keytype = "right";
+					
+				var currentTime = Date.now();
+				
+				if (this._leftTime == -1 && keytype == "left")
+				{
+					this._rightTime = -1;
+					this._leftTime = currentTime + TetriPlayField.KeyholdDelay1;
+				}
+				else if (this._rightTime == -1 && keytype == "right")
+				{
+					this._leftTime = -1;
+					this._rightTime = currentTime + TetriPlayField.KeyholdDelay1;
+				}
+			}
 		}
 	};
 	
 TetriPlayField.prototype._onApplicationKeydown = 
 	function (keyboardEvent)
 	{
-		//"ArrowRight" 39
-		//"ArrowLeft" 37
-		//"ArrowDown" 40
+		//block input while waiting for lines to clear.
+		if (this._currentLines.length > 0)
+			return;
 	
-		//	a 65
-		//	s 83
-		//	d 68
-		//	w 87
-		//
-		//	q 81
-		//	e 69 
-	
-		var currentTime = Date.now();
 		var keycode = keyboardEvent.getKeyCode();
+		var keytype = null;
 		
-		if (keycode == 65)
+		if (keycode == 65 || keycode == 37 || keycode == 100)
+			keytype = "left";
+		else if (keycode == 68 || keycode == 39 || keycode == 102)
+			keytype = "right";
+		else if (keycode == 83 || keycode == 40 || keycode == 101)
+			keytype = "down";
+		else if (keycode == 87 || keycode == 38 || keycode == 104)
+			keytype = "up";
+		else if (keycode == 81 || keycode == 74 || keycode == 103)
+			keytype = "rleft";
+		else if (keycode == 69 || keycode == 76 || keycode == 105)
+			keytype = "rright";
+		else if (keycode == 32 || keycode == 75 || keycode == 96)
+			keytype = "hold";
+	
+		if (keytype == null)
+			return;
+		
+		var currentTime = Date.now();
+		
+		if (keytype == "left")
 		{
-			if (this._leftTime != -1)
+			//Key already down (keyboard auto repeat)
+			if (this._leftRightKeys.indexOf(keycode) != -1)
 				return;
 			
-			this._leftTime = currentTime + TetriPlayField.KeyholdDelay1;
-			this._movePiece(currentTime, "left");
+			this._leftRightKeys.push(keycode);
+			
+			this._rightTime = -1;
+			
+			if (this._leftTime == -1)
+			{
+				this._leftTime = currentTime + TetriPlayField.KeyholdDelay1;
+				this._movePiece(currentTime, "left");
+			}
 			
 			return;
 		}
-		
-		if (keycode == 68)
+		if (keytype == "right")
 		{
-			if (this._rightTime != -1)
+			//Key already down (keyboard auto repeat)
+			if (this._leftRightKeys.indexOf(keycode) != -1)
 				return;
 			
-			this._rightTime = currentTime + TetriPlayField.KeyholdDelay1;
-			this._movePiece(currentTime, "right");
+			this._leftRightKeys.push(keycode);
+			
+			this._leftTime = -1;
+			
+			if (this._rightTime == -1)
+			{
+				this._rightTime = currentTime + TetriPlayField.KeyholdDelay1;
+				this._movePiece(currentTime, "right");
+			}
 			
 			return;
 		}
-		
-		if (keycode == 83)
+		if (keytype == "down")
 		{
-			if (this._downTime != -1)
+			//Key already down (keyboard auto repeat)
+			if (this._softDropKeys.indexOf(keycode) != -1)
 				return;
 			
-			this._downTime = currentTime + Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
-			this._movePiece(currentTime, "down");
+			this._softDropKeys.push(keycode);
+			
+			if (this._softDropKeys.length == 1)
+			{
+				this._softDropTime = currentTime + Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
+				this._movePiece(currentTime, "down");
+			}
 			
 			return;
 		}
-		
-		if (keycode == 81)
+		if (keytype == "up")
 		{
-			this._rotatePiece("left");
+			//Only allow 1 press from 1 key at a time
+			if (this._hardDropKey != null)
+				return;
+			
+			this._hardDropKey = keycode;
+			this._hardDropCurrentPiece(currentTime);
 			
 			return;
 		}
-		
-		if (keycode == 69)
+		if (keytype == "rleft")
 		{
-			this._rotatePiece("right");
+			//Only allow 1 press from 1 key at a time
+			if (this._rotateLeftKey != null)
+				return;
+			
+			this._rotateLeftKey = keycode;
+			this._rotatePiece("left", currentTime);
+			
+			return;
+		}
+		if (keytype == "rright")
+		{
+			//Only allow 1 press from 1 key at a time
+			if (this._rotateRightKey != null)
+				return;
+			
+			this._rotateRightKey = keycode;
+			this._rotatePiece("right", currentTime);
+			
+			return;
+		}
+		if (keytype == "hold")
+		{
+			//Only allow 1 press from 1 key at a time
+			if (this._holdKey != null)
+				return;
+			
+			this._holdKey = keycode;
+			this._holdCurrentPiece(currentTime);
 			
 			return;
 		}

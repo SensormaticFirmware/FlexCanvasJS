@@ -17,6 +17,9 @@ ButtonUpSkinStyle.setStyle("BackgroundColor", "#9F9F9F");
 var ButtonDisabledSkinStyle = new StyleDefinition();
 ButtonDisabledSkinStyle.setStyle("BackgroundColor", "#777777");
 
+var buttonPlayBackgroundShape = new RoundedRectangleShape();
+buttonPlayBackgroundShape.setStyle("CornerRadius", 5);
+
 var buttonBackgroundColors = new StyleDefinition();
 buttonBackgroundColors.setStyle("DownSkinStyle", ButtonDownSkinStyle);
 buttonBackgroundColors.setStyle("OverSkinStyle", ButtonOverSkinStyle);
@@ -24,10 +27,7 @@ buttonBackgroundColors.setStyle("UpSkinStyle", ButtonUpSkinStyle);
 buttonBackgroundColors.setStyle("DisabledSkinStyle", ButtonDisabledSkinStyle);
 buttonBackgroundColors.setStyle("BorderType", null);
 buttonBackgroundColors.setStyle("AutoGradientType", null);
-
-
-var buttonPlayBackgroundShape = new RoundedRectangleShape();
-buttonPlayBackgroundShape.setStyle("CornerRadius", 5);
+buttonBackgroundColors.setStyle("BackgroundShape", buttonPlayBackgroundShape);
 
 var buttonPlayStyle = new StyleDefinition();
 buttonPlayStyle.setStyle("Padding", 5);
@@ -36,7 +36,7 @@ buttonPlayStyle.setStyle("PaddingRight", 30);
 buttonPlayStyle.setStyle("TextFont", "Audiowide");
 buttonPlayStyle.setStyle("TextSize", 22);
 buttonPlayStyle.setStyle("TextStyle", "bold");
-buttonPlayStyle.setStyle("BackgroundShape", buttonPlayBackgroundShape);
+
 
 var labelControlsStyle = new StyleDefinition();
 labelControlsStyle.setStyle("TextSize", 17);
