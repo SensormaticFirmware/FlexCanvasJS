@@ -56,13 +56,13 @@ function TetriPlayField()
 				this._nextLabel.setStyle("TextStyle", "bold");
 				this._nextLabel.setStyle("TextFont", "Audiowide");
 				this._nextLabel.setStyle("TextColor", "#DDDDDD");
-				this._nextLabel.setStyle("Y", 4);
+				this._nextLabel.setStyle("Y", 8);
 				this._nextLabel.setStyle("HorizontalCenter", 0);
 				
 				this._nextPieceContainer = new AnchorContainerElement();
 				this._nextPieceContainer.setStyle("PercentWidth", 100);
-				this._nextPieceContainer.setStyle("Top", 30);
-				this._nextPieceContainer.setStyle("Bottom", 5);
+				this._nextPieceContainer.setStyle("Top", 32);
+				this._nextPieceContainer.setStyle("Bottom", 3);
 				
 					this._nextPieceBlockContainer = new AnchorContainerElement();
 					this._nextPieceBlockContainer.setStyle("HorizontalCenter", 0);
@@ -96,13 +96,13 @@ function TetriPlayField()
 				this._holdLabel.setStyle("TextStyle", "bold");
 				this._holdLabel.setStyle("TextFont", "Audiowide");
 				this._holdLabel.setStyle("TextColor", "#DDDDDD");
-				this._holdLabel.setStyle("Y", 4);
+				this._holdLabel.setStyle("Y", 8);
 				this._holdLabel.setStyle("HorizontalCenter", 0);
 				
 				this._holdPieceContainer = new AnchorContainerElement();
 				this._holdPieceContainer.setStyle("PercentWidth", 100);
-				this._holdPieceContainer.setStyle("Top", 30);
-				this._holdPieceContainer.setStyle("Bottom", 5);
+				this._holdPieceContainer.setStyle("Top", 32);
+				this._holdPieceContainer.setStyle("Bottom", 3);
 				
 					this._holdPieceBlockContainer = new AnchorContainerElement();
 					this._holdPieceBlockContainer.setStyle("HorizontalCenter", 0);
@@ -301,7 +301,7 @@ function TetriPlayField()
 	
 	this._fallTime = -1;
 	this._lockTime = -1;
-	this._suspendLock = false;
+	this._lockRemaining = 500;
 	
 	
 	////Key state tracking////
@@ -378,13 +378,16 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 			}
 			
 			if (this._lockTime != -1 && 
-				this._suspendLock == false &&
 				currentTime >= this._lockTime)
 			{
-				//Piece moved, suspend the lock timer and the fall will unsuspend.			
+				//Not over ground
 				if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) != null)
-					this._suspendLock = true;
-				else
+				{
+					//Record remaining time, shut off lock.
+					this._lockRemaining = currentTime - this._lockTime;
+					this._lockTime = -1;
+				}
+				else //Lock complete
 				{
 					var i;
 					var currentYPositions = [];
@@ -488,8 +491,8 @@ TetriPlayField.prototype._clearLines =
 		this._lineCount += this._currentLines.length;
 		this._labelLineCount.setStyle("Text", this._lineCount.toString());
 		
-		if (Math.ceil(this._lineCount / 10) > this._level)
-			this._setLevel(Math.ceil(this._lineCount / 10));
+		if (Math.floor(this._lineCount / 10) + 1 > this._level)
+			this._setLevel(Math.floor(this._lineCount / 10) + 1);
 		
 		this._currentLines.splice(0, this._currentLines.length);
 	};
@@ -599,8 +602,8 @@ TetriPlayField.prototype._generatePiece =
 		this._currentResetLockY = -1;
 		this._fallTime = -1;
 		this._lockTime = -1;
+		this._lockRemaining = 500;
 		this._linesClearTime = -1;
-		this._suspendLock = false;
 		this._holdAvailable = true;
 		
 		if (this._currentPiece == 1)
@@ -630,7 +633,7 @@ TetriPlayField.prototype._movePiece =
 	function (fromTime, direction)
 	{
 		if (this._currentPiece == null)
-			return;
+			return false;
 	
 		var originX = this._currentOriginX;
 		var originY = this._currentOriginY;
@@ -643,8 +646,8 @@ TetriPlayField.prototype._movePiece =
 			originY += 1;
 		
 		result = this._updatePosition(this._currentPiece, this._currentOrient, originX, originY);
-		this._suspendLock = false;
 		
+		//Always reset fall time, reset lock time if origin increased.
 		if (direction == "down")
 		{
 			this._fallTime = fromTime + Math.ceil(TetriStackApplication.GetFallSpeed(this._level));
@@ -654,14 +657,25 @@ TetriPlayField.prototype._movePiece =
 				//Prevent floor kicks from restarting the lock timer.
 				this._currentResetLockY = this._currentOriginY;
 				this._lockTime = -1;
+				this._lockRemaining = 500;
 			}
 		}
 		
-		//Initial fall piece may not actually move, still need to start lock timer.
+		//Touching ground
 		if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) == null)
 		{
+			//Lock is not running, turn it on with remaining time.
 			if (this._lockTime == -1)
-				this._lockTime = fromTime + 500;
+				this._lockTime = fromTime + this._lockRemaining;
+		}
+		else //Not touching ground (or moved off of ground)
+		{
+			//Lock is running, shut if off, record remaining time.
+			if (this._lockTime != -1)
+			{
+				this._lockRemaining = fromTime - this._lockTime;
+				this._lockTime = -1;
+			}
 		}
 		
 		if (result == true && (direction == "right" || direction == "left"))
