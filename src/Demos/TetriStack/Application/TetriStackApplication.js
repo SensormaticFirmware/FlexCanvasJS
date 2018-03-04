@@ -16,7 +16,6 @@ function TetriStackApplication() //extends CanvasManager
 		this._rootContainer = new ListContainerElement();
 		this._rootContainer.setStyle("PercentWidth", 100);
 		this._rootContainer.setStyle("PercentHeight", 100);
-		this._rootContainer.setStyle("PercentHeight", 100);
 		
 			this._contentContainer = new ListContainerElement();
 			this._contentContainer.setStyle("PercentWidth", 100);

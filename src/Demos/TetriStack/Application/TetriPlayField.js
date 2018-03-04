@@ -301,7 +301,7 @@ function TetriPlayField()
 	
 	this._fallTime = -1;
 	this._lockTime = -1;
-	this._lockRemaining = 500;
+	this._lockRemaining = TetriStackApplication.GetLockDelayTime();
 	
 	
 	////Key state tracking////
@@ -352,91 +352,42 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 	{
 		var currentTime = Date.now();
 		
+		if (this._currentPiece != null && this._lockTime != -1 && currentTime >= this._lockTime)
+		{
+			//Not over ground
+			if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) != null)
+			{
+				//Turn off lock time, zero remaining time, instant lock if we dont drop down further.
+				this._lockRemaining = 0;
+				this._lockTime = -1;
+			}
+			else //Lock complete
+				this._lockCurrentPiece(this._lockTime);
+		}
+		
 		if (this._currentPiece != null)
 		{
 			while (this._leftTime != -1 && this._rightTime == -1 && currentTime >= this._leftTime)
 			{
-				this._movePiece(this._leftTime, "left");
+				this._moveCurrentPiece(this._leftTime, "left");
 				this._leftTime += TetriPlayField.KeyholdDelay2;
 			}
 			
 			while (this._rightTime != -1 && this._leftTime == -1 && currentTime >= this._rightTime)
 			{
-				this._movePiece(this._rightTime, "right");
+				this._moveCurrentPiece(this._rightTime, "right");
 				this._rightTime += TetriPlayField.KeyholdDelay2;
 			}
 			
 			while (this._softDropTime != -1 && currentTime >= this._softDropTime)
 			{
 				this._softDropTime += Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
-				this._movePiece(this._softDropTime, "down");
+				this._moveCurrentPiece(this._softDropTime, "down");
 			}
 			
 			while (this._fallTime != -1 && currentTime >= this._fallTime)
 			{
-				this._movePiece(this._fallTime, "down");
-			}
-			
-			if (this._lockTime != -1 && 
-				currentTime >= this._lockTime)
-			{
-				//Not over ground
-				if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) != null)
-				{
-					//Record remaining time, shut off lock.
-					this._lockRemaining = currentTime - this._lockTime;
-					this._lockTime = -1;
-				}
-				else //Lock complete
-				{
-					var i;
-					var currentYPositions = [];
-					var gridPosition;
-					for (i = 0; i < this._currentBlocks.length; i++)
-					{
-						gridPosition = this._getGridPositionFromBlock(this._currentBlocks[i]);
-						if (currentYPositions.indexOf(gridPosition.y) == -1)
-							currentYPositions.push(gridPosition.y);
-					}
-					
-					var x;
-					var lineComplete = true;
-					var block;
-					for (i = 0; i < currentYPositions.length; i++)
-					{
-						lineComplete = true;
-						
-						for (x = 0; x < 10; x++)
-						{
-							block = this._getBlockAtGridPosition(x, currentYPositions[i]);
-							
-							if (block.getBlockColor() == TetriStackApplication.BlockColors.BLACK)
-							{
-								lineComplete = false;
-								break;
-							}
-						}
-						
-						if (lineComplete == true)
-						{
-							this._currentLines.push(currentYPositions[i]);
-							
-							for (x = 0; x < 10; x++)
-							{
-								block = this._getBlockAtGridPosition(x, currentYPositions[i]);
-								block.setBlockColor(TetriStackApplication.BlockColors.WHITE);
-							}
-						}
-					}
-					
-					if (this._currentLines.length > 0)
-					{
-						this._linesClearTime = this._lockTime + 300;
-						this._currentPiece = null;
-					}
-					else
-						this._generatePiece(this._lockTime);
-				}
+				this._moveCurrentPiece(this._fallTime, "down");
 			}
 		}
 		
@@ -445,8 +396,59 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 			this._clearLines();
 			this._generatePiece(this._linesClearTime);
 		}
-		
 	};
+	
+TetriPlayField.prototype._lockCurrentPiece = 
+	function (fromTime)
+	{
+		var i;
+		var currentYPositions = [];
+		var gridPosition;
+		for (i = 0; i < this._currentBlocks.length; i++)
+		{
+			gridPosition = this._getGridPositionFromBlock(this._currentBlocks[i]);
+			if (currentYPositions.indexOf(gridPosition.y) == -1)
+				currentYPositions.push(gridPosition.y);
+		}
+		
+		var x;
+		var lineComplete = true;
+		var block;
+		for (i = 0; i < currentYPositions.length; i++)
+		{
+			lineComplete = true;
+			
+			for (x = 0; x < 10; x++)
+			{
+				block = this._getBlockAtGridPosition(x, currentYPositions[i]);
+				
+				if (block.getBlockColor() == TetriStackApplication.BlockColors.BLACK)
+				{
+					lineComplete = false;
+					break;
+				}
+			}
+			
+			if (lineComplete == true)
+			{
+				this._currentLines.push(currentYPositions[i]);
+				
+				for (x = 0; x < 10; x++)
+				{
+					block = this._getBlockAtGridPosition(x, currentYPositions[i]);
+					block.setBlockColor(TetriStackApplication.BlockColors.WHITE);
+				}
+			}
+		}
+		
+		if (this._currentLines.length > 0)
+		{
+			this._linesClearTime = fromTime + 300;
+			this._currentPiece = null;
+		}
+		else
+			this._generatePiece(fromTime);
+	};	
 	
 TetriPlayField.prototype._clearLines = 
 	function ()
@@ -602,7 +604,7 @@ TetriPlayField.prototype._generatePiece =
 		this._currentResetLockY = -1;
 		this._fallTime = -1;
 		this._lockTime = -1;
-		this._lockRemaining = 500;
+		this._lockRemaining = TetriStackApplication.GetLockDelayTime();
 		this._linesClearTime = -1;
 		this._holdAvailable = true;
 		
@@ -612,7 +614,7 @@ TetriPlayField.prototype._generatePiece =
 		if (this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY) == false)
 			return; //TODO: Game over
 		
-		this._movePiece(fromTime, "down");
+		this._moveCurrentPiece(fromTime, "down");
 		this._updateGhost();
 	};
 	
@@ -629,7 +631,7 @@ TetriPlayField.prototype._getNextPiece =
 		return this._randomBag.splice(randomIndex, 1)[0];
 	};
 	
-TetriPlayField.prototype._movePiece = 
+TetriPlayField.prototype._moveCurrentPiece = 
 	function (fromTime, direction)
 	{
 		if (this._currentPiece == null)
@@ -656,8 +658,9 @@ TetriPlayField.prototype._movePiece =
 			{
 				//Prevent floor kicks from restarting the lock timer.
 				this._currentResetLockY = this._currentOriginY;
+				
 				this._lockTime = -1;
-				this._lockRemaining = 500;
+				this._lockRemaining = TetriStackApplication.GetLockDelayTime();
 			}
 		}
 		
@@ -673,7 +676,7 @@ TetriPlayField.prototype._movePiece =
 			//Lock is running, shut if off, record remaining time.
 			if (this._lockTime != -1)
 			{
-				this._lockRemaining = fromTime - this._lockTime;
+				this._lockRemaining = this._lockTime - fromTime;
 				this._lockTime = -1;
 			}
 		}
@@ -684,7 +687,7 @@ TetriPlayField.prototype._movePiece =
 		return result;
 	};
 	
-TetriPlayField.prototype._rotatePiece = 
+TetriPlayField.prototype._rotateCurrentPiece = 
 	function (direction, fromTime)
 	{
 		if (this._currentPiece == null)
@@ -720,10 +723,21 @@ TetriPlayField.prototype._rotatePiece =
 		
 		if (result == true)
 		{
+			//Touching ground
 			if (this._testPosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY + 1) == null)
 			{
+				//Lock not started, start it.
 				if (this._lockTime == -1)
-					this._lockTime = fromTime + 500;
+					this._lockTime = fromTime + TetriStackApplication.GetLockDelayTime();
+			}
+			else //Not touching ground
+			{
+				//Lock started, stop it and record remaining time.
+				if (this._lockTime != -1)
+				{
+					this._lockRemaining = this._lockTime - fromTime;
+					this._lockTime = -1;
+				}
 			}
 			
 			this._updateGhost();
@@ -776,7 +790,7 @@ TetriPlayField.prototype._hardDropCurrentPiece =
 		}
 		
 		this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, y);
-		this._lockTime = fromTime;
+		this._lockCurrentPiece(fromTime);
 	};
 	
 TetriPlayField.prototype._onApplicationKeyup = 
@@ -893,7 +907,7 @@ TetriPlayField.prototype._onApplicationKeydown =
 			if (this._leftTime == -1)
 			{
 				this._leftTime = currentTime + TetriPlayField.KeyholdDelay1;
-				this._movePiece(currentTime, "left");
+				this._moveCurrentPiece(currentTime, "left");
 			}
 			
 			return;
@@ -911,7 +925,7 @@ TetriPlayField.prototype._onApplicationKeydown =
 			if (this._rightTime == -1)
 			{
 				this._rightTime = currentTime + TetriPlayField.KeyholdDelay1;
-				this._movePiece(currentTime, "right");
+				this._moveCurrentPiece(currentTime, "right");
 			}
 			
 			return;
@@ -927,7 +941,7 @@ TetriPlayField.prototype._onApplicationKeydown =
 			if (this._softDropKeys.length == 1)
 			{
 				this._softDropTime = currentTime + Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
-				this._movePiece(currentTime, "down");
+				this._moveCurrentPiece(currentTime, "down");
 			}
 			
 			return;
@@ -950,7 +964,7 @@ TetriPlayField.prototype._onApplicationKeydown =
 				return;
 			
 			this._rotateLeftKey = keycode;
-			this._rotatePiece("left", currentTime);
+			this._rotateCurrentPiece("left", currentTime);
 			
 			return;
 		}
@@ -961,7 +975,7 @@ TetriPlayField.prototype._onApplicationKeydown =
 				return;
 			
 			this._rotateRightKey = keycode;
-			this._rotatePiece("right", currentTime);
+			this._rotateCurrentPiece("right", currentTime);
 			
 			return;
 		}
