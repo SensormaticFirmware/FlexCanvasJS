@@ -496,7 +496,7 @@ function TetriStackApplication() //extends CanvasManager
 		
 		if (blockColor == TetriStackApplication.BlockColors.ORANGE)
 			blockColor = TetriStackApplication.BlockColors.DARKBLUE;
-		
+
 		else if (blockColor == TetriStackApplication.BlockColors.DARKBLUE)
 			blockColor = TetriStackApplication.BlockColors.GREEN;
 		
@@ -672,6 +672,27 @@ TetriStackApplication.GetFallSpeed =
 	{
 		//Milliseconds per line
 		return (Math.pow(0.8 - ((level - 1) * 0.007), level - 1)) * 1000; 
+	};
+
+//Standard guideline scoring (base multiplied by level)	
+TetriStackApplication.GetBaseLinePoints = 
+	function (lines)
+	{
+		if (lines = 1)
+			return 100;
+		else if (lines == 2)
+			return 300;
+		else if (lines == 3)
+			return 500;
+		else if (lines == 4)
+			return 800;
+	};
+	
+//Standard guideline for back to back bonus.	
+TetriStackApplication.GetBackToBackMultiplier = 
+	function ()
+	{
+		return .5;
 	};
 	
 //Standard guideline rotation kick tables
@@ -857,6 +878,9 @@ TetriStackApplication.PieceData = [	//[piece][orientation][point]
 			{x:1, y:2}],                                 
 	 ]
   ];
+
+
+
 
 
 

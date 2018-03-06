@@ -297,7 +297,9 @@ function TetriPlayField()
 	
 	this._randomBag = [];
 	this._level = 0;
-	this._lineCount = 0;
+	this._lines = 0;
+	this._score = 0;
+	this._backToBackBonus = false;
 	
 	this._fallTime = -1;
 	this._lockTime = -1;
@@ -382,7 +384,9 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 			while (this._softDropTime != -1 && currentTime >= this._softDropTime)
 			{
 				this._softDropTime += Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
-				this._moveCurrentPiece(this._softDropTime, "down");
+				
+				if (this._moveCurrentPiece(this._softDropTime, "down") == true)
+					this._addToScore(1);
 			}
 			
 			while (this._fallTime != -1 && currentTime >= this._fallTime)
@@ -490,11 +494,10 @@ TetriPlayField.prototype._clearLines =
 			}
 		}
 		
-		this._lineCount += this._currentLines.length;
-		this._labelLineCount.setStyle("Text", this._lineCount.toString());
+		this._addToLines(this._currentLines.length);
 		
-		if (Math.floor(this._lineCount / 10) + 1 > this._level)
-			this._setLevel(Math.floor(this._lineCount / 10) + 1);
+		if (Math.floor(this._lines / 10) + 1 > this._level)
+			this._setLevel(Math.floor(this._lines / 10) + 1);
 		
 		this._currentLines.splice(0, this._currentLines.length);
 	};
@@ -502,7 +505,11 @@ TetriPlayField.prototype._clearLines =
 TetriPlayField.prototype.startGame = 
 	function (currentTime, startLevel)
 	{
+		this._score = 0;
+		this._lines = 0;
+	
 		this._setLevel(startLevel);
+		this._addToScore(0);
 		this._nextPiece = this._getNextPiece();
 		
 		this._generatePiece(currentTime);
@@ -516,6 +523,20 @@ TetriPlayField.prototype._setLevel =
 		
 		this._level = level;
 		this._labelLevelValue.setStyle("Text", level.toString());
+	};
+	
+TetriPlayField.prototype._addToScore = 
+	function (value)
+	{
+		this._score += value;
+		this._labelScoreValue.setStyle("Text", this._score.toString());
+	};
+	
+TetriPlayField.prototype._addToLines = 
+	function (lines)
+	{
+		this._lines += lines;
+		this._labelLineCount.setStyle("Text", this._lines.toString());
 	};
 	
 TetriPlayField.prototype._updateNextPiece = 
@@ -791,6 +812,7 @@ TetriPlayField.prototype._hardDropCurrentPiece =
 		
 		this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, y);
 		this._lockCurrentPiece(fromTime);
+		this._addToScore((y - this._currentOriginY) * 2);
 	};
 	
 TetriPlayField.prototype._onApplicationKeyup = 
@@ -941,7 +963,9 @@ TetriPlayField.prototype._onApplicationKeydown =
 			if (this._softDropKeys.length == 1)
 			{
 				this._softDropTime = currentTime + Math.ceil(TetriStackApplication.GetFallSpeed(this._level) / 20);
-				this._moveCurrentPiece(currentTime, "down");
+				
+				if (this._moveCurrentPiece(currentTime, "down") == true)
+					this._addToScore(1);
 			}
 			
 			return;
