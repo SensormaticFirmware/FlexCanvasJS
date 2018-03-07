@@ -61,9 +61,52 @@ function TetriPlayField()
 					
 					this._menuPauseContainer.addElement(this._labelMenuPauseTitle);
 					this._menuPauseContainer.addElement(this._menuPauseButtonsContainer);
+					
+					this._menuGameOverContainer = new ListContainerElement();
+					this._menuGameOverContainer.setStyle("PercentWidth", 100);
+					this._menuGameOverContainer.setStyle("PercentHeight", 100);
+					this._menuGameOverContainer.setStyle("LayoutVerticalAlign", "middle");
+					this._menuGameOverContainer.setStyle("LayoutHorizontalAlign", "center");
+					this._menuGameOverContainer.setStyle("LayoutGap", 20);
+					this._menuGameOverContainer.setStyle("Visible", false);
+					
+						this._labelMenuGameOverTitle = new LabelElement();
+						this._labelMenuGameOverTitle.setStyle("Text", "GAME OVER");
+						this._labelMenuGameOverTitle.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldExLargeSizeStyle]);
 						
+						this._labelMenuGameOverScore = new LabelElement();
+						this._labelMenuGameOverScore.setStyle("Text", "0");
+						this._labelMenuGameOverScore.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldLargeSizeStyle]);
+						
+						this._menuGameOverButtonsContainer = new ListContainerElement();
+						this._menuGameOverButtonsContainer.setStyle("LayoutDirection", "vertical");
+						this._menuGameOverButtonsContainer.setStyle("PaddingTop", 30);
+						this._menuGameOverButtonsContainer.setStyle("LayoutGap", 20);
+						
+							this._buttonMenuGameOverPlay = new ButtonElement();
+							this._buttonMenuGameOverPlay.setStyle("Text", "PLAY");
+							this._buttonMenuGameOverPlay.setStyle("Width", 150);
+							this._buttonMenuGameOverPlay.setStyle("PaddingTop", 10);
+							this._buttonMenuGameOverPlay.setStyle("PaddingBottom", 10);
+							this._buttonMenuGameOverPlay.setStyleDefinitions([buttonBackgroundStyle, buttonMenuStyle]);
+							
+							this._buttonMenuGameOverQuit = new ButtonElement();
+							this._buttonMenuGameOverQuit.setStyle("Text", "QUIT");
+							this._buttonMenuGameOverQuit.setStyle("Width", 150);
+							this._buttonMenuGameOverQuit.setStyle("PaddingTop", 10);
+							this._buttonMenuGameOverQuit.setStyle("PaddingBottom", 10);
+							this._buttonMenuGameOverQuit.setStyleDefinitions([buttonBackgroundStyle, buttonMenuStyle]);
+							
+						this._menuGameOverButtonsContainer.addElement(this._buttonMenuGameOverPlay);
+						this._menuGameOverButtonsContainer.addElement(this._buttonMenuGameOverQuit);
+					
+					this._menuGameOverContainer.addElement(this._labelMenuGameOverTitle);
+					this._menuGameOverContainer.addElement(this._labelMenuGameOverScore);
+					this._menuGameOverContainer.addElement(this._menuGameOverButtonsContainer);
+					
 				this._gridContainerInner.addElement(this._blockContainer);
 				this._gridContainerInner.addElement(this._menuPauseContainer);
+				this._gridContainerInner.addElement(this._menuGameOverContainer);
 					
 			this._gridContainer.addElement(this._gridContainerInner);
 		
@@ -272,7 +315,11 @@ function TetriPlayField()
 		{
 			_self._onPlayFieldQuitClick(event);
 		};
-	
+	this._onPlayFieldNewGameInstance = 
+		function (event)
+		{
+			_self._onPlayFieldNewGame(event);
+		};	
 		
 	this.addEventListener("enterframe", this._onPlayFieldEnterFrameInstance);	
 	this.addEventListener("added", this._onPlayFieldAddedInstance);
@@ -280,6 +327,8 @@ function TetriPlayField()
 	this._menuButton.addEventListener("click", this._onPlayFieldMenuClickInstance);
 	this._buttonMenuPauseResume.addEventListener("click", this._onPlayFieldResumeClickInstance);
 	this._buttonMenuPauseQuit.addEventListener("click", this._onPlayFieldQuitClickInstance);
+	this._buttonMenuGameOverQuit.addEventListener("click", this._onPlayFieldQuitClickInstance);
+	this._buttonMenuGameOverPlay.addEventListener("click", this._onPlayFieldNewGameInstance);
 	
 	////////////
 	
@@ -319,6 +368,8 @@ function TetriPlayField()
 		tetriBlock.setStyle("Height", 25);
 		this._holdPieceBlockContainer.addElement(tetriBlock);
 	}
+	
+	this._startAtLevel = 1;
 	
 	this._paused = true;
 	this._level = 0;
@@ -381,6 +432,8 @@ TetriPlayField.KeyholdDelay2 = 50;
 TetriPlayField.prototype.startGame = 
 	function (currentTime, startLevel)
 	{
+		this._startAtLevel = startLevel;
+	
 		this._paused = false;
 		this._setLevel(startLevel);
 		this._nextPiece = this._getNextPiece();
@@ -415,6 +468,13 @@ TetriPlayField.prototype._onPlayFieldQuitClick =
 		this._dispatchEvent(new DispatcherEvent("quit"));
 	};
 	
+TetriPlayField.prototype._onPlayFieldNewGame = 
+	function (event)
+	{
+		this._resetPlayField();
+		this.startGame(Date.now(), this._startAtLevel);
+	};
+	
 TetriPlayField.prototype._onPlayFieldResumeClick = 
 	function (event)
 	{
@@ -444,6 +504,18 @@ TetriPlayField.prototype._onPlayFieldResumeClick =
 		
 		if (this._holdPiece != null)
 			this._holdPieceBlockContainer.setStyle("Visible", true);
+	};
+
+TetriPlayField.prototype._gameOver = 
+	function ()
+	{
+		this._paused = true;
+		this._currentPiece = null;
+		
+		this._menuButton.setStyle("Enabled" , false);
+		this._menuGameOverContainer.setStyle("Visible", true);
+		this._blockContainer.setStyle("Visible", false);
+		this._labelMenuGameOverScore.setStyle("Text", this._score.toString());
 	};
 	
 TetriPlayField.prototype._resetPlayField = 
@@ -493,6 +565,7 @@ TetriPlayField.prototype._resetPlayField =
 		this._paused = true;
 		this._menuButton.setStyle("Enabled" , true);
 		this._menuPauseContainer.setStyle("Visible", false);
+		this._menuGameOverContainer.setStyle("Visible", false);
 		this._blockContainer.setStyle("Visible", true);
 		
 		this._nextPieceBlockContainer.setStyle("Visible", true);
@@ -558,6 +631,9 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 TetriPlayField.prototype._lockCurrentPiece = 
 	function (fromTime)
 	{
+		//Game over if locked above skyline.
+		var isGameOver = true;
+	
 		var i;
 		var currentYPositions = [];
 		var gridPosition;
@@ -566,6 +642,15 @@ TetriPlayField.prototype._lockCurrentPiece =
 			gridPosition = this._getGridPositionFromBlock(this._currentBlocks[i]);
 			if (currentYPositions.indexOf(gridPosition.y) == -1)
 				currentYPositions.push(gridPosition.y);
+			
+			if (gridPosition.y > 2)
+				isGameOver = false;
+		}
+		
+		if (isGameOver == true)
+		{
+			this._gameOver();
+			return;
 		}
 		
 		var x;
@@ -698,7 +783,10 @@ TetriPlayField.prototype._generatePiece =
 			this._currentOriginX = 4;
 		
 		if (this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY) == false)
-			return; //TODO: Game over
+		{
+			this._gameOver();
+			return;
+		}
 		
 		this._moveCurrentPiece(fromTime, "down");
 		this._updateGhost();
