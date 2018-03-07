@@ -9,28 +9,61 @@ function TetriPlayField()
 		this._gridRoundedBorder = new AnchorContainerElement();
 		this._gridRoundedBorder.setStyle("Width", 310);
 		this._gridRoundedBorder.setStyle("Height", 620);
-		this._gridRoundedBorder.setStyle("BackgroundColor", "#DDDDDD");
-		this._gridRoundedBorder.setStyle("BackgroundShape", gridRoundedBorderShape);		
+		this._gridRoundedBorder.setStyleDefinitions(playFieldOuterContainerStyle);		
 		
 			this._gridContainer = new AnchorContainerElement();
-			this._gridContainer.setStyle("BackgroundColor", "#000000");
-			this._gridContainer.setStyle("X", 3);
-			this._gridContainer.setStyle("Y", 3);
-			this._gridContainer.setStyle("Width", 304);
-			this._gridContainer.setStyle("Height", 614);
+			this._gridContainer.setStyleDefinitions(playFieldInnerContainerStyle);
 			
 				this._gridContainerInner = new AnchorContainerElement();
 				this._gridContainerInner.setStyle("X", 2);
 				this._gridContainerInner.setStyle("Y", 2);
-				this._gridContainerInner.setStyle("Width", 300);
-				this._gridContainerInner.setStyle("Height", 610);
-			
+				this._gridContainerInner.setStyle("Top", 2);
+				this._gridContainerInner.setStyle("Bottom", 2);
+					
+					//Larger than parent (hidden blocks above sky-line)
 					this._blockContainer = new AnchorContainerElement();
 					this._blockContainer.setStyle("Width", 300);
 					this._blockContainer.setStyle("Height", 690);
 					this._blockContainer.setStyle("Bottom", 0);
-				
+					
+					this._menuPauseContainer = new ListContainerElement();
+					this._menuPauseContainer.setStyle("PercentWidth", 100);
+					this._menuPauseContainer.setStyle("PercentHeight", 100);
+					this._menuPauseContainer.setStyle("LayoutVerticalAlign", "middle");
+					this._menuPauseContainer.setStyle("LayoutHorizontalAlign", "center");
+					this._menuPauseContainer.setStyle("Visible", false);
+					
+						this._labelMenuPauseTitle = new LabelElement();
+						this._labelMenuPauseTitle.setStyle("Text", "PAUSED");
+						this._labelMenuPauseTitle.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldExLargeSizeStyle]);
+						
+						this._menuPauseButtonsContainer = new ListContainerElement();
+						this._menuPauseButtonsContainer.setStyle("LayoutDirection", "vertical");
+						this._menuPauseButtonsContainer.setStyle("PaddingTop", 50);
+						this._menuPauseButtonsContainer.setStyle("LayoutGap", 20);
+						
+							this._buttonMenuPauseResume = new ButtonElement();
+							this._buttonMenuPauseResume.setStyle("Text", "RESUME");
+							this._buttonMenuPauseResume.setStyle("Width", 150);
+							this._buttonMenuPauseResume.setStyle("PaddingTop", 10);
+							this._buttonMenuPauseResume.setStyle("PaddingBottom", 10);
+							this._buttonMenuPauseResume.setStyleDefinitions([buttonBackgroundStyle, buttonMenuStyle]);
+							
+							this._buttonMenuPauseQuit = new ButtonElement();
+							this._buttonMenuPauseQuit.setStyle("Text", "QUIT");
+							this._buttonMenuPauseQuit.setStyle("Width", 150);
+							this._buttonMenuPauseQuit.setStyle("PaddingTop", 10);
+							this._buttonMenuPauseQuit.setStyle("PaddingBottom", 10);
+							this._buttonMenuPauseQuit.setStyleDefinitions([buttonBackgroundStyle, buttonMenuStyle]);
+							
+						this._menuPauseButtonsContainer.addElement(this._buttonMenuPauseResume);
+						this._menuPauseButtonsContainer.addElement(this._buttonMenuPauseQuit);
+					
+					this._menuPauseContainer.addElement(this._labelMenuPauseTitle);
+					this._menuPauseContainer.addElement(this._menuPauseButtonsContainer);
+						
 				this._gridContainerInner.addElement(this._blockContainer);
+				this._gridContainerInner.addElement(this._menuPauseContainer);
 					
 			this._gridContainer.addElement(this._gridContainerInner);
 		
@@ -40,22 +73,14 @@ function TetriPlayField()
 		this._nextRoundedBorder.setStyle("X", 315);
 		this._nextRoundedBorder.setStyle("Width", 140);
 		this._nextRoundedBorder.setStyle("Height", 120);
-		this._nextRoundedBorder.setStyle("BackgroundColor", "#DDDDDD");
-		this._nextRoundedBorder.setStyle("BackgroundShape", gridRoundedBorderShape);	
+		this._nextRoundedBorder.setStyleDefinitions(playFieldOuterContainerStyle);	
 		
 			this._nextContainer = new AnchorContainerElement();
-			this._nextContainer.setStyle("BackgroundColor", "#202020");
-			this._nextContainer.setStyle("X", 3);
-			this._nextContainer.setStyle("Y", 3);
-			this._nextContainer.setStyle("Width", 134);
-			this._nextContainer.setStyle("Height", 114);
+			this._nextContainer.setStyleDefinitions(playFieldInnerContainerStyle);
 			
 				this._nextLabel = new LabelElement();
 				this._nextLabel.setStyle("Text", "Next");
-				this._nextLabel.setStyle("TextSize", 24);
-				this._nextLabel.setStyle("TextStyle", "bold");
-				this._nextLabel.setStyle("TextFont", "Audiowide");
-				this._nextLabel.setStyle("TextColor", "#DDDDDD");
+				this._nextLabel.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldLargeSizeStyle]);
 				this._nextLabel.setStyle("Y", 8);
 				this._nextLabel.setStyle("HorizontalCenter", 0);
 				
@@ -80,22 +105,14 @@ function TetriPlayField()
 		this._holdRoundedBorder.setStyle("Y", 125);
 		this._holdRoundedBorder.setStyle("Width", 140);
 		this._holdRoundedBorder.setStyle("Height", 120);
-		this._holdRoundedBorder.setStyle("BackgroundColor", "#DDDDDD");
-		this._holdRoundedBorder.setStyle("BackgroundShape", gridRoundedBorderShape);	
+		this._holdRoundedBorder.setStyleDefinitions(playFieldOuterContainerStyle);	
 		
 			this._holdContainer = new AnchorContainerElement();
-			this._holdContainer.setStyle("BackgroundColor", "#202020");
-			this._holdContainer.setStyle("X", 3);
-			this._holdContainer.setStyle("Y", 3);
-			this._holdContainer.setStyle("Width", 134);
-			this._holdContainer.setStyle("Height", 114);
+			this._holdContainer.setStyleDefinitions(playFieldInnerContainerStyle);
 			
 				this._holdLabel = new LabelElement();
 				this._holdLabel.setStyle("Text", "Hold");
-				this._holdLabel.setStyle("TextSize", 24);
-				this._holdLabel.setStyle("TextStyle", "bold");
-				this._holdLabel.setStyle("TextFont", "Audiowide");
-				this._holdLabel.setStyle("TextColor", "#DDDDDD");
+				this._holdLabel.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldLargeSizeStyle]);
 				this._holdLabel.setStyle("Y", 8);
 				this._holdLabel.setStyle("HorizontalCenter", 0);
 				
@@ -107,6 +124,7 @@ function TetriPlayField()
 					this._holdPieceBlockContainer = new AnchorContainerElement();
 					this._holdPieceBlockContainer.setStyle("HorizontalCenter", 0);
 					this._holdPieceBlockContainer.setStyle("VerticalCenter", 0);
+					this._holdPieceBlockContainer.setStyle("Visible", false);
 					
 				this._holdPieceContainer.addElement(this._holdPieceBlockContainer);
 				
@@ -120,89 +138,62 @@ function TetriPlayField()
 		this._scoreRoundedBorder.setStyle("Y", 250);
 		this._scoreRoundedBorder.setStyle("Width", 140);
 		this._scoreRoundedBorder.setStyle("Height", 320);
-		this._scoreRoundedBorder.setStyle("BackgroundColor", "#DDDDDD");
-		this._scoreRoundedBorder.setStyle("BackgroundShape", gridRoundedBorderShape);	
+		this._scoreRoundedBorder.setStyleDefinitions(playFieldOuterContainerStyle);	
 		
 			this._scoreContainer = new ListContainerElement();
-			this._scoreContainer.setStyle("BackgroundColor", "#202020");
-			this._scoreContainer.setStyle("Left", 3);
-			this._scoreContainer.setStyle("Top", 3);
-			this._scoreContainer.setStyle("Bottom", 3);
-			this._scoreContainer.setStyle("Right", 3);
+			this._scoreContainer.setStyleDefinitions(playFieldInnerContainerStyle);
 			this._scoreContainer.setStyle("LayoutHorizontalAlign", "center");
 			
 				this._scoreContainerSpacer0 = new CanvasElement();
-				this._scoreContainerSpacer0.setStyle("PercentHeight", 100);
+				this._scoreContainerSpacer0.setStyle("PercentHeight", 70);
 			
 				this._labelLevel = new LabelElement();
 				this._labelLevel.setStyle("Text", "Level");
-				this._labelLevel.setStyle("TextSize", 24);
-				this._labelLevel.setStyle("TextStyle", "bold");
-				this._labelLevel.setStyle("TextFont", "Audiowide");
-				this._labelLevel.setStyle("TextColor", "#DDDDDD");
+				this._labelLevel.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldLargeSizeStyle]);
 				
 				this._labelLevelValue = new LabelElement();
 				this._labelLevelValue.setStyle("Text", "0");
-				this._labelLevelValue.setStyle("TextSize", 20);
-				this._labelLevelValue.setStyle("TextStyle", "normal");
-				this._labelLevelValue.setStyle("TextFont", "Audiowide");
-				this._labelLevelValue.setStyle("TextColor", "#DDDDDD");
+				this._labelLevelValue.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldSmallSizeStyle]);
 				this._labelLevelValue.setStyle("PaddingTop", 8);
 			
 				this._scoreContainerSpacer1 = new CanvasElement();
 				this._scoreContainerSpacer1.setStyle("PercentHeight", 100);
 			
 				this._scoreContainerDivider1 = new CanvasElement();
-				this._scoreContainerDivider1.setStyle("PercentWidth", 80);
-				this._scoreContainerDivider1.setStyle("Height", 1);
-				this._scoreContainerDivider1.setStyle("BackgroundColor", "#DDDDDD");
+				this._scoreContainerDivider1.setStyleDefinitions(scoreControlsDividerStyle);
 				
 				this._scoreContainerSpacer2 = new CanvasElement();
 				this._scoreContainerSpacer2.setStyle("PercentHeight", 100);
 				
 				this._labelLines = new LabelElement();
 				this._labelLines.setStyle("Text", "Lines");
-				this._labelLines.setStyle("TextSize", 24);
-				this._labelLines.setStyle("TextStyle", "bold");
-				this._labelLines.setStyle("TextFont", "Audiowide");
-				this._labelLines.setStyle("TextColor", "#DDDDDD");
+				this._labelLines.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldLargeSizeStyle]);
 				
 				this._labelLineCount = new LabelElement();
 				this._labelLineCount.setStyle("Text", "0");
-				this._labelLineCount.setStyle("TextSize", 20);
-				this._labelLineCount.setStyle("TextStyle", "normal");
-				this._labelLineCount.setStyle("TextFont", "Audiowide");
-				this._labelLineCount.setStyle("TextColor", "#DDDDDD");
+				this._labelLineCount.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldSmallSizeStyle]);
 				this._labelLineCount.setStyle("PaddingTop", 8);
 				
 				this._scoreContainerSpacer3 = new CanvasElement();
 				this._scoreContainerSpacer3.setStyle("PercentHeight", 100);
 				
 				this._scoreContainerDivider2 = new CanvasElement();
-				this._scoreContainerDivider2.setStyle("PercentWidth", 80);
-				this._scoreContainerDivider2.setStyle("Height", 1);
-				this._scoreContainerDivider2.setStyle("BackgroundColor", "#DDDDDD");
+				this._scoreContainerDivider2.setStyleDefinitions(scoreControlsDividerStyle);
 				
 				this._scoreContainerSpacer4 = new CanvasElement();
 				this._scoreContainerSpacer4.setStyle("PercentHeight", 100);
 				
 				this._labelScore = new LabelElement();
 				this._labelScore.setStyle("Text", "Score");
-				this._labelScore.setStyle("TextSize", 24);
-				this._labelScore.setStyle("TextStyle", "bold");
-				this._labelScore.setStyle("TextFont", "Audiowide");
-				this._labelScore.setStyle("TextColor", "#DDDDDD");
+				this._labelScore.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldLargeSizeStyle]);
 				
 				this._labelScoreValue = new LabelElement();
 				this._labelScoreValue.setStyle("Text", "0");
-				this._labelScoreValue.setStyle("TextSize", 20);
-				this._labelScoreValue.setStyle("TextStyle", "normal");
-				this._labelScoreValue.setStyle("TextFont", "Audiowide");
-				this._labelScoreValue.setStyle("TextColor", "#DDDDDD");
+				this._labelScoreValue.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldSmallSizeStyle]);
 				this._labelScoreValue.setStyle("PaddingTop", 8);
 				
 				this._scoreContainerSpacer5 = new CanvasElement();
-				this._scoreContainerSpacer5.setStyle("PercentHeight", 100);
+				this._scoreContainerSpacer5.setStyle("PercentHeight", 70);
 			
 			this._scoreContainer.addElement(this._scoreContainerSpacer0);	
 			this._scoreContainer.addElement(this._labelLevel);
@@ -221,22 +212,18 @@ function TetriPlayField()
 			
 		this._scoreRoundedBorder.addElement(this._scoreContainer);
 		
-		this._pauseButton = new ButtonElement();
-		this._pauseButton.setStyle("Text", "MENU");
-		this._pauseButton.setStyle("TextFont", "Audiowide");
-		this._pauseButton.setStyle("TextSize", 22);
-		this._pauseButton.setStyle("TextStyle", "bold");
-		this._pauseButton.setStyleDefinitions([buttonBackgroundColors]);
-		this._pauseButton.setStyle("Width", 140);
-		this._pauseButton.setStyle("Height", 45);
-		this._pauseButton.setStyle("X", 315);
-		this._pauseButton.setStyle("Y", 575);
+		this._menuButton = new ButtonElement();
+		this._menuButton.setStyleDefinitions([buttonBackgroundStyle, buttonMenuStyle]);
+		this._menuButton.setStyle("Width", 140);
+		this._menuButton.setStyle("Height", 45);
+		this._menuButton.setStyle("X", 315);
+		this._menuButton.setStyle("Y", 575);
 		
 	this.addElement(this._gridRoundedBorder);
 	this.addElement(this._nextRoundedBorder);
 	this.addElement(this._holdRoundedBorder);
 	this.addElement(this._scoreRoundedBorder);
-	this.addElement(this._pauseButton);
+	this.addElement(this._menuButton);
 
 
 	////Event Handling////////
@@ -270,10 +257,29 @@ function TetriPlayField()
 		{
 			_self._onApplicationKeyup(keyboardEvent);
 		};
+	this._onPlayFieldMenuClickInstance = 
+		function (event)
+		{
+			_self._onPlayFieldMenuClick(event);
+		};
+	this._onPlayFieldResumeClickInstance = 
+		function (event)
+		{
+			_self._onPlayFieldResumeClick(event);
+		};
+	this._onPlayFieldQuitClickInstance = 
+		function (event)
+		{
+			_self._onPlayFieldQuitClick(event);
+		};
+	
 		
 	this.addEventListener("enterframe", this._onPlayFieldEnterFrameInstance);	
 	this.addEventListener("added", this._onPlayFieldAddedInstance);
 	this.addEventListener("removed", this._onPlayFieldRemovedInstance);
+	this._menuButton.addEventListener("click", this._onPlayFieldMenuClickInstance);
+	this._buttonMenuPauseResume.addEventListener("click", this._onPlayFieldResumeClickInstance);
+	this._buttonMenuPauseQuit.addEventListener("click", this._onPlayFieldQuitClickInstance);
 	
 	////////////
 	
@@ -281,6 +287,7 @@ function TetriPlayField()
 	var i2 = 0;
 	var tetriBlock;
 	
+	//Populate main grid
 	for (i = 0; i < 23; i++)
 	{
 		for (i2 = 0; i2 < 10; i2++)
@@ -295,16 +302,55 @@ function TetriPlayField()
 		}
 	}
 	
-	this._randomBag = [];
+	//Populate next piece blocks
+	for (i = 0; i < 4; i++)
+	{
+		tetriBlock = new TetriBlock();
+		tetriBlock.setStyle("Width", 25);
+		tetriBlock.setStyle("Height", 25);
+		this._nextPieceBlockContainer.addElement(tetriBlock);
+	}
+	
+	//Populate hold piece blocks
+	for (i = 0; i < 4; i++)
+	{
+		tetriBlock = new TetriBlock();
+		tetriBlock.setStyle("Width", 25);
+		tetriBlock.setStyle("Height", 25);
+		this._holdPieceBlockContainer.addElement(tetriBlock);
+	}
+	
+	this._paused = true;
 	this._level = 0;
 	this._lines = 0;
 	this._score = 0;
 	this._backToBackBonus = false;
 	
 	this._fallTime = -1;
-	this._lockTime = -1;
-	this._lockRemaining = TetriStackApplication.GetLockDelayTime();
+	this._fallTimePauseRemaining = -1;
 	
+	this._lockTime = -1;
+	this._lockRemaining = -1;
+	this._lockTimePauseRemaining = -1;
+	
+	this._linesClearTime = -1;
+	this._linesClearTimePauseRemaining = -1;
+	
+	this._randomBag = [];
+	this._currentBlocks = [];
+	this._ghostBlocks = [];
+	this._currentLines = [];
+	
+	this._currentPiece = null;
+	this._currentOrient = 0;
+	this._currentOriginX = 0;
+	this._currentOriginY = 0;
+	
+	this._currentResetLockY = -1;
+	
+	this._nextPiece = null;
+	this._holdPiece = null;
+	this._holdAvailable = true;
 	
 	////Key state tracking////
 	
@@ -322,23 +368,6 @@ function TetriPlayField()
 	//Allow key hold, respect any keys while pressed, most recent key if left/right
 	this._softDropKeys = [];
 	this._leftRightKeys = [];
-	
-	this._currentBlocks = [];
-	this._currentPiece = 0;
-	this._currentOrient = 0;
-	this._currentOriginX = 0;
-	this._currentOriginY = 0;
-	
-	this._currentResetLockY = -1;
-	
-	this._ghostBlocks = [];
-	
-	this._currentLines = [];
-	this._linesClearTime = -1;
-	
-	this._nextPiece = 0;
-	this._holdPiece = null;
-	this._holdAvailable = true;
 }
 
 //Inherit from AnchorContainerElement
@@ -349,9 +378,133 @@ TetriPlayField.base = AnchorContainerElement;
 TetriPlayField.KeyholdDelay1 = 200;
 TetriPlayField.KeyholdDelay2 = 50;
 
+TetriPlayField.prototype.startGame = 
+	function (currentTime, startLevel)
+	{
+		this._paused = false;
+		this._setLevel(startLevel);
+		this._nextPiece = this._getNextPiece();
+		this._generatePiece(currentTime);
+	};
+
+TetriPlayField.prototype._onPlayFieldMenuClick = 
+	function (event)
+	{
+		var currentTime = Date.now();
+	
+		if (this._fallTime != -1)
+			this._fallTimePauseRemaining = this._fallTime - currentTime;
+		if (this._lockTime != -1)
+			this._lockTimePauseRemaining = this._lockTime - currentTime;
+		if (this._linesClearTime != -1)
+			this._linesClearTimePauseRemaining = this._linesClearTime - currentTime;
+		
+		this._paused = true;
+		this._menuButton.setStyle("Enabled" , false);
+		this._menuPauseContainer.setStyle("Visible", true);
+		this._blockContainer.setStyle("Visible", false);
+		
+		this._nextPieceBlockContainer.setStyle("Visible", false);
+		this._holdPieceBlockContainer.setStyle("Visible", false);
+	};
+	
+TetriPlayField.prototype._onPlayFieldQuitClick = 
+	function (event)
+	{
+		this._resetPlayField();
+		this._dispatchEvent(new DispatcherEvent("quit"));
+	};
+	
+TetriPlayField.prototype._onPlayFieldResumeClick = 
+	function (event)
+	{
+		var currentTime = Date.now();
+		
+		if (this._fallTimePauseRemaining != -1)
+		{
+			this._fallTime = currentTime + this._fallTimePauseRemaining;
+			this._fallTimePauseRemaining = -1;
+		}
+		if (this._lockTimePauseRemaining != -1)
+		{
+			this._lockTime = currentTime + this._lockTimePauseRemaining;
+			this._lockTimePauseRemaining = -1;
+		}
+		if (this._linesClearTimePauseRemaining != -1)
+		{
+			this._linesClearTime = currentTime + this._linesClearTimePauseRemaining;
+			this._linesClearTimePauseRemaining = -1;
+		}
+		
+		this._paused = false;
+		this._menuButton.setStyle("Enabled" , true);
+		this._menuPauseContainer.setStyle("Visible", false);
+		this._blockContainer.setStyle("Visible", true);
+		this._nextPieceBlockContainer.setStyle("Visible", true);
+		
+		if (this._holdPiece != null)
+			this._holdPieceBlockContainer.setStyle("Visible", true);
+	};
+	
+TetriPlayField.prototype._resetPlayField = 
+	function ()
+	{
+		//Reset play field
+		
+		//Reset blocks
+		var block = null;
+		for (var i = 0; i < this._blockContainer.getNumElements(); i++)
+		{
+			block = this._blockContainer.getElementAt(i);
+			block.setBlockColor(TetriStackApplication.BlockColors.BLACK);
+			block.setIsGhost(false);
+		}
+		
+		//Reset states
+		this._setLevel(0);
+		
+		this._lines = 0;
+		this._addToLines(0);
+		
+		this._score = 0;
+		this._addToScore(0);
+		
+		this._backToBackBonus = false;
+		
+		this._fallTime = -1;
+		this._fallTimePauseRemaining = -1;
+		
+		this._lockTime = -1;
+		this._lockRemaining = -1;
+		this._lockTimePauseRemaining = -1;
+		
+		this._linesClearTime = -1;
+		this._linesClearTimePauseRemaining = -1;
+		
+		this._randomBag = [];
+		this._currentBlocks = [];
+		this._ghostBlocks = [];
+		this._currentLines = [];
+		
+		this._currentPiece = null;
+		this._nextPiece = null;
+		this._holdPiece = null;
+		
+		this._paused = true;
+		this._menuButton.setStyle("Enabled" , true);
+		this._menuPauseContainer.setStyle("Visible", false);
+		this._blockContainer.setStyle("Visible", true);
+		
+		this._nextPieceBlockContainer.setStyle("Visible", true);
+		this._holdPieceBlockContainer.setStyle("Visible", false);
+	};	
+	
 TetriPlayField.prototype._onPlayFieldEnterFrame = 
 	function (event)
 	{
+		if (this._paused == true)
+			return;
+	
 		var currentTime = Date.now();
 		
 		if (this._currentPiece != null && this._lockTime != -1 && currentTime >= this._lockTime)
@@ -445,6 +598,8 @@ TetriPlayField.prototype._lockCurrentPiece =
 			}
 		}
 		
+		this._fallTime = -1;
+		
 		if (this._currentLines.length > 0)
 		{
 			this._linesClearTime = fromTime + 300;
@@ -499,21 +654,55 @@ TetriPlayField.prototype._clearLines =
 		if (Math.floor(this._lines / 10) + 1 > this._level)
 			this._setLevel(Math.floor(this._lines / 10) + 1);
 		
+		var points = TetriStackApplication.GetBaseLinePoints(this._currentLines.length) * this._level;
+		if (this._currentLines.length == 4)
+		{
+			if (this._backToBackBonus == true)
+				points = points + Math.floor(points * .5);
+			else
+				this._backToBackBonus = true;
+		}
+		else
+			this._backToBackBonus = false;
+		
+		this._addToScore(points);
+		
 		this._currentLines.splice(0, this._currentLines.length);
 	};
 	
-TetriPlayField.prototype.startGame = 
-	function (currentTime, startLevel)
+TetriPlayField.prototype._generatePiece = 
+	function (fromTime, useHoldPiece)
 	{
-		this._score = 0;
-		this._lines = 0;
-	
-		this._setLevel(startLevel);
-		this._addToScore(0);
-		this._nextPiece = this._getNextPiece();
+		if (useHoldPiece == true && this._holdPiece != null)
+			this._currentPiece = this._holdPiece;
+		else
+		{
+			this._currentPiece = this._nextPiece;
+			this._nextPiece = this._getNextPiece();
+			this._updateNextPiece();
+		}
 		
-		this._generatePiece(currentTime);
-	};
+		this._currentOrient = 0;
+		this._currentOriginX = 3;
+		this._currentOriginY = 1;
+		this._currentBlocks.splice(0, this._currentBlocks.length);
+		
+		this._currentResetLockY = -1;
+		this._fallTime = -1;
+		this._lockTime = -1;
+		this._lockRemaining = TetriStackApplication.GetLockDelayTime();
+		this._linesClearTime = -1;
+		this._holdAvailable = true;
+		
+		if (this._currentPiece == 1)
+			this._currentOriginX = 4;
+		
+		if (this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY) == false)
+			return; //TODO: Game over
+		
+		this._moveCurrentPiece(fromTime, "down");
+		this._updateGhost();
+	};	
 	
 TetriPlayField.prototype._setLevel = 
 	function (level)
@@ -549,16 +738,7 @@ TetriPlayField.prototype._updateNextPiece =
 		
 		for (var i = 0; i < blockPoints.length; i++)
 		{
-			if (this._nextPieceBlockContainer.getNumElements() < i + 1)
-			{
-				block = new TetriBlock();
-				block.setStyle("Width", 25);
-				block.setStyle("Height", 25);
-				
-				this._nextPieceBlockContainer.addElement(block);
-			}
-			else
-				block = this._nextPieceBlockContainer.getElementAt(i);
+			block = this._nextPieceBlockContainer.getElementAt(i);
 			
 			point = blockPoints[i];
 			
@@ -575,6 +755,8 @@ TetriPlayField.prototype._updateNextPiece =
 TetriPlayField.prototype._updateHoldPiece = 
 	function ()
 	{
+		this._holdPieceBlockContainer.setStyle("Visible", true);
+		
 		var block;
 		var point;
 		var blockPoints = TetriStackApplication.PieceData[this._holdPiece][0];
@@ -582,16 +764,7 @@ TetriPlayField.prototype._updateHoldPiece =
 		
 		for (var i = 0; i < blockPoints.length; i++)
 		{
-			if (this._holdPieceBlockContainer.getNumElements() < i + 1)
-			{
-				block = new TetriBlock();
-				block.setStyle("Width", 25);
-				block.setStyle("Height", 25);
-				
-				this._holdPieceBlockContainer.addElement(block);
-			}
-			else
-				block = this._holdPieceBlockContainer.getElementAt(i);
+			block = this._holdPieceBlockContainer.getElementAt(i);
 			
 			point = blockPoints[i];
 			
@@ -604,40 +777,6 @@ TetriPlayField.prototype._updateHoldPiece =
 				block.setStyle("Y", 0);
 		}
 	};	
-	
-TetriPlayField.prototype._generatePiece = 
-	function (fromTime, useHoldPiece)
-	{
-		if (useHoldPiece == true && this._holdPiece != null)
-			this._currentPiece = this._holdPiece;
-		else
-		{
-			this._currentPiece = this._nextPiece;
-			this._nextPiece = this._getNextPiece();
-			this._updateNextPiece();
-		}
-		
-		this._currentOrient = 0;
-		this._currentOriginX = 3;
-		this._currentOriginY = 1;
-		this._currentBlocks.splice(0, this._currentBlocks.length);
-		
-		this._currentResetLockY = -1;
-		this._fallTime = -1;
-		this._lockTime = -1;
-		this._lockRemaining = TetriStackApplication.GetLockDelayTime();
-		this._linesClearTime = -1;
-		this._holdAvailable = true;
-		
-		if (this._currentPiece == 1)
-			this._currentOriginX = 4;
-		
-		if (this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, this._currentOriginY) == false)
-			return; //TODO: Game over
-		
-		this._moveCurrentPiece(fromTime, "down");
-		this._updateGhost();
-	};
 	
 TetriPlayField.prototype._getNextPiece = 
 	function ()

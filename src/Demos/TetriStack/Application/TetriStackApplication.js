@@ -11,13 +11,13 @@ function TetriStackApplication() //extends CanvasManager
 	
 	//Using indentation to help visualize nest level of elements.
 	
-	this.setStyle("BackgroundColor", "#444444");
+	this.setStyleDefinitions(applicationStyles);
 	
 		this._rootContainer = new ListContainerElement();
 		this._rootContainer.setStyle("PercentWidth", 100);
 		this._rootContainer.setStyle("PercentHeight", 100);
 		
-			this._contentContainer = new ListContainerElement();
+			this._contentContainer = new AnchorContainerElement();
 			this._contentContainer.setStyle("PercentWidth", 100);
 			this._contentContainer.setStyle("PercentHeight", 100);
 		
@@ -31,11 +31,7 @@ function TetriStackApplication() //extends CanvasManager
 					this._titleContainer = new AnchorContainerElement();
 				
 					this._labelSelectLevel = new LabelElement(); 
-					this._labelSelectLevel.setStyle("Text", "Start At Level");
-					this._labelSelectLevel.setStyle("TextSize", 22);
-					this._labelSelectLevel.setStyle("TextStyle", "bold");
-					this._labelSelectLevel.setStyle("TextFont", "Audiowide");
-					this._labelSelectLevel.setStyle("TextColor", "#DDDDDD");
+					this._labelSelectLevel.setStyleDefinitions(labelSelectLevelStyle);
 					this._labelSelectLevel.setStyle("PaddingTop", 20);
 					
 					this._levelSelectContainer = new ListContainerElement();
@@ -51,16 +47,13 @@ function TetriStackApplication() //extends CanvasManager
 						this._buttonLowerLevel.setStyle("Height", 25);
 						this._buttonLowerLevel.setStyle("Enabled", false);
 						this._buttonLowerLevel.setStyle("BackgroundShape", arrowLeftShape);
-						this._buttonLowerLevel.setStyleDefinitions([buttonBackgroundColors]);
+						this._buttonLowerLevel.setStyleDefinitions([buttonBackgroundStyle]);
 						
 						this._labelSelectedLevel = new LabelElement();
 						this._labelSelectedLevel.setStyle("Text", "1");
 						this._labelSelectedLevel.setStyle("Width", 35);
-						this._labelSelectedLevel.setStyle("TextSize", 22);
 						this._labelSelectedLevel.setStyle("TextHorizontalAlign", "center");
-						this._labelSelectedLevel.setStyle("TextStyle", "bold");
-						this._labelSelectedLevel.setStyle("TextFont", "Audiowide");
-						this._labelSelectedLevel.setStyle("TextColor", "#DDDDDD");
+						this._labelSelectedLevel.setStyleDefinitions(labelSelectLevelStyle);
 						
 						var arrowRightShape = new ArrowShape();
 						arrowRightShape.setStyle("Direction", "right");
@@ -68,15 +61,14 @@ function TetriStackApplication() //extends CanvasManager
 						this._buttonHigherLevel.setStyle("Width", 25);
 						this._buttonHigherLevel.setStyle("Height", 25);
 						this._buttonHigherLevel.setStyle("BackgroundShape", arrowRightShape);
-						this._buttonHigherLevel.setStyleDefinitions([buttonBackgroundColors]);
+						this._buttonHigherLevel.setStyleDefinitions([buttonBackgroundStyle]);
 						
 					this._levelSelectContainer.addElement(this._buttonLowerLevel);
 					this._levelSelectContainer.addElement(this._labelSelectedLevel);
 					this._levelSelectContainer.addElement(this._buttonHigherLevel);
 					
 					this._buttonPlay = new ButtonElement();
-					this._buttonPlay.setStyle("Text", "PLAY");
-					this._buttonPlay.setStyleDefinitions([buttonBackgroundColors, buttonPlayStyle]);
+					this._buttonPlay.setStyleDefinitions([buttonBackgroundStyle, buttonPlayStyle]);
 					
 					this._controlsContainer = new ListContainerElement();
 					this._controlsContainer.setStyle("PaddingTop", 30);
@@ -95,32 +87,25 @@ function TetriStackApplication() //extends CanvasManager
 						
 							this._labelControlMoveLeft = new LabelElement();
 							this._labelControlMoveLeft.setStyle("Text", "Move Left:");
-							this._labelControlMoveLeft.setStyle("TextStyle", "bold");
 							this._labelControlMoveLeft.setStyleDefinitions(labelControlsStyle);
-							this._labelControlMoveLeft.setStyle("PercentWidth", 100);
-							this._labelControlMoveLeft.setStyle("TextHorizontalAlign", "left");
 							
 							this._labelControlMoveLeftKey1 = new LabelElement();
 							this._labelControlMoveLeftKey1.setStyle("Text", "A");
-							this._labelControlMoveLeftKey1.setStyle("Width", 100);
-							this._labelControlMoveLeftKey1.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveLeftKey1.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol1Style]);
 							
 							this._labelControlMoveLeftDivider1 = new CanvasElement();
 							this._labelControlMoveLeftDivider1.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlMoveLeftKey2 = new LabelElement();
 							this._labelControlMoveLeftKey2.setStyle("Text", "Arrow Left");
-							this._labelControlMoveLeftKey2.setStyle("Width", 150);
-							this._labelControlMoveLeftKey2.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveLeftKey2.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol2Style]);
 							
 							this._labelControlMoveLeftDivider2 = new CanvasElement();
 							this._labelControlMoveLeftDivider2.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlMoveLeftKey3 = new LabelElement();
 							this._labelControlMoveLeftKey3.setStyle("Text", "NumPad 4");
-							this._labelControlMoveLeftKey3.setStyle("Width", 120);
-							this._labelControlMoveLeftKey3.setStyle("TextHorizontalAlign", "right");
-							this._labelControlMoveLeftKey3.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveLeftKey3.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol3Style]);
 							
 						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeft);
 						this._controlMoveLeftContainer.addElement(this._labelControlMoveLeftKey1);
@@ -136,32 +121,25 @@ function TetriStackApplication() //extends CanvasManager
 						
 							this._labelControlMoveRight = new LabelElement();
 							this._labelControlMoveRight.setStyle("Text", "Move Right:");
-							this._labelControlMoveRight.setStyle("TextStyle", "bold");
 							this._labelControlMoveRight.setStyleDefinitions(labelControlsStyle);
-							this._labelControlMoveRight.setStyle("PercentWidth", 100);
-							this._labelControlMoveRight.setStyle("TextHorizontalAlign", "left");
 							
 							this._labelControlMoveRightKey1 = new LabelElement();
 							this._labelControlMoveRightKey1.setStyle("Text", "D");
-							this._labelControlMoveRightKey1.setStyle("Width", 100);
-							this._labelControlMoveRightKey1.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveRightKey1.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol1Style]);
 							
 							this._labelControlMoveRightDivider1 = new CanvasElement();
 							this._labelControlMoveRightDivider1.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlMoveRightKey2 = new LabelElement();
 							this._labelControlMoveRightKey2.setStyle("Text", "Arrow Right");
-							this._labelControlMoveRightKey2.setStyle("Width", 150);
-							this._labelControlMoveRightKey2.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveRightKey2.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol2Style]);
 							
 							this._labelControlMoveRightDivider2 = new CanvasElement();
 							this._labelControlMoveRightDivider2.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlMoveRightKey3 = new LabelElement();
 							this._labelControlMoveRightKey3.setStyle("Text", "NumPad 6");
-							this._labelControlMoveRightKey3.setStyle("Width", 120);
-							this._labelControlMoveRightKey3.setStyle("TextHorizontalAlign", "right");
-							this._labelControlMoveRightKey3.setStyleDefinitions(labelControlsStyle);
+							this._labelControlMoveRightKey3.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol3Style]);
 							
 						this._controlMoveRightContainer.addElement(this._labelControlMoveRight);
 						this._controlMoveRightContainer.addElement(this._labelControlMoveRightKey1);
@@ -177,32 +155,25 @@ function TetriStackApplication() //extends CanvasManager
 						
 							this._labelControlSoftDrop = new LabelElement();
 							this._labelControlSoftDrop.setStyle("Text", "Soft Drop:");
-							this._labelControlSoftDrop.setStyle("TextStyle", "bold");
 							this._labelControlSoftDrop.setStyleDefinitions(labelControlsStyle);
-							this._labelControlSoftDrop.setStyle("PercentWidth", 100);
-							this._labelControlSoftDrop.setStyle("TextHorizontalAlign", "left");
 							
 							this._labelControlSoftDropKey1 = new LabelElement();
 							this._labelControlSoftDropKey1.setStyle("Text", "S");
-							this._labelControlSoftDropKey1.setStyle("Width", 100);
-							this._labelControlSoftDropKey1.setStyleDefinitions(labelControlsStyle);
+							this._labelControlSoftDropKey1.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol1Style]);
 							
 							this._labelControlSoftDropDivider1 = new CanvasElement();
 							this._labelControlSoftDropDivider1.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlSoftDropKey2 = new LabelElement();
 							this._labelControlSoftDropKey2.setStyle("Text", "Arrow Down");
-							this._labelControlSoftDropKey2.setStyle("Width", 150);
-							this._labelControlSoftDropKey2.setStyleDefinitions(labelControlsStyle);
+							this._labelControlSoftDropKey2.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol2Style]);
 							
 							this._labelControlSoftDropDivider2 = new CanvasElement();
 							this._labelControlSoftDropDivider2.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlSoftDropKey3 = new LabelElement();
 							this._labelControlSoftDropKey3.setStyle("Text", "NumPad 5");
-							this._labelControlSoftDropKey3.setStyle("Width", 120);
-							this._labelControlSoftDropKey3.setStyle("TextHorizontalAlign", "right");
-							this._labelControlSoftDropKey3.setStyleDefinitions(labelControlsStyle);
+							this._labelControlSoftDropKey3.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol3Style]);
 						
 						this._controlSoftDropContainer.addElement(this._labelControlSoftDrop);
 						this._controlSoftDropContainer.addElement(this._labelControlSoftDropKey1);
@@ -218,32 +189,25 @@ function TetriStackApplication() //extends CanvasManager
 						
 							this._labelControlHardDrop = new LabelElement();
 							this._labelControlHardDrop.setStyle("Text", "Hard Drop:");
-							this._labelControlHardDrop.setStyle("TextStyle", "bold");
 							this._labelControlHardDrop.setStyleDefinitions(labelControlsStyle);
-							this._labelControlHardDrop.setStyle("PercentWidth", 100);
-							this._labelControlHardDrop.setStyle("TextHorizontalAlign", "left");
 							
 							this._labelControlHardDropKey1 = new LabelElement();
 							this._labelControlHardDropKey1.setStyle("Text", "W");
-							this._labelControlHardDropKey1.setStyle("Width", 100);
-							this._labelControlHardDropKey1.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHardDropKey1.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol1Style]);
 							
 							this._labelControlHardDropDivider1 = new CanvasElement();
 							this._labelControlHardDropDivider1.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlHardDropKey2 = new LabelElement();
 							this._labelControlHardDropKey2.setStyle("Text", "Arrow Up");
-							this._labelControlHardDropKey2.setStyle("Width", 150);
-							this._labelControlHardDropKey2.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHardDropKey2.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol2Style]);
 							
 							this._labelControlHardDropDivider2 = new CanvasElement();
 							this._labelControlHardDropDivider2.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlHardDropKey3 = new LabelElement();
 							this._labelControlHardDropKey3.setStyle("Text", "NumPad 8");
-							this._labelControlHardDropKey3.setStyle("Width", 120);
-							this._labelControlHardDropKey3.setStyle("TextHorizontalAlign", "right");
-							this._labelControlHardDropKey3.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHardDropKey3.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol3Style]);
 							
 						this._controlHardDropContainer.addElement(this._labelControlHardDrop);
 						this._controlHardDropContainer.addElement(this._labelControlHardDropKey1);
@@ -259,32 +223,25 @@ function TetriStackApplication() //extends CanvasManager
 						
 							this._labelControlRotateLeft = new LabelElement();
 							this._labelControlRotateLeft.setStyle("Text", "Rotate Left:");
-							this._labelControlRotateLeft.setStyle("TextStyle", "bold");
 							this._labelControlRotateLeft.setStyleDefinitions(labelControlsStyle);
-							this._labelControlRotateLeft.setStyle("PercentWidth", 100);
-							this._labelControlRotateLeft.setStyle("TextHorizontalAlign", "left");
 							
 							this._labelControlRotateLeftKey1 = new LabelElement();
 							this._labelControlRotateLeftKey1.setStyle("Text", "Q");
-							this._labelControlRotateLeftKey1.setStyle("Width", 100);
-							this._labelControlRotateLeftKey1.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateLeftKey1.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol1Style]);
 							
 							this._labelControlRotateLeftDivider1 = new CanvasElement();
 							this._labelControlRotateLeftDivider1.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlRotateLeftKey2 = new LabelElement();
 							this._labelControlRotateLeftKey2.setStyle("Text", "J");
-							this._labelControlRotateLeftKey2.setStyle("Width", 150);
-							this._labelControlRotateLeftKey2.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateLeftKey2.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol2Style]);
 							
 							this._labelControlRotateLeftDivider2 = new CanvasElement();
 							this._labelControlRotateLeftDivider2.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlRotateLeftKey3 = new LabelElement();
 							this._labelControlRotateLeftKey3.setStyle("Text", "NumPad 7");
-							this._labelControlRotateLeftKey3.setStyle("Width", 120);
-							this._labelControlRotateLeftKey3.setStyle("TextHorizontalAlign", "right");
-							this._labelControlRotateLeftKey3.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateLeftKey3.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol3Style]);
 							
 						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeft);
 						this._controlRotateLeftContainer.addElement(this._labelControlRotateLeftKey1);
@@ -300,32 +257,25 @@ function TetriStackApplication() //extends CanvasManager
 						
 							this._labelControlRotateRight = new LabelElement();
 							this._labelControlRotateRight.setStyle("Text", "Rotate Right:");
-							this._labelControlRotateRight.setStyle("TextStyle", "bold");
 							this._labelControlRotateRight.setStyleDefinitions(labelControlsStyle);
-							this._labelControlRotateRight.setStyle("PercentWidth", 100);
-							this._labelControlRotateRight.setStyle("TextHorizontalAlign", "left");
 							
 							this._labelControlRotateRightKey1 = new LabelElement();
 							this._labelControlRotateRightKey1.setStyle("Text", "E");
-							this._labelControlRotateRightKey1.setStyle("Width", 100);
-							this._labelControlRotateRightKey1.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateRightKey1.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol1Style]);
 							
 							this._labelControlRotateRightDivider1 = new CanvasElement();
 							this._labelControlRotateRightDivider1.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlRotateRightKey2 = new LabelElement();
 							this._labelControlRotateRightKey2.setStyle("Text", "L");
-							this._labelControlRotateRightKey2.setStyle("Width", 150);
-							this._labelControlRotateRightKey2.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateRightKey2.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol2Style]);
 							
 							this._labelControlRotateRightDivider2 = new CanvasElement();
 							this._labelControlRotateRightDivider2.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlRotateRightKey3 = new LabelElement();
 							this._labelControlRotateRightKey3.setStyle("Text", "NumPad 9");
-							this._labelControlRotateRightKey3.setStyle("Width", 120);
-							this._labelControlRotateRightKey3.setStyle("TextHorizontalAlign", "right");
-							this._labelControlRotateRightKey3.setStyleDefinitions(labelControlsStyle);
+							this._labelControlRotateRightKey3.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol3Style]);
 							
 						this._controlRotateRightContainer.addElement(this._labelControlRotateRight);
 						this._controlRotateRightContainer.addElement(this._labelControlRotateRightKey1);
@@ -341,32 +291,25 @@ function TetriStackApplication() //extends CanvasManager
 						
 							this._labelControlHold = new LabelElement();
 							this._labelControlHold.setStyle("Text", "Hold:");
-							this._labelControlHold.setStyle("TextStyle", "bold");
 							this._labelControlHold.setStyleDefinitions(labelControlsStyle);
-							this._labelControlHold.setStyle("PercentWidth", 100);
-							this._labelControlHold.setStyle("TextHorizontalAlign", "left");
 							
 							this._labelControlHoldKey1 = new LabelElement();
 							this._labelControlHoldKey1.setStyle("Text", "Space");
-							this._labelControlHoldKey1.setStyle("Width", 100);
-							this._labelControlHoldKey1.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHoldKey1.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol1Style]);
 							
 							this._labelControlHoldDivider1 = new CanvasElement();
 							this._labelControlHoldDivider1.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlHoldKey2 = new LabelElement();
 							this._labelControlHoldKey2.setStyle("Text", "K");
-							this._labelControlHoldKey2.setStyle("Width", 150);
-							this._labelControlHoldKey2.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHoldKey2.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol2Style]);
 							
 							this._labelControlHoldDivider2 = new CanvasElement();
 							this._labelControlHoldDivider2.setStyleDefinitions(labelControlsDividerStyle);
 							
 							this._labelControlHoldKey3 = new LabelElement();
 							this._labelControlHoldKey3.setStyle("Text", "NumPad 0");
-							this._labelControlHoldKey3.setStyle("Width", 120);
-							this._labelControlHoldKey3.setStyle("TextHorizontalAlign", "right");
-							this._labelControlHoldKey3.setStyleDefinitions(labelControlsStyle);
+							this._labelControlHoldKey3.setStyleDefinitions([labelControlsValueStyle, labelControlsValueCol3Style]);
 							
 						this._controlHoldContainer.addElement(this._labelControlHold);
 						this._controlHoldContainer.addElement(this._labelControlHoldKey1);
@@ -396,7 +339,10 @@ function TetriStackApplication() //extends CanvasManager
 				this._gameView.setStyle("PercentWidth", 100);
 				this._gameView.setStyle("PercentHeight", 100);
 				this._gameView.setStyle("Visible", false);
-				this._gameView.setStyle("IncludeInLayout", false);
+				
+					this._playField = new TetriPlayField();
+					
+				this._gameView.addElement(this._playField);
 				
 			this._contentContainer.addElement(this._menuView);
 			this._contentContainer.addElement(this._gameView);
@@ -453,10 +399,16 @@ function TetriStackApplication() //extends CanvasManager
 		{
 			_self._onButtonHigherLevelClick(event);
 		};
+	this._onPlayFieldQuitInstance = 
+		function (event)
+		{
+			_self._onPlayFieldQuit(event);
+		};
 	
 	this._buttonPlay.addEventListener("click", this._onButtonPlayClickInstance);
 	this._buttonLowerLevel.addEventListener("click", this._onButtonLowerLevelClickInstance);
 	this._buttonHigherLevel.addEventListener("click", this._onButtonHigherLevelClickInstance);
+	this._playField.addEventListener("quit", this._onPlayFieldQuitInstance);
 	
 	//////////////////////////////////////////////////////////
 	
@@ -542,16 +494,18 @@ TetriStackApplication.prototype._onButtonPlayClick =
 	{
 		this._menuView.setStyle("Visible", false);
 		this._menuView.setStyle("IncludeInLayout", false);
-		
 		this._gameView.setStyle("Visible", true);
-		this._gameView.setStyle("IncludeInLayout", true);
-		
-		var playField = new TetriPlayField();
-		this._gameView.addElement(playField);
-		
-		playField.startGame(Date.now(), this._selectedLevel);
+		this._playField.startGame(Date.now(), this._selectedLevel);
 	};
 
+TetriStackApplication.prototype._onPlayFieldQuit = 
+	function (event)
+	{
+		this._menuView.setStyle("Visible", true);
+		this._menuView.setStyle("IncludeInLayout", true);
+		this._gameView.setStyle("Visible", false);
+	};
+	
 TetriStackApplication.prototype._onButtonLowerLevelClick = 
 	function (event)
 	{
@@ -678,7 +632,7 @@ TetriStackApplication.GetFallSpeed =
 TetriStackApplication.GetBaseLinePoints = 
 	function (lines)
 	{
-		if (lines = 1)
+		if (lines == 1)
 			return 100;
 		else if (lines == 2)
 			return 300;
