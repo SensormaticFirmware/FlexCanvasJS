@@ -87,6 +87,9 @@ labelPlayFieldStyle.setStyle("TextStyle", "bold");
 labelPlayFieldStyle.setStyle("TextFont", "Audiowide");
 labelPlayFieldStyle.setStyle("TextColor", "#DDDDDD");
 
+var labelPlayFieldStartCountSizeStyle = new StyleDefinition();
+labelPlayFieldStartCountSizeStyle.setStyle("TextSize", 80);
+
 var labelPlayFieldExLargeSizeStyle = new StyleDefinition();
 labelPlayFieldExLargeSizeStyle.setStyle("TextSize", 36);
 

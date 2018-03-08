@@ -20,11 +20,24 @@ function TetriPlayField()
 				this._gridContainerInner.setStyle("Top", 2);
 				this._gridContainerInner.setStyle("Bottom", 2);
 					
+					this._gameStartContainer = new ListContainerElement();
+					this._gameStartContainer.setStyle("PercentWidth", 100);
+					this._gameStartContainer.setStyle("PercentHeight", 100);
+					this._gameStartContainer.setStyle("LayoutVerticalAlign", "middle");
+					this._gameStartContainer.setStyle("LayoutHorizontalAlign", "center");
+					this._gameStartContainer.setStyle("Visible", true);
+					
+						this._labelGameStartCount = new LabelElement();
+						this._labelGameStartCount.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldStartCountSizeStyle]);
+						
+					this._gameStartContainer.addElement(this._labelGameStartCount);
+				
 					//Larger than parent (hidden blocks above sky-line)
 					this._blockContainer = new AnchorContainerElement();
 					this._blockContainer.setStyle("Width", 300);
 					this._blockContainer.setStyle("Height", 690);
 					this._blockContainer.setStyle("Bottom", 0);
+					this._blockContainer.setStyle("Visible", false);
 					
 					this._menuPauseContainer = new ListContainerElement();
 					this._menuPauseContainer.setStyle("PercentWidth", 100);
@@ -104,6 +117,7 @@ function TetriPlayField()
 					this._menuGameOverContainer.addElement(this._labelMenuGameOverScore);
 					this._menuGameOverContainer.addElement(this._menuGameOverButtonsContainer);
 					
+				this._gridContainerInner.addElement(this._gameStartContainer);
 				this._gridContainerInner.addElement(this._blockContainer);
 				this._gridContainerInner.addElement(this._menuPauseContainer);
 				this._gridContainerInner.addElement(this._menuGameOverContainer);
@@ -135,6 +149,7 @@ function TetriPlayField()
 					this._nextPieceBlockContainer = new AnchorContainerElement();
 					this._nextPieceBlockContainer.setStyle("HorizontalCenter", 0);
 					this._nextPieceBlockContainer.setStyle("VerticalCenter", 0);
+					this._nextPieceBlockContainer.setStyle("Visible", false);
 					
 				this._nextPieceContainer.addElement(this._nextPieceBlockContainer);
 				
@@ -372,20 +387,29 @@ function TetriPlayField()
 	this._startAtLevel = 1;
 	
 	this._paused = true;
+	this._pauseTime = -1;
+	
 	this._level = 0;
 	this._lines = 0;
 	this._score = 0;
 	this._backToBackBonus = false;
 	
 	this._fallTime = -1;
-	this._fallTimePauseRemaining = -1;
 	
 	this._lockTime = -1;
 	this._lockRemaining = -1;
-	this._lockTimePauseRemaining = -1;
 	
+	this._generatePieceTime = -1;
+	
+	this._lineClearPhase = null;
 	this._linesClearTime = -1;
-	this._linesClearTimePauseRemaining = -1;
+	
+	this._gameStartPhase = null;
+	this._gameStartCountTween = new Tween();
+	this._gameStartCountTween.startVal = 1;
+	this._gameStartCountTween.endVal = 0;
+	this._gameStartCountTween.duration = 1000;	
+	this._gameStartCountTween.easingFunction = Tween.easeOutSine;
 	
 	this._randomBag = [];
 	this._currentBlocks = [];
@@ -429,6 +453,8 @@ TetriPlayField.base = AnchorContainerElement;
 TetriPlayField.KeyholdDelay1 = 200;
 TetriPlayField.KeyholdDelay2 = 50;
 
+TetriPlayField.LineClearColumnTime = 20;
+
 TetriPlayField.prototype.startGame = 
 	function (currentTime, startLevel)
 	{
@@ -436,8 +462,11 @@ TetriPlayField.prototype.startGame =
 	
 		this._paused = false;
 		this._setLevel(startLevel);
-		this._nextPiece = this._getNextPiece();
-		this._generatePiece(currentTime);
+		
+		this._gameStartPhase = 3;
+		this._labelGameStartCount.setStyle("Text", this._gameStartPhase.toString());
+		this._labelGameStartCount.setStyle("Alpha", 1);
+		this._gameStartCountTween.startTime = currentTime;
 	};
 
 TetriPlayField.prototype._onPlayFieldMenuClick = 
@@ -445,18 +474,15 @@ TetriPlayField.prototype._onPlayFieldMenuClick =
 	{
 		var currentTime = Date.now();
 	
-		if (this._fallTime != -1)
-			this._fallTimePauseRemaining = this._fallTime - currentTime;
-		if (this._lockTime != -1)
-			this._lockTimePauseRemaining = this._lockTime - currentTime;
-		if (this._linesClearTime != -1)
-			this._linesClearTimePauseRemaining = this._linesClearTime - currentTime;
-		
 		this._paused = true;
-		this._menuButton.setStyle("Enabled" , false);
-		this._menuPauseContainer.setStyle("Visible", true);
-		this._blockContainer.setStyle("Visible", false);
+		this._pauseTime = currentTime;
 		
+		this._menuButton.setStyle("Enabled" , false);
+
+		this._menuPauseContainer.setStyle("Visible", true);
+		
+		this._blockContainer.setStyle("Visible", false);
+		this._gameStartContainer.setStyle("Visible", false);
 		this._nextPieceBlockContainer.setStyle("Visible", false);
 		this._holdPieceBlockContainer.setStyle("Visible", false);
 	};
@@ -480,27 +506,32 @@ TetriPlayField.prototype._onPlayFieldResumeClick =
 	{
 		var currentTime = Date.now();
 		
-		if (this._fallTimePauseRemaining != -1)
-		{
-			this._fallTime = currentTime + this._fallTimePauseRemaining;
-			this._fallTimePauseRemaining = -1;
-		}
-		if (this._lockTimePauseRemaining != -1)
-		{
-			this._lockTime = currentTime + this._lockTimePauseRemaining;
-			this._lockTimePauseRemaining = -1;
-		}
-		if (this._linesClearTimePauseRemaining != -1)
-		{
-			this._linesClearTime = currentTime + this._linesClearTimePauseRemaining;
-			this._linesClearTimePauseRemaining = -1;
-		}
+		if (this._fallTime != -1)
+			this._fallTime += (currentTime - this._pauseTime);
+
+		if (this._lockTime != -1)
+			this._lockTime += (currentTime - this._pauseTime);
+
+		if (this._lineClearTime != -1)
+			this._lineClearTime += (currentTime - this._pauseTime);
+
+		if (this._gameStartCountTween.startTime != null)
+			this._gameStartCountTween.startTime += (currentTime - this._pauseTime);
+		
+		if (this._generatePieceTime != -1)
+			this._generatePieceTime += (currentTime - this._pauseTime);
 		
 		this._paused = false;
 		this._menuButton.setStyle("Enabled" , true);
 		this._menuPauseContainer.setStyle("Visible", false);
-		this._blockContainer.setStyle("Visible", true);
-		this._nextPieceBlockContainer.setStyle("Visible", true);
+		
+		if (this._gameStartPhase == null)
+			this._blockContainer.setStyle("Visible", true);
+		else
+			this._gameStartContainer.setStyle("Visible", true);
+		
+		if (this._nextPiece != null)
+			this._nextPieceBlockContainer.setStyle("Visible", true);
 		
 		if (this._holdPiece != null)
 			this._holdPieceBlockContainer.setStyle("Visible", true);
@@ -513,8 +544,11 @@ TetriPlayField.prototype._gameOver =
 		this._currentPiece = null;
 		
 		this._menuButton.setStyle("Enabled" , false);
-		this._menuGameOverContainer.setStyle("Visible", true);
+		
+		this._gameStartContainer.setStyle("Visible", false);
+		this._menuPauseContainer.setStyle("Visible", false);
 		this._blockContainer.setStyle("Visible", false);
+		this._menuGameOverContainer.setStyle("Visible", true);
 		this._labelMenuGameOverScore.setStyle("Text", this._score.toString());
 	};
 	
@@ -544,14 +578,13 @@ TetriPlayField.prototype._resetPlayField =
 		this._backToBackBonus = false;
 		
 		this._fallTime = -1;
-		this._fallTimePauseRemaining = -1;
-		
 		this._lockTime = -1;
 		this._lockRemaining = -1;
-		this._lockTimePauseRemaining = -1;
 		
+		this._lineClearPhase = null;
 		this._linesClearTime = -1;
-		this._linesClearTimePauseRemaining = -1;
+		
+		this._generatePieceTime = -1;
 		
 		this._randomBag = [];
 		this._currentBlocks = [];
@@ -562,13 +595,18 @@ TetriPlayField.prototype._resetPlayField =
 		this._nextPiece = null;
 		this._holdPiece = null;
 		
+		this._gameStartPhase == null;
+		this._gameStartCountTween.startTime = null;
+		
 		this._paused = true;
 		this._menuButton.setStyle("Enabled" , true);
+		
+		this._gameStartContainer.setStyle("Visible", true);
 		this._menuPauseContainer.setStyle("Visible", false);
 		this._menuGameOverContainer.setStyle("Visible", false);
-		this._blockContainer.setStyle("Visible", true);
+		this._blockContainer.setStyle("Visible", false);
 		
-		this._nextPieceBlockContainer.setStyle("Visible", true);
+		this._nextPieceBlockContainer.setStyle("Visible", false);
 		this._holdPieceBlockContainer.setStyle("Visible", false);
 	};	
 	
@@ -621,10 +659,73 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 			}
 		}
 		
-		if (this._currentLines.length > 0 && currentTime >= this._linesClearTime)
+		if (this._lineClearPhase != null && currentTime >= this._linesClearTime)
 		{
-			this._clearLines();
-			this._generatePiece(this._linesClearTime);
+			var lineClearBlockColor = TetriStackApplication.BlockColors.BLACK;
+			
+			var column = this._lineClearPhase - 1;
+			if (column > 9)
+			{
+				lineClearBlockColor = TetriStackApplication.BlockColors.WHITE;
+				column -= 10;
+			}
+			
+			if (column == -1)
+			{
+				this._lineClearPhase = null;
+				this._lineClearTime = -1;
+				
+				this._clearLines();
+				this._generatePiece(this._linesClearTime);
+			}
+			else
+			{	
+				var block = null;				
+				for (var i = 0; i < this._currentLines.length; i++)
+				{
+					block = this._getBlockAtGridPosition(column, this._currentLines[i]);
+					block.setBlockColor(lineClearBlockColor);
+				}
+				
+				this._lineClearPhase--;
+				this._linesClearTime += TetriPlayField.LineClearColumnTime;
+			}
+		}
+		
+		if (this._generatePieceTime != -1 && currentTime >= this._generatePieceTime)
+		{
+			this._generatePiece(this._generatePieceTime);
+			this._generatePieceTime = -1;
+		}
+		
+		if (this._gameStartPhase != null)
+		{
+			var gameStartTweenVal = this._gameStartCountTween.getValue(currentTime);
+			
+			if (gameStartTweenVal == this._gameStartCountTween.endVal)
+			{
+				this._gameStartPhase--;
+				if (this._gameStartPhase < 1)
+				{
+					this._gameStartPhase = null;
+					this._gameStartCountTween.startTime = null;
+					
+					this._nextPiece = this._getNextPiece();
+					this._generatePiece(currentTime);
+					
+					this._gameStartContainer.setStyle("Visible", false);
+					this._blockContainer.setStyle("Visible", true);
+					this._nextPieceBlockContainer.setStyle("Visible", true);
+				}
+				else
+				{
+					this._labelGameStartCount.setStyle("Text", this._gameStartPhase.toString());
+					this._labelGameStartCount.setStyle("Alpha", 1);
+					this._gameStartCountTween.startTime = this._gameStartCountTween.startTime + 1000;
+				}
+			}
+			else
+				this._labelGameStartCount.setStyle("Alpha", gameStartTweenVal);
 		}
 	};
 	
@@ -672,26 +773,37 @@ TetriPlayField.prototype._lockCurrentPiece =
 			}
 			
 			if (lineComplete == true)
-			{
 				this._currentLines.push(currentYPositions[i]);
-				
-				for (x = 0; x < 10; x++)
-				{
-					block = this._getBlockAtGridPosition(x, currentYPositions[i]);
-					block.setBlockColor(TetriStackApplication.BlockColors.WHITE);
-				}
-			}
 		}
 		
-		this._fallTime = -1;
+		this._currentPiece = null;
 		
 		if (this._currentLines.length > 0)
 		{
-			this._linesClearTime = fromTime + 300;
-			this._currentPiece = null;
+			this._lineClearPhase = 20;
+			this._linesClearTime = fromTime + TetriPlayField.LineClearColumnTime;
+			
+			//Update level, lines, and score
+			this._addToLines(this._currentLines.length);
+			
+			if (Math.floor(this._lines / 10) + 1 > this._level)
+				this._setLevel(Math.floor(this._lines / 10) + 1);
+			
+			var points = TetriStackApplication.GetBaseLinePoints(this._currentLines.length) * this._level;
+			if (this._currentLines.length == 4)
+			{
+				if (this._backToBackBonus == true)
+					points = points + Math.floor(points * .5);
+				else
+					this._backToBackBonus = true;
+			}
+			else
+				this._backToBackBonus = false;
+			
+			this._addToScore(points);
 		}
 		else
-			this._generatePiece(fromTime);
+			this._generatePieceTime = fromTime + TetriStackApplication.GetGenerationDelayTime();
 	};	
 	
 TetriPlayField.prototype._clearLines = 
@@ -733,24 +845,6 @@ TetriPlayField.prototype._clearLines =
 				}
 			}
 		}
-		
-		this._addToLines(this._currentLines.length);
-		
-		if (Math.floor(this._lines / 10) + 1 > this._level)
-			this._setLevel(Math.floor(this._lines / 10) + 1);
-		
-		var points = TetriStackApplication.GetBaseLinePoints(this._currentLines.length) * this._level;
-		if (this._currentLines.length == 4)
-		{
-			if (this._backToBackBonus == true)
-				points = points + Math.floor(points * .5);
-			else
-				this._backToBackBonus = true;
-		}
-		else
-			this._backToBackBonus = false;
-		
-		this._addToScore(points);
 		
 		this._currentLines.splice(0, this._currentLines.length);
 	};
@@ -1036,10 +1130,10 @@ TetriPlayField.prototype._hardDropCurrentPiece =
 			
 			y++;
 		}
-		
+
+		this._addToScore((y - this._currentOriginY) * 2);
 		this._updatePosition(this._currentPiece, this._currentOrient, this._currentOriginX, y);
 		this._lockCurrentPiece(fromTime);
-		this._addToScore((y - this._currentOriginY) * 2);
 	};
 	
 TetriPlayField.prototype._onApplicationKeyup = 
