@@ -121,6 +121,21 @@ playFieldInnerContainerStyle.setStyle("Left", 3);
 playFieldInnerContainerStyle.setStyle("Right", 3);
 
 
+/////////SOUNDS//////////////////
+
+var sound_countdownbeep = new Audio(["Sounds/37732__longhairman__1khz-1ds-peep.mp3"]);
+sound_countdownbeep.volume = 0.35;
+
+var sound_rotate = new Audio(["Sounds/187024__lloydevans09__jump2.mp3"]);
+
+var sound_lineComplete = new Audio(["Sounds/109662__grunz__success.mp3"]);
+
+var sound_levelUp = new Audio(["Sounds/320777__rhodesmas__action-01.mp3"]);
+
+var sound_music = new Audio(["Sounds/382931__frankum__vintage-techno-house-loop-110bpm.mp3"]);
+sound_music.loop = true;
+
+
 //////APPLICATION////////////////
 
 //Globals go here...//

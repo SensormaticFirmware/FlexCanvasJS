@@ -388,6 +388,9 @@ function TetriStackApplication() //extends CanvasManager
 		function (event)
 		{
 			_self._onButtonPlayClick(event);
+			
+			//Test popup
+			//window.open('http://URL', '_blank');
 		};
 	this._onButtonLowerLevelClickInstance = 
 		function (event)

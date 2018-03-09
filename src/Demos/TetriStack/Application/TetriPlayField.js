@@ -394,6 +394,8 @@ function TetriPlayField()
 	this._score = 0;
 	this._backToBackBonus = false;
 	
+	this._levelUp = false;
+	
 	this._fallTime = -1;
 	
 	this._lockTime = -1;
@@ -467,6 +469,8 @@ TetriPlayField.prototype.startGame =
 		this._labelGameStartCount.setStyle("Text", this._gameStartPhase.toString());
 		this._labelGameStartCount.setStyle("Alpha", 1);
 		this._gameStartCountTween.startTime = currentTime;
+		
+		sound_countdownbeep.play();
 	};
 
 TetriPlayField.prototype._onPlayFieldMenuClick = 
@@ -480,6 +484,9 @@ TetriPlayField.prototype._onPlayFieldMenuClick =
 		this._menuButton.setStyle("Enabled" , false);
 
 		this._menuPauseContainer.setStyle("Visible", true);
+		
+		if (this._gameStartPhase == null)
+			sound_music.pause();
 		
 		this._blockContainer.setStyle("Visible", false);
 		this._gameStartContainer.setStyle("Visible", false);
@@ -526,7 +533,10 @@ TetriPlayField.prototype._onPlayFieldResumeClick =
 		this._menuPauseContainer.setStyle("Visible", false);
 		
 		if (this._gameStartPhase == null)
+		{
 			this._blockContainer.setStyle("Visible", true);
+			sound_music.play();
+		}
 		else
 			this._gameStartContainer.setStyle("Visible", true);
 		
@@ -550,6 +560,8 @@ TetriPlayField.prototype._gameOver =
 		this._blockContainer.setStyle("Visible", false);
 		this._menuGameOverContainer.setStyle("Visible", true);
 		this._labelMenuGameOverScore.setStyle("Text", this._score.toString());
+		
+		sound_music.pause();
 	};
 	
 TetriPlayField.prototype._resetPlayField = 
@@ -583,6 +595,8 @@ TetriPlayField.prototype._resetPlayField =
 		
 		this._lineClearPhase = null;
 		this._linesClearTime = -1;
+		
+		this._levelUp = false;
 		
 		this._generatePieceTime = -1;
 		
@@ -677,6 +691,12 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 				
 				this._clearLines();
 				this._generatePiece(this._linesClearTime);
+				
+				if (this._levelUp == true)
+				{
+					this._levelUp = false;
+					sound_levelUp.play();
+				}
 			}
 			else
 			{	
@@ -716,12 +736,17 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 					this._gameStartContainer.setStyle("Visible", false);
 					this._blockContainer.setStyle("Visible", true);
 					this._nextPieceBlockContainer.setStyle("Visible", true);
+					
+					sound_music.currentTime = 0;
+					sound_music.play();
 				}
 				else
 				{
 					this._labelGameStartCount.setStyle("Text", this._gameStartPhase.toString());
 					this._labelGameStartCount.setStyle("Alpha", 1);
 					this._gameStartCountTween.startTime = this._gameStartCountTween.startTime + 1000;
+					
+					sound_countdownbeep.play();
 				}
 			}
 			else
@@ -787,7 +812,10 @@ TetriPlayField.prototype._lockCurrentPiece =
 			this._addToLines(this._currentLines.length);
 			
 			if (Math.floor(this._lines / 10) + 1 > this._level)
+			{
 				this._setLevel(Math.floor(this._lines / 10) + 1);
+				this._levelUp = true;
+			}
 			
 			var points = TetriStackApplication.GetBaseLinePoints(this._currentLines.length) * this._level;
 			if (this._currentLines.length == 4)
@@ -801,9 +829,13 @@ TetriPlayField.prototype._lockCurrentPiece =
 				this._backToBackBonus = false;
 			
 			this._addToScore(points);
+			
+			sound_lineComplete.play();
 		}
 		else
+		{
 			this._generatePieceTime = fromTime + TetriStackApplication.GetGenerationDelayTime();
+		}
 	};	
 	
 TetriPlayField.prototype._clearLines = 
@@ -1083,6 +1115,8 @@ TetriPlayField.prototype._rotateCurrentPiece =
 			}
 			
 			this._updateGhost();
+			
+			sound_rotate.play();
 		}
 		
 		return result;
@@ -1107,6 +1141,8 @@ TetriPlayField.prototype._holdCurrentPiece =
 		this._holdPiece = currentPiece;
 		this._updateHoldPiece();
 		this._holdAvailable = false;
+		
+		sound_rotate.play();
 	};
 	
 TetriPlayField.prototype._hardDropCurrentPiece = 
