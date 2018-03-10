@@ -24,21 +24,22 @@ function TetriStackApplication() //extends CanvasManager
 				this._menuView = new ListContainerElement();
 				this._menuView.setStyle("LayoutHorizontalAlign", "center");
 				this._menuView.setStyle("LayoutVerticalAlign", "middle");
-				this._menuView.setStyle("LayoutGap", 20);
+				this._menuView.setStyle("LayoutGap", 10);
 				this._menuView.setStyle("PercentWidth", 100);
 				this._menuView.setStyle("PercentHeight", 100);
 				
 					this._titleContainer = new AnchorContainerElement();
 				
 					this._labelSelectLevel = new LabelElement(); 
-					this._labelSelectLevel.setStyleDefinitions(labelSelectLevelStyle);
+					this._labelSelectLevel.setStyleDefinitions(labelSelectStyle);
+					this._labelSelectLevel.setStyle("Text", "Start At Level");
 					this._labelSelectLevel.setStyle("PaddingTop", 20);
 					
 					this._levelSelectContainer = new ListContainerElement();
 					this._levelSelectContainer.setStyle("LayoutDirection", "horizontal");
 					this._levelSelectContainer.setStyle("LayoutVerticalAlign", "middle");
 					this._levelSelectContainer.setStyle("LayoutGap", 30);
-					this._levelSelectContainer.setStyle("PaddingBottom", 10);
+					this._levelSelectContainer.setStyle("PaddingBottom", 20);
 					
 						var arrowLeftShape = new ArrowShape();
 						arrowLeftShape.setStyle("Direction", "left");
@@ -53,7 +54,7 @@ function TetriStackApplication() //extends CanvasManager
 						this._labelSelectedLevel.setStyle("Text", "1");
 						this._labelSelectedLevel.setStyle("Width", 35);
 						this._labelSelectedLevel.setStyle("TextHorizontalAlign", "center");
-						this._labelSelectedLevel.setStyleDefinitions(labelSelectLevelStyle);
+						this._labelSelectedLevel.setStyleDefinitions(labelSelectStyle);
 						
 						var arrowRightShape = new ArrowShape();
 						arrowRightShape.setStyle("Direction", "right");
@@ -67,11 +68,14 @@ function TetriStackApplication() //extends CanvasManager
 					this._levelSelectContainer.addElement(this._labelSelectedLevel);
 					this._levelSelectContainer.addElement(this._buttonHigherLevel);
 					
+					this._audioSelectContainer = new TetriAudioSelectSettings();
+					this._audioSelectContainer.setStyle("PaddingBottom", 25);
+					
 					this._buttonPlay = new ButtonElement();
 					this._buttonPlay.setStyleDefinitions([buttonBackgroundStyle, buttonPlayStyle]);
 					
 					this._controlsContainer = new ListContainerElement();
-					this._controlsContainer.setStyle("PaddingTop", 30);
+					this._controlsContainer.setStyle("PaddingTop", 25);
 					this._controlsContainer.setStyle("LayoutGap", 5);
 					this._controlsContainer.setStyle("LayoutHorizontalAlign", "center");
 					
@@ -328,8 +332,9 @@ function TetriStackApplication() //extends CanvasManager
 					this._controlsContainer.addElement(this._controlHoldContainer);
 					
 				this._menuView.addElement(this._titleContainer);
-				this._menuView.addElement(this._labelSelectLevel);
+				this._menuView.addElement(this._labelSelectLevel); 
 				this._menuView.addElement(this._levelSelectContainer);
+				this._menuView.addElement(this._audioSelectContainer); 
 				this._menuView.addElement(this._buttonPlay);
 				this._menuView.addElement(this._controlsContainer);	
 			
@@ -408,14 +413,13 @@ function TetriStackApplication() //extends CanvasManager
 			_self._onPlayFieldQuit(event);
 		};
 	
+	
 	this._buttonPlay.addEventListener("click", this._onButtonPlayClickInstance);
 	this._buttonLowerLevel.addEventListener("click", this._onButtonLowerLevelClickInstance);
 	this._buttonHigherLevel.addEventListener("click", this._onButtonHigherLevelClickInstance);
 	this._playField.addEventListener("quit", this._onPlayFieldQuitInstance);
 	
 	//////////////////////////////////////////////////////////
-	
-	this._selectedLevel = 1;
 	
 	
 	////Build Tetristack logo////////////////
@@ -498,12 +502,13 @@ TetriStackApplication.prototype._onButtonPlayClick =
 		this._menuView.setStyle("Visible", false);
 		this._menuView.setStyle("IncludeInLayout", false);
 		this._gameView.setStyle("Visible", true);
-		this._playField.startGame(Date.now(), this._selectedLevel);
+		this._playField.startGame(Date.now());
 	};
 
 TetriStackApplication.prototype._onPlayFieldQuit = 
 	function (event)
 	{
+		//Switch current view
 		this._menuView.setStyle("Visible", true);
 		this._menuView.setStyle("IncludeInLayout", true);
 		this._gameView.setStyle("Visible", false);
@@ -512,12 +517,12 @@ TetriStackApplication.prototype._onPlayFieldQuit =
 TetriStackApplication.prototype._onButtonLowerLevelClick = 
 	function (event)
 	{
-		this._selectedLevel--;
-		this._labelSelectedLevel.setStyle("Text", this._selectedLevel.toString());
+		TetriStackApplication.StartAtLevel--;
+		this._labelSelectedLevel.setStyle("Text", TetriStackApplication.StartAtLevel.toString());
 		
 		this._buttonHigherLevel.setStyle("Enabled", true);
 		
-		if (this._selectedLevel == 1)
+		if (TetriStackApplication.StartAtLevel == 1)
 			this._buttonLowerLevel.setStyle("Enabled", false);
 		else
 			this._buttonLowerLevel.setStyle("Enabled", true);
@@ -526,19 +531,30 @@ TetriStackApplication.prototype._onButtonLowerLevelClick =
 TetriStackApplication.prototype._onButtonHigherLevelClick = 
 	function (event)
 	{
-		this._selectedLevel++;
-		this._labelSelectedLevel.setStyle("Text", this._selectedLevel.toString());
+		TetriStackApplication.StartAtLevel++;
+		this._labelSelectedLevel.setStyle("Text", TetriStackApplication.StartAtLevel.toString());
 		
 		this._buttonLowerLevel.setStyle("Enabled", true);
 		
-		if (this._selectedLevel == 10)
+		if (TetriStackApplication.StartAtLevel == 10)
 			this._buttonHigherLevel.setStyle("Enabled", false);
 		else
 			this._buttonHigherLevel.setStyle("Enabled", true);
 	};	
+
 	
-	
-////STATIC////
+////////////STATIC////////////
+
+////Settings////
+TetriStackApplication.StartAtLevel = 1;
+TetriStackApplication.MusicEnabled = true;
+TetriStackApplication.SFXEnabled = true;
+
+//Static / global event dispatcher, used to notify views when static / global values change.
+TetriStackApplication.GlobalEventDispatcher = new EventDispatcher();
+
+///////////////
+
 
 TetriStackApplication.TitleLetterCoordinates = 
 	{

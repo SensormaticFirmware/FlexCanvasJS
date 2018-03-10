@@ -50,6 +50,10 @@ function TetriPlayField()
 						this._labelMenuPauseTitle.setStyle("Text", "PAUSED");
 						this._labelMenuPauseTitle.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldExLargeSizeStyle]);
 						
+						this._audioSelectContainerMenuPause = new TetriAudioSelectSettings();
+						this._audioSelectContainerMenuPause.setStyle("PaddingTop", 50);
+						this._audioSelectContainerMenuPause.setStyle("PaddingBottom", 20);
+						
 						this._menuPauseButtonsContainer = new ListContainerElement();
 						this._menuPauseButtonsContainer.setStyle("LayoutDirection", "vertical");
 						this._menuPauseButtonsContainer.setStyle("PaddingTop", 50);
@@ -73,6 +77,7 @@ function TetriPlayField()
 						this._menuPauseButtonsContainer.addElement(this._buttonMenuPauseQuit);
 					
 					this._menuPauseContainer.addElement(this._labelMenuPauseTitle);
+					this._menuPauseContainer.addElement(this._audioSelectContainerMenuPause);
 					this._menuPauseContainer.addElement(this._menuPauseButtonsContainer);
 					
 					this._menuGameOverContainer = new ListContainerElement();
@@ -90,6 +95,10 @@ function TetriPlayField()
 						this._labelMenuGameOverScore = new LabelElement();
 						this._labelMenuGameOverScore.setStyle("Text", "0");
 						this._labelMenuGameOverScore.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldLargeSizeStyle]);
+						
+						this._audioSelectContainerGameOver = new TetriAudioSelectSettings();
+						this._audioSelectContainerGameOver.setStyle("PaddingTop", 50);
+						this._audioSelectContainerGameOver.setStyle("PaddingBottom", 20);
 						
 						this._menuGameOverButtonsContainer = new ListContainerElement();
 						this._menuGameOverButtonsContainer.setStyle("LayoutDirection", "vertical");
@@ -115,6 +124,7 @@ function TetriPlayField()
 					
 					this._menuGameOverContainer.addElement(this._labelMenuGameOverTitle);
 					this._menuGameOverContainer.addElement(this._labelMenuGameOverScore);
+					this._menuGameOverContainer.addElement(this._audioSelectContainerGameOver);
 					this._menuGameOverContainer.addElement(this._menuGameOverButtonsContainer);
 					
 				this._gridContainerInner.addElement(this._gameStartContainer);
@@ -384,8 +394,6 @@ function TetriPlayField()
 		this._holdPieceBlockContainer.addElement(tetriBlock);
 	}
 	
-	this._startAtLevel = 1;
-	
 	this._paused = true;
 	this._pauseTime = -1;
 	
@@ -458,19 +466,18 @@ TetriPlayField.KeyholdDelay2 = 50;
 TetriPlayField.LineClearColumnTime = 20;
 
 TetriPlayField.prototype.startGame = 
-	function (currentTime, startLevel)
+	function (currentTime)
 	{
-		this._startAtLevel = startLevel;
-	
 		this._paused = false;
-		this._setLevel(startLevel);
+		this._setLevel(TetriStackApplication.StartAtLevel);
 		
 		this._gameStartPhase = 3;
 		this._labelGameStartCount.setStyle("Text", this._gameStartPhase.toString());
 		this._labelGameStartCount.setStyle("Alpha", 1);
 		this._gameStartCountTween.startTime = currentTime;
 		
-		sound_countdownbeep.play();
+		if (TetriStackApplication.SFXEnabled == true)
+			sound_countdownbeep.play();
 	};
 
 TetriPlayField.prototype._onPlayFieldMenuClick = 
@@ -505,7 +512,7 @@ TetriPlayField.prototype._onPlayFieldNewGame =
 	function (event)
 	{
 		this._resetPlayField();
-		this.startGame(Date.now(), this._startAtLevel);
+		this.startGame(Date.now());
 	};
 	
 TetriPlayField.prototype._onPlayFieldResumeClick = 
@@ -535,7 +542,9 @@ TetriPlayField.prototype._onPlayFieldResumeClick =
 		if (this._gameStartPhase == null)
 		{
 			this._blockContainer.setStyle("Visible", true);
-			sound_music.play();
+			
+			if (TetriStackApplication.MusicEnabled == true)
+				sound_music.play();
 		}
 		else
 			this._gameStartContainer.setStyle("Visible", true);
@@ -695,7 +704,9 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 				if (this._levelUp == true)
 				{
 					this._levelUp = false;
-					sound_levelUp.play();
+					
+					if (TetriStackApplication.SFXEnabled == true)
+						sound_levelUp.play();
 				}
 			}
 			else
@@ -737,8 +748,11 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 					this._blockContainer.setStyle("Visible", true);
 					this._nextPieceBlockContainer.setStyle("Visible", true);
 					
-					sound_music.currentTime = 0;
-					sound_music.play();
+					if (TetriStackApplication.MusicEnabled == true)
+					{
+						sound_music.currentTime = 0;
+						sound_music.play();
+					}
 				}
 				else
 				{
@@ -746,7 +760,8 @@ TetriPlayField.prototype._onPlayFieldEnterFrame =
 					this._labelGameStartCount.setStyle("Alpha", 1);
 					this._gameStartCountTween.startTime = this._gameStartCountTween.startTime + 1000;
 					
-					sound_countdownbeep.play();
+					if (TetriStackApplication.SFXEnabled == true)
+						sound_countdownbeep.play();
 				}
 			}
 			else
@@ -830,7 +845,12 @@ TetriPlayField.prototype._lockCurrentPiece =
 			
 			this._addToScore(points);
 			
-			sound_lineComplete.play();
+			if (TetriStackApplication.SFXEnabled == true)
+			{
+				//Reset the position (rapid line completion before sound complete)
+				sound_lineComplete.currentTime = 0;
+				sound_lineComplete.play();
+			}
 		}
 		else
 		{
@@ -1116,7 +1136,8 @@ TetriPlayField.prototype._rotateCurrentPiece =
 			
 			this._updateGhost();
 			
-			sound_rotate.play();
+			if (TetriStackApplication.SFXEnabled == true)
+				sound_rotate.play();
 		}
 		
 		return result;
@@ -1142,7 +1163,8 @@ TetriPlayField.prototype._holdCurrentPiece =
 		this._updateHoldPiece();
 		this._holdAvailable = false;
 		
-		sound_rotate.play();
+		if (TetriStackApplication.SFXEnabled == true)
+			sound_rotate.play();
 	};
 	
 TetriPlayField.prototype._hardDropCurrentPiece = 

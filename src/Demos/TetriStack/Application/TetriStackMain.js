@@ -4,6 +4,10 @@
 var applicationStyles = new StyleDefinition();
 applicationStyles.setStyle("BackgroundColor", "#444444");
 
+//Increase the line padding to handle characters with low hanging decenders.
+applicationStyles.setStyle("TextLinePaddingTop", 2);
+applicationStyles.setStyle("TextLinePaddingBottom", 2);
+
 /////
 var ButtonDownSkinStyle = new StyleDefinition();
 ButtonDownSkinStyle.setStyle("BackgroundColor", "#BEBEBE");
@@ -20,10 +24,14 @@ ButtonDisabledSkinStyle.setStyle("BackgroundColor", "#777777");
 var buttonBackgroundShapeStyle = new RoundedRectangleShape();
 buttonBackgroundShapeStyle.setStyle("CornerRadius", 5);
 
+//Handle button & checkbox
 var buttonBackgroundStyle = new StyleDefinition();
 buttonBackgroundStyle.setStyle("DownSkinStyle", ButtonDownSkinStyle);
 buttonBackgroundStyle.setStyle("OverSkinStyle", ButtonOverSkinStyle);
 buttonBackgroundStyle.setStyle("UpSkinStyle", ButtonUpSkinStyle);
+buttonBackgroundStyle.setStyle("SelectedDownSkinStyle", ButtonDownSkinStyle);
+buttonBackgroundStyle.setStyle("SelectedOverSkinStyle", ButtonOverSkinStyle);
+buttonBackgroundStyle.setStyle("SelectedUpSkinStyle", ButtonUpSkinStyle);
 buttonBackgroundStyle.setStyle("DisabledSkinStyle", ButtonDisabledSkinStyle);
 buttonBackgroundStyle.setStyle("BorderType", null);
 buttonBackgroundStyle.setStyle("AutoGradientType", null);
@@ -45,12 +53,11 @@ buttonMenuStyle.setStyle("TextSize", 22);
 buttonMenuStyle.setStyle("TextStyle", "bold");
 buttonMenuStyle.setStyle("Text", "MENU");
 
-var labelSelectLevelStyle = new StyleDefinition();
-labelSelectLevelStyle.setStyle("Text", "Start At Level");
-labelSelectLevelStyle.setStyle("TextSize", 22);
-labelSelectLevelStyle.setStyle("TextStyle", "bold");
-labelSelectLevelStyle.setStyle("TextFont", "Audiowide");
-labelSelectLevelStyle.setStyle("TextColor", "#DDDDDD");
+var labelSelectStyle = new StyleDefinition();
+labelSelectStyle.setStyle("TextSize", 22);
+labelSelectStyle.setStyle("TextStyle", "bold");
+labelSelectStyle.setStyle("TextFont", "Audiowide");
+labelSelectStyle.setStyle("TextColor", "#DDDDDD");
 
 var labelControlsStyle = new StyleDefinition();
 labelControlsStyle.setStyle("TextSize", 17);
@@ -97,7 +104,7 @@ var labelPlayFieldLargeSizeStyle = new StyleDefinition();
 labelPlayFieldLargeSizeStyle.setStyle("TextSize", 24);
 
 var labelPlayFieldSmallSizeStyle = new StyleDefinition();
-labelPlayFieldSmallSizeStyle.setStyle("TextSize", 18);
+labelPlayFieldSmallSizeStyle.setStyle("TextSize", 20);
 
 var scoreControlsDividerStyle = new StyleDefinition();
 scoreControlsDividerStyle.setStyle("PercentWidth", 80);
