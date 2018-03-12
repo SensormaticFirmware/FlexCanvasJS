@@ -330,13 +330,22 @@ function TetriStackApplication() //extends CanvasManager
 					this._controlsContainer.addElement(this._controlRotateLeftContainer);
 					this._controlsContainer.addElement(this._controlRotateRightContainer);
 					this._controlsContainer.addElement(this._controlHoldContainer);
+				
+					this._menuViewControlsCreditsSpacer = new CanvasElement();
+					this._menuViewControlsCreditsSpacer.setStyle("Height", 10);
+					
+					this._labelCredits = new LabelElement();
+					this._labelCredits.setStyleDefinitions([textCreditsStyle, textLinkStyle]);
+					this._labelCredits.setStyle("Text", "View Credits");
 					
 				this._menuView.addElement(this._titleContainer);
 				this._menuView.addElement(this._labelSelectLevel); 
 				this._menuView.addElement(this._levelSelectContainer);
 				this._menuView.addElement(this._audioSelectContainer); 
 				this._menuView.addElement(this._buttonPlay);
-				this._menuView.addElement(this._controlsContainer);	
+				this._menuView.addElement(this._controlsContainer);
+				this._menuView.addElement(this._menuViewControlsCreditsSpacer);
+				this._menuView.addElement(this._labelCredits);	
 			
 				this._gameView = new ListContainerElement();
 				this._gameView.setStyle("LayoutHorizontalAlign", "center");
@@ -349,8 +358,132 @@ function TetriStackApplication() //extends CanvasManager
 					
 				this._gameView.addElement(this._playField);
 				
+				this._creditsView = new ListContainerElement();
+				this._creditsView.setStyle("LayoutHorizontalAlign", "center");
+				this._creditsView.setStyle("LayoutVerticalAlign", "middle");
+				this._creditsView.setStyle("PercentWidth", 100);
+				this._creditsView.setStyle("PercentHeight", 100);
+				this._creditsView.setStyle("Visible", false);
+				this._creditsView.setStyle("LayoutGap", 30);
+				
+					this._creditsProgrammingContainer = new ListContainerElement();
+					this._creditsProgrammingContainer.setStyle("LayoutGap", 2);
+					this._creditsProgrammingContainer.setStyle("LayoutHorizontalAlign", "center");
+					this._creditsProgrammingContainer.setStyle("LayoutVerticalAlign", "middle");
+				
+						this._labelCreditsProgramming = new LabelElement();
+						this._labelCreditsProgramming.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldSmallSizeStyle]);
+						this._labelCreditsProgramming.setStyle("Text", "PROGRAMMING");
+					
+						this._creditsProgrammingDivider = new CanvasElement();
+						this._creditsProgrammingDivider.setStyleDefinitions(scoreControlsDividerStyle);
+				
+						this._programmingCredit1 = new LabelElement();
+						this._programmingCredit1.setStyleDefinitions([textCreditsStyle]);
+						this._programmingCredit1.setStyle("Text", "Nathan E Nelson");
+						
+					this._creditsProgrammingContainer.addElement(this._labelCreditsProgramming);
+					this._creditsProgrammingContainer.addElement(this._creditsProgrammingDivider);
+					this._creditsProgrammingContainer.addElement(this._programmingCredit1);
+
+					this._creditsDesignTestingContainer = new ListContainerElement();
+					this._creditsDesignTestingContainer.setStyle("LayoutGap", 2);
+					this._creditsDesignTestingContainer.setStyle("LayoutHorizontalAlign", "center");
+					this._creditsDesignTestingContainer.setStyle("LayoutVerticalAlign", "middle");
+				
+						this._labelDesignTesting = new LabelElement();
+						this._labelDesignTesting.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldSmallSizeStyle]);
+						this._labelDesignTesting.setStyle("Text", "DESIGN & TESTING");
+					
+						this._creditsDesignTestingDivider = new CanvasElement();
+						this._creditsDesignTestingDivider.setStyleDefinitions(scoreControlsDividerStyle);
+				
+						this._labelDesignTestingCredit1 = new LabelElement();
+						this._labelDesignTestingCredit1.setStyleDefinitions([textCreditsStyle]);
+						this._labelDesignTestingCredit1.setStyle("Text", "Nathan E Nelson");
+						
+						this._labelDesignTestingCredit2 = new LabelElement();
+						this._labelDesignTestingCredit2.setStyleDefinitions([textCreditsStyle]);
+						this._labelDesignTestingCredit2.setStyle("Text", "Barbie L Spinner");
+						
+						this._labelDesignTestingCredit3 = new LabelElement();
+						this._labelDesignTestingCredit3.setStyleDefinitions([textCreditsStyle]);
+						this._labelDesignTestingCredit3.setStyle("Text", "Xylomax");
+						
+					this._creditsDesignTestingContainer.addElement(this._labelDesignTesting);
+					this._creditsDesignTestingContainer.addElement(this._creditsDesignTestingDivider);
+					this._creditsDesignTestingContainer.addElement(this._labelDesignTestingCredit1);
+					this._creditsDesignTestingContainer.addElement(this._labelDesignTestingCredit2);
+					this._creditsDesignTestingContainer.addElement(this._labelDesignTestingCredit3);
+					
+					this._creditsSoundContainer = new ListContainerElement();
+					this._creditsSoundContainer.setStyle("LayoutGap", 5);
+					this._creditsSoundContainer.setStyle("LayoutHorizontalAlign", "center");
+					this._creditsSoundContainer.setStyle("LayoutVerticalAlign", "middle");
+				
+						this._labelCreditsSound = new LabelElement();
+						this._labelCreditsSound.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldSmallSizeStyle]);
+						this._labelCreditsSound.setStyle("Text", "SOUNDS");
+					
+						this._creditsSoundDivider = new CanvasElement();
+						this._creditsSoundDivider.setStyleDefinitions(scoreControlsDividerStyle);
+				
+						this._sound1Credit = new CCAttributeLinks();
+						this._sound1Credit.setLicenseData(sound_countdownLicenseData);
+						
+						this._sound2Credit = new CCAttributeLinks();
+						this._sound2Credit.setLicenseData(sound_rotateLicenseData);
+						
+						this._sound3Credit = new CCAttributeLinks();
+						this._sound3Credit.setLicenseData(sound_lineCompleteLicenseData);
+						
+						this._sound4Credit = new CCAttributeLinks();
+						this._sound4Credit.setLicenseData(sound_levelUpLicenseData);
+						
+						this._sound5Credit = new CCAttributeLinks();
+						this._sound5Credit.setLicenseData(sound_musicLicenseData);
+						
+					this._creditsSoundContainer.addElement(this._labelCreditsSound);
+					this._creditsSoundContainer.addElement(this._creditsSoundDivider);
+					this._creditsSoundContainer.addElement(this._sound1Credit);
+					this._creditsSoundContainer.addElement(this._sound2Credit);
+					this._creditsSoundContainer.addElement(this._sound3Credit);
+					this._creditsSoundContainer.addElement(this._sound4Credit);
+					this._creditsSoundContainer.addElement(this._sound5Credit);
+					
+					this._creditsNothingContainer = new ListContainerElement();
+					this._creditsNothingContainer.setStyle("LayoutGap", 2);
+					this._creditsNothingContainer.setStyle("LayoutHorizontalAlign", "center");
+					this._creditsNothingContainer.setStyle("LayoutVerticalAlign", "middle");
+				
+						this._labelCreditsNothing = new LabelElement();
+						this._labelCreditsNothing.setStyleDefinitions([labelPlayFieldStyle, labelPlayFieldSmallSizeStyle]);
+						this._labelCreditsNothing.setStyle("Text", "NO HELP AT ALL");
+					
+						this._creditsNothingDivider = new CanvasElement();
+						this._creditsNothingDivider.setStyleDefinitions(scoreControlsDividerStyle);
+				
+						this._nothingCredit1 = new LabelElement();
+						this._nothingCredit1.setStyleDefinitions([textCreditsStyle]);
+						this._nothingCredit1.setStyle("Text", "David E Snyder");
+						
+					this._creditsNothingContainer.addElement(this._labelCreditsNothing);
+					this._creditsNothingContainer.addElement(this._creditsNothingDivider);
+					this._creditsNothingContainer.addElement(this._nothingCredit1);
+					
+					this._buttonCreditsDone = new ButtonElement();
+					this._buttonCreditsDone.setStyleDefinitions([buttonBackgroundStyle, buttonPlayStyle]);
+					this._buttonCreditsDone.setStyle("Text", "DONE");
+					
+				this._creditsView.addElement(this._creditsProgrammingContainer);
+				this._creditsView.addElement(this._creditsDesignTestingContainer);
+				this._creditsView.addElement(this._creditsSoundContainer);
+				this._creditsView.addElement(this._creditsNothingContainer);
+				this._creditsView.addElement(this._buttonCreditsDone);
+					
 			this._contentContainer.addElement(this._menuView);
 			this._contentContainer.addElement(this._gameView);
+			this._contentContainer.addElement(this._creditsView);
 			
 			this._footerContainer = new ListContainerElement();
 			this._footerContainer.setStyle("PercentWidth", 100);
@@ -393,9 +526,6 @@ function TetriStackApplication() //extends CanvasManager
 		function (event)
 		{
 			_self._onButtonPlayClick(event);
-			
-			//Test popup
-			//window.open('http://URL', '_blank');
 		};
 	this._onButtonLowerLevelClickInstance = 
 		function (event)
@@ -412,12 +542,23 @@ function TetriStackApplication() //extends CanvasManager
 		{
 			_self._onPlayFieldQuit(event);
 		};
-	
+	this._onLabelCreditsClickInstance = 
+		function (event)
+		{
+			_self._onLabelCreditsClick(event);
+		};	
+	this._onButtonCreditsDoneClickInstance = 
+		function (event)
+		{
+			_self._onButtonCreditsDoneClick(event);
+		};
 	
 	this._buttonPlay.addEventListener("click", this._onButtonPlayClickInstance);
 	this._buttonLowerLevel.addEventListener("click", this._onButtonLowerLevelClickInstance);
 	this._buttonHigherLevel.addEventListener("click", this._onButtonHigherLevelClickInstance);
 	this._playField.addEventListener("quit", this._onPlayFieldQuitInstance);
+	this._labelCredits.addEventListener("click", this._onLabelCreditsClickInstance);
+	this._buttonCreditsDone.addEventListener("click", this._onButtonCreditsDoneClickInstance);
 	
 	//////////////////////////////////////////////////////////
 	
@@ -496,6 +637,26 @@ TetriStackApplication.prototype.constructor = TetriStackApplication;
 TetriStackApplication.base = CanvasManager;
 
 
+TetriStackApplication.prototype._onLabelCreditsClick = 
+	function (event)
+	{
+		this._menuView.setStyle("Visible", false);
+		this._menuView.setStyle("IncludeInLayout", false);
+		
+		this._creditsView.setStyle("Visible", true);
+		this._creditsView.setStyle("IncludeInLayout", true);
+	};
+
+TetriStackApplication.prototype._onButtonCreditsDoneClick = 
+	function (event)
+	{
+		this._menuView.setStyle("Visible", true);
+		this._menuView.setStyle("IncludeInLayout", true);
+		
+		this._creditsView.setStyle("Visible", false);
+		this._creditsView.setStyle("IncludeInLayout", false);
+	};
+	
 TetriStackApplication.prototype._onButtonPlayClick = 
 	function (event)
 	{

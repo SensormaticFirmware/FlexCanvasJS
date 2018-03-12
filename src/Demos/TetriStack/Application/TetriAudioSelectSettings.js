@@ -4,6 +4,7 @@ function TetriAudioSelectSettings()
 	//Call base constructor
 	TetriAudioSelectSettings.base.prototype.constructor.call(this);
 	
+	////Layout////
 	this.setStyle("LayoutDirection", "horizontal");
 	
 		this._checkboxMusic = new CheckboxElement(); 
@@ -23,8 +24,11 @@ function TetriAudioSelectSettings()
 	this.addElement(this._audioSelectContainerSpacer);
 	this.addElement(this._checkboxSFX);
 	
+	
+	////Event Handling////
 	var _self = this;
 	
+	//Need a different function instance for each handler, proxy to prototype.
 	this._onCheckboxMusicChangedInstance = 
 		function (event)
 		{
@@ -93,7 +97,7 @@ TetriAudioSelectSettings.prototype._onCheckboxMusicChanged =
 	};
 
 //SFX toggled	
-TetriAudioSelectSettings.prototype._onCheckboxSFXChangedInstance = 
+TetriAudioSelectSettings.prototype._onCheckboxSFXChanged = 
 	function (event)
 	{
 		//Update static value

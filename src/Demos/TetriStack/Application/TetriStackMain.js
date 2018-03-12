@@ -38,6 +38,18 @@ buttonBackgroundStyle.setStyle("AutoGradientType", null);
 buttonBackgroundStyle.setStyle("BackgroundShape", buttonBackgroundShapeStyle);
 /////
 
+var textCreditsStyle = new StyleDefinition();
+textCreditsStyle.setStyle("TextFont", "Arial");
+textCreditsStyle.setStyle("TextStyle", "bold");
+textCreditsStyle.setStyle("TextColor", "#DDDDDD");
+textCreditsStyle.setStyle("TextSize", 14);
+
+var textLinkStyle = new StyleDefinition();
+textLinkStyle.setStyle("TextDecoration", "underline");
+textLinkStyle.setStyle("Cursor", "pointer");
+
+/////
+
 var buttonPlayStyle = new StyleDefinition();
 buttonPlayStyle.setStyle("Padding", 5);
 buttonPlayStyle.setStyle("PaddingLeft", 30);
@@ -131,15 +143,70 @@ playFieldInnerContainerStyle.setStyle("Right", 3);
 /////////SOUNDS//////////////////
 
 var sound_countdownbeep = new Audio(["Sounds/37732__longhairman__1khz-1ds-peep.mp3"]);
+var sound_countdownLicenseData = {
+	
+	name:"1khz-1ds-peep",
+	link:"https://freesound.org/people/Longhairman/sounds/37732/",
+	
+	author:"Longhairman",
+	authorLink:"https://freesound.org/people/Longhairman/",
+	
+	license:"CC0 1.0",
+	licenseLink:"https://creativecommons.org/publicdomain/zero/1.0/"		
+};
 sound_countdownbeep.volume = 0.35;
 
 var sound_rotate = new Audio(["Sounds/187024__lloydevans09__jump2.mp3"]);
+var sound_rotateLicenseData = {
+	
+	name:"jump2",
+	link:"https://freesound.org/people/LloydEvans09/sounds/187024/",
+	
+	author:"LloydEvans09",
+	authorLink:"https://freesound.org/people/LloydEvans09/",
+	
+	license:"CC BY 3.0",
+	licenseLink:"https://creativecommons.org/licenses/by/3.0/"	
+};
 
 var sound_lineComplete = new Audio(["Sounds/109662__grunz__success.mp3"]);
+var sound_lineCompleteLicenseData = {
+	
+	name:"success",
+	link:"https://freesound.org/people/grunz/sounds/109662/",
+	
+	author:"grunz",
+	authorLink:"https://freesound.org/people/grunz/",
+	
+	license:"CC BY 3.0",
+	licenseLink:"https://creativecommons.org/licenses/by/3.0/"		
+};
 
 var sound_levelUp = new Audio(["Sounds/320777__rhodesmas__action-01.mp3"]);
+var sound_levelUpLicenseData = {
+	
+	name:"action-01",
+	link:"https://freesound.org/people/rhodesmas/sounds/320777/",
+	
+	author:"rhodesmas",
+	authorLink:"https://freesound.org/people/rhodesmas/",
+	
+	license:"CC BY 3.0",
+	licenseLink:"https://creativecommons.org/licenses/by/3.0/"		
+};
 
 var sound_music = new Audio(["Sounds/382931__frankum__vintage-techno-house-loop-110bpm.mp3"]);
+var sound_musicLicenseData = {
+		
+		name:"vintage-techno-house-loop-110bpm",
+		link:"https://freesound.org/people/frankum/sounds/382931/",
+		
+		author:"frankum",
+		authorLink:"https://freesound.org/people/frankum/",
+		
+		license:"CC BY 3.0",
+		licenseLink:"https://creativecommons.org/licenses/by/3.0/"		
+	};
 sound_music.loop = true;
 
 
