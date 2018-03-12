@@ -1,3 +1,24 @@
+//MIT License
+//
+//Copyright (c) 2017-2018 SENSORMATIC ELECTRONICS LLC, NATHAN E NELSON
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 ///////////////////////////////////////////////////////
 //////////////////Tween////////////////////////////////
@@ -4425,6 +4446,15 @@ CanvasElement._StyleTypes.CompositeLayer = 					StyleableBase.EStyleType.NORMAL;
  */
 CanvasElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.INHERITABLE;		// "normal" || "bold" || "italic" || "bold italic"
 
+
+/**
+ * @style TextDecoration String
+ * @inheritable
+ * 
+ * Determines the text decoration used.  Available values are "none" or "underline".
+ */
+CanvasElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.INHERITABLE;		// "none" || null || "underline"
+
 /**
  * @style TextFont String
  * @inheritable
@@ -4583,6 +4613,7 @@ CanvasElement.StyleDefault.setStyle("IncludeInLayout", 					true);
 CanvasElement.StyleDefault.setStyle("CompositeLayer",					false);
 
 CanvasElement.StyleDefault.setStyle("TextStyle", 						"normal");
+CanvasElement.StyleDefault.setStyle("TextDecoration", 					null);
 CanvasElement.StyleDefault.setStyle("TextFont", 						"Arial");
 CanvasElement.StyleDefault.setStyle("TextSize", 						12);
 CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
@@ -4738,7 +4769,7 @@ CanvasElement.prototype._getNumStyleDefinitions =
 			return this._styleDefinitionDefaults.length;
 
 		return this._styleDefinitions.length;
-	}
+	};
 	
 /**
  * @function getStyleDefinitionAt
@@ -9497,7 +9528,8 @@ TextFieldLineElement._StyleTypes.TextSize =							StyleableBase.EStyleType.NORMA
 TextFieldLineElement._StyleTypes.TextColor =						StyleableBase.EStyleType.NORMAL;			
 TextFieldLineElement._StyleTypes.TextFillType =						StyleableBase.EStyleType.NORMAL;			
 TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;			
-TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;	
+TextFieldLineElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.NORMAL;
 
 
 TextFieldLineElement.prototype.setParentLineMetrics = 
@@ -9569,9 +9601,11 @@ TextFieldLineElement.prototype._doRender =
 		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
 		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
 		var fontString = this._parentTextField._getFontString();
+		var textDecoration = this._parentTextField.getStyle("TextDecoration");		
 		
 		var x = paddingMetrics.getX();
 		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
+		var w = paddingMetrics.getWidth();
 		
 		if (this._highlightMinIndex == this._highlightMaxIndex)
 		{
@@ -9613,6 +9647,23 @@ TextFieldLineElement.prototype._doRender =
 				
 				x += charWidth;
 			}
+		}
+		
+		if (textDecoration == "underline")
+		{
+			y = this._height - .5;
+			
+			ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x + w, y);
+			ctx.lineWidth = 1;
+			
+			if (this._highlightMinIndex == this._highlightMaxIndex)
+				ctx.strokeStyle = textColor;
+			else 
+				ctx.strokeStyle = highlightTextColor;
+			
+			ctx.stroke();
 		}
 	};	
 
@@ -10683,7 +10734,8 @@ TextFieldElement.prototype._doStylesUpdated =
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap ||
 			"TextColor" in stylesMap ||
-			"TextFillType" in stylesMap)
+			"TextFillType" in stylesMap || 
+			"TextDecoration" in stylesMap)
 		{
 			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
 				this._textLinesContainer._getChildAt(i)._invalidateRender();
@@ -12876,7 +12928,8 @@ LabelElement.prototype._doStylesUpdated =
 		if ("TextHorizontalAlign" in stylesMap ||
 			"TextVerticalAlign" in stylesMap ||
 			"TextColor" in stylesMap ||
-			"TextFillType" in stylesMap)
+			"TextFillType" in stylesMap ||
+			"TextDecoration" in stylesMap)
 		{
 			this._invalidateRender();
 		}
@@ -12972,6 +13025,7 @@ LabelElement.prototype._doRender =
 		var textAlign = this.getStyle("TextHorizontalAlign");
 		var textFillType = this.getStyle("TextFillType");
 		var textColor = this.getStyle("TextColor");
+		var textDecoration = this.getStyle("TextDecoration");
 		
 		//Get x position
 		var textXPosition;
@@ -12996,6 +13050,19 @@ LabelElement.prototype._doRender =
 			CanvasElement._strokeText(ctx, text, textXPosition, textYPosition, fontString, textColor, textBaseline);
 		else
 			CanvasElement._fillText(ctx, text, textXPosition, textYPosition, fontString, textColor, textBaseline);
+		
+		if (textDecoration == "underline")
+		{
+			y = paddingMetrics.getY() + linePaddingTop + this.getStyle("TextSize") + linePaddingBottom - .5;
+			
+			ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x + w, y);
+			ctx.lineWidth = 1;
+			ctx.strokeStyle = textColor;
+			
+			ctx.stroke();
+		}
 	};
 	
 	
@@ -16258,6 +16325,9 @@ ListContainerElement.prototype._doMeasure =
 		var tempRotateDegrees;		
 		
 		var insertGap = false;
+		
+		//TODO: Measure is incorrect when using percent sized elements that total < 100%
+		//		Need to account for unused space.
 		
 		for (var i = 0; i < this._elements.length; i++)
 		{
@@ -20035,14 +20105,14 @@ DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("OverSkinStyle", 		
 DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("DownSkinStyle", 				DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault);
 
 //Note that SkinState is proxied to the sort icons, so the sort icons will change state along with the HeaderRenderer (unless you turn mouse back on)
-DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 			false);
+DataGridHeaderItemRenderer.SortDescIconStyleDefault.setStyle("MouseEnabled", 				false);
 
 ///////////////////////////////////
 
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",					ButtonElement);											// CanvasElement constructor
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconStyle",					DataGridHeaderItemRenderer.SortAscIconStyleDefault);	// StyleDefinition
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconClass",					ButtonElement);											// CanvasElement constructor
-DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconStyle",					DataGridHeaderItemRenderer.SortDescIconStyleDefault);	// StyleDefinition
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconClass",						ButtonElement);											// CanvasElement constructor
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortAscIconStyle",						DataGridHeaderItemRenderer.SortAscIconStyleDefault);	// StyleDefinition
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconClass",						ButtonElement);											// CanvasElement constructor
+DataGridHeaderItemRenderer.StyleDefault.setStyle("SortDescIconStyle",						DataGridHeaderItemRenderer.SortDescIconStyleDefault);	// StyleDefinition
 
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconGap",								3);			// number
 DataGridHeaderItemRenderer.StyleDefault.setStyle("SortIconPlacement",						"right");	// "left" || "right"
