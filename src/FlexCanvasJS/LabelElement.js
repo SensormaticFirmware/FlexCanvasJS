@@ -96,7 +96,8 @@ LabelElement.prototype._doStylesUpdated =
 		if ("TextHorizontalAlign" in stylesMap ||
 			"TextVerticalAlign" in stylesMap ||
 			"TextColor" in stylesMap ||
-			"TextFillType" in stylesMap)
+			"TextFillType" in stylesMap ||
+			"TextDecoration" in stylesMap)
 		{
 			this._invalidateRender();
 		}
@@ -192,6 +193,7 @@ LabelElement.prototype._doRender =
 		var textAlign = this.getStyle("TextHorizontalAlign");
 		var textFillType = this.getStyle("TextFillType");
 		var textColor = this.getStyle("TextColor");
+		var textDecoration = this.getStyle("TextDecoration");
 		
 		//Get x position
 		var textXPosition;
@@ -216,6 +218,19 @@ LabelElement.prototype._doRender =
 			CanvasElement._strokeText(ctx, text, textXPosition, textYPosition, fontString, textColor, textBaseline);
 		else
 			CanvasElement._fillText(ctx, text, textXPosition, textYPosition, fontString, textColor, textBaseline);
+		
+		if (textDecoration == "underline")
+		{
+			y = paddingMetrics.getY() + linePaddingTop + this.getStyle("TextSize") + linePaddingBottom - .5;
+			
+			ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x + w, y);
+			ctx.lineWidth = 1;
+			ctx.strokeStyle = textColor;
+			
+			ctx.stroke();
+		}
 	};
 	
 	

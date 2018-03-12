@@ -806,6 +806,15 @@ CanvasElement._StyleTypes.CompositeLayer = 					StyleableBase.EStyleType.NORMAL;
  */
 CanvasElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.INHERITABLE;		// "normal" || "bold" || "italic" || "bold italic"
 
+
+/**
+ * @style TextDecoration String
+ * @inheritable
+ * 
+ * Determines the text decoration used.  Available values are "none" or "underline".
+ */
+CanvasElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.INHERITABLE;		// "none" || null || "underline"
+
 /**
  * @style TextFont String
  * @inheritable
@@ -964,6 +973,7 @@ CanvasElement.StyleDefault.setStyle("IncludeInLayout", 					true);
 CanvasElement.StyleDefault.setStyle("CompositeLayer",					false);
 
 CanvasElement.StyleDefault.setStyle("TextStyle", 						"normal");
+CanvasElement.StyleDefault.setStyle("TextDecoration", 					null);
 CanvasElement.StyleDefault.setStyle("TextFont", 						"Arial");
 CanvasElement.StyleDefault.setStyle("TextSize", 						12);
 CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");

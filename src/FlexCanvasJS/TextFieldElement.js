@@ -36,7 +36,8 @@ TextFieldLineElement._StyleTypes.TextSize =							StyleableBase.EStyleType.NORMA
 TextFieldLineElement._StyleTypes.TextColor =						StyleableBase.EStyleType.NORMAL;			
 TextFieldLineElement._StyleTypes.TextFillType =						StyleableBase.EStyleType.NORMAL;			
 TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;			
-TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;	
+TextFieldLineElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.NORMAL;
 
 
 TextFieldLineElement.prototype.setParentLineMetrics = 
@@ -108,9 +109,11 @@ TextFieldLineElement.prototype._doRender =
 		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
 		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
 		var fontString = this._parentTextField._getFontString();
+		var textDecoration = this._parentTextField.getStyle("TextDecoration");		
 		
 		var x = paddingMetrics.getX();
 		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
+		var w = paddingMetrics.getWidth();
 		
 		if (this._highlightMinIndex == this._highlightMaxIndex)
 		{
@@ -152,6 +155,23 @@ TextFieldLineElement.prototype._doRender =
 				
 				x += charWidth;
 			}
+		}
+		
+		if (textDecoration == "underline")
+		{
+			y = this._height - .5;
+			
+			ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x + w, y);
+			ctx.lineWidth = 1;
+			
+			if (this._highlightMinIndex == this._highlightMaxIndex)
+				ctx.strokeStyle = textColor;
+			else 
+				ctx.strokeStyle = highlightTextColor;
+			
+			ctx.stroke();
 		}
 	};	
 
@@ -1222,7 +1242,8 @@ TextFieldElement.prototype._doStylesUpdated =
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap ||
 			"TextColor" in stylesMap ||
-			"TextFillType" in stylesMap)
+			"TextFillType" in stylesMap || 
+			"TextDecoration" in stylesMap)
 		{
 			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
 				this._textLinesContainer._getChildAt(i)._invalidateRender();
