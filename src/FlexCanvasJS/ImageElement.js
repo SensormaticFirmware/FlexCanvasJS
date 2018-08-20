@@ -173,13 +173,13 @@ ImageElement.prototype._doStylesUpdated =
 			if ("ImageSourceClipX" in stylesMap ||
 				"ImageSourceClipY" in stylesMap ||
 				"ImageSourceClipWidth" in stylesMap ||
-				"ImageSourceClipHeight" in stylesMap)
+				"ImageSourceClipHeight" in stylesMap || 
+				"ImageScaleType" in stylesMap)
 			{
 				this._invalidateMeasure();
 				this._invalidateRender();
 			}
-			else if ("ImageScaleType" in stylesMap ||
-					"ImageVerticalAlign" in stylesMap ||
+			else if ("ImageVerticalAlign" in stylesMap ||
 					"ImageHorizontalAlign" in stylesMap)
 			{
 				this._invalidateRender();
@@ -215,8 +215,78 @@ ImageElement.prototype._doMeasure =
 		else if (this._imageLoadComplete == true)
 			measuredSize.height += (this._imageLoader.naturalHeight - clipY);
 		
+		if (this.getStyle("ImageScaleType") == "fit")
+			this._invalidateLayout();
+		
 		return measuredSize;
 	};	
+	
+//@override	
+ImageElement.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		ImageElement.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		//When type "fit", we use layout to adjust measured size. This allows the implementor
+		//to set only width OR height, and the image's measured size will scale appropriately.
+		if (this.getStyle("ImageScaleType") != "fit" || this._imageLoadComplete == false)
+			return;
+	
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY();
+		var w = paddingMetrics.getWidth();
+		var h = paddingMetrics.getHeight();
+		
+		//Zero size, bail
+		if (w <= 0 || h <= 0)
+			return;
+		
+		//Only adjust measured sizes if width OR height doesnt match measured, bail if both match, or miss match.
+		if ((w == this._measuredWidth && h == this._measuredHeight) ||
+			(w != this._measuredWidth && h != this._measuredHeight))
+			return;
+		
+		var clipX = this.getStyle("ImageSourceClipX");
+		var clipY = this.getStyle("ImageSourceClipY");
+		var clipW = this.getStyle("ImageSourceClipWidth");
+		var clipH = this.getStyle("ImageSourceClipHeight");
+		
+		if (clipX == null)
+			clipX = 0;
+		if (clipY == null)
+			clipY = 0;
+		
+		if (clipW == null)
+			clipW = this._imageLoader.naturalWidth - clipX;
+		if (clipH == null)
+			clipH = this._imageLoader.naturalHeight - clipY;
+		
+		if (clipW <= 0 || clipH <= 0)
+			return;
+		
+		var thisRatio = w / h;
+		var imageRatio = clipW / clipH;
+		
+		var drawWidth = clipW;
+		var drawHeight = clipH;
+		
+		//Size to our height
+		if (h != this._measuredHeight)
+		{
+			drawHeight = h;
+			drawWidth = h * imageRatio;
+		}
+		else //Size to our width
+		{
+			drawWidth = w;
+			drawHeight = w / imageRatio;
+		}
+		
+		drawWidth = Math.round(drawWidth);
+		drawHeight = Math.round(drawHeight);
+		
+		this._setMeasuredSize(drawWidth, drawHeight);
+	};
 	
 //@Override
 ImageElement.prototype._doRender =
@@ -389,12 +459,12 @@ ImageElement.prototype._doRender =
 				if (thisRatio > imageRatio)
 				{
 					drawHeight = h;
-					drawWidth = h * imageRatio;
+					drawWidth = Math.round(h * imageRatio);
 				}
 				else //Size to our width
 				{
 					drawWidth = w;
-					drawHeight = w / imageRatio;
+					drawHeight = Math.round(w / imageRatio);
 				}
 			}
 			else //scaleType == "none"
