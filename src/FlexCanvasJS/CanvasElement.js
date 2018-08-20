@@ -914,6 +914,15 @@ CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyle
  */
 CanvasElement._StyleTypes.TextCaretColor = 					StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
+/**
+ * @style PasswordMaskCharacter String
+ * @inheritable
+ * 
+ * Character to use when masking a password field
+ */
+CanvasElement._StyleTypes.PasswordMaskCharacter = 			StyleableBase.EStyleType.INHERITABLE;		// "●"
+
+
 
 /////////////Default Styles///////////////////////////////
 
@@ -986,6 +995,7 @@ CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
 CanvasElement.StyleDefault.setStyle("TextHighlightedColor", 			"#FFFFFF");
 CanvasElement.StyleDefault.setStyle("TextHighlightedBackgroundColor", 	"#000000");
 CanvasElement.StyleDefault.setStyle("TextCaretColor", 					"#000000");
+CanvasElement.StyleDefault.setStyle("PasswordMaskCharacter", 			"●");
 
 
 ///////////CanvasElement Public Functions///////////////////////////////

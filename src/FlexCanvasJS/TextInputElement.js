@@ -164,6 +164,14 @@ TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			StyleableBase.ESt
  */
 TextInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
+/**
+ * @style DisplayAsPassword boolean
+ * 
+ * When true, text will be masked using the PasswordMaskCharacter style.
+ */
+TextInputElement._StyleTypes.DisplayAsPassword = 						StyleableBase.EStyleType.NORMAL;		// false
+
+
 
 /////////////Default Styles///////////////////////////
 
@@ -179,6 +187,8 @@ TextInputElement.StyleDefault.setStyle("UpTextHighlightedBackgroundColor", 			"#
 TextInputElement.StyleDefault.setStyle("DisabledTextColor", 						"#888888");
 TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedColor", 				"#FFFFFF");
 TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedBackgroundColor", 	"#000000");
+
+TextInputElement.StyleDefault.setStyle("DisplayAsPassword", 						false);
 
 TextInputElement.StyleDefault.setStyle("PaddingTop",								3);
 TextInputElement.StyleDefault.setStyle("PaddingBottom",								3);
@@ -528,6 +538,16 @@ TextInputElement.prototype._doStylesUpdated =
 			this._textField.setStyle("PaddingRight", paddingSize.paddingRight);
 			
 			this._invalidateMeasure();
+		}
+		
+		if ("DisplayAsPassword" in stylesMap ||
+			"PasswordMaskCharacter" in stylesMap)
+		{
+			var maskCharacter = null;
+			if (this.getStyle("DisplayAsPassword") == true)
+				maskCharacter = this.getStyle("PasswordMaskCharacter")
+			
+			this._textField.setStyle("MaskCharacter", maskCharacter);
 		}
 		
 		////Update skin classes and sub styles.

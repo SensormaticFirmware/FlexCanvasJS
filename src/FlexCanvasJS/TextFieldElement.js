@@ -39,7 +39,6 @@ TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleT
 TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;	
 TextFieldLineElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.NORMAL;
 
-
 TextFieldLineElement.prototype.setParentLineMetrics = 
 	function (parentTextField, charStartIndex, charEndIndex)
 	{
@@ -109,52 +108,47 @@ TextFieldLineElement.prototype._doRender =
 		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
 		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
 		var fontString = this._parentTextField._getFontString();
-		var textDecoration = this._parentTextField.getStyle("TextDecoration");		
+		var textDecoration = this._parentTextField.getStyle("TextDecoration");	
+		var maskCharacter = this._parentTextField.getStyle("MaskCharacter");
 		
 		var x = paddingMetrics.getX();
 		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
 		var w = paddingMetrics.getWidth();
 		
-		if (this._highlightMinIndex == this._highlightMaxIndex)
+		for (var i = 0; i < this._text.length; i++)
 		{
-			if (textFillType == "stroke")
-				CanvasElement._strokeText(ctx, this._text, x, y, fontString, textColor, "middle");
-			else
-				CanvasElement._fillText(ctx, this._text, x, y, fontString, textColor, "middle");
-		}
-		else
-		{
-			for (var i = 0; i < this._text.length; i++)
+			var charWidth = this._parentTextField._charMetrics[i + this._charMetricsStartIndex].width;
+			
+			var printChar = this._text[i];
+			if (maskCharacter != null)
+				printChar = maskCharacter;
+			
+			if (this._highlightMinIndex <= i && this._highlightMaxIndex > i)
 			{
-				var charWidth = CanvasElement._measureText(this._text[i], fontString);
+				ctx.fillStyle = backgroundHighlightTextColor;
 				
-				if (this._highlightMinIndex <= i && this._highlightMaxIndex > i)
-				{
-					ctx.fillStyle = backgroundHighlightTextColor;
-					
-					ctx.beginPath();
-					ctx.moveTo(x, 0);
-					ctx.lineTo(x + charWidth, 0);
-					ctx.lineTo(x + charWidth, this._height);
-					ctx.lineTo(x, this._height);
-					ctx.closePath();
-					ctx.fill();
-					
-					if (textFillType == "stroke")
-						CanvasElement._strokeText(ctx, this._text[i], x, y, fontString, highlightTextColor, "middle");
-					else
-						CanvasElement._fillText(ctx, this._text[i], x, y, fontString, highlightTextColor, "middle");
-				}
+				ctx.beginPath();
+				ctx.moveTo(x, 0);
+				ctx.lineTo(x + charWidth, 0);
+				ctx.lineTo(x + charWidth, this._height);
+				ctx.lineTo(x, this._height);
+				ctx.closePath();
+				ctx.fill();
+				
+				if (textFillType == "stroke")
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
 				else
-				{
-					if (textFillType == "stroke")
-						CanvasElement._strokeText(ctx, this._text[i], x, y, fontString, textColor, "middle");
-					else
-						CanvasElement._fillText(ctx, this._text[i], x, y, fontString, textColor, "middle");
-				}
-				
-				x += charWidth;
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
 			}
+			else
+			{
+				if (textFillType == "stroke")
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "middle");
+				else
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "middle");
+			}
+			
+			x += charWidth;
 		}
 		
 		if (textDecoration == "underline")
@@ -332,6 +326,13 @@ TextFieldElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		/
  */
 TextFieldElement._StyleTypes.WordWrap = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
+/**
+ * @style MaskCharacter String
+ * 
+ * When not null, all characters are replaced with the MaskCharacter. 
+ */
+TextFieldElement._StyleTypes.MaskCharacter = 			StyleableBase.EStyleType.NORMAL;		// true || false
+
 
 ////////////Default Styles////////////////////////////
 
@@ -341,6 +342,7 @@ TextFieldElement.StyleDefault.setStyle("Selectable", 					false);
 TextFieldElement.StyleDefault.setStyle("MaxChars", 						0);
 TextFieldElement.StyleDefault.setStyle("Multiline", 					false);
 TextFieldElement.StyleDefault.setStyle("WordWrap", 						false);
+TextFieldElement.StyleDefault.setStyle("MaskCharacter", 				null);
 
 TextFieldElement.StyleDefault.setStyle("Enabled", 						false);
 TextFieldElement.StyleDefault.setStyle("TabStop",						0);
@@ -997,7 +999,13 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 			}
 			
 			//Measure new char
-			var newCharMetrics = {x:0, width:CanvasElement._measureText(keyString, this._getFontString())};
+			var maskCharacter = this.getStyle("MaskCharacter");
+			
+			var printCharacter = keyString;
+			if (maskCharacter != null)
+				printCharacter = maskCharacter;
+			
+			var newCharMetrics = {x:0, width:CanvasElement._measureText(printCharacter, this._getFontString())};
 			
 			//Fix char metrics
 			this._charMetrics.splice(this._caretIndex, 0, newCharMetrics);
@@ -1090,12 +1098,18 @@ TextFieldElement.prototype._onTextFieldPaste =
 		
 		this._deleteHighlightChars();
 		
+		var maskCharacter = this.getStyle("MaskCharacter");
+		
 		//Measure new chars
 		var fontString = this._getFontString();
 		for (var i = 0; i < pasteString.length; i++)
 		{
+			var printCharacter = pasteString[i];
+			if (maskCharacter != null)
+				printCharacter = maskCharacter;
+			
 			this._charMetrics.splice(this._caretIndex + i, 0, 
-					{x:0, width:CanvasElement._measureText(pasteString[i], fontString)});
+					{x:0, width:CanvasElement._measureText(printCharacter, fontString)});
 		}
 
 		//Fix char metrics
@@ -1243,7 +1257,8 @@ TextFieldElement.prototype._doStylesUpdated =
 			"TextSize" in stylesMap ||
 			"TextColor" in stylesMap ||
 			"TextFillType" in stylesMap || 
-			"TextDecoration" in stylesMap)
+			"TextDecoration" in stylesMap ||
+			"MaskCharacter" in stylesMap)
 		{
 			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
 				this._textLinesContainer._getChildAt(i)._invalidateRender();
@@ -1262,7 +1277,8 @@ TextFieldElement.prototype._doStylesUpdated =
 		//Update ourself
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
-			"TextSize" in stylesMap)
+			"TextSize" in stylesMap ||
+			"MaskCharacter" in stylesMap)
 		{
 			this._charMetrics = null;
 			
@@ -1341,13 +1357,19 @@ TextFieldElement.prototype._createCharMetrics =
 		
 		var currentSpaceSpan = null;
 		
+		var maskCharacter = this.getStyle("MaskCharacter");
+		
 		if (this._text.length > 0)
 		{
 			var fontString = this._getFontString();	
 			
 			for (var i = 0; i < this._text.length; i++)
 			{
-				currentWidth = CanvasElement._measureText(this._text[i], fontString);
+				var printCharacter = this._text[i];
+				if (maskCharacter != null)
+					printCharacter = maskCharacter;
+				
+				currentWidth = CanvasElement._measureText(printCharacter, fontString);
 				
 				this._charMetrics.push(
 					{
