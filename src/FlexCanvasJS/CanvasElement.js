@@ -3792,6 +3792,7 @@ CanvasElement.prototype._setActualSize =
 		
 		this._invalidateLayout();
 		this._invalidateRender();
+		this._invalidateRedrawRegion();
 		
 		if (this.hasEventListener("resize", null) == true)
 			this._dispatchEvent(new DispatcherEvent("resize"), false);
