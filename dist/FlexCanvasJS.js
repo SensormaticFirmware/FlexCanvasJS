@@ -1,4 +1,4 @@
-//MIT License
+﻿//MIT License
 //
 //Copyright (c) 2017-2018 SENSORMATIC ELECTRONICS LLC, NATHAN E NELSON
 //
@@ -2334,53 +2334,104 @@ RoundedRectangleShape._StyleTypes = Object.create(null);
 /**
  * @style CornerRadius Number
  * 
- * Radius size in pixels for the rectangle's corners. 
+ * Radius of the rectangles corners in pixels. 
  * CornerRadius effects all corners of the rectangle.
+ * This will override CornerRadiusPercent style.
  */
 RoundedRectangleShape._StyleTypes.CornerRadius = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
+ * @style CornerRadiusPercent Number
+ * 
+ * Radius of the rectangles corners as a percent size of the minimum dimension (width/height). 
+ * CornerRadiusPercent effects all corners of the rectangle.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusPercent = 			StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
  * @style CornerRadiusTopLeft Number
  * 
- * Radius size in pixels for the rectangle's top left corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles top left corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusTopLeftPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
+ * @style CornerRadiusTopLeftPercent Number
+ * 
+ * Radius of the rectangles top left corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopRight Number
  * 
- * Radius size in pixels for the rectangle's top right corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles top right corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusTopRightPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
+ * @style CornerRadiusTopRightPercent Number
+ * 
+ * Radius of the rectangles top right corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusTopRightPercent = 	StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
  * @style CornerRadiusBottomLeft Number
  * 
- * Radius size in pixels for the rectangle's bottom left corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles bottom left corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusBottomLeftPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
+ * @style CornerRadiusBottomLeftPercent Number
+ * 
+ * Radius of the rectangles bottom left corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeftPercent = 	StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
  * @style CornerRadiusBottomRight Number
  * 
- * Radius size in pixels for the rectangle's bottom right corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles bottom right corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusBottomRightPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusBottomRight = 		StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
+ * @style CornerRadiusBottomRightPercent Number
+ * 
+ * Radius of the rectangles bottom right corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomRightPercent = 	StyleableBase.EStyleType.NORMAL;		// number || null
 
 
 ////////////Style Defaults////////////////////////////
 
 RoundedRectangleShape.StyleDefault = new StyleDefinition();
 
-RoundedRectangleShape.StyleDefault.setStyle("CornerRadius", 					0);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadius", 					null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusPercent", 				null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopLeft",				null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopLeftPercent",		null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopRight",				null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopRightPercent",		null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomLeft",			null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomLeftPercent",	null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomRight",			null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomRightPercent",	null);
+
 
 ////////////Public//////////////////////
 
@@ -2393,6 +2444,7 @@ RoundedRectangleShape.prototype.drawShape =
 		
 		var width = metrics.getWidth();
 		var height = metrics.getHeight();
+		var size = Math.min(width, height);
 		
 		var c = this.getStyle("CornerRadius");
 		var cTl = this.getStyle("CornerRadiusTopLeft");
@@ -2401,15 +2453,49 @@ RoundedRectangleShape.prototype.drawShape =
 		var cBr = this.getStyle("CornerRadiusBottomRight");
 		
 		if (c == null)
-			c = 0;
+		{
+			var cp = this.getStyle("CornerRadiusPercent");
+			if (cp == null)
+				c = 0;
+			else
+				c = size * (cp / 100);
+		}
+		
 		if (cTl == null)
-			cTl = c;
+		{
+			var cTlp = this.getStyle("CornerRadiusTopLeftPercent");
+			if (cTlp == null)
+				cTl = c;
+			else
+				cTl = size * (cTlp / 100);
+		}
+		
 		if (cTr == null)
-			cTr = c;
+		{
+			var cTrp = this.getStyle("CornerRadiusTopRightPercent");
+			if (cTrp == null)
+				cTr = c;
+			else
+				cTr = size * (cTrp / 100);
+		}
+		
 		if (cBl == null)
-			cBl = c;
+		{
+			var cBlp = this.getStyle("CornerRadiusBottomLeftPercent");
+			if (cBlp == null)
+				cBl = c;
+			else
+				cBl = size * (cBlp / 100);
+		}
+		
 		if (cBr == null)
-			cBr = c;
+		{
+			var cBrp = this.getStyle("CornerRadiusBottomRightPercent");
+			if (cBrp == null)
+				cBr = c;
+			else
+				cBr = size * (cBrp / 100);
+		}
 		
 		ctx.moveTo(x, y + cTl);
 		
@@ -4554,6 +4640,15 @@ CanvasElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyle
  */
 CanvasElement._StyleTypes.TextCaretColor = 					StyleableBase.EStyleType.INHERITABLE;		// color "#000000"
 
+/**
+ * @style PasswordMaskCharacter String
+ * @inheritable
+ * 
+ * Character to use when masking a password field
+ */
+CanvasElement._StyleTypes.PasswordMaskCharacter = 			StyleableBase.EStyleType.INHERITABLE;		// "●"
+
+
 
 /////////////Default Styles///////////////////////////////
 
@@ -4626,6 +4721,7 @@ CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
 CanvasElement.StyleDefault.setStyle("TextHighlightedColor", 			"#FFFFFF");
 CanvasElement.StyleDefault.setStyle("TextHighlightedBackgroundColor", 	"#000000");
 CanvasElement.StyleDefault.setStyle("TextCaretColor", 					"#000000");
+CanvasElement.StyleDefault.setStyle("PasswordMaskCharacter", 			"●");
 
 
 ///////////CanvasElement Public Functions///////////////////////////////
@@ -7422,6 +7518,7 @@ CanvasElement.prototype._setActualSize =
 		
 		this._invalidateLayout();
 		this._invalidateRender();
+		this._invalidateRedrawRegion();
 		
 		if (this.hasEventListener("resize", null) == true)
 			this._dispatchEvent(new DispatcherEvent("resize"), false);
@@ -9531,7 +9628,6 @@ TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleT
 TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;	
 TextFieldLineElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.NORMAL;
 
-
 TextFieldLineElement.prototype.setParentLineMetrics = 
 	function (parentTextField, charStartIndex, charEndIndex)
 	{
@@ -9601,52 +9697,47 @@ TextFieldLineElement.prototype._doRender =
 		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
 		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
 		var fontString = this._parentTextField._getFontString();
-		var textDecoration = this._parentTextField.getStyle("TextDecoration");		
+		var textDecoration = this._parentTextField.getStyle("TextDecoration");	
+		var maskCharacter = this._parentTextField.getStyle("MaskCharacter");
 		
 		var x = paddingMetrics.getX();
 		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
 		var w = paddingMetrics.getWidth();
 		
-		if (this._highlightMinIndex == this._highlightMaxIndex)
+		for (var i = 0; i < this._text.length; i++)
 		{
-			if (textFillType == "stroke")
-				CanvasElement._strokeText(ctx, this._text, x, y, fontString, textColor, "middle");
-			else
-				CanvasElement._fillText(ctx, this._text, x, y, fontString, textColor, "middle");
-		}
-		else
-		{
-			for (var i = 0; i < this._text.length; i++)
+			var charWidth = this._parentTextField._charMetrics[i + this._charMetricsStartIndex].width;
+			
+			var printChar = this._text[i];
+			if (maskCharacter != null)
+				printChar = maskCharacter;
+			
+			if (this._highlightMinIndex <= i && this._highlightMaxIndex > i)
 			{
-				var charWidth = CanvasElement._measureText(this._text[i], fontString);
+				ctx.fillStyle = backgroundHighlightTextColor;
 				
-				if (this._highlightMinIndex <= i && this._highlightMaxIndex > i)
-				{
-					ctx.fillStyle = backgroundHighlightTextColor;
-					
-					ctx.beginPath();
-					ctx.moveTo(x, 0);
-					ctx.lineTo(x + charWidth, 0);
-					ctx.lineTo(x + charWidth, this._height);
-					ctx.lineTo(x, this._height);
-					ctx.closePath();
-					ctx.fill();
-					
-					if (textFillType == "stroke")
-						CanvasElement._strokeText(ctx, this._text[i], x, y, fontString, highlightTextColor, "middle");
-					else
-						CanvasElement._fillText(ctx, this._text[i], x, y, fontString, highlightTextColor, "middle");
-				}
+				ctx.beginPath();
+				ctx.moveTo(x, 0);
+				ctx.lineTo(x + charWidth, 0);
+				ctx.lineTo(x + charWidth, this._height);
+				ctx.lineTo(x, this._height);
+				ctx.closePath();
+				ctx.fill();
+				
+				if (textFillType == "stroke")
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
 				else
-				{
-					if (textFillType == "stroke")
-						CanvasElement._strokeText(ctx, this._text[i], x, y, fontString, textColor, "middle");
-					else
-						CanvasElement._fillText(ctx, this._text[i], x, y, fontString, textColor, "middle");
-				}
-				
-				x += charWidth;
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
 			}
+			else
+			{
+				if (textFillType == "stroke")
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "middle");
+				else
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "middle");
+			}
+			
+			x += charWidth;
 		}
 		
 		if (textDecoration == "underline")
@@ -9824,6 +9915,13 @@ TextFieldElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		/
  */
 TextFieldElement._StyleTypes.WordWrap = 				StyleableBase.EStyleType.NORMAL;		// true || false
 
+/**
+ * @style MaskCharacter String
+ * 
+ * When not null, all characters are replaced with the MaskCharacter. 
+ */
+TextFieldElement._StyleTypes.MaskCharacter = 			StyleableBase.EStyleType.NORMAL;		// true || false
+
 
 ////////////Default Styles////////////////////////////
 
@@ -9833,6 +9931,7 @@ TextFieldElement.StyleDefault.setStyle("Selectable", 					false);
 TextFieldElement.StyleDefault.setStyle("MaxChars", 						0);
 TextFieldElement.StyleDefault.setStyle("Multiline", 					false);
 TextFieldElement.StyleDefault.setStyle("WordWrap", 						false);
+TextFieldElement.StyleDefault.setStyle("MaskCharacter", 				null);
 
 TextFieldElement.StyleDefault.setStyle("Enabled", 						false);
 TextFieldElement.StyleDefault.setStyle("TabStop",						0);
@@ -10489,7 +10588,13 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 			}
 			
 			//Measure new char
-			var newCharMetrics = {x:0, width:CanvasElement._measureText(keyString, this._getFontString())};
+			var maskCharacter = this.getStyle("MaskCharacter");
+			
+			var printCharacter = keyString;
+			if (maskCharacter != null)
+				printCharacter = maskCharacter;
+			
+			var newCharMetrics = {x:0, width:CanvasElement._measureText(printCharacter, this._getFontString())};
 			
 			//Fix char metrics
 			this._charMetrics.splice(this._caretIndex, 0, newCharMetrics);
@@ -10582,12 +10687,18 @@ TextFieldElement.prototype._onTextFieldPaste =
 		
 		this._deleteHighlightChars();
 		
+		var maskCharacter = this.getStyle("MaskCharacter");
+		
 		//Measure new chars
 		var fontString = this._getFontString();
 		for (var i = 0; i < pasteString.length; i++)
 		{
+			var printCharacter = pasteString[i];
+			if (maskCharacter != null)
+				printCharacter = maskCharacter;
+			
 			this._charMetrics.splice(this._caretIndex + i, 0, 
-					{x:0, width:CanvasElement._measureText(pasteString[i], fontString)});
+					{x:0, width:CanvasElement._measureText(printCharacter, fontString)});
 		}
 
 		//Fix char metrics
@@ -10735,7 +10846,8 @@ TextFieldElement.prototype._doStylesUpdated =
 			"TextSize" in stylesMap ||
 			"TextColor" in stylesMap ||
 			"TextFillType" in stylesMap || 
-			"TextDecoration" in stylesMap)
+			"TextDecoration" in stylesMap ||
+			"MaskCharacter" in stylesMap)
 		{
 			for (var i = 0; i < this._textLinesContainer._getNumChildren(); i++)
 				this._textLinesContainer._getChildAt(i)._invalidateRender();
@@ -10754,7 +10866,8 @@ TextFieldElement.prototype._doStylesUpdated =
 		//Update ourself
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
-			"TextSize" in stylesMap)
+			"TextSize" in stylesMap ||
+			"MaskCharacter" in stylesMap)
 		{
 			this._charMetrics = null;
 			
@@ -10833,13 +10946,19 @@ TextFieldElement.prototype._createCharMetrics =
 		
 		var currentSpaceSpan = null;
 		
+		var maskCharacter = this.getStyle("MaskCharacter");
+		
 		if (this._text.length > 0)
 		{
 			var fontString = this._getFontString();	
 			
 			for (var i = 0; i < this._text.length; i++)
 			{
-				currentWidth = CanvasElement._measureText(this._text[i], fontString);
+				var printCharacter = this._text[i];
+				if (maskCharacter != null)
+					printCharacter = maskCharacter;
+				
+				currentWidth = CanvasElement._measureText(printCharacter, fontString);
 				
 				this._charMetrics.push(
 					{
@@ -12422,6 +12541,14 @@ TextInputElement._StyleTypes.DisabledTextHighlightedColor = 			StyleableBase.ESt
  */
 TextInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;		// color "#000000"
 
+/**
+ * @style DisplayAsPassword boolean
+ * 
+ * When true, text will be masked using the PasswordMaskCharacter style.
+ */
+TextInputElement._StyleTypes.DisplayAsPassword = 						StyleableBase.EStyleType.NORMAL;		// false
+
+
 
 /////////////Default Styles///////////////////////////
 
@@ -12437,6 +12564,8 @@ TextInputElement.StyleDefault.setStyle("UpTextHighlightedBackgroundColor", 			"#
 TextInputElement.StyleDefault.setStyle("DisabledTextColor", 						"#888888");
 TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedColor", 				"#FFFFFF");
 TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedBackgroundColor", 	"#000000");
+
+TextInputElement.StyleDefault.setStyle("DisplayAsPassword", 						false);
 
 TextInputElement.StyleDefault.setStyle("PaddingTop",								3);
 TextInputElement.StyleDefault.setStyle("PaddingBottom",								3);
@@ -12786,6 +12915,16 @@ TextInputElement.prototype._doStylesUpdated =
 			this._textField.setStyle("PaddingRight", paddingSize.paddingRight);
 			
 			this._invalidateMeasure();
+		}
+		
+		if ("DisplayAsPassword" in stylesMap ||
+			"PasswordMaskCharacter" in stylesMap)
+		{
+			var maskCharacter = null;
+			if (this.getStyle("DisplayAsPassword") == true)
+				maskCharacter = this.getStyle("PasswordMaskCharacter")
+			
+			this._textField.setStyle("MaskCharacter", maskCharacter);
 		}
 		
 		////Update skin classes and sub styles.
@@ -13243,13 +13382,13 @@ ImageElement.prototype._doStylesUpdated =
 			if ("ImageSourceClipX" in stylesMap ||
 				"ImageSourceClipY" in stylesMap ||
 				"ImageSourceClipWidth" in stylesMap ||
-				"ImageSourceClipHeight" in stylesMap)
+				"ImageSourceClipHeight" in stylesMap || 
+				"ImageScaleType" in stylesMap)
 			{
 				this._invalidateMeasure();
 				this._invalidateRender();
 			}
-			else if ("ImageScaleType" in stylesMap ||
-					"ImageVerticalAlign" in stylesMap ||
+			else if ("ImageVerticalAlign" in stylesMap ||
 					"ImageHorizontalAlign" in stylesMap)
 			{
 				this._invalidateRender();
@@ -13285,8 +13424,78 @@ ImageElement.prototype._doMeasure =
 		else if (this._imageLoadComplete == true)
 			measuredSize.height += (this._imageLoader.naturalHeight - clipY);
 		
+		if (this.getStyle("ImageScaleType") == "fit")
+			this._invalidateLayout();
+		
 		return measuredSize;
 	};	
+	
+//@override	
+ImageElement.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		ImageElement.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		//When type "fit", we use layout to adjust measured size. This allows the implementor
+		//to set only width OR height, and the image's measured size will scale appropriately.
+		if (this.getStyle("ImageScaleType") != "fit" || this._imageLoadComplete == false)
+			return;
+	
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY();
+		var w = paddingMetrics.getWidth();
+		var h = paddingMetrics.getHeight();
+		
+		//Zero size, bail
+		if (w <= 0 || h <= 0)
+			return;
+		
+		//Only adjust measured sizes if width OR height doesnt match measured, bail if both match, or miss match.
+		if ((w == this._measuredWidth && h == this._measuredHeight) ||
+			(w != this._measuredWidth && h != this._measuredHeight))
+			return;
+		
+		var clipX = this.getStyle("ImageSourceClipX");
+		var clipY = this.getStyle("ImageSourceClipY");
+		var clipW = this.getStyle("ImageSourceClipWidth");
+		var clipH = this.getStyle("ImageSourceClipHeight");
+		
+		if (clipX == null)
+			clipX = 0;
+		if (clipY == null)
+			clipY = 0;
+		
+		if (clipW == null)
+			clipW = this._imageLoader.naturalWidth - clipX;
+		if (clipH == null)
+			clipH = this._imageLoader.naturalHeight - clipY;
+		
+		if (clipW <= 0 || clipH <= 0)
+			return;
+		
+		var thisRatio = w / h;
+		var imageRatio = clipW / clipH;
+		
+		var drawWidth = clipW;
+		var drawHeight = clipH;
+		
+		//Size to our height
+		if (h != this._measuredHeight)
+		{
+			drawHeight = h;
+			drawWidth = h * imageRatio;
+		}
+		else //Size to our width
+		{
+			drawWidth = w;
+			drawHeight = w / imageRatio;
+		}
+		
+		drawWidth = Math.round(drawWidth);
+		drawHeight = Math.round(drawHeight);
+		
+		this._setMeasuredSize(drawWidth, drawHeight);
+	};
 	
 //@Override
 ImageElement.prototype._doRender =
@@ -13459,12 +13668,12 @@ ImageElement.prototype._doRender =
 				if (thisRatio > imageRatio)
 				{
 					drawHeight = h;
-					drawWidth = h * imageRatio;
+					drawWidth = Math.round(h * imageRatio);
 				}
 				else //Size to our width
 				{
 					drawWidth = w;
-					drawHeight = w / imageRatio;
+					drawHeight = Math.round(w / imageRatio);
 				}
 			}
 			else //scaleType == "none"
