@@ -115,7 +115,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		if (styleDef instanceof StyleDefinition == false)
 			return;
 		
-
+		//												category, 		styleName, 									styleType, allowNull, initNull, styleDefinition, parent, initValue, allowValues
 		if (this.styleType == "root") //Container styles (Root only)
 		{
 			this.styleList.addItem(new ControlStyleType("Container", 	"Top", 										"number", 	true, 	true, 	styleDef, this,	10, 						null));
@@ -480,6 +480,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		if (this.styleName == "TextInputStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"MaxChars", 								"number", 	false, 	false, 	styleDef, this,	0,							null));
+			this.styleList.addItem(new ControlStyleType("Functional", 	"DisplayAsPassword", 						"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 			
 			this.styleList.addItem(new ControlStyleType("Text", 		"TextHighlightedColor", 					"color", 	false, 	false, 	styleDef, this,	"#FFFFFF",					null));
 			this.styleList.addItem(new ControlStyleType("Text", 		"TextHighlightedBackgroundColor", 			"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
@@ -654,6 +655,15 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusTopRight", 					"number", 	true, 	true, 	styleDef, this,	0, 							null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusBottomLeft", 					"number", 	true, 	true, 	styleDef, this,	0, 							null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusBottomRight", 					"number", 	true, 	true, 	styleDef, this,	0, 							null));
+		}
+		
+		if (styleDef instanceof RoundedRectangleShape)
+		{
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusPercent", 						"number", 	false, 	false, 	styleDef, this,	0, 							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusTopLeftPercent", 				"number", 	true, 	true, 	styleDef, this,	0, 							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusTopRightPercent", 				"number", 	true, 	true, 	styleDef, this,	0, 							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusBottomLeftPercent", 			"number", 	true, 	true, 	styleDef, this,	0, 							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"CornerRadiusBottomRightPercent", 			"number", 	true, 	true, 	styleDef, this,	0, 							null));
 		}
 		
 		if (styleDef instanceof ArrowShape)
