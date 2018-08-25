@@ -32,53 +32,104 @@ RoundedRectangleShape._StyleTypes = Object.create(null);
 /**
  * @style CornerRadius Number
  * 
- * Radius size in pixels for the rectangle's corners. 
+ * Radius of the rectangles corners in pixels. 
  * CornerRadius effects all corners of the rectangle.
+ * This will override CornerRadiusPercent style.
  */
 RoundedRectangleShape._StyleTypes.CornerRadius = 					StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
+ * @style CornerRadiusPercent Number
+ * 
+ * Radius of the rectangles corners as a percent size of the minimum dimension (width/height). 
+ * CornerRadiusPercent effects all corners of the rectangle.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusPercent = 			StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
  * @style CornerRadiusTopLeft Number
  * 
- * Radius size in pixels for the rectangle's top left corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles top left corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusTopLeftPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
+ * @style CornerRadiusTopLeftPercent Number
+ * 
+ * Radius of the rectangles top left corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusTopLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
  * @style CornerRadiusTopRight Number
  * 
- * Radius size in pixels for the rectangle's top right corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles top right corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusTopRightPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusTopRight = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
+ * @style CornerRadiusTopRightPercent Number
+ * 
+ * Radius of the rectangles top right corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusTopRightPercent = 	StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
  * @style CornerRadiusBottomLeft Number
  * 
- * Radius size in pixels for the rectangle's bottom left corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles bottom left corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusBottomLeftPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeft = 			StyleableBase.EStyleType.NORMAL;		// number || null
 
 /**
+ * @style CornerRadiusBottomLeftPercent Number
+ * 
+ * Radius of the rectangles bottom left corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomLeftPercent = 	StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
  * @style CornerRadiusBottomRight Number
  * 
- * Radius size in pixels for the rectangle's bottom right corner.  
- * This will override the CornerRadius style unless it is null.
+ * Radius size of the rectangles bottom right corner in pixels.  
+ * This will override the CornerRadius, CornerRadiusPercent, & CornerRadiusBottomRightPercent styles.
  */
 RoundedRectangleShape._StyleTypes.CornerRadiusBottomRight = 		StyleableBase.EStyleType.NORMAL;		// number || null
+
+/**
+ * @style CornerRadiusBottomRightPercent Number
+ * 
+ * Radius of the rectangles bottom right corner as a percent size of the minimum dimension (width/height).  
+ * This will override the CornerRadius & CornerRadiusPercent styles.
+ */
+RoundedRectangleShape._StyleTypes.CornerRadiusBottomRightPercent = 	StyleableBase.EStyleType.NORMAL;		// number || null
 
 
 ////////////Style Defaults////////////////////////////
 
 RoundedRectangleShape.StyleDefault = new StyleDefinition();
 
-RoundedRectangleShape.StyleDefault.setStyle("CornerRadius", 					0);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadius", 					null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusPercent", 				null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopLeft",				null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopLeftPercent",		null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopRight",				null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusTopRightPercent",		null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomLeft",			null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomLeftPercent",	null);
+
 RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomRight",			null);
+RoundedRectangleShape.StyleDefault.setStyle("CornerRadiusBottomRightPercent",	null);
+
 
 ////////////Public//////////////////////
 
@@ -91,6 +142,7 @@ RoundedRectangleShape.prototype.drawShape =
 		
 		var width = metrics.getWidth();
 		var height = metrics.getHeight();
+		var size = Math.min(width, height);
 		
 		var c = this.getStyle("CornerRadius");
 		var cTl = this.getStyle("CornerRadiusTopLeft");
@@ -99,15 +151,49 @@ RoundedRectangleShape.prototype.drawShape =
 		var cBr = this.getStyle("CornerRadiusBottomRight");
 		
 		if (c == null)
-			c = 0;
+		{
+			var cp = this.getStyle("CornerRadiusPercent");
+			if (cp == null)
+				c = 0;
+			else
+				c = size * (cp / 100);
+		}
+		
 		if (cTl == null)
-			cTl = c;
+		{
+			var cTlp = this.getStyle("CornerRadiusTopLeftPercent");
+			if (cTlp == null)
+				cTl = c;
+			else
+				cTl = size * (cTlp / 100);
+		}
+		
 		if (cTr == null)
-			cTr = c;
+		{
+			var cTrp = this.getStyle("CornerRadiusTopRightPercent");
+			if (cTrp == null)
+				cTr = c;
+			else
+				cTr = size * (cTrp / 100);
+		}
+		
 		if (cBl == null)
-			cBl = c;
+		{
+			var cBlp = this.getStyle("CornerRadiusBottomLeftPercent");
+			if (cBlp == null)
+				cBl = c;
+			else
+				cBl = size * (cBlp / 100);
+		}
+		
 		if (cBr == null)
-			cBr = c;
+		{
+			var cBrp = this.getStyle("CornerRadiusBottomRightPercent");
+			if (cBrp == null)
+				cBr = c;
+			else
+				cBr = size * (cBrp / 100);
+		}
 		
 		ctx.moveTo(x, y + cTl);
 		
