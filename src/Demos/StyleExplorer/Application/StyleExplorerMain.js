@@ -124,6 +124,15 @@ fontSizeButtonStyle.setStyle("SkinClass", ScrollButtonSkinElement);
 fontSizeButtonStyle.setStyle("Width", 14);
 fontSizeButtonStyle.setStyle("PercentHeight", 100);
 
+////Style editing viewport
+var stylesControlViewportVScrollbarStyle = new StyleDefinition();
+stylesControlViewportVScrollbarStyle.setStyle("PaddingLeft", 4);
+
+var stylesControlViewportStyle = new StyleDefinition();
+stylesControlViewportStyle.setStyle("VerticalScrollBarStyle", stylesControlViewportVScrollbarStyle);
+stylesControlViewportStyle.setStyle("MinWidth", 450);
+stylesControlViewportStyle.setStyle("MeasureContentWidth", true); //Allow horizontal expansion
+
 
 
 //////APPLICATION////////////////
