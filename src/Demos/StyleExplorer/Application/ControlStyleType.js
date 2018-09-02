@@ -129,12 +129,6 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Container", 	"RotateDegrees", 							"number", 	false, 	false, 	styleDef, this,	0, 							null));
 			this.styleList.addItem(new ControlStyleType("Container", 	"RotateCenterY", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
 			this.styleList.addItem(new ControlStyleType("Container", 	"RotateCenterY", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
-			
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowSize", 								"number", 	false, 	false, 	styleDef, this,	0,							null));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetX", 							"number", 	false, 	false, 	styleDef, this,	0,							null));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetY", 							"number", 	false, 	false, 	styleDef, this,	0, 							null));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-			
 			this.styleList.addItem(new ControlStyleType("Functional", 	"Draggable", 								"bool", 	false, 	false, 	styleDef, this, false,						[{label:"true", value:true}, {label:"false", value:false}]));
 		}
 		
@@ -223,6 +217,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"AutoGradientType", 						"string", 	true, 	false, 	styleDef, this,	"linear",					[{label:"linear", value:"linear"}, {label:"radial", value:"radial"}]));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"AutoGradientStart", 						"number", 	false, 	false, 	styleDef, this,	(+.05),						null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"AutoGradientStop", 						"number", 	false, 	false, 	styleDef, this,	(-.05),						null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowSize", 								"number", 	false, 	false, 	styleDef, this,	0,							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetX", 							"number", 	false, 	false, 	styleDef, this,	0,							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetY", 							"number", 	false, 	false, 	styleDef, this,	0, 							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 		}
 		
 		if (this.styleType == "root" || 
