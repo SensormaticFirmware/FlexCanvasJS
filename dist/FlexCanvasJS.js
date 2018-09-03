@@ -2183,11 +2183,27 @@ StyleableBase.prototype._getInstanceStyle =
 StyleableBase.prototype._applySubStylesToElement = 
 	function (styleName, elementToApply)
 	{
+		var instanceDefinitions = [];
+
+		//Set default style definitions (class styles)
 		elementToApply._setStyleDefinitions(this._getClassStyleList(styleName), true);
 		
+		//Get instance style or array of styles
 		var instanceStyle = this._getInstanceStyle(styleName);
+		
 		if (instanceStyle !== undefined)
-			elementToApply._setStyleDefinitions([instanceStyle], false);
+		{
+			if (Array.isArray(instanceStyle) == true)
+			{
+				for (var i = 0; i < instanceStyle.length; i++)
+					instanceDefinitions.push(instanceStyle[i]);
+			}
+			else 
+				instanceDefinitions.push(instanceStyle);
+		}
+		
+		//Set style definitions
+		elementToApply._setStyleDefinitions(instanceDefinitions, false);
 	};	
 	
 /**
@@ -2209,11 +2225,32 @@ StyleableBase.prototype._getClassStyleList =
 	{
 		this._flattenClassStyles();
 	
-		//Copy the array so our internal data cannot get fudged.
+		var i;
+		var i2;
+		var styleList = [];
+		var styleValue;
+		var styleFlatArray;
+		
 		if (styleName in this.constructor.__StyleDefaultsFlatMap)
-			return this.constructor.__StyleDefaultsFlatMap[styleName].slice();
+		{
+			styleFlatArray = this.constructor.__StyleDefaultsFlatMap[styleName];
+			
+			for (i = 0; i < styleFlatArray.length; i++)
+			{
+				styleValue = styleFlatArray[i];
+				
+				//Flatten any values that are arrays
+				if (Array.isArray(styleValue) == true)
+				{
+					for (i2 = 0; i2 < styleValue.length; i2++)
+						styleList.push(styleValue[i2]);
+				}
+				else
+					styleList.push(styleValue);
+			}
+		}
 	
-		return [];
+		return styleList;
 	};
 	
 //@private	
@@ -6617,6 +6654,7 @@ CanvasElement.prototype._getStyleList =
 	function (styleName)
 	{
 		var styleList = [];
+		var i;
 		
 		//Add definitions
 		for (var i = 0; i < this._styleDefinitions.length; i++)
@@ -6624,12 +6662,31 @@ CanvasElement.prototype._getStyleList =
 			styleValue = this._styleDefinitions[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-				styleList.push(styleValue);
+			{
+				if (Array.isArray(styleValue) == true)
+				{
+					for (i = 0; i < styleValue.length; i++)
+						styleList.push(styleValue[i]);
+						
+				}
+				else
+					styleList.push(styleValue);
+			}
 		}
 		
 		//Add instance
 		if (styleName in this._styleMap && this._styleMap[styleName] != null)
-			styleList.push(this._styleMap[styleName]);
+		{
+			styleValue = this._styleMap[styleName];
+			
+			if (Array.isArray(styleValue) == true)
+			{
+				for (i = 0; i < styleValue.length; i++)
+					styleList.push(styleValue[i]);
+			}
+			else
+				styleList.push(this._styleMap[styleName]);
+		}
 		
 		return styleList;
 	};
@@ -6653,6 +6710,7 @@ CanvasElement.prototype._getDefaultStyleList =
 	function (styleName)
 	{
 		var styleValue = null;
+		var i;
 		
 		//Get class list
 		var styleList = this._getClassStyleList(styleName);
@@ -6663,7 +6721,15 @@ CanvasElement.prototype._getDefaultStyleList =
 			styleValue = this._styleDefinitionDefaults[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-				styleList.push(styleValue);
+			{
+				if (Array.isArray(styleValue) == true)
+				{
+					for (i = 0; i < styleValue.length; i++)
+						styleList.push(styleValue[i]);
+				}
+				else 
+					styleList.push(styleValue);
+			}
 		}
 		
 		return styleList;
@@ -9146,13 +9212,13 @@ ViewportElement._StyleTypes.VerticalScrollBarPlacement = 		StyleableBase.EStyleT
 //ScrollBar styles.
 /**
  * @style HorizontalScrollBarStyle StyleDefinition
- * The StyleDefinition to be applied to the horizontal scroll bar.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the horizontal scroll bar.
  */
 ViewportElement._StyleTypes.HorizontalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style VerticalScrollBarStyle StyleDefinition
- * The StyleDefinition to be applied to the vertical scroll bar.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the vertical scroll bar.
  */
 ViewportElement._StyleTypes.VerticalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -12474,7 +12540,7 @@ TextInputElement._StyleTypes.UpSkinClass = 								StyleableBase.EStyleType.NORM
 /**
  * @style UpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "up" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
  */
 TextInputElement._StyleTypes.UpSkinStyle = 								StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -12512,7 +12578,7 @@ TextInputElement._StyleTypes.DisabledSkinClass = 						StyleableBase.EStyleType.
 
 /**
  * @style DisabledSkinStyle StyleDefinition
- * The StyleDefinition to apply to the "disabled" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.
  * When this is null, the base SkinTyle will be used.
  */
 TextInputElement._StyleTypes.DisabledSkinStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
@@ -13796,7 +13862,7 @@ DataRendererBaseElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.N
 /**
  * @style UpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "up" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
  */
 DataRendererBaseElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -13812,7 +13878,7 @@ DataRendererBaseElement._StyleTypes.AltSkinClass = 				StyleableBase.EStyleType.
 /**
  * @style AltSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "alt" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "alt" state skin element.
  */
 DataRendererBaseElement._StyleTypes.AltSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -13827,7 +13893,7 @@ DataRendererBaseElement._StyleTypes.OverSkinClass = 			StyleableBase.EStyleType.
 /**
  * @style OverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "over" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "over" state skin element.
  */
 DataRendererBaseElement._StyleTypes.OverSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -13842,7 +13908,7 @@ DataRendererBaseElement._StyleTypes.SelectedSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style SelectedSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selected" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selected" state skin element.
  */
 DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -14420,7 +14486,7 @@ DataListElement._StyleTypes.ScrollBarPlacement = 				StyleableBase.EStyleType.NO
 /**
  * @style ScrollBarStyle StyleDefinition
  * 
- * The StyleDefinition to be applied to the scroll bar.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the scroll bar.
  */
 DataListElement._StyleTypes.ScrollBarStyle = 					StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -14443,7 +14509,7 @@ DataListElement._StyleTypes.ListItemClass = 					StyleableBase.EStyleType.NORMAL
 /**
  * @style ListItemStyle StyleDefinition
  * 
- * The StyleDefinition to be applied to the DataRenderer.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the DataRenderer.
  */
 DataListElement._StyleTypes.ListItemStyle = 					StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -17005,25 +17071,25 @@ ScrollBarElement._StyleTypes.ScrollTweenDuration =			StyleableBase.EStyleType.NO
 //ScrollButton / Button styles.
 /**
  * @style ButtonIncrementStyle StyleDefinition
- * StyleDefinition to be applied to the Scroll increment Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the Scroll increment Button.
  */
 ScrollBarElement._StyleTypes.ButtonIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonDecrementStyle StyleDefinition
- * StyleDefinition to be applied to the Scroll decrement Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the Scroll decrement Button.
  */
 ScrollBarElement._StyleTypes.ButtonDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTrackStyle StyleDefinition
- * StyleDefinition to be applied to the scroll bar track Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the scroll bar track Button.
  */
 ScrollBarElement._StyleTypes.ButtonTrackStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTabStyle StyleDefinition
- * StyleDefinition to be applied to the scroll bar tab (draggable) Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the scroll bar tab (draggable) Button.
  */
 ScrollBarElement._StyleTypes.ButtonTabStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -17933,7 +17999,7 @@ ButtonElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.NORMAL;		//
 /**
  * @style UpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "up" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
  */
 ButtonElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -17956,7 +18022,7 @@ ButtonElement._StyleTypes.OverSkinClass = 				StyleableBase.EStyleType.NORMAL;		
 /**
  * @style OverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "over" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "over" state skin element.
  */
 ButtonElement._StyleTypes.OverSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -17979,7 +18045,7 @@ ButtonElement._StyleTypes.DownSkinClass = 				StyleableBase.EStyleType.NORMAL;		
 /**
  * @style DownSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "down" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "down" state skin element.
  */
 ButtonElement._StyleTypes.DownSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -18002,7 +18068,7 @@ ButtonElement._StyleTypes.DisabledSkinClass = 			StyleableBase.EStyleType.NORMAL
 /**
  * @style DisabledSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "disabled" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.
  */
 ButtonElement._StyleTypes.DisabledSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -18511,7 +18577,7 @@ ToggleButtonElement._StyleTypes.SelectedUpSkinClass = 			StyleableBase.EStyleTyp
 /**
  * @style SelectedUpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedUp" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedUp" state skin element.
  */
 ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -18534,7 +18600,7 @@ ToggleButtonElement._StyleTypes.SelectedOverSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style SelectedOverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedOver" state skin element. 
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedOver" state skin element. 
  */
 ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -18557,7 +18623,7 @@ ToggleButtonElement._StyleTypes.SelectedDownSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style SelectedDownSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedDown" state skin element. 
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedDown" state skin element. 
  */
 ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -18580,7 +18646,7 @@ ToggleButtonElement._StyleTypes.SelectedDisabledSkinClass = 	StyleableBase.EStyl
 /**
  * @style SelectedDisabledSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedDisabled" state skin element. 
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedDisabled" state skin element. 
  */
 ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -19223,7 +19289,7 @@ DropdownElement._StyleTypes.PopupDataListClass =			StyleableBase.EStyleType.NORM
 /**
  * @style PopupDataListStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the pop up list element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the pop up list element.
  */
 DropdownElement._StyleTypes.PopupDataListStyle = 			StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
@@ -19244,7 +19310,7 @@ DropdownElement._StyleTypes.ArrowButtonClass = 				StyleableBase.EStyleType.NORM
 /**
  * @style ArrowButtonStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the arrow icon class.
+ * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
  */
 DropdownElement._StyleTypes.ArrowButtonStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
@@ -20221,7 +20287,7 @@ DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			StyleableBase.EStyle
 /**
  * @style SortAscIconStyle StyleDefinition
  * 
- * The StyleDefinition to apply ascending sort icon element.
+ * The StyleDefinition or [StyleDefinition] array to apply ascending sort icon element.
  */
 DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -20237,7 +20303,7 @@ DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			StyleableBase.EStyl
 /**
  * @style SortDescIconStyle StyleDefinition
  * 
- * The StyleDefinition to apply descending sort icon element.
+ * The StyleDefinition or [StyleDefinition] array to apply descending sort icon element.
  */
 DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -20623,7 +20689,7 @@ DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		StyleableBase.EStyleTyp
 /**
  * @style ColumnDividerStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the column divider element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the column divider element.
  * See default skin class is DataGridHeaderColumnDividerSkinElement for additional styles.
  * 
  * @seealso DataGridHeaderColumnDividerSkinElement
@@ -21115,7 +21181,7 @@ DataGridElement._StyleTypes.HeaderClass = 						StyleableBase.EStyleType.NORMAL;
 /**
  * @style HeaderStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the header element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the header element.
  */
 DataGridElement._StyleTypes.HeaderStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -21136,7 +21202,7 @@ DataGridElement._StyleTypes.VerticalGridLinesClass = 			StyleableBase.EStyleType
 /**
  * @style VerticalGridLinesStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the vertical grid line elements.
+ * The StyleDefinition or [StyleDefinition] array to apply to the vertical grid line elements.
  */
 DataGridElement._StyleTypes.VerticalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -21150,7 +21216,7 @@ DataGridElement._StyleTypes.HorizontalGridLinesClass = 			StyleableBase.EStyleTy
 /**
  * @style HorizontalGridLinesStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the horizontal grid line elements.
+ * The StyleDefinition or [StyleDefinition] array to apply to the horizontal grid line elements.
  */
 DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -22057,7 +22123,7 @@ DataGridColumnDefinition._StyleTypes.HeaderItemClass = 				StyleableBase.EStyleT
 /**
  * @style HeaderItemStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the HeaderItem DataRenderer.
+ * The StyleDefinition or [StyleDefinition] array to apply to the HeaderItem DataRenderer.
  */
 DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -22078,7 +22144,7 @@ DataGridColumnDefinition._StyleTypes.RowItemClass = 				StyleableBase.EStyleType
 /**
  * @style RowItemStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the RowItem DataRenderer.
+ * The StyleDefinition or [StyleDefinition] array to apply to the RowItem DataRenderer.
  */
 DataGridColumnDefinition._StyleTypes.RowItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -22194,7 +22260,7 @@ CheckboxElement._StyleTypes.HalfSelectedUpSkinClass = 			StyleableBase.EStyleTyp
 /**
  * @style HalfSelectedUpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedUp" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedUp" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -22217,7 +22283,7 @@ CheckboxElement._StyleTypes.HalfSelectedOverSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style HalfSelectedOverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedOver" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedOver" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -22240,7 +22306,7 @@ CheckboxElement._StyleTypes.HalfSelectedDownSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style HalfSelectedDownSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedDown" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedDown" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -22263,7 +22329,7 @@ CheckboxElement._StyleTypes.HalfSelectedDisabledSkinClass = 	StyleableBase.EStyl
 /**
  * @style HalfSelectedDisabledSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedDisabled" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedDisabled" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
