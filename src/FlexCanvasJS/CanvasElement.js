@@ -2891,6 +2891,7 @@ CanvasElement.prototype._getStyleList =
 	function (styleName)
 	{
 		var styleList = [];
+		var i;
 		
 		//Add definitions
 		for (var i = 0; i < this._styleDefinitions.length; i++)
@@ -2898,12 +2899,31 @@ CanvasElement.prototype._getStyleList =
 			styleValue = this._styleDefinitions[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-				styleList.push(styleValue);
+			{
+				if (Array.isArray(styleValue) == true)
+				{
+					for (i = 0; i < styleValue.length; i++)
+						styleList.push(styleValue[i]);
+						
+				}
+				else
+					styleList.push(styleValue);
+			}
 		}
 		
 		//Add instance
 		if (styleName in this._styleMap && this._styleMap[styleName] != null)
-			styleList.push(this._styleMap[styleName]);
+		{
+			styleValue = this._styleMap[styleName];
+			
+			if (Array.isArray(styleValue) == true)
+			{
+				for (i = 0; i < styleValue.length; i++)
+					styleList.push(styleValue[i]);
+			}
+			else
+				styleList.push(this._styleMap[styleName]);
+		}
 		
 		return styleList;
 	};
@@ -2927,6 +2947,7 @@ CanvasElement.prototype._getDefaultStyleList =
 	function (styleName)
 	{
 		var styleValue = null;
+		var i;
 		
 		//Get class list
 		var styleList = this._getClassStyleList(styleName);
@@ -2937,7 +2958,15 @@ CanvasElement.prototype._getDefaultStyleList =
 			styleValue = this._styleDefinitionDefaults[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-				styleList.push(styleValue);
+			{
+				if (Array.isArray(styleValue) == true)
+				{
+					for (i = 0; i < styleValue.length; i++)
+						styleList.push(styleValue[i]);
+				}
+				else 
+					styleList.push(styleValue);
+			}
 		}
 		
 		return styleList;
