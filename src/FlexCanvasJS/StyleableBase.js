@@ -380,11 +380,27 @@ StyleableBase.prototype._getInstanceStyle =
 StyleableBase.prototype._applySubStylesToElement = 
 	function (styleName, elementToApply)
 	{
+		var instanceDefinitions = [];
+
+		//Set default style definitions (class styles)
 		elementToApply._setStyleDefinitions(this._getClassStyleList(styleName), true);
 		
+		//Get instance style or array of styles
 		var instanceStyle = this._getInstanceStyle(styleName);
+		
 		if (instanceStyle !== undefined)
-			elementToApply._setStyleDefinitions([instanceStyle], false);
+		{
+			if (Array.isArray(instanceStyle) == true)
+			{
+				for (var i = 0; i < instanceStyle.length; i++)
+					instanceDefinitions.push(instanceStyle[i]);
+			}
+			else 
+				instanceDefinitions.push(instanceStyle);
+		}
+		
+		//Set style definitions
+		elementToApply._setStyleDefinitions(instanceDefinitions, false);
 	};	
 	
 /**
@@ -406,11 +422,32 @@ StyleableBase.prototype._getClassStyleList =
 	{
 		this._flattenClassStyles();
 	
-		//Copy the array so our internal data cannot get fudged.
+		var i;
+		var i2;
+		var styleList = [];
+		var styleValue;
+		var styleFlatArray;
+		
 		if (styleName in this.constructor.__StyleDefaultsFlatMap)
-			return this.constructor.__StyleDefaultsFlatMap[styleName].slice();
+		{
+			styleFlatArray = this.constructor.__StyleDefaultsFlatMap[styleName];
+			
+			for (i = 0; i < styleFlatArray.length; i++)
+			{
+				styleValue = styleFlatArray[i];
+				
+				//Flatten any values that are arrays
+				if (Array.isArray(styleValue) == true)
+				{
+					for (i2 = 0; i2 < styleValue.length; i2++)
+						styleList.push(styleValue[i2]);
+				}
+				else
+					styleList.push(styleValue);
+			}
+		}
 	
-		return [];
+		return styleList;
 	};
 	
 //@private	
