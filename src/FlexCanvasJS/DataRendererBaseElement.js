@@ -69,7 +69,7 @@ DataRendererBaseElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.N
 /**
  * @style UpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "up" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
  */
 DataRendererBaseElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -85,7 +85,7 @@ DataRendererBaseElement._StyleTypes.AltSkinClass = 				StyleableBase.EStyleType.
 /**
  * @style AltSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "alt" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "alt" state skin element.
  */
 DataRendererBaseElement._StyleTypes.AltSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -100,7 +100,7 @@ DataRendererBaseElement._StyleTypes.OverSkinClass = 			StyleableBase.EStyleType.
 /**
  * @style OverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "over" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "over" state skin element.
  */
 DataRendererBaseElement._StyleTypes.OverSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -115,7 +115,7 @@ DataRendererBaseElement._StyleTypes.SelectedSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style SelectedSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selected" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selected" state skin element.
  */
 DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 

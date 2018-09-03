@@ -97,7 +97,7 @@ TextInputElement._StyleTypes.UpSkinClass = 								StyleableBase.EStyleType.NORM
 /**
  * @style UpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "up" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
  */
 TextInputElement._StyleTypes.UpSkinStyle = 								StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -135,7 +135,7 @@ TextInputElement._StyleTypes.DisabledSkinClass = 						StyleableBase.EStyleType.
 
 /**
  * @style DisabledSkinStyle StyleDefinition
- * The StyleDefinition to apply to the "disabled" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.
  * When this is null, the base SkinTyle will be used.
  */
 TextInputElement._StyleTypes.DisabledSkinStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition

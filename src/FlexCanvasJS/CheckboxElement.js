@@ -55,7 +55,7 @@ CheckboxElement._StyleTypes.HalfSelectedUpSkinClass = 			StyleableBase.EStyleTyp
 /**
  * @style HalfSelectedUpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedUp" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedUp" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -78,7 +78,7 @@ CheckboxElement._StyleTypes.HalfSelectedOverSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style HalfSelectedOverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedOver" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedOver" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -101,7 +101,7 @@ CheckboxElement._StyleTypes.HalfSelectedDownSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style HalfSelectedDownSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedDown" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedDown" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -124,7 +124,7 @@ CheckboxElement._StyleTypes.HalfSelectedDisabledSkinClass = 	StyleableBase.EStyl
 /**
  * @style HalfSelectedDisabledSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "halfSelectedDisabled" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "halfSelectedDisabled" state skin element.
  */
 CheckboxElement._StyleTypes.HalfSelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 

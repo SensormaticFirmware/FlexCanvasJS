@@ -92,7 +92,7 @@ ButtonElement._StyleTypes.UpSkinClass = 				StyleableBase.EStyleType.NORMAL;		//
 /**
  * @style UpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "up" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
  */
 ButtonElement._StyleTypes.UpSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -115,7 +115,7 @@ ButtonElement._StyleTypes.OverSkinClass = 				StyleableBase.EStyleType.NORMAL;		
 /**
  * @style OverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "over" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "over" state skin element.
  */
 ButtonElement._StyleTypes.OverSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -138,7 +138,7 @@ ButtonElement._StyleTypes.DownSkinClass = 				StyleableBase.EStyleType.NORMAL;		
 /**
  * @style DownSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "down" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "down" state skin element.
  */
 ButtonElement._StyleTypes.DownSkinStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -161,7 +161,7 @@ ButtonElement._StyleTypes.DisabledSkinClass = 			StyleableBase.EStyleType.NORMAL
 /**
  * @style DisabledSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "disabled" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.
  */
 ButtonElement._StyleTypes.DisabledSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 

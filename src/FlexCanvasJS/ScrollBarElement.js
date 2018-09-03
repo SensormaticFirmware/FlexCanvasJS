@@ -102,25 +102,25 @@ ScrollBarElement._StyleTypes.ScrollTweenDuration =			StyleableBase.EStyleType.NO
 //ScrollButton / Button styles.
 /**
  * @style ButtonIncrementStyle StyleDefinition
- * StyleDefinition to be applied to the Scroll increment Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the Scroll increment Button.
  */
 ScrollBarElement._StyleTypes.ButtonIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonDecrementStyle StyleDefinition
- * StyleDefinition to be applied to the Scroll decrement Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the Scroll decrement Button.
  */
 ScrollBarElement._StyleTypes.ButtonDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTrackStyle StyleDefinition
- * StyleDefinition to be applied to the scroll bar track Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the scroll bar track Button.
  */
 ScrollBarElement._StyleTypes.ButtonTrackStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style ButtonTabStyle StyleDefinition
- * StyleDefinition to be applied to the scroll bar tab (draggable) Button.
+ * StyleDefinition or [StyleDefinition] array to be applied to the scroll bar tab (draggable) Button.
  */
 ScrollBarElement._StyleTypes.ButtonTabStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 

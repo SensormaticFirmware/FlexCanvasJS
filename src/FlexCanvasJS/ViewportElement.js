@@ -111,13 +111,13 @@ ViewportElement._StyleTypes.VerticalScrollBarPlacement = 		StyleableBase.EStyleT
 //ScrollBar styles.
 /**
  * @style HorizontalScrollBarStyle StyleDefinition
- * The StyleDefinition to be applied to the horizontal scroll bar.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the horizontal scroll bar.
  */
 ViewportElement._StyleTypes.HorizontalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
 /**
  * @style VerticalScrollBarStyle StyleDefinition
- * The StyleDefinition to be applied to the vertical scroll bar.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the vertical scroll bar.
  */
 ViewportElement._StyleTypes.VerticalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 

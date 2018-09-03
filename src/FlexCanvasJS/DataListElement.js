@@ -186,7 +186,7 @@ DataListElement._StyleTypes.ScrollBarPlacement = 				StyleableBase.EStyleType.NO
 /**
  * @style ScrollBarStyle StyleDefinition
  * 
- * The StyleDefinition to be applied to the scroll bar.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the scroll bar.
  */
 DataListElement._StyleTypes.ScrollBarStyle = 					StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -209,7 +209,7 @@ DataListElement._StyleTypes.ListItemClass = 					StyleableBase.EStyleType.NORMAL
 /**
  * @style ListItemStyle StyleDefinition
  * 
- * The StyleDefinition to be applied to the DataRenderer.
+ * The StyleDefinition or [StyleDefinition] array to be applied to the DataRenderer.
  */
 DataListElement._StyleTypes.ListItemStyle = 					StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 

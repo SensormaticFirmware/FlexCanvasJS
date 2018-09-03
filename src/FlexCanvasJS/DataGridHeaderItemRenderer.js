@@ -45,7 +45,7 @@ DataGridHeaderItemRenderer._StyleTypes.SortAscIconClass =			StyleableBase.EStyle
 /**
  * @style SortAscIconStyle StyleDefinition
  * 
- * The StyleDefinition to apply ascending sort icon element.
+ * The StyleDefinition or [StyleDefinition] array to apply ascending sort icon element.
  */
 DataGridHeaderItemRenderer._StyleTypes.SortAscIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -61,7 +61,7 @@ DataGridHeaderItemRenderer._StyleTypes.SortDescIconClass =			StyleableBase.EStyl
 /**
  * @style SortDescIconStyle StyleDefinition
  * 
- * The StyleDefinition to apply descending sort icon element.
+ * The StyleDefinition or [StyleDefinition] array to apply descending sort icon element.
  */
 DataGridHeaderItemRenderer._StyleTypes.SortDescIconStyle =			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 

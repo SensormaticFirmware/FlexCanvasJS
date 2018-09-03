@@ -71,7 +71,7 @@ ToggleButtonElement._StyleTypes.SelectedUpSkinClass = 			StyleableBase.EStyleTyp
 /**
  * @style SelectedUpSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedUp" state skin element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedUp" state skin element.
  */
 ToggleButtonElement._StyleTypes.SelectedUpSkinStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -94,7 +94,7 @@ ToggleButtonElement._StyleTypes.SelectedOverSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style SelectedOverSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedOver" state skin element. 
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedOver" state skin element. 
  */
 ToggleButtonElement._StyleTypes.SelectedOverSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -117,7 +117,7 @@ ToggleButtonElement._StyleTypes.SelectedDownSkinClass = 		StyleableBase.EStyleTy
 /**
  * @style SelectedDownSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedDown" state skin element. 
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedDown" state skin element. 
  */
 ToggleButtonElement._StyleTypes.SelectedDownSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
@@ -140,7 +140,7 @@ ToggleButtonElement._StyleTypes.SelectedDisabledSkinClass = 	StyleableBase.EStyl
 /**
  * @style SelectedDisabledSkinStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the "selectedDisabled" state skin element. 
+ * The StyleDefinition or [StyleDefinition] array to apply to the "selectedDisabled" state skin element. 
  */
 ToggleButtonElement._StyleTypes.SelectedDisabledSkinStyle = 	StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 

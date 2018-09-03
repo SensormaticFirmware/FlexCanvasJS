@@ -52,7 +52,7 @@ DataGridHeaderElement._StyleTypes.ColumnDividerClass = 		StyleableBase.EStyleTyp
 /**
  * @style ColumnDividerStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the column divider element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the column divider element.
  * See default skin class is DataGridHeaderColumnDividerSkinElement for additional styles.
  * 
  * @seealso DataGridHeaderColumnDividerSkinElement

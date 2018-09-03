@@ -129,7 +129,7 @@ DataGridElement._StyleTypes.HeaderClass = 						StyleableBase.EStyleType.NORMAL;
 /**
  * @style HeaderStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the header element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the header element.
  */
 DataGridElement._StyleTypes.HeaderStyle = 						StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -150,7 +150,7 @@ DataGridElement._StyleTypes.VerticalGridLinesClass = 			StyleableBase.EStyleType
 /**
  * @style VerticalGridLinesStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the vertical grid line elements.
+ * The StyleDefinition or [StyleDefinition] array to apply to the vertical grid line elements.
  */
 DataGridElement._StyleTypes.VerticalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -164,7 +164,7 @@ DataGridElement._StyleTypes.HorizontalGridLinesClass = 			StyleableBase.EStyleTy
 /**
  * @style HorizontalGridLinesStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the horizontal grid line elements.
+ * The StyleDefinition or [StyleDefinition] array to apply to the horizontal grid line elements.
  */
 DataGridElement._StyleTypes.HorizontalGridLinesStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 

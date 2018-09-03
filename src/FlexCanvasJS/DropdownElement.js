@@ -137,7 +137,7 @@ DropdownElement._StyleTypes.PopupDataListClass =			StyleableBase.EStyleType.NORM
 /**
  * @style PopupDataListStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the pop up list element.
+ * The StyleDefinition or [StyleDefinition] array to apply to the pop up list element.
  */
 DropdownElement._StyleTypes.PopupDataListStyle = 			StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
@@ -158,7 +158,7 @@ DropdownElement._StyleTypes.ArrowButtonClass = 				StyleableBase.EStyleType.NORM
 /**
  * @style ArrowButtonStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the arrow icon class.
+ * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
  */
 DropdownElement._StyleTypes.ArrowButtonStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 

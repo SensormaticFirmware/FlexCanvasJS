@@ -70,7 +70,7 @@ DataGridColumnDefinition._StyleTypes.HeaderItemClass = 				StyleableBase.EStyleT
 /**
  * @style HeaderItemStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the HeaderItem DataRenderer.
+ * The StyleDefinition or [StyleDefinition] array to apply to the HeaderItem DataRenderer.
  */
 DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
@@ -91,7 +91,7 @@ DataGridColumnDefinition._StyleTypes.RowItemClass = 				StyleableBase.EStyleType
 /**
  * @style RowItemStyle StyleDefinition
  * 
- * The StyleDefinition to apply to the RowItem DataRenderer.
+ * The StyleDefinition or [StyleDefinition] array to apply to the RowItem DataRenderer.
  */
 DataGridColumnDefinition._StyleTypes.RowItemStyle = 				StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
 
