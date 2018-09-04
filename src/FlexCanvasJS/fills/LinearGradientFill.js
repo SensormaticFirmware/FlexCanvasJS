@@ -34,7 +34,7 @@ LinearGradientFill._StyleTypes = Object.create(null);
 /**
  * @style GradientDegrees Number
  * 
- * Angle which the gradient should be drawn across the element
+ * Angle 0-360 which the gradient should be drawn across the element.
  */
 LinearGradientFill._StyleTypes.GradientDegrees = 						StyleableBase.EStyleType.NORMAL;		// 45
 
@@ -42,17 +42,32 @@ LinearGradientFill._StyleTypes.GradientDegrees = 						StyleableBase.EStyleType.
  * @style GradientColorStops Array
  * 
  * Array of color stops to apply to the gradient.
- * Format like [[percent, "color"], [percent, "color"], ...]
+ * Format like [[position, "color"], [position, "color"], ...]
+ * Position is a number between 0 and 1 representing where on the gradient line
+ * to place the color stop.
  */
 LinearGradientFill._StyleTypes.GradientColorStops = 					StyleableBase.EStyleType.NORMAL;		// [[0, "#FFFFFF"], [1, "#000000]]
+
+/**
+ * @style GradientCoverage String
+ * 
+ * Determines the size of the gradient line based on the GradientDegrees.
+ * This style has no effect on gradients at 90 degree intervals.
+ * Available values are "inner" and "outer".
+ * Inner gradient will draw a line across the center of the element at the specified degrees.
+ * Outer gradient extends the line beyond the element's bounds so that the gradient is 
+ * perpendicular to the outer most corners of the element. 
+ */
+LinearGradientFill._StyleTypes.GradientCoverage = 						StyleableBase.EStyleType.NORMAL;		// "inner" || "outer"
 
 
 ////////////Default Styles///////////////////////////
 
 LinearGradientFill.StyleDefault = new StyleDefinition();
 
-LinearGradientFill.StyleDefault.setStyle("GradientDegrees", 			0);	// 45
-LinearGradientFill.StyleDefault.setStyle("GradientColorStops", 			[[0, "#FF0000"], [1, "#00FF00"]]);
+LinearGradientFill.StyleDefault.setStyle("GradientDegrees", 			0);	
+LinearGradientFill.StyleDefault.setStyle("GradientColorStops", 			[[0, "#FF0000"], [1, "#000000"]]);
+LinearGradientFill.StyleDefault.setStyle("GradientCoverage", 			"inner");
 
 
 ////////////Public//////////////////////
@@ -63,13 +78,18 @@ LinearGradientFill.prototype.drawFill =
 	{
 		var degrees = CanvasElement.normalizeDegrees(this.getStyle("GradientDegrees"));
 		var colorStops = this.getStyle("GradientColorStops");
+		var coverage = this.getStyle("GradientCoverage");
 		
 		var pointsStart = this._calculateInnerOuterPoints(degrees, metrics);
 		var pointsStop = this._calculateInnerOuterPoints(CanvasElement.normalizeDegrees(degrees + 180), metrics);
 		
+		var pointsIndex = 0;
+		if (coverage == "outer")
+			pointsIndex = 1;
+		
 		//Currently always use outer butterfly
-		var pointStart = pointsStart[1];
-		var pointStop = pointsStop[1];
+		var pointStart = pointsStart[pointsIndex];
+		var pointStop = pointsStop[pointsIndex];
 		
 		var gradient = ctx.createLinearGradient(pointStart.x, pointStart.y, pointStop.x, pointStop.y);
 		
