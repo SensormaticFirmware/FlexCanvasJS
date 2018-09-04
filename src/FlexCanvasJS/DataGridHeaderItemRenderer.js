@@ -84,7 +84,7 @@ DataGridHeaderItemRenderer._StyleTypes.SortIconPlacement =				StyleableBase.ESty
 
 //Make disabled skin look like "up" skin (just not click-able)
 DataGridHeaderItemRenderer.DisabledSkinStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#EBEBEB");
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundFill", 			"#EBEBEB");
 DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BorderType", 				null);
 
 //Other up/over/down skins (kill border)
@@ -113,7 +113,7 @@ DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault.setStyle("Direction", 	
 
 DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault = new StyleDefinition();
 DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BorderType", 				null);
-DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundColor", 			"#444444");
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundFill", 			"#444444");
 DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortAscIconStyleDefault = new StyleDefinition();
@@ -129,7 +129,7 @@ DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault.setStyle("Direction", 
 
 DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault = new StyleDefinition();
 DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BorderType", 				null);
-DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundColor", 		"#444444");
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundFill", 			"#444444");
 DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortDescIconStyleDefault = new StyleDefinition();

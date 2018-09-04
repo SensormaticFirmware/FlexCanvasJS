@@ -134,18 +134,18 @@ ScrollBarElement.TrackSkinStyleDefault = new StyleDefinition();
 ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderType", 						"solid");
 ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderThickness", 					1);
 ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderColor", 						"#333333");
-ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundColor", 					"#D9D9D9");
-ScrollBarElement.TrackSkinStyleDefault.setStyle("AutoGradientType", 				"none");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundFill", 					"#D9D9D9");
 
 //disabled skin of track
 ScrollBarElement.DisabledTrackSkinStyleDefault = new StyleDefinition();
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderType", 				"solid");
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderThickness", 			1);
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderColor", 				"#999999");
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BackgroundColor", 			"#ECECEC");
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
+
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BackgroundFill", 			"#ECECEC");
+//ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
+//ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
+//ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
 
 //track button
 ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();

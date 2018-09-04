@@ -15,7 +15,7 @@
  * Any states may be used. As an example, ButtonElement uses "up", "over", "down", and "disabled" states.
  * Override appropriate functions to return skin classes and style definitions per the element's states. 
  * SkinnableElement does not render itself, its skins do. It proxies all rendering 
- * related styles to its skins (such as BackgroundColor).
+ * related styles to its skins (such as BackgroundFill).
  * 
  * @seealso StyleProxy
  * 
@@ -51,10 +51,7 @@ SkinnableElement._SkinProxyMap = Object.create(null);
 SkinnableElement._SkinProxyMap.BorderType = 				true;
 SkinnableElement._SkinProxyMap.BorderColor = 				true;
 SkinnableElement._SkinProxyMap.BorderThickness = 			true;
-SkinnableElement._SkinProxyMap.BackgroundColor = 			true;
-SkinnableElement._SkinProxyMap.AutoGradientType = 			true;
-SkinnableElement._SkinProxyMap.AutoGradientStart = 			true;
-SkinnableElement._SkinProxyMap.AutoGradientStop = 			true;
+SkinnableElement._SkinProxyMap.BackgroundFill = 			true;
 SkinnableElement._SkinProxyMap.BackgroundShape = 			true;
 
 //Proxy styles that are not defined by the element.
@@ -261,37 +258,6 @@ SkinnableElement.prototype._changeState =
 		return true;
 	};
 
-//@override	
-SkinnableElement.prototype._setActualRotation = 
-	function (degrees, centerX, centerY)
-	{
-		var currentDegrees = this._rotateDegrees;
-	
-		SkinnableElement.base.prototype._setActualRotation.call(this, degrees, centerX, centerY);
-	
-		//Rotation changed
-		if (this._rotateDegrees != currentDegrees)
-		{
-			var autoGradientType;
-			var backgroundColor;
-			var borderType;
-			
-			for (var skinState in this._skins)
-			{
-				//Check if we need to re-render due to auto gradient
-				autoGradientType = this._skins[skinState].getStyle("AutoGradientType");
-				backgroundColor = this._skins[skinState].getStyle("BackgroundColor");
-				borderType = this._skins[skinState].getStyle("BorderType");
-				
-				if (autoGradientType != null && autoGradientType != "none" && 
-					(backgroundColor != null || (borderType != null && borderType != "none")))
-				{
-					this._skins[skinState]._invalidateRender();
-				}
-			}
-		}
-	};	
-	
 //@override
 SkinnableElement.prototype._doStylesUpdated =
 	function (stylesMap)

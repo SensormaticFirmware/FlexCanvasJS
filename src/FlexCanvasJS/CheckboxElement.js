@@ -173,10 +173,11 @@ CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundShape",					null);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderType", 						"solid");
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#333333");
-CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundColor", 					"#EBEBEB");
-CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 				(+.05));
-CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+
+CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundFill", 					"#EBEBEB");
+//CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
+//CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 				(+.05));
+//CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
 CheckboxElement.UpSkinStyleDefault.setStyle("CheckColor", 						"#000000");
 
 CheckboxElement.OverSkinStyleDefault = new StyleDefinition();
@@ -185,10 +186,11 @@ CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderColor", 					"#333333");
-CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundColor", 				"#DDDDDD");
-CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 				(+.05));
-CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+
+CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundFill", 				"#DDDDDD");
+//CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
+//CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 				(+.05));
+//CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
 CheckboxElement.OverSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DownSkinStyleDefault = new StyleDefinition();
@@ -197,10 +199,11 @@ CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderColor", 					"#333333");
-CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundColor", 				"#CCCCCC");
-CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 				(-.06));
-CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 				(+.02));
+
+CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundFill", 				"#CCCCCC");
+//CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
+//CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 				(-.06));
+//CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 				(+.02));
 CheckboxElement.DownSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DisabledSkinStyleDefault = new StyleDefinition();
@@ -209,10 +212,11 @@ CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundShape",			null);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderType", 				"solid");
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 			1);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderColor", 				"#999999");
-CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 			"#ECECEC");
-CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
+
+CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 			"#ECECEC");
+//CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
+//CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
+//CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
 CheckboxElement.DisabledSkinStyleDefault.setStyle("CheckColor", 				"#777777");
 
 

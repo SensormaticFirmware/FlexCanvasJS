@@ -80,7 +80,7 @@ DataGridHeaderElement.ColumnDividerSkinStyleDefault = new StyleDefinition();
 DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerLineColor", 		"#777777");
 DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerArrowColor", 		"#444444");
 DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BorderType", 				null);
-DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BackgroundColor", 		null);
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BackgroundFill", 			null);
 
 DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); 

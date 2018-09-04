@@ -43,6 +43,11 @@ function CanvasElement()
 	//this is changed (via styles) or added/removed to display chain.
 	this._backgroundShape = null;
 	
+	//Storage for the current background fill FillBase() per styling. We need to store a reference 
+	//because we listen for style changed events and need to be able to remove the listener when
+	//this is changed (via styles) or added/removed to display chain.
+	this._backgroundFill = null;
+	
 	this._manager = null; //Canvas Manager reference
 	this._displayDepth = 0; //Depth in display chain hierarchy
 	
@@ -221,6 +226,12 @@ function CanvasElement()
 		function (styleChangedEvent)
 		{
 			_self._onBackgroundShapeStyleChanged(styleChangedEvent);
+		};
+		
+	this._onBackgroundFillStyleChangedInstance = 
+		function (styleChangedEvent)
+		{
+			_self._onBackgroundFillStyleChanged(styleChangedEvent);
 		};
 		
 	this._onCanvasElementAddedRemovedInstance = 
@@ -402,12 +413,12 @@ CanvasElement._StyleTypes.BorderColor = 			StyleableBase.EStyleType.NORMAL;		// 
 CanvasElement._StyleTypes.BorderThickness = 		StyleableBase.EStyleType.NORMAL;		// number
 
 /**
- * @style BackgroundColor String
+ * @style BackgroundFill FillBase
  * 
- * Hex color value to be used when drawing the background. This may be set to null and no
- * background will be rendered. Format like "#FF0000" (red)
+ * Fill to use when filling the background. May be any FillBase subclass instance, 
+ * "color" string, or null for transparent. 
  */
-CanvasElement._StyleTypes.BackgroundColor = 		StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
+CanvasElement._StyleTypes.BackgroundFill = 			StyleableBase.EStyleType.NORMAL;		// FillBase() || "#FF0000" || null
 
 /**
  * @style ShadowSize Number
@@ -447,33 +458,6 @@ CanvasElement._StyleTypes.ShadowColor = 			StyleableBase.EStyleType.NORMAL;		// 
  * when a value between 1 and 0 is used.
  */
 CanvasElement._StyleTypes.Alpha = 					StyleableBase.EStyleType.NORMAL;		// number
-
-/**
- * @style AutoGradientType String
- * 
- * Determines the type of gradient to be used when rendering the element's background.
- * Allowable values are "none", "linear", or "radial". Auto gradients automatically lighten
- * and darken the associated color are always rendered in the same direction relative to the 
- * canvas itself regardless of rotation or transformation applied to the element. 
- * This is used to create effects like a consistent light source even if the element is rotating.
- */
-CanvasElement._StyleTypes.AutoGradientType = 		StyleableBase.EStyleType.NORMAL;		// "none" || "linear" || "radial"
-
-/**
- * @style AutoGradientStart Number
- * 
- * Color offset to apply to the start of the gradient. Allowable values are numbers between 
- * -1 (white) and +1 (black). 
- */
-CanvasElement._StyleTypes.AutoGradientStart = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
-
-/**
- * @style AutoGradientStop Number
- * 
- * Color offset to apply to the end of the gradient. Allowable values are numbers between 
- * -1 (white) and +1 (black). 
- */
-CanvasElement._StyleTypes.AutoGradientStop = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
 
 /**
  * @style ClipContent boolean
@@ -932,15 +916,12 @@ CanvasElement.StyleDefault.setStyle("Visible", 							true);
 CanvasElement.StyleDefault.setStyle("BorderType", 						"none");
 CanvasElement.StyleDefault.setStyle("BorderColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("BorderThickness", 					1);
-CanvasElement.StyleDefault.setStyle("BackgroundColor", 					null); 
+CanvasElement.StyleDefault.setStyle("BackgroundFill", 					null); 
 CanvasElement.StyleDefault.setStyle("ShadowSize", 						0);
 CanvasElement.StyleDefault.setStyle("ShadowOffsetX",					0);
 CanvasElement.StyleDefault.setStyle("ShadowOffsetY",					0);
 CanvasElement.StyleDefault.setStyle("ShadowColor",						"#000000");
 CanvasElement.StyleDefault.setStyle("Alpha", 							1);
-CanvasElement.StyleDefault.setStyle("AutoGradientType",					"none");
-CanvasElement.StyleDefault.setStyle("AutoGradientStart",				(0.15));
-CanvasElement.StyleDefault.setStyle("AutoGradientStop",					(-0.15));
 CanvasElement.StyleDefault.setStyle("ClipContent",						false);
 CanvasElement.StyleDefault.setStyle("SkinState", 						"");
 CanvasElement.StyleDefault.setStyle("BackgroundShape", 					null); 		//ShapeBase
@@ -2013,6 +1994,23 @@ CanvasElement.adjustColorLight =
 	};
 	
 /**
+ * @function cot
+ * @static
+ * Calculates the cotangent of supplied radians.
+ * 
+ * @param radians Number
+ * Radians to calculate cotangent
+ * 
+ * @returns Number
+ * Resulting cotangent from radians
+ */
+CanvasElement.cot = 
+	function (radians)
+	{
+		return 1 / Math.tan(radians);
+	};
+	
+/**
  * @function radiansToDegrees
  * @static
  * Calculates radians to degrees.
@@ -2511,6 +2509,13 @@ CanvasElement._calculateMinMaxPercentSizes =
 
 //@private	
 CanvasElement.prototype._onBackgroundShapeStyleChanged = 
+	function (styleChangedEvent)
+	{
+		this._invalidateRender();
+	};
+	
+//@private
+CanvasElement.prototype._onBackgroundFillStyleChanged = 
 	function (styleChangedEvent)
 	{
 		this._invalidateRender();
@@ -3048,6 +3053,9 @@ CanvasElement.prototype._onCanvasElementAdded =
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
+		if (this._backgroundFill != null && this._backgroundFill.hasEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance) == false)
+			this._backgroundFill.addEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+		
 		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
 		{
 			if (this._styleDefinitionDefaults[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
@@ -3118,6 +3126,9 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == true)
 			this._backgroundShape.removeEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
+		
+		if (this._backgroundFill != null && this._backgroundFill.hasEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance) == true)
+			this._backgroundFill.removeEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
 		
 		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
 		{
@@ -3863,17 +3874,6 @@ CanvasElement.prototype._setActualRotation =
 			{
 				this._compositeEffectChanged = true;
 				this._invalidateCompositeRender();
-				
-				//Check if we need to re-render due to auto gradient
-				var autoGradientType = this.getStyle("AutoGradientType");
-				var backgroundColor = this.getStyle("BackgroundColor");
-				var borderType = this.getStyle("BorderType");
-				
-				if (autoGradientType != null && autoGradientType != "none" && 
-					(backgroundColor != null || (borderType != null && borderType != "none")))
-				{
-					this._invalidateRender();
-				}
 			}
 		}
 		
@@ -4121,170 +4121,6 @@ CanvasElement.prototype._getPaddingMetrics =
 	};
 
 /**
- * @function _getAutoGradientFill
- * Helper function that returns a Context2D linear or radial CanvasGradient depending on this elements
- * auto gradient styles. This gradient uses 1 color and lightens and darkens the supplied color. 
- * The gradient is always oriented in the same direction regardless of the elements rotation or transformation. 
- * This is used for a consistent light source. 
- * 
- * @param color String
- * Hex color to lighten and darken for gradient. Format "#FF0000" (red).
- * 
- * @param context Canvas2DContext
- * Canvas2DContext to use to generate the gradient.
- * 
- * @returns CanvasGradient
- * Returns CanvasGradient to be applied to canvas Context2D.
- */		
-CanvasElement.prototype._getAutoGradientFill = 
-	function (color, context)
-	{
-		var gradientType = this.getStyle("AutoGradientType");
-		
-		if (gradientType == "radial")
-			return this._getAutoGradientRadial(color, context);
-		else if (gradientType == "linear")
-			return this._getAutoGradientLinear(color, context);
-		
-		return null;
-	};
-
-/**
- * @function _getAutoGradientMetrics
- * Helper function that returns a metrics object to be used for generating a consistent gradient
- * relative to the canvas regardless of the elements rotation, transformation or position in the
- * display hierarchy. Currently this always generates a gradient at 10 degrees from the upper left
- * to the lower right for consistency with inset/outset borders. This is used by the auto-gradient
- * to create a consistent light source. More styles should be added to allow changing the degrees
- * for more flexibility.
- * 
- * @returns Object
- * Gradient metrics object containing {startPoint:{x,y}, endPoint:{x, y}, width, height}
- */	
-CanvasElement.prototype._getAutoGradientMetrics = 
-	function ()
-	{
-		//Get metrics relative to the canvas. Regardless of transform, 
-		//light source should always be consistent.
-		var metrics = this.getMetrics(this._manager);
-	
-		//For convienience
-		var canvasX = metrics.getX();
-		var canvasY = metrics.getY();
-		var canvasWidth = metrics.getWidth();
-		var canvasHeight = metrics.getHeight();
-		
-		//Calculate the gradient line based on the element's canvas metrics.
-		var gradientWidth = canvasHeight * Math.tan(CanvasElement.degreesToRadians(8));
-		
-		var gradientStart = {x:0, y:canvasY};
-		if (gradientWidth <= canvasWidth)
-			gradientStart.x = canvasX + (canvasWidth / 2) - (gradientWidth / 2);
-		else
-			gradientStart.x = canvasX - ((gradientWidth - canvasWidth) / 2);
-		
-		var gradientEnd = {x:0, y:canvasY + canvasHeight};
-		if (gradientWidth <= canvasWidth)
-			gradientEnd.x = canvasX + (canvasWidth / 2) + (gradientWidth / 2);
-		else
-			gradientEnd.x = canvasX + canvasWidth + ((gradientWidth - canvasWidth) / 2);
-		
-		//Translate the gradient line start/stop back down to the element's coordinate plane.
-		this._manager.translatePointTo(gradientStart, this);
-		this._manager.translatePointTo(gradientEnd, this);
-		
-		return {startPoint:gradientStart, endPoint:gradientEnd, width:canvasWidth, height:canvasHeight};
-	};
-
-/**
- * @function _getAutoGradientLinear
- * Helper function that returns a Context2D linear CanvasGradient depending on this elements
- * auto gradient styles. See _getAutoGradientFill().
- * 
- * @param color String
- * Hex color to lighten and darken for gradient. Format "#FF0000" (red).
- * 
- * @param context Canvas2DContext
- * Canvas2DContext to use to generate the gradient.
- * 
- * @returns CanvasGradient
- * Returns CanvasGradient to be applied to canvas Context2D.
- */		
-CanvasElement.prototype._getAutoGradientLinear = 
-	function (color, context)
-	{
-		var lighterFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStart"));
-		var darkerFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStop"));
-		
-		var gradientMetrics = this._getAutoGradientMetrics();
-		
-		try
-		{
-			var fillGradient = context.createLinearGradient(
-					gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
-					gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
-			
-			fillGradient.addColorStop(0, lighterFill);
-			fillGradient.addColorStop(1, darkerFill);
-			
-			return fillGradient;
-		}
-		catch (ex)
-		{
-			//Swallow, invalid color
-			return null;
-		}
-	};	
-	
-/**
- * @function _getAutoGradientRadial
- * Helper function that returns a Context2D linear CanvasGradient depending on this elements
- * auto gradient styles. See _getAutoGradientFill().
- * 
- * @param color String
- * Hex color to lighten and darken for gradient. Format "#FF0000" (red).
- * 
- * @param context Canvas2DContext
- * Canvas2DContext to use to generate the gradient.
- * 
- * @returns CanvasGradient
- * Returns CanvasGradient to be applied to canvas Context2D.
- */		
-CanvasElement.prototype._getAutoGradientRadial = 
-	function (color, context)
-	{
-		var lighterFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStart"));
-		var darkerFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStop"));
-		
-		var gradientMetrics = this._getAutoGradientMetrics();
-		
-		var xSpan = gradientMetrics.endPoint.x - gradientMetrics.startPoint.x;
-		var ySpan = gradientMetrics.endPoint.y - gradientMetrics.startPoint.y;
-		
-		var gradientPoint = {x:gradientMetrics.startPoint.x + (xSpan * .42), 
-							y:gradientMetrics.startPoint.y + (ySpan * .42)};
-		
-		try
-		{
-			var fillGradient = context.createRadialGradient(
-					gradientPoint.x, gradientPoint.y, 
-					(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
-					gradientPoint.x, gradientPoint.y, 
-					0);
-			
-			fillGradient.addColorStop(0, darkerFill);
-			fillGradient.addColorStop(1, lighterFill);
-			
-			return fillGradient;
-		}
-		catch (ex)
-		{
-			//Swallow, invalid color
-			return null;
-		}
-	};	
-
-/**
  * @function _drawBackgroundShape
  * Used to draw the path to the Canvas2DContext that is to be used to render the focus ring,
  * fill the background, and draw the border. You should never need to explicitly call this. 
@@ -4383,7 +4219,7 @@ CanvasElement.prototype._drawFocusRing =
 	
 /**
  * @function _fillBackground
- * Used to fill the elements background shape according to the element�s background color and gradient settings.
+ * Used to fill the elements background shape according to the element's BackgroundShape and BackgroundFill styles.
  * You should never need to explicitly call this. The system calls this during
  * the render phase. You may override if you need to do a more complex background fill. The background fill
  * is rendered after the focus ring and before the border. 
@@ -4398,22 +4234,15 @@ CanvasElement.prototype._drawFocusRing =
 CanvasElement.prototype._fillBackground = 
 	function (borderMetrics)
 	{
-		var backgroundColor = this.getStyle("BackgroundColor");
-		if (backgroundColor == null)
+		if (this._backgroundFill == null)
 			return;
 	
 		var ctx = this._getGraphicsCtx();
-		var gradientFill = this._getAutoGradientFill(backgroundColor, ctx);
-		
-		if (gradientFill != null)
-			ctx.fillStyle = gradientFill;
-		else
-			ctx.fillStyle = backgroundColor;
 		
 		ctx.beginPath();
 		this._drawBackgroundShape(ctx, borderMetrics);
-
-		ctx.fill();
+		
+		this._backgroundFill.drawFill(ctx, borderMetrics);
 	};
 
 //@private	
@@ -5017,7 +4846,7 @@ CanvasElement.prototype._invalidateLayout =
  * this is only necessary for custom component development.
  * This should only be called when a change is made to the element that will impact its rendering.
  * Such as property changes or from within the elements doStylesUpdated() when a style change impacts
- * the element's rendering (such as BackgroundColor). 
+ * the element's rendering (such as BackgroundFill). 
  * Do not override this function.
  */	
 CanvasElement.prototype._invalidateRender =
@@ -5126,10 +4955,6 @@ CanvasElement.prototype._doStylesUpdated =
 		if ("BorderThickness" in stylesMap || 
 			"BorderType" in stylesMap || 
 			"BorderColor" in stylesMap || 
-			"BackgroundColor" in stylesMap || 
-			"AutoGradientType" in stylesMap || 
-			"AutoGradientStart" in stylesMap || 
-			"AutoGradientStop" in stylesMap ||
 			(this._renderFocusRing == true && ("FocusColor" in stylesMap || "FocusThickness" in stylesMap)))
 		{
 			this._invalidateRender();
@@ -5165,6 +4990,58 @@ CanvasElement.prototype._doStylesUpdated =
 					this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 				
 				this._invalidateRender();
+			}
+		}
+		
+		if ("BackgroundFill" in stylesMap)
+		{
+			var bgFill = this.getStyle("BackgroundFill"); //FillBase or color string
+			
+			//Only handle if changed, attached/detached handles initial add/remove listener.
+			if (bgFill != this._backgroundFill)
+			{
+				//Check if new fill is solid (SolidFill or color string)
+				var isSolidFillOrColor = false;
+				if (bgFill instanceof FillBase == false || bgFill instanceof SolidFill) //We're a color or a SolidFill class
+					isSolidFillOrColor = true;
+				
+				if (this._backgroundFill instanceof SolidFill == true && isSolidFillOrColor == true) //Existing and new are both SolidFill
+				{
+					if (bgFill instanceof SolidFill == true) //Swap the solid fill classes
+					{
+						this._backgroundFill.removeEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+						this._backgroundFill = bgFill;
+						this._backgroundFill.addEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+						
+						this._invalidateRender();
+					}
+					else //Set the color to the current SolidFill
+						this._backgroundFill.setStyle("FillColor", bgFill); //Will invalidate render if fill color changed
+				}
+				else //Definately different fill classes
+				{
+					//Purge the old background fill
+					if (this._backgroundFill != null)
+						this._backgroundFill.removeEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+					
+					this._backgroundFill = null;
+					
+					if (bgFill != null)
+					{
+						if (bgFill instanceof FillBase == false) //color
+						{
+							//Create new solid fill
+							this._backgroundFill = new SolidFill();
+							this._backgroundFill.setStyle("FillColor", bgFill);
+						}
+						else //Fill class
+							this._backgroundFill = bgFill;
+						
+						this._backgroundFill.addEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+					}
+					
+					this._invalidateRender();
+				}
 			}
 		}
 		

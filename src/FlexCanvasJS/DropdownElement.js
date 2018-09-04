@@ -190,7 +190,7 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyle
 
 DropdownElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
 DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
-DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundColor", 			null);
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
 
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
@@ -212,12 +212,10 @@ DropdownElement.DataListScrollBarStyleDefault = new StyleDefinition();
 DropdownElement.DataListScrollBarStyleDefault.setStyle("Padding", -1);			//Expand by 1px to share borders
 
 DropdownElement.DataListItemUpSkinStyleDefault = new StyleDefinition();
-DropdownElement.DataListItemUpSkinStyleDefault.setStyle("BackgroundColor", 		"#FFFFFF");
-DropdownElement.DataListItemUpSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("BackgroundFill", 		"#FFFFFF");
 
 DropdownElement.DataListItemAltSkinStyleDefault = new StyleDefinition();
-DropdownElement.DataListItemAltSkinStyleDefault.setStyle("BackgroundColor", 	"#F0F0F0");
-DropdownElement.DataListItemAltSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("BackgroundFill", 		"#F0F0F0");
 
 //DataList ListItem style
 DropdownElement.DataListItemStyleDefault = new StyleDefinition();

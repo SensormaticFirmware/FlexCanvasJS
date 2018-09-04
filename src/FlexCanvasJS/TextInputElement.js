@@ -208,17 +208,19 @@ TextInputElement.DisabledSkinStyleDefault = new StyleDefinition();
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderType", 					"inset");
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 				1);
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderColor", 					"#999999");
-TextInputElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 				"#ECECEC");
-TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+
+TextInputElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 				"#ECECEC");
+//TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
+//TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
+//TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
 
 TextInputElement.UpSkinStyleDefault = new StyleDefinition();
 
 TextInputElement.UpSkinStyleDefault.setStyle("BorderType", 							"inset");
 TextInputElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 TextInputElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#606060");
-TextInputElement.UpSkinStyleDefault.setStyle("BackgroundColor", 					"#F5F5F5");
+
+TextInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 					"#F5F5F5");
 
 //Apply skin defaults
 TextInputElement.StyleDefault.setStyle("UpSkinStyle", 								TextInputElement.UpSkinStyleDefault);

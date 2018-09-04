@@ -103,10 +103,11 @@ RadioButtonElement.UpSkinStyleDefault.setStyle("BackgroundShape",				new Ellipse
 RadioButtonElement.UpSkinStyleDefault.setStyle("BorderType", 					"solid");
 RadioButtonElement.UpSkinStyleDefault.setStyle("BorderThickness", 				1);
 RadioButtonElement.UpSkinStyleDefault.setStyle("BorderColor", 					"#333333");
-RadioButtonElement.UpSkinStyleDefault.setStyle("BackgroundColor", 				"#EBEBEB");
-RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+
+RadioButtonElement.UpSkinStyleDefault.setStyle("BackgroundFill", 				"#EBEBEB");
+//RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
+//RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
+//RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
 RadioButtonElement.UpSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 RadioButtonElement.OverSkinStyleDefault = new StyleDefinition();
@@ -115,10 +116,11 @@ RadioButtonElement.OverSkinStyleDefault.setStyle("BackgroundShape",				new Ellip
 RadioButtonElement.OverSkinStyleDefault.setStyle("BorderType", 					"solid");
 RadioButtonElement.OverSkinStyleDefault.setStyle("BorderThickness", 			1);
 RadioButtonElement.OverSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-RadioButtonElement.OverSkinStyleDefault.setStyle("BackgroundColor", 			"#DDDDDD");
-RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
+
+RadioButtonElement.OverSkinStyleDefault.setStyle("BackgroundFill", 				"#DDDDDD");
+//RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
+//RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
+//RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
 RadioButtonElement.OverSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 RadioButtonElement.DownSkinStyleDefault = new StyleDefinition();
@@ -127,10 +129,11 @@ RadioButtonElement.DownSkinStyleDefault.setStyle("BackgroundShape",				new Ellip
 RadioButtonElement.DownSkinStyleDefault.setStyle("BorderType", 					"solid");
 RadioButtonElement.DownSkinStyleDefault.setStyle("BorderThickness", 			1);
 RadioButtonElement.DownSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-RadioButtonElement.DownSkinStyleDefault.setStyle("BackgroundColor", 			"#CCCCCC");
-RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 			(-.06));
-RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 			(+.02));
+
+RadioButtonElement.DownSkinStyleDefault.setStyle("BackgroundFill", 			"#CCCCCC");
+//RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
+//RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 			(-.06));
+//RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 			(+.02));
 RadioButtonElement.DownSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 RadioButtonElement.DisabledSkinStyleDefault = new StyleDefinition();
@@ -139,10 +142,11 @@ RadioButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundShape",			new El
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("BorderType", 				"solid");
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 		1);
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("BorderColor", 			"#999999");
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#ECECEC");
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
+
+RadioButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 			"#ECECEC");
+//RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
+//RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
+//RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("CheckColor", 				"#777777");
 
 //Apply Skin Defaults

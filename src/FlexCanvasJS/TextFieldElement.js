@@ -353,7 +353,7 @@ TextFieldElement.StyleDefault.setStyle("PaddingTop", 					0);
 TextFieldElement.StyleDefault.setStyle("PaddingBottom",					0);
 TextFieldElement.StyleDefault.setStyle("PaddingLeft", 					3);
 TextFieldElement.StyleDefault.setStyle("PaddingRight", 					2);
-TextFieldElement.StyleDefault.setStyle("BackgroundColor",				null);
+TextFieldElement.StyleDefault.setStyle("BackgroundFill",				null);
 
 
 ////////Public///////////////////////
@@ -488,9 +488,7 @@ TextFieldElement.prototype._createTextCaret =
 	{
 		var textCaret = new CanvasElement();
 		textCaret.setStyle("MouseEnabled", false);
-		textCaret.setStyle("BackgroundColor", "TextCaretColor");
-		textCaret.setStyle("AutoGradientStart", 0);
-		textCaret.setStyle("AutoGradientStop", 0);
+		textCaret.setStyle("BackgroundFill", this.getStyle("TextCaretColor"));
 		
 		return textCaret;
 	};
@@ -1304,7 +1302,7 @@ TextFieldElement.prototype._doStylesUpdated =
 			this.setText(this._text); //Will trim if needed.
 		
 		if ("TextCaretColor" in stylesMap && this._textCaret != null)
-			this._textCaret.setStyle("BackgroundColor", this.getStyle("TextCaretColor"));
+			this._textCaret.setStyle("BackgroundFill", this.getStyle("TextCaretColor"));
 		
 		if ("Enabled" in stylesMap || "Selectable" in stylesMap)
 			this._updateEventListeners();

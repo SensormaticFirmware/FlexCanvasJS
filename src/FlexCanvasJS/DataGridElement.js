@@ -177,7 +177,7 @@ DataGridElement.StyleDefault = new StyleDefinition();
 DataGridElement.GridLineStyleDefault = new StyleDefinition();
 DataGridElement.GridLineStyleDefault.setStyle("Width", 					1);				// number
 DataGridElement.GridLineStyleDefault.setStyle("Height", 				1); 			// number
-DataGridElement.GridLineStyleDefault.setStyle("BackgroundColor", 		"#BBBBBB");		// "#000000"
+DataGridElement.GridLineStyleDefault.setStyle("BackgroundFill", 		"#BBBBBB");		// "#000000"
 ///////////////////////////////////
 
 /////ScrollBar default style //////

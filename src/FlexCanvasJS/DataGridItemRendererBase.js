@@ -30,12 +30,10 @@ DataGridItemRendererBase.prototype.constructor = DataGridItemRendererBase;
 DataGridItemRendererBase.base = DataRendererBaseElement;
 
 DataGridItemRendererBase.UpSkinStyleDefault = new StyleDefinition();
-DataGridItemRendererBase.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
-DataGridItemRendererBase.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("BackgroundFill", 				"#FFFFFF");
 
 DataGridItemRendererBase.AltSkinStyleDefault = new StyleDefinition();
-DataGridItemRendererBase.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
-DataGridItemRendererBase.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("BackgroundFill", 			"#F0F0F0");
 
 DataGridItemRendererBase.StyleDefault = new StyleDefinition();
 DataGridItemRendererBase.StyleDefault.setStyle("UpSkinStyle", DataGridItemRendererBase.UpSkinStyleDefault);

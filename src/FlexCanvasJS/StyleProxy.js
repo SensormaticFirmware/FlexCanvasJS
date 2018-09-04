@@ -30,7 +30,7 @@
  * _Arbitrary is a special flag that indicates all styles that are not defined / unknown 
  * by the element will also be proxied.
  * 
- * For example, a Button will proxy several styles to its skins such as "BackgroundColor" by including
+ * For example, a Button will proxy several styles to its skins such as "BackgroundFill" by including
  * them in the proxy map it passes to its skins. Styles like "Visible" however, are omitted from the proxy
  * map. Also, the button sets the _Arbitrary flag so any styles the Button is not aware of and does not define itself, 
  * are automatically proxied to the skin, without having to be added to the proxy map. 
