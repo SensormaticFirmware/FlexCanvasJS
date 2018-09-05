@@ -678,7 +678,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		if (styleDef instanceof LinearGradientFill)
 		{
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"GradientDegrees", 							"number", 	false, 	false, 	styleDef, this,	0, 							null));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"GradientColorStops", 						"json", 	false, 	false, 	styleDef, this,	"[[0,'#000000'],[1,'#00FFFF']]", null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"GradientColorStops", 						"json", 	false, 	false, 	styleDef, this,	"[[0,\"#000000\"],[1,\"#00FFFF\"]]", null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"GradientCoverage", 						"string", 	false, 	false, 	styleDef, this,	"inner", 					[{label:"inner", value:"inner"}, {label:"outer", value:"outer"}]));
 		}
 		

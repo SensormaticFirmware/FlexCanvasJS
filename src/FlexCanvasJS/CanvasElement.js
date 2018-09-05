@@ -5002,7 +5002,7 @@ CanvasElement.prototype._doStylesUpdated =
 			{
 				//Check if new fill is solid (SolidFill or color string)
 				var isSolidFillOrColor = false;
-				if (bgFill instanceof FillBase == false || bgFill instanceof SolidFill) //We're a color or a SolidFill class
+				if ((bgFill != null && bgFill instanceof FillBase == false) || bgFill instanceof SolidFill) //We're a color or a SolidFill class
 					isSolidFillOrColor = true;
 				
 				if (this._backgroundFill instanceof SolidFill == true && isSolidFillOrColor == true) //Existing and new are both SolidFill

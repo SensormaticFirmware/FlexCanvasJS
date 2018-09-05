@@ -98,7 +98,13 @@ LinearGradientFill.prototype.drawFill =
 			for (var i = 0; i < colorStops.length; i++)
 			{
 				if (colorStops[i].length > 1)
-					gradient.addColorStop(colorStops[i][0], colorStops[i][1]);
+				{
+					try
+					{
+						gradient.addColorStop(colorStops[i][0], colorStops[i][1]);
+					}
+					catch (ex) { //Swallow }
+				}
 			}
 		}
 		
