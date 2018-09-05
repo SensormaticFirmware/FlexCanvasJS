@@ -717,10 +717,10 @@ ScrollBarElement.prototype._doMeasure =
 			
 			measuredSize.width += (tabMinWidth * 2);
 			
-			if (tabHeight > measuredSize.width)
-				measuredSize.width = tabHeight;
-			if (trackHeight > measuredSize.width)
-				measuredSize.width = trackHeight;
+			if (tabHeight > measuredSize.height)
+				measuredSize.height = tabHeight;
+			if (trackHeight > measuredSize.height)
+				measuredSize.height = trackHeight;
 		}
 		
 		return measuredSize;
