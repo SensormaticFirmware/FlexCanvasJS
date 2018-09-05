@@ -330,7 +330,7 @@ Tween.easeInOutSine =
  * _Arbitrary is a special flag that indicates all styles that are not defined / unknown 
  * by the element will also be proxied.
  * 
- * For example, a Button will proxy several styles to its skins such as "BackgroundColor" by including
+ * For example, a Button will proxy several styles to its skins such as "BackgroundFill" by including
  * them in the proxy map it passes to its skins. Styles like "Visible" however, are omitted from the proxy
  * map. Also, the button sets the _Arbitrary flag so any styles the Button is not aware of and does not define itself, 
  * are automatically proxied to the skin, without having to be added to the proxy map. 
@@ -3283,6 +3283,291 @@ ListCollection.prototype.indexUpdated =
 	};
 
 
+/**
+ * @depends StyleableBase.js
+ */
+
+////////////////////////////////////////////////////////
+////////////////////FillBase///////////////////////////
+
+/**
+ * @class FillBase
+ * @inherits StyleableBase
+ * 
+ * Abstract base class for filling element's background shape.
+ * 
+ * @constructor FillBase 
+ * Creates new FillBase instance.
+ */
+function FillBase()
+{
+	FillBase.base.prototype.constructor.call(this);
+}
+
+//Inherit from StyleableBase
+FillBase.prototype = Object.create(StyleableBase.prototype);
+FillBase.prototype.constructor = FillBase;
+FillBase.base = StyleableBase;
+
+////////////Public//////////////////////
+
+/**
+ * @function drawFill
+ * Used to create and set the Canvas2DContext.fillStyle
+ * 
+ * @param ctx Canvas2DContext
+ * The Canvas2DContext to draw the fill on.
+ * 
+ * @param metrics DrawMetrics
+ * DrawMetrics object to use as the bounding box for the fill.
+ * 
+ */
+FillBase.prototype.drawFill = 
+	function (ctx, metrics)
+	{
+		//Stub for override.
+	};
+	
+	
+
+
+/**
+ * @depends FillBase.js
+ */
+
+////////////////////////////////////////////////////////
+/////////////////SolidFill//////////////////////////////	
+
+/**
+ * @class SolidFill
+ * @inherits FillBase
+ * 
+ * Fills an element a solid color. This class is automatically used when
+ * an element's BackgroundFill style is set to a color string like "#FF0000".
+ * 
+ * @constructor SolidFill 
+ * Creates new SolidFill instance.
+ */
+function SolidFill()
+{
+	SolidFill.base.prototype.constructor.call(this);
+}
+
+//Inherit from ShapeBase
+SolidFill.prototype = Object.create(FillBase.prototype);
+SolidFill.prototype.constructor = SolidFill;
+SolidFill.base = FillBase;
+
+
+/////////////Style Types///////////////////////////////
+
+SolidFill._StyleTypes = Object.create(null);
+
+
+/**
+ * @style FillColor color
+ * 
+ * Color which the element should be filled.
+ */
+SolidFill._StyleTypes.FillColor = 							StyleableBase.EStyleType.NORMAL;		// "#FF0000"
+
+
+////////////Default Styles///////////////////////////
+
+SolidFill.StyleDefault = new StyleDefinition();
+
+SolidFill.StyleDefault.setStyle("FillColor", 				"#FF0000");	// "#FF0000"
+
+
+////////////Public//////////////////////
+
+//@override
+SolidFill.prototype.drawFill = 
+	function (ctx, metrics)
+	{
+		ctx.fillStyle = this.getStyle("FillColor");
+		ctx.fill();
+	};	
+	
+
+
+
+/**
+ * @depends FillBase.js
+ */
+
+////////////////////////////////////////////////////////
+/////////////////LinearGradientFill/////////////////////	
+
+/**
+ * @class LinearGradientFill
+ * @inherits FillBase
+ * 
+ * Fills a linear gradient across the element with supplied angle and color stops.
+ * 
+ * @constructor LinearGradientFill 
+ * Creates new LinearGradientFill instance.
+ */
+function LinearGradientFill()
+{
+	LinearGradientFill.base.prototype.constructor.call(this);
+}
+
+//Inherit from ShapeBase
+LinearGradientFill.prototype = Object.create(FillBase.prototype);
+LinearGradientFill.prototype.constructor = LinearGradientFill;
+LinearGradientFill.base = FillBase;
+
+
+/////////////Style Types///////////////////////////////
+
+LinearGradientFill._StyleTypes = Object.create(null);
+
+
+/**
+ * @style GradientDegrees Number
+ * 
+ * Angle 0-360 which the gradient should be drawn across the element.
+ */
+LinearGradientFill._StyleTypes.GradientDegrees = 						StyleableBase.EStyleType.NORMAL;		// 45
+
+/**
+ * @style GradientColorStops Array
+ * 
+ * Array of color stops to apply to the gradient.
+ * Format like [[position, "color"], [position, "color"], ...]
+ * Position is a number between 0 and 1 representing where on the gradient line
+ * to place the color stop.
+ */
+LinearGradientFill._StyleTypes.GradientColorStops = 					StyleableBase.EStyleType.NORMAL;		// [[0, "#FFFFFF"], [1, "#000000]]
+
+/**
+ * @style GradientCoverage String
+ * 
+ * Determines the size of the gradient line based on the GradientDegrees.
+ * This style has no effect on gradients at 90 degree intervals.
+ * Available values are "inner" and "outer".
+ * Inner gradient will draw a line across the center of the element at the specified degrees.
+ * Outer gradient extends the line beyond the element's bounds so that the gradient is 
+ * perpendicular to the outer most corners of the element. 
+ */
+LinearGradientFill._StyleTypes.GradientCoverage = 						StyleableBase.EStyleType.NORMAL;		// "inner" || "outer"
+
+
+////////////Default Styles///////////////////////////
+
+LinearGradientFill.StyleDefault = new StyleDefinition();
+
+LinearGradientFill.StyleDefault.setStyle("GradientDegrees", 			0);	
+LinearGradientFill.StyleDefault.setStyle("GradientColorStops", 			[[0, "#FF0000"], [1, "#000000"]]);
+LinearGradientFill.StyleDefault.setStyle("GradientCoverage", 			"inner");
+
+
+////////////Public//////////////////////
+
+//@override
+LinearGradientFill.prototype.drawFill = 
+	function (ctx, metrics)
+	{
+		var degrees = CanvasElement.normalizeDegrees(this.getStyle("GradientDegrees"));
+		var colorStops = this.getStyle("GradientColorStops");
+		var coverage = this.getStyle("GradientCoverage");
+		
+		var pointsStart = this._calculateInnerOuterPoints(degrees, metrics);
+		var pointsStop = this._calculateInnerOuterPoints(CanvasElement.normalizeDegrees(degrees + 180), metrics);
+		
+		var pointsIndex = 0;
+		if (coverage == "outer")
+			pointsIndex = 1;
+		
+		//Currently always use outer butterfly
+		var pointStart = pointsStart[pointsIndex];
+		var pointStop = pointsStop[pointsIndex];
+		
+		var gradient = ctx.createLinearGradient(pointStart.x, pointStart.y, pointStop.x, pointStop.y);
+		
+		if (Array.isArray(colorStops) == true)
+		{
+			for (var i = 0; i < colorStops.length; i++)
+			{
+				if (colorStops[i].length > 1)
+					gradient.addColorStop(colorStops[i][0], colorStops[i][1]);
+			}
+		}
+		
+		ctx.fillStyle = gradient;
+		ctx.fill();
+	};	
+	
+	
+///////////Internal////////////////////
+	
+//@private	
+LinearGradientFill.prototype._calculateInnerOuterPoints =
+	function (degrees, metrics)
+	{
+		degrees = CanvasElement.normalizeDegrees(degrees);
+	
+		var x = metrics.getX();
+		var y = metrics.getY();
+		var w = metrics.getWidth();
+		var h = metrics.getHeight();
+
+		var radians = CanvasElement.degreesToRadians(degrees);
+		
+		var xRadius = (w / 2);
+		var yRadius = (h / 2);
+		
+		var x1 = CanvasElement.cot(radians) * yRadius;
+		var y1 = Math.tan(radians) * xRadius;
+		
+		if (Math.abs(x1) > xRadius)
+		{
+			if (x1 < 0)
+				x1 = xRadius * -1;
+			else
+				x1 = xRadius;
+		}
+		if (Math.abs(y1) > yRadius)
+		{
+			if (y1 < 0)
+				y1 = yRadius * -1;
+			else
+				y1 = yRadius;
+		}
+		
+		if (degrees > 90 && degrees <= 180)
+		{
+			y1 = y1 * -1;
+		}
+		else if (degrees > 180 && degrees <= 270)
+		{
+			x1 = x1 * -1;
+			y1 = y1 * -1;
+		}
+		else if (degrees > 270)
+		{
+			x1 = x1 * -1;
+		}	
+		
+		var edgeRadius = Math.sqrt((x1 * x1) + (y1 * y1));
+		
+		var finalRadius;
+		if (Math.abs(y1) < yRadius)
+			finalRadius = edgeRadius + Math.abs(((yRadius - Math.abs(y1)) * Math.sin(radians)));
+		else
+			finalRadius = edgeRadius + Math.abs(((xRadius - Math.abs(x1)) * Math.cos(radians)));
+		
+		var x2 = finalRadius * Math.cos(radians);
+		var y2 = finalRadius * Math.sin(radians);
+		
+		return [{x:x1 + xRadius, y:y1 + yRadius}, 
+				{x:x2 + xRadius, y:y2 + yRadius}];
+	};
+	
+	
+
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////DrawMetrics/////////////////////////////////////	
 
@@ -3806,6 +4091,11 @@ function CanvasElement()
 	//this is changed (via styles) or added/removed to display chain.
 	this._backgroundShape = null;
 	
+	//Storage for the current background fill FillBase() per styling. We need to store a reference 
+	//because we listen for style changed events and need to be able to remove the listener when
+	//this is changed (via styles) or added/removed to display chain.
+	this._backgroundFill = null;
+	
 	this._manager = null; //Canvas Manager reference
 	this._displayDepth = 0; //Depth in display chain hierarchy
 	
@@ -3984,6 +4274,12 @@ function CanvasElement()
 		function (styleChangedEvent)
 		{
 			_self._onBackgroundShapeStyleChanged(styleChangedEvent);
+		};
+		
+	this._onBackgroundFillStyleChangedInstance = 
+		function (styleChangedEvent)
+		{
+			_self._onBackgroundFillStyleChanged(styleChangedEvent);
 		};
 		
 	this._onCanvasElementAddedRemovedInstance = 
@@ -4165,12 +4461,12 @@ CanvasElement._StyleTypes.BorderColor = 			StyleableBase.EStyleType.NORMAL;		// 
 CanvasElement._StyleTypes.BorderThickness = 		StyleableBase.EStyleType.NORMAL;		// number
 
 /**
- * @style BackgroundColor String
+ * @style BackgroundFill FillBase
  * 
- * Hex color value to be used when drawing the background. This may be set to null and no
- * background will be rendered. Format like "#FF0000" (red)
+ * Fill to use when filling the background. May be any FillBase subclass instance, 
+ * "color" string, or null for transparent. 
  */
-CanvasElement._StyleTypes.BackgroundColor = 		StyleableBase.EStyleType.NORMAL;		// "#FF0000" or null
+CanvasElement._StyleTypes.BackgroundFill = 			StyleableBase.EStyleType.NORMAL;		// FillBase() || "#FF0000" || null
 
 /**
  * @style ShadowSize Number
@@ -4210,33 +4506,6 @@ CanvasElement._StyleTypes.ShadowColor = 			StyleableBase.EStyleType.NORMAL;		// 
  * when a value between 1 and 0 is used.
  */
 CanvasElement._StyleTypes.Alpha = 					StyleableBase.EStyleType.NORMAL;		// number
-
-/**
- * @style AutoGradientType String
- * 
- * Determines the type of gradient to be used when rendering the element's background.
- * Allowable values are "none", "linear", or "radial". Auto gradients automatically lighten
- * and darken the associated color are always rendered in the same direction relative to the 
- * canvas itself regardless of rotation or transformation applied to the element. 
- * This is used to create effects like a consistent light source even if the element is rotating.
- */
-CanvasElement._StyleTypes.AutoGradientType = 		StyleableBase.EStyleType.NORMAL;		// "none" || "linear" || "radial"
-
-/**
- * @style AutoGradientStart Number
- * 
- * Color offset to apply to the start of the gradient. Allowable values are numbers between 
- * -1 (white) and +1 (black). 
- */
-CanvasElement._StyleTypes.AutoGradientStart = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
-
-/**
- * @style AutoGradientStop Number
- * 
- * Color offset to apply to the end of the gradient. Allowable values are numbers between 
- * -1 (white) and +1 (black). 
- */
-CanvasElement._StyleTypes.AutoGradientStop = 		StyleableBase.EStyleType.NORMAL;		// number (-1 to +1 values)
 
 /**
  * @style ClipContent boolean
@@ -4695,15 +4964,12 @@ CanvasElement.StyleDefault.setStyle("Visible", 							true);
 CanvasElement.StyleDefault.setStyle("BorderType", 						"none");
 CanvasElement.StyleDefault.setStyle("BorderColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("BorderThickness", 					1);
-CanvasElement.StyleDefault.setStyle("BackgroundColor", 					null); 
+CanvasElement.StyleDefault.setStyle("BackgroundFill", 					null); 
 CanvasElement.StyleDefault.setStyle("ShadowSize", 						0);
 CanvasElement.StyleDefault.setStyle("ShadowOffsetX",					0);
 CanvasElement.StyleDefault.setStyle("ShadowOffsetY",					0);
 CanvasElement.StyleDefault.setStyle("ShadowColor",						"#000000");
 CanvasElement.StyleDefault.setStyle("Alpha", 							1);
-CanvasElement.StyleDefault.setStyle("AutoGradientType",					"none");
-CanvasElement.StyleDefault.setStyle("AutoGradientStart",				(0.15));
-CanvasElement.StyleDefault.setStyle("AutoGradientStop",					(-0.15));
 CanvasElement.StyleDefault.setStyle("ClipContent",						false);
 CanvasElement.StyleDefault.setStyle("SkinState", 						"");
 CanvasElement.StyleDefault.setStyle("BackgroundShape", 					null); 		//ShapeBase
@@ -5776,6 +6042,23 @@ CanvasElement.adjustColorLight =
 	};
 	
 /**
+ * @function cot
+ * @static
+ * Calculates the cotangent of supplied radians.
+ * 
+ * @param radians Number
+ * Radians to calculate cotangent
+ * 
+ * @returns Number
+ * Resulting cotangent from radians
+ */
+CanvasElement.cot = 
+	function (radians)
+	{
+		return 1 / Math.tan(radians);
+	};
+	
+/**
  * @function radiansToDegrees
  * @static
  * Calculates radians to degrees.
@@ -6274,6 +6557,13 @@ CanvasElement._calculateMinMaxPercentSizes =
 
 //@private	
 CanvasElement.prototype._onBackgroundShapeStyleChanged = 
+	function (styleChangedEvent)
+	{
+		this._invalidateRender();
+	};
+	
+//@private
+CanvasElement.prototype._onBackgroundFillStyleChanged = 
 	function (styleChangedEvent)
 	{
 		this._invalidateRender();
@@ -6811,6 +7101,9 @@ CanvasElement.prototype._onCanvasElementAdded =
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == false)
 			this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 		
+		if (this._backgroundFill != null && this._backgroundFill.hasEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance) == false)
+			this._backgroundFill.addEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+		
 		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
 		{
 			if (this._styleDefinitionDefaults[i].hasEventListener("stylechanged", this._onExternalStyleChangedInstance) == false)
@@ -6881,6 +7174,9 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		
 		if (this._backgroundShape != null && this._backgroundShape.hasEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance) == true)
 			this._backgroundShape.removeEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
+		
+		if (this._backgroundFill != null && this._backgroundFill.hasEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance) == true)
+			this._backgroundFill.removeEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
 		
 		for (i = 0; i < this._styleDefinitionDefaults.length; i++)
 		{
@@ -7626,17 +7922,6 @@ CanvasElement.prototype._setActualRotation =
 			{
 				this._compositeEffectChanged = true;
 				this._invalidateCompositeRender();
-				
-				//Check if we need to re-render due to auto gradient
-				var autoGradientType = this.getStyle("AutoGradientType");
-				var backgroundColor = this.getStyle("BackgroundColor");
-				var borderType = this.getStyle("BorderType");
-				
-				if (autoGradientType != null && autoGradientType != "none" && 
-					(backgroundColor != null || (borderType != null && borderType != "none")))
-				{
-					this._invalidateRender();
-				}
 			}
 		}
 		
@@ -7884,170 +8169,6 @@ CanvasElement.prototype._getPaddingMetrics =
 	};
 
 /**
- * @function _getAutoGradientFill
- * Helper function that returns a Context2D linear or radial CanvasGradient depending on this elements
- * auto gradient styles. This gradient uses 1 color and lightens and darkens the supplied color. 
- * The gradient is always oriented in the same direction regardless of the elements rotation or transformation. 
- * This is used for a consistent light source. 
- * 
- * @param color String
- * Hex color to lighten and darken for gradient. Format "#FF0000" (red).
- * 
- * @param context Canvas2DContext
- * Canvas2DContext to use to generate the gradient.
- * 
- * @returns CanvasGradient
- * Returns CanvasGradient to be applied to canvas Context2D.
- */		
-CanvasElement.prototype._getAutoGradientFill = 
-	function (color, context)
-	{
-		var gradientType = this.getStyle("AutoGradientType");
-		
-		if (gradientType == "radial")
-			return this._getAutoGradientRadial(color, context);
-		else if (gradientType == "linear")
-			return this._getAutoGradientLinear(color, context);
-		
-		return null;
-	};
-
-/**
- * @function _getAutoGradientMetrics
- * Helper function that returns a metrics object to be used for generating a consistent gradient
- * relative to the canvas regardless of the elements rotation, transformation or position in the
- * display hierarchy. Currently this always generates a gradient at 10 degrees from the upper left
- * to the lower right for consistency with inset/outset borders. This is used by the auto-gradient
- * to create a consistent light source. More styles should be added to allow changing the degrees
- * for more flexibility.
- * 
- * @returns Object
- * Gradient metrics object containing {startPoint:{x,y}, endPoint:{x, y}, width, height}
- */	
-CanvasElement.prototype._getAutoGradientMetrics = 
-	function ()
-	{
-		//Get metrics relative to the canvas. Regardless of transform, 
-		//light source should always be consistent.
-		var metrics = this.getMetrics(this._manager);
-	
-		//For convienience
-		var canvasX = metrics.getX();
-		var canvasY = metrics.getY();
-		var canvasWidth = metrics.getWidth();
-		var canvasHeight = metrics.getHeight();
-		
-		//Calculate the gradient line based on the element's canvas metrics.
-		var gradientWidth = canvasHeight * Math.tan(CanvasElement.degreesToRadians(8));
-		
-		var gradientStart = {x:0, y:canvasY};
-		if (gradientWidth <= canvasWidth)
-			gradientStart.x = canvasX + (canvasWidth / 2) - (gradientWidth / 2);
-		else
-			gradientStart.x = canvasX - ((gradientWidth - canvasWidth) / 2);
-		
-		var gradientEnd = {x:0, y:canvasY + canvasHeight};
-		if (gradientWidth <= canvasWidth)
-			gradientEnd.x = canvasX + (canvasWidth / 2) + (gradientWidth / 2);
-		else
-			gradientEnd.x = canvasX + canvasWidth + ((gradientWidth - canvasWidth) / 2);
-		
-		//Translate the gradient line start/stop back down to the element's coordinate plane.
-		this._manager.translatePointTo(gradientStart, this);
-		this._manager.translatePointTo(gradientEnd, this);
-		
-		return {startPoint:gradientStart, endPoint:gradientEnd, width:canvasWidth, height:canvasHeight};
-	};
-
-/**
- * @function _getAutoGradientLinear
- * Helper function that returns a Context2D linear CanvasGradient depending on this elements
- * auto gradient styles. See _getAutoGradientFill().
- * 
- * @param color String
- * Hex color to lighten and darken for gradient. Format "#FF0000" (red).
- * 
- * @param context Canvas2DContext
- * Canvas2DContext to use to generate the gradient.
- * 
- * @returns CanvasGradient
- * Returns CanvasGradient to be applied to canvas Context2D.
- */		
-CanvasElement.prototype._getAutoGradientLinear = 
-	function (color, context)
-	{
-		var lighterFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStart"));
-		var darkerFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStop"));
-		
-		var gradientMetrics = this._getAutoGradientMetrics();
-		
-		try
-		{
-			var fillGradient = context.createLinearGradient(
-					gradientMetrics.startPoint.x, gradientMetrics.startPoint.y, 
-					gradientMetrics.endPoint.x, gradientMetrics.endPoint.y);
-			
-			fillGradient.addColorStop(0, lighterFill);
-			fillGradient.addColorStop(1, darkerFill);
-			
-			return fillGradient;
-		}
-		catch (ex)
-		{
-			//Swallow, invalid color
-			return null;
-		}
-	};	
-	
-/**
- * @function _getAutoGradientRadial
- * Helper function that returns a Context2D linear CanvasGradient depending on this elements
- * auto gradient styles. See _getAutoGradientFill().
- * 
- * @param color String
- * Hex color to lighten and darken for gradient. Format "#FF0000" (red).
- * 
- * @param context Canvas2DContext
- * Canvas2DContext to use to generate the gradient.
- * 
- * @returns CanvasGradient
- * Returns CanvasGradient to be applied to canvas Context2D.
- */		
-CanvasElement.prototype._getAutoGradientRadial = 
-	function (color, context)
-	{
-		var lighterFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStart"));
-		var darkerFill = CanvasElement.adjustColorLight(color, this.getStyle("AutoGradientStop"));
-		
-		var gradientMetrics = this._getAutoGradientMetrics();
-		
-		var xSpan = gradientMetrics.endPoint.x - gradientMetrics.startPoint.x;
-		var ySpan = gradientMetrics.endPoint.y - gradientMetrics.startPoint.y;
-		
-		var gradientPoint = {x:gradientMetrics.startPoint.x + (xSpan * .42), 
-							y:gradientMetrics.startPoint.y + (ySpan * .42)};
-		
-		try
-		{
-			var fillGradient = context.createRadialGradient(
-					gradientPoint.x, gradientPoint.y, 
-					(Math.max(gradientMetrics.width, gradientMetrics.height) / 2) + (Math.max(xSpan, ySpan) * .08), 
-					gradientPoint.x, gradientPoint.y, 
-					0);
-			
-			fillGradient.addColorStop(0, darkerFill);
-			fillGradient.addColorStop(1, lighterFill);
-			
-			return fillGradient;
-		}
-		catch (ex)
-		{
-			//Swallow, invalid color
-			return null;
-		}
-	};	
-
-/**
  * @function _drawBackgroundShape
  * Used to draw the path to the Canvas2DContext that is to be used to render the focus ring,
  * fill the background, and draw the border. You should never need to explicitly call this. 
@@ -8146,7 +8267,7 @@ CanvasElement.prototype._drawFocusRing =
 	
 /**
  * @function _fillBackground
- * Used to fill the elements background shape according to the element�s background color and gradient settings.
+ * Used to fill the elements background shape according to the element's BackgroundShape and BackgroundFill styles.
  * You should never need to explicitly call this. The system calls this during
  * the render phase. You may override if you need to do a more complex background fill. The background fill
  * is rendered after the focus ring and before the border. 
@@ -8161,22 +8282,15 @@ CanvasElement.prototype._drawFocusRing =
 CanvasElement.prototype._fillBackground = 
 	function (borderMetrics)
 	{
-		var backgroundColor = this.getStyle("BackgroundColor");
-		if (backgroundColor == null)
+		if (this._backgroundFill == null)
 			return;
 	
 		var ctx = this._getGraphicsCtx();
-		var gradientFill = this._getAutoGradientFill(backgroundColor, ctx);
-		
-		if (gradientFill != null)
-			ctx.fillStyle = gradientFill;
-		else
-			ctx.fillStyle = backgroundColor;
 		
 		ctx.beginPath();
 		this._drawBackgroundShape(ctx, borderMetrics);
-
-		ctx.fill();
+		
+		this._backgroundFill.drawFill(ctx, borderMetrics);
 	};
 
 //@private	
@@ -8780,7 +8894,7 @@ CanvasElement.prototype._invalidateLayout =
  * this is only necessary for custom component development.
  * This should only be called when a change is made to the element that will impact its rendering.
  * Such as property changes or from within the elements doStylesUpdated() when a style change impacts
- * the element's rendering (such as BackgroundColor). 
+ * the element's rendering (such as BackgroundFill). 
  * Do not override this function.
  */	
 CanvasElement.prototype._invalidateRender =
@@ -8889,10 +9003,6 @@ CanvasElement.prototype._doStylesUpdated =
 		if ("BorderThickness" in stylesMap || 
 			"BorderType" in stylesMap || 
 			"BorderColor" in stylesMap || 
-			"BackgroundColor" in stylesMap || 
-			"AutoGradientType" in stylesMap || 
-			"AutoGradientStart" in stylesMap || 
-			"AutoGradientStop" in stylesMap ||
 			(this._renderFocusRing == true && ("FocusColor" in stylesMap || "FocusThickness" in stylesMap)))
 		{
 			this._invalidateRender();
@@ -8928,6 +9038,58 @@ CanvasElement.prototype._doStylesUpdated =
 					this._backgroundShape.addEventListener("stylechanged", this._onBackgroundShapeStyleChangedInstance);
 				
 				this._invalidateRender();
+			}
+		}
+		
+		if ("BackgroundFill" in stylesMap)
+		{
+			var bgFill = this.getStyle("BackgroundFill"); //FillBase or color string
+			
+			//Only handle if changed, attached/detached handles initial add/remove listener.
+			if (bgFill != this._backgroundFill)
+			{
+				//Check if new fill is solid (SolidFill or color string)
+				var isSolidFillOrColor = false;
+				if (bgFill instanceof FillBase == false || bgFill instanceof SolidFill) //We're a color or a SolidFill class
+					isSolidFillOrColor = true;
+				
+				if (this._backgroundFill instanceof SolidFill == true && isSolidFillOrColor == true) //Existing and new are both SolidFill
+				{
+					if (bgFill instanceof SolidFill == true) //Swap the solid fill classes
+					{
+						this._backgroundFill.removeEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+						this._backgroundFill = bgFill;
+						this._backgroundFill.addEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+						
+						this._invalidateRender();
+					}
+					else //Set the color to the current SolidFill
+						this._backgroundFill.setStyle("FillColor", bgFill); //Will invalidate render if fill color changed
+				}
+				else //Definately different fill classes
+				{
+					//Purge the old background fill
+					if (this._backgroundFill != null)
+						this._backgroundFill.removeEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+					
+					this._backgroundFill = null;
+					
+					if (bgFill != null)
+					{
+						if (bgFill instanceof FillBase == false) //color
+						{
+							//Create new solid fill
+							this._backgroundFill = new SolidFill();
+							this._backgroundFill.setStyle("FillColor", bgFill);
+						}
+						else //Fill class
+							this._backgroundFill = bgFill;
+						
+						this._backgroundFill.addEventListener("stylechanged", this._onBackgroundFillStyleChangedInstance);
+					}
+					
+					this._invalidateRender();
+				}
 			}
 		}
 		
@@ -10008,7 +10170,7 @@ TextFieldElement.StyleDefault.setStyle("PaddingTop", 					0);
 TextFieldElement.StyleDefault.setStyle("PaddingBottom",					0);
 TextFieldElement.StyleDefault.setStyle("PaddingLeft", 					3);
 TextFieldElement.StyleDefault.setStyle("PaddingRight", 					2);
-TextFieldElement.StyleDefault.setStyle("BackgroundColor",				null);
+TextFieldElement.StyleDefault.setStyle("BackgroundFill",				null);
 
 
 ////////Public///////////////////////
@@ -10143,9 +10305,7 @@ TextFieldElement.prototype._createTextCaret =
 	{
 		var textCaret = new CanvasElement();
 		textCaret.setStyle("MouseEnabled", false);
-		textCaret.setStyle("BackgroundColor", "TextCaretColor");
-		textCaret.setStyle("AutoGradientStart", 0);
-		textCaret.setStyle("AutoGradientStop", 0);
+		textCaret.setStyle("BackgroundFill", this.getStyle("TextCaretColor"));
 		
 		return textCaret;
 	};
@@ -10959,7 +11119,7 @@ TextFieldElement.prototype._doStylesUpdated =
 			this.setText(this._text); //Will trim if needed.
 		
 		if ("TextCaretColor" in stylesMap && this._textCaret != null)
-			this._textCaret.setStyle("BackgroundColor", this.getStyle("TextCaretColor"));
+			this._textCaret.setStyle("BackgroundFill", this.getStyle("TextCaretColor"));
 		
 		if ("Enabled" in stylesMap || "Selectable" in stylesMap)
 			this._updateEventListeners();
@@ -12122,7 +12282,7 @@ CheckboxSkinElement.prototype._doRender =
  * Any states may be used. As an example, ButtonElement uses "up", "over", "down", and "disabled" states.
  * Override appropriate functions to return skin classes and style definitions per the element's states. 
  * SkinnableElement does not render itself, its skins do. It proxies all rendering 
- * related styles to its skins (such as BackgroundColor).
+ * related styles to its skins (such as BackgroundFill).
  * 
  * @seealso StyleProxy
  * 
@@ -12158,10 +12318,7 @@ SkinnableElement._SkinProxyMap = Object.create(null);
 SkinnableElement._SkinProxyMap.BorderType = 				true;
 SkinnableElement._SkinProxyMap.BorderColor = 				true;
 SkinnableElement._SkinProxyMap.BorderThickness = 			true;
-SkinnableElement._SkinProxyMap.BackgroundColor = 			true;
-SkinnableElement._SkinProxyMap.AutoGradientType = 			true;
-SkinnableElement._SkinProxyMap.AutoGradientStart = 			true;
-SkinnableElement._SkinProxyMap.AutoGradientStop = 			true;
+SkinnableElement._SkinProxyMap.BackgroundFill = 			true;
 SkinnableElement._SkinProxyMap.BackgroundShape = 			true;
 
 //Proxy styles that are not defined by the element.
@@ -12368,37 +12525,6 @@ SkinnableElement.prototype._changeState =
 		return true;
 	};
 
-//@override	
-SkinnableElement.prototype._setActualRotation = 
-	function (degrees, centerX, centerY)
-	{
-		var currentDegrees = this._rotateDegrees;
-	
-		SkinnableElement.base.prototype._setActualRotation.call(this, degrees, centerX, centerY);
-	
-		//Rotation changed
-		if (this._rotateDegrees != currentDegrees)
-		{
-			var autoGradientType;
-			var backgroundColor;
-			var borderType;
-			
-			for (var skinState in this._skins)
-			{
-				//Check if we need to re-render due to auto gradient
-				autoGradientType = this._skins[skinState].getStyle("AutoGradientType");
-				backgroundColor = this._skins[skinState].getStyle("BackgroundColor");
-				borderType = this._skins[skinState].getStyle("BorderType");
-				
-				if (autoGradientType != null && autoGradientType != "none" && 
-					(backgroundColor != null || (borderType != null && borderType != "none")))
-				{
-					this._skins[skinState]._invalidateRender();
-				}
-			}
-		}
-	};	
-	
 //@override
 SkinnableElement.prototype._doStylesUpdated =
 	function (stylesMap)
@@ -12651,17 +12777,15 @@ TextInputElement.DisabledSkinStyleDefault = new StyleDefinition();
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderType", 					"inset");
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 				1);
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderColor", 					"#999999");
-TextInputElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 				"#ECECEC");
-TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+TextInputElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 				"#ECECEC");
 
 TextInputElement.UpSkinStyleDefault = new StyleDefinition();
 
 TextInputElement.UpSkinStyleDefault.setStyle("BorderType", 							"inset");
 TextInputElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 TextInputElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#606060");
-TextInputElement.UpSkinStyleDefault.setStyle("BackgroundColor", 					"#F5F5F5");
+
+TextInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 					"#F5F5F5");
 
 //Apply skin defaults
 TextInputElement.StyleDefault.setStyle("UpSkinStyle", 								TextInputElement.UpSkinStyleDefault);
@@ -13928,17 +14052,11 @@ DataRendererBaseElement.StyleDefault = new StyleDefinition();
 //Skin Defaults////////////////////////////
 DataRendererBaseElement.OverSkinStyleDefault = new StyleDefinition();
 
-DataRendererBaseElement.OverSkinStyleDefault.setStyle("BackgroundColor", 			"#E0E0E0");
-DataRendererBaseElement.OverSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-DataRendererBaseElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 			(+.03));
-DataRendererBaseElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 			(-.03));
+DataRendererBaseElement.OverSkinStyleDefault.setStyle("BackgroundFill", 			"#E0E0E0");
 
 DataRendererBaseElement.SelectedSkinStyleDefault = new StyleDefinition();
 
-DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("BackgroundColor", 			"#CDCDCD");
-DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("AutoGradientStart", 			(+.03));
-DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("AutoGradientStop", 			(-.03));
+DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("BackgroundFill", 			"#CDCDCD");
 //////////////////////////////////////////
 
 DataRendererBaseElement.StyleDefault.setStyle("Selectable", 			true);												// intended only for reading, its proxied from DataList
@@ -15581,12 +15699,10 @@ DataGridItemRendererBase.prototype.constructor = DataGridItemRendererBase;
 DataGridItemRendererBase.base = DataRendererBaseElement;
 
 DataGridItemRendererBase.UpSkinStyleDefault = new StyleDefinition();
-DataGridItemRendererBase.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#FFFFFF");
-DataGridItemRendererBase.UpSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+DataGridItemRendererBase.UpSkinStyleDefault.setStyle("BackgroundFill", 				"#FFFFFF");
 
 DataGridItemRendererBase.AltSkinStyleDefault = new StyleDefinition();
-DataGridItemRendererBase.AltSkinStyleDefault.setStyle("BackgroundColor", 			"#F0F0F0");
-DataGridItemRendererBase.AltSkinStyleDefault.setStyle("AutoGradientType", 			"none");
+DataGridItemRendererBase.AltSkinStyleDefault.setStyle("BackgroundFill", 			"#F0F0F0");
 
 DataGridItemRendererBase.StyleDefault = new StyleDefinition();
 DataGridItemRendererBase.StyleDefault.setStyle("UpSkinStyle", DataGridItemRendererBase.UpSkinStyleDefault);
@@ -17103,18 +17219,14 @@ ScrollBarElement.TrackSkinStyleDefault = new StyleDefinition();
 ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderType", 						"solid");
 ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderThickness", 					1);
 ScrollBarElement.TrackSkinStyleDefault.setStyle("BorderColor", 						"#333333");
-ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundColor", 					"#D9D9D9");
-ScrollBarElement.TrackSkinStyleDefault.setStyle("AutoGradientType", 				"none");
+ScrollBarElement.TrackSkinStyleDefault.setStyle("BackgroundFill", 					"#D9D9D9");
 
 //disabled skin of track
 ScrollBarElement.DisabledTrackSkinStyleDefault = new StyleDefinition();
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderType", 				"solid");
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderThickness", 			1);
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderColor", 				"#999999");
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BackgroundColor", 			"#ECECEC");
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
-ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
+ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BackgroundFill", 			"#ECECEC");
 
 //track button
 ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();
@@ -18134,40 +18246,28 @@ ButtonElement.UpSkinStyleDefault = new StyleDefinition();
 ButtonElement.UpSkinStyleDefault.setStyle("BorderType", 				"solid");
 ButtonElement.UpSkinStyleDefault.setStyle("BorderThickness", 			1);
 ButtonElement.UpSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-ButtonElement.UpSkinStyleDefault.setStyle("BackgroundColor", 			"#EBEBEB");
-ButtonElement.UpSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-ButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-ButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
+ButtonElement.UpSkinStyleDefault.setStyle("BackgroundFill", 			"#EBEBEB");
 
 ButtonElement.OverSkinStyleDefault = new StyleDefinition();
 
 ButtonElement.OverSkinStyleDefault.setStyle("BorderType", 				"solid");
 ButtonElement.OverSkinStyleDefault.setStyle("BorderThickness", 			1);
 ButtonElement.OverSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-ButtonElement.OverSkinStyleDefault.setStyle("BackgroundColor", 			"#DDDDDD");
-ButtonElement.OverSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-ButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
-ButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
+ButtonElement.OverSkinStyleDefault.setStyle("BackgroundFill", 			"#DDDDDD");
 
 ButtonElement.DownSkinStyleDefault = new StyleDefinition();
 
 ButtonElement.DownSkinStyleDefault.setStyle("BorderType", 				"solid");
 ButtonElement.DownSkinStyleDefault.setStyle("BorderThickness", 			1);
 ButtonElement.DownSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-ButtonElement.DownSkinStyleDefault.setStyle("BackgroundColor", 			"#CCCCCC");
-ButtonElement.DownSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-ButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 		(-.06));
-ButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 		(+.02));
+ButtonElement.DownSkinStyleDefault.setStyle("BackgroundFill", 			"#CCCCCC");
 
 ButtonElement.DisabledSkinStyleDefault = new StyleDefinition();
 
 ButtonElement.DisabledSkinStyleDefault.setStyle("BorderType", 			"solid");
 ButtonElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 		1);
 ButtonElement.DisabledSkinStyleDefault.setStyle("BorderColor", 			"#999999");
-ButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#ECECEC");
-ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 	"linear");
-ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 	(+.05));
-ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 	(-.05));
+ButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 		"#ECECEC");
 /////////////////////////////////////////////////
 
 //Apply Skin Defaults
@@ -18682,40 +18782,28 @@ ToggleButtonElement.SelectedUpSkinStyleDefault = new StyleDefinition();
 ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BorderType", 				"solid");
 ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BorderThickness", 			1);
 ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BackgroundColor", 			"#CCCCCC");
-ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("AutoGradientStart", 		(-.06));
-ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("AutoGradientStop", 		(+.02));
+ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BackgroundFill", 			"#CCCCCC");
 
 ToggleButtonElement.SelectedOverSkinStyleDefault = new StyleDefinition();
 
 ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BorderType", 			"solid");
 ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BorderThickness", 		1);
 ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BorderColor", 			"#333333");
-ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BackgroundColor", 		"#BDBDBD");
-ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("AutoGradientStart", 		(-.08));
-ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("AutoGradientStop", 		(+.05));
+ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BackgroundFill", 		"#BDBDBD");
 
 ToggleButtonElement.SelectedDownSkinStyleDefault = new StyleDefinition();
 
 ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BorderType", 			"solid");
 ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BorderThickness", 		1);
 ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BorderColor", 			"#333333");
-ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BackgroundColor", 		"#B0B0B0");
-ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("AutoGradientStart", 		(-.08));
-ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("AutoGradientStop", 		(+.05));
+ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BackgroundFill", 		"#B0B0B0");
 
 ToggleButtonElement.SelectedDisabledSkinStyleDefault = new StyleDefinition();
 
 ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BorderType", 		"solid");
 ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BorderThickness", 	1);
 ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BorderColor", 		"#777777");
-ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BackgroundColor", 	"#C7C7C7");
-ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("AutoGradientType", 	"linear");
-ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("AutoGradientStart", 	(-.08));
-ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("AutoGradientStop", 	(+.05));
+ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BackgroundFill", 	"#C7C7C7");
 ///////////////////////////////////////////////////////
 
 ToggleButtonElement.StyleDefault.setStyle("SelectedUpSkinStyle", 					ToggleButtonElement.SelectedUpSkinStyleDefault);
@@ -19018,10 +19106,7 @@ RadioButtonElement.UpSkinStyleDefault.setStyle("BackgroundShape",				new Ellipse
 RadioButtonElement.UpSkinStyleDefault.setStyle("BorderType", 					"solid");
 RadioButtonElement.UpSkinStyleDefault.setStyle("BorderThickness", 				1);
 RadioButtonElement.UpSkinStyleDefault.setStyle("BorderColor", 					"#333333");
-RadioButtonElement.UpSkinStyleDefault.setStyle("BackgroundColor", 				"#EBEBEB");
-RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-RadioButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+RadioButtonElement.UpSkinStyleDefault.setStyle("BackgroundFill", 				"#EBEBEB");
 RadioButtonElement.UpSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 RadioButtonElement.OverSkinStyleDefault = new StyleDefinition();
@@ -19030,10 +19115,7 @@ RadioButtonElement.OverSkinStyleDefault.setStyle("BackgroundShape",				new Ellip
 RadioButtonElement.OverSkinStyleDefault.setStyle("BorderType", 					"solid");
 RadioButtonElement.OverSkinStyleDefault.setStyle("BorderThickness", 			1);
 RadioButtonElement.OverSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-RadioButtonElement.OverSkinStyleDefault.setStyle("BackgroundColor", 			"#DDDDDD");
-RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-RadioButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
+RadioButtonElement.OverSkinStyleDefault.setStyle("BackgroundFill", 				"#DDDDDD");
 RadioButtonElement.OverSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 RadioButtonElement.DownSkinStyleDefault = new StyleDefinition();
@@ -19042,10 +19124,7 @@ RadioButtonElement.DownSkinStyleDefault.setStyle("BackgroundShape",				new Ellip
 RadioButtonElement.DownSkinStyleDefault.setStyle("BorderType", 					"solid");
 RadioButtonElement.DownSkinStyleDefault.setStyle("BorderThickness", 			1);
 RadioButtonElement.DownSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-RadioButtonElement.DownSkinStyleDefault.setStyle("BackgroundColor", 			"#CCCCCC");
-RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 			(-.06));
-RadioButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 			(+.02));
+RadioButtonElement.DownSkinStyleDefault.setStyle("BackgroundFill", 				"#CCCCCC");
 RadioButtonElement.DownSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 RadioButtonElement.DisabledSkinStyleDefault = new StyleDefinition();
@@ -19054,10 +19133,7 @@ RadioButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundShape",			new El
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("BorderType", 				"solid");
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 		1);
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("BorderColor", 			"#999999");
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#ECECEC");
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
-RadioButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
+RadioButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 			"#ECECEC");
 RadioButtonElement.DisabledSkinStyleDefault.setStyle("CheckColor", 				"#777777");
 
 //Apply Skin Defaults
@@ -19342,7 +19418,7 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyle
 
 DropdownElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
 DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
-DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundColor", 			null);
+DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
 
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
@@ -19364,12 +19440,10 @@ DropdownElement.DataListScrollBarStyleDefault = new StyleDefinition();
 DropdownElement.DataListScrollBarStyleDefault.setStyle("Padding", -1);			//Expand by 1px to share borders
 
 DropdownElement.DataListItemUpSkinStyleDefault = new StyleDefinition();
-DropdownElement.DataListItemUpSkinStyleDefault.setStyle("BackgroundColor", 		"#FFFFFF");
-DropdownElement.DataListItemUpSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+DropdownElement.DataListItemUpSkinStyleDefault.setStyle("BackgroundFill", 		"#FFFFFF");
 
 DropdownElement.DataListItemAltSkinStyleDefault = new StyleDefinition();
-DropdownElement.DataListItemAltSkinStyleDefault.setStyle("BackgroundColor", 	"#F0F0F0");
-DropdownElement.DataListItemAltSkinStyleDefault.setStyle("AutoGradientType", 	"none");
+DropdownElement.DataListItemAltSkinStyleDefault.setStyle("BackgroundFill", 		"#F0F0F0");
 
 //DataList ListItem style
 DropdownElement.DataListItemStyleDefault = new StyleDefinition();
@@ -20326,7 +20400,7 @@ DataGridHeaderItemRenderer._StyleTypes.SortIconPlacement =				StyleableBase.ESty
 
 //Make disabled skin look like "up" skin (just not click-able)
 DataGridHeaderItemRenderer.DisabledSkinStyleDefault = new StyleDefinition();
-DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundColor", 		"#EBEBEB");
+DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BackgroundFill", 			"#EBEBEB");
 DataGridHeaderItemRenderer.DisabledSkinStyleDefault.setStyle("BorderType", 				null);
 
 //Other up/over/down skins (kill border)
@@ -20355,7 +20429,7 @@ DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault.setStyle("Direction", 	
 
 DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault = new StyleDefinition();
 DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BorderType", 				null);
-DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundColor", 			"#444444");
+DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundFill", 			"#444444");
 DataGridHeaderItemRenderer.SortAscIconSkinStyleDefault.setStyle("BackgroundShape", 			DataGridHeaderItemRenderer.SortAscIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortAscIconStyleDefault = new StyleDefinition();
@@ -20371,7 +20445,7 @@ DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault.setStyle("Direction", 
 
 DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault = new StyleDefinition();
 DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BorderType", 				null);
-DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundColor", 		"#444444");
+DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundFill", 			"#444444");
 DataGridHeaderItemRenderer.SortDescIconSkinStyleDefault.setStyle("BackgroundShape", 		DataGridHeaderItemRenderer.SortDescIconSkinBgShapeDefault);
 
 DataGridHeaderItemRenderer.SortDescIconStyleDefault = new StyleDefinition();
@@ -20717,7 +20791,7 @@ DataGridHeaderElement.ColumnDividerSkinStyleDefault = new StyleDefinition();
 DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerLineColor", 		"#777777");
 DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("DividerArrowColor", 		"#444444");
 DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BorderType", 				null);
-DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BackgroundColor", 		null);
+DataGridHeaderElement.ColumnDividerSkinStyleDefault.setStyle("BackgroundFill", 			null);
 
 DataGridHeaderElement.ColumnDividerStyleDefault = new StyleDefinition();
 DataGridHeaderElement.ColumnDividerStyleDefault.setStyle("SkinClass", 				DataGridHeaderColumnDividerSkinElement); 
@@ -21229,7 +21303,7 @@ DataGridElement.StyleDefault = new StyleDefinition();
 DataGridElement.GridLineStyleDefault = new StyleDefinition();
 DataGridElement.GridLineStyleDefault.setStyle("Width", 					1);				// number
 DataGridElement.GridLineStyleDefault.setStyle("Height", 				1); 			// number
-DataGridElement.GridLineStyleDefault.setStyle("BackgroundColor", 		"#BBBBBB");		// "#000000"
+DataGridElement.GridLineStyleDefault.setStyle("BackgroundFill", 		"#BBBBBB");		// "#000000"
 ///////////////////////////////////
 
 /////ScrollBar default style //////
@@ -22378,10 +22452,7 @@ CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundShape",					null);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderType", 						"solid");
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 CheckboxElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#333333");
-CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundColor", 					"#EBEBEB");
-CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 				(+.05));
-CheckboxElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+CheckboxElement.UpSkinStyleDefault.setStyle("BackgroundFill", 					"#EBEBEB");
 CheckboxElement.UpSkinStyleDefault.setStyle("CheckColor", 						"#000000");
 
 CheckboxElement.OverSkinStyleDefault = new StyleDefinition();
@@ -22390,10 +22461,7 @@ CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.OverSkinStyleDefault.setStyle("BorderColor", 					"#333333");
-CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundColor", 				"#DDDDDD");
-CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 				(+.05));
-CheckboxElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
+CheckboxElement.OverSkinStyleDefault.setStyle("BackgroundFill", 				"#DDDDDD");
 CheckboxElement.OverSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DownSkinStyleDefault = new StyleDefinition();
@@ -22402,10 +22470,7 @@ CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundShape",				null);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderType", 					"solid");
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderThickness", 				1);
 CheckboxElement.DownSkinStyleDefault.setStyle("BorderColor", 					"#333333");
-CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundColor", 				"#CCCCCC");
-CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 				(-.06));
-CheckboxElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 				(+.02));
+CheckboxElement.DownSkinStyleDefault.setStyle("BackgroundFill", 				"#CCCCCC");
 CheckboxElement.DownSkinStyleDefault.setStyle("CheckColor", 					"#000000");
 
 CheckboxElement.DisabledSkinStyleDefault = new StyleDefinition();
@@ -22414,10 +22479,7 @@ CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundShape",			null);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderType", 				"solid");
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 			1);
 CheckboxElement.DisabledSkinStyleDefault.setStyle("BorderColor", 				"#999999");
-CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundColor", 			"#ECECEC");
-CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-CheckboxElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
+CheckboxElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 			"#ECECEC");
 CheckboxElement.DisabledSkinStyleDefault.setStyle("CheckColor", 				"#777777");
 
 
