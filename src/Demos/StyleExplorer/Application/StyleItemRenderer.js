@@ -216,6 +216,8 @@ StyleItemRenderer.prototype._updateStyleValue =
 		this._styleControlType.styleListCodeString = "";
 		this._styleControlType.styleItemCodeString = (styleDefName + ".setStyle(\"" + this._styleControlType.styleName + "\", ");
 		
+		var valueParseFailure = false;
+		
 		if (value != null)
 		{
 			if (this._styleControlType.styleType == "number")
@@ -257,7 +259,15 @@ StyleItemRenderer.prototype._updateStyleValue =
 			else if (this._styleControlType.styleType == "json")
 			{
 				this._styleControlType.styleItemCodeString += (value + ");");
-				value = JSON.parse(value);
+				
+				try
+				{
+					value = JSON.parse(value);
+				}
+				catch (ex)
+				{
+					valueParseFailure = true;
+				}
 			}
 			else 
 			{
@@ -270,7 +280,9 @@ StyleItemRenderer.prototype._updateStyleValue =
 		
 		this._styleControlType.styleItemCodeString += "\r\n";
 		
-		this._styleControlType.styleDefinition.setStyle(this._styleControlType.styleName, value);
+		//Update style definition unless the value is invalid & not parse-able
+		if (valueParseFailure == false)
+			this._styleControlType.styleDefinition.setStyle(this._styleControlType.styleName, value);
 		
 		if (value instanceof StyleDefinition) //Substyle
 		{
