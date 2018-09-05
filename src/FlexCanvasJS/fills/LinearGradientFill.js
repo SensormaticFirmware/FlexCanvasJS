@@ -103,7 +103,10 @@ LinearGradientFill.prototype.drawFill =
 					{
 						gradient.addColorStop(colorStops[i][0], colorStops[i][1]);
 					}
-					catch (ex) { //Swallow }
+					catch (ex) 
+					{ 
+						//Swallow 
+					}
 				}
 			}
 		}
