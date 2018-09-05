@@ -95,8 +95,10 @@ lable.innerHTML = "Show Inherited";
 <a href="ElementMouseWheelEvent.html">ElementMouseWheelEvent</a><br>
 <a href="EllipseShape.html">EllipseShape</a><br>
 <a href="EventDispatcher.html">EventDispatcher</a><br>
+<a href="FillBase.html">FillBase</a><br>
 <a href="ImageElement.html">ImageElement</a><br>
 <a href="LabelElement.html">LabelElement</a><br>
+<a href="LinearGradientFill.html">LinearGradientFill</a><br>
 <a href="ListCollection.html">ListCollection</a><br>
 <a href="ListContainerElement.html">ListContainerElement</a><br>
 <a href="RadioButtonElement.html">RadioButtonElement</a><br>
@@ -106,6 +108,7 @@ lable.innerHTML = "Show Inherited";
 <a href="ScrollButtonSkinElement.html">ScrollButtonSkinElement</a><br>
 <a href="ShapeBase.html">ShapeBase</a><br>
 <a href="SkinnableElement.html">SkinnableElement</a><br>
+<a href="SolidFill.html">SolidFill</a><br>
 <a href="StyleableBase.html">StyleableBase</a><br>
 <a href="StyleChangedEvent.html">StyleChangedEvent</a><br>
 <a href="StyleData.html">StyleData</a><br>
@@ -169,7 +172,7 @@ The element to proxy styles from.<br>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleProxyMap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
-A map of styleNames to proxy. This Object is walked for members so<br>should always be created using a null prototype: Object.create(null) and<br>members created for each styleName to proxy (set to true).<br>MyProxyMap = Object.create(null);<br>MyProxyMap.StyleName1 = true;<br>MyProxyMap.StyleName2 = true;<br>MyProxyMap._Arbitrary = true;<br>_Arbitrary is a special flag that indicates all styles that are not defined / unknown<br>by the element will also be proxied.<br>For example, a Button will proxy several styles to its skins such as "BackgroundColor" by including<br>them in the proxy map it passes to its skins. Styles like "Visible" however, are omitted from the proxy<br>map. Also, the button sets the _Arbitrary flag so any styles the Button is not aware of and does not define itself,<br>are automatically proxied to the skin, without having to be added to the proxy map.<br>This is so that skins may have custom styles and still be blanket set by setting the Button style itself.<br>
+A map of styleNames to proxy. This Object is walked for members so<br>should always be created using a null prototype: Object.create(null) and<br>members created for each styleName to proxy (set to true).<br>MyProxyMap = Object.create(null);<br>MyProxyMap.StyleName1 = true;<br>MyProxyMap.StyleName2 = true;<br>MyProxyMap._Arbitrary = true;<br>_Arbitrary is a special flag that indicates all styles that are not defined / unknown<br>by the element will also be proxied.<br>For example, a Button will proxy several styles to its skins such as "BackgroundFill" by including<br>them in the proxy map it passes to its skins. Styles like "Visible" however, are omitted from the proxy<br>map. Also, the button sets the _Arbitrary flag so any styles the Button is not aware of and does not define itself,<br>are automatically proxied to the skin, without having to be added to the proxy map.<br>This is so that skins may have custom styles and still be blanket set by setting the Button style itself.<br>
 </td>
 </tr>
 </table>
@@ -205,7 +208,7 @@ The element to proxy styles from.<br>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleProxyMap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
-A map of styleNames to proxy. This Object is walked for members so<br>should always be created using a null prototype: Object.create(null) and<br>members created for each styleName to proxy (set to true).<br>MyProxyMap = Object.create(null);<br>MyProxyMap.StyleName1 = true;<br>MyProxyMap.StyleName2 = true;<br>MyProxyMap._Arbitrary = true;<br>_Arbitrary is a special flag that indicates all styles that are not defined / unknown<br>by the element will also be proxied.<br>For example, a Button will proxy several styles to its skins such as "BackgroundColor" by including<br>them in the proxy map it passes to its skins. Styles like "Visible" however, are omitted from the proxy<br>map. Also, the button sets the _Arbitrary flag so any styles the Button is not aware of and does not define itself,<br>are automatically proxied to the skin, without having to be added to the proxy map.<br>This is so that skins may have custom styles and still be blanket set by setting the Button style itself.<br>
+A map of styleNames to proxy. This Object is walked for members so<br>should always be created using a null prototype: Object.create(null) and<br>members created for each styleName to proxy (set to true).<br>MyProxyMap = Object.create(null);<br>MyProxyMap.StyleName1 = true;<br>MyProxyMap.StyleName2 = true;<br>MyProxyMap._Arbitrary = true;<br>_Arbitrary is a special flag that indicates all styles that are not defined / unknown<br>by the element will also be proxied.<br>For example, a Button will proxy several styles to its skins such as "BackgroundFill" by including<br>them in the proxy map it passes to its skins. Styles like "Visible" however, are omitted from the proxy<br>map. Also, the button sets the _Arbitrary flag so any styles the Button is not aware of and does not define itself,<br>are automatically proxied to the skin, without having to be added to the proxy map.<br>This is so that skins may have custom styles and still be blanket set by setting the Button style itself.<br>
 </td>
 </tr>
 </table>

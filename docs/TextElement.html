@@ -95,8 +95,10 @@ lable.innerHTML = "Show Inherited";
 <a href="ElementMouseWheelEvent.html">ElementMouseWheelEvent</a><br>
 <a href="EllipseShape.html">EllipseShape</a><br>
 <a href="EventDispatcher.html">EventDispatcher</a><br>
+<a href="FillBase.html">FillBase</a><br>
 <a href="ImageElement.html">ImageElement</a><br>
 <a href="LabelElement.html">LabelElement</a><br>
+<a href="LinearGradientFill.html">LinearGradientFill</a><br>
 <a href="ListCollection.html">ListCollection</a><br>
 <a href="ListContainerElement.html">ListContainerElement</a><br>
 <a href="RadioButtonElement.html">RadioButtonElement</a><br>
@@ -106,6 +108,7 @@ lable.innerHTML = "Show Inherited";
 <a href="ScrollButtonSkinElement.html">ScrollButtonSkinElement</a><br>
 <a href="ShapeBase.html">ShapeBase</a><br>
 <a href="SkinnableElement.html">SkinnableElement</a><br>
+<a href="SolidFill.html">SolidFill</a><br>
 <a href="StyleableBase.html">StyleableBase</a><br>
 <a href="StyleChangedEvent.html">StyleChangedEvent</a><br>
 <a href="StyleData.html">StyleData</a><br>
@@ -227,7 +230,7 @@ when a value between 1 and 0 is used.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">AutoGradientStart</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+<span style="font-weight: bold;">BackgroundFill</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="FillBase.html">FillBase</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
@@ -235,56 +238,8 @@ when a value between 1 and 0 is used.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Color offset to apply to the start of the gradient. Allowable values are numbers between<br>
--1 (white) and +1 (black).<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">AutoGradientStop</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Color offset to apply to the end of the gradient. Allowable values are numbers between<br>
--1 (white) and +1 (black).<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">AutoGradientType</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Determines the type of gradient to be used when rendering the element's background.<br>
-Allowable values are "none", "linear", or "radial". Auto gradients automatically lighten<br>
-and darken the associated color are always rendered in the same direction relative to the<br>
-canvas itself regardless of rotation or transformation applied to the element.<br>
-This is used to create effects like a consistent light source even if the element is rotating.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">BackgroundColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used when drawing the background. This may be set to null and no<br>
-background will be rendered. Format like "#FF0000" (red)<br>
+Fill to use when filling the background. May be any FillBase subclass instance,<br>
+"color" string, or null for transparent.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -3122,7 +3077,7 @@ The DrawMetrics containing x,y,width,height used to draw the background. These<b
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Used to fill the elements background shape according to the element�s background color and gradient settings.<br>
+Used to fill the elements background shape according to the element's BackgroundShape and BackgroundFill styles.<br>
 You should never need to explicitly call this. The system calls this during<br>
 the render phase. You may override if you need to do a more complex background fill. The background fill<br>
 is rendered after the focus ring and before the border.<br>
@@ -3139,150 +3094,6 @@ Canvas2DContext to fill the background shape.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">borderMetrics</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DrawMetrics.html">DrawMetrics</a><br>
 The DrawMetrics containing x,y,width,height used to draw the background. These<br>metrics should be the same as the ones used to stroke a solid border.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getAutoGradientFill(color, context)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Helper function that returns a Context2D linear or radial CanvasGradient depending on this elements<br>
-auto gradient styles. This gradient uses 1 color and lightens and darkens the supplied color.<br>
-The gradient is always oriented in the same direction regardless of the elements rotation or transformation.<br>
-This is used for a consistent light source.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">color</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-Hex color to lighten and darken for gradient. Format "#FF0000" (red).<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">context</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Canvas2DContext<br>
-Canvas2DContext to use to generate the gradient.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;CanvasGradient<br>
-Returns CanvasGradient to be applied to canvas Context2D.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getAutoGradientLinear(color, context)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Helper function that returns a Context2D linear CanvasGradient depending on this elements<br>
-auto gradient styles. See _getAutoGradientFill().<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">color</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-Hex color to lighten and darken for gradient. Format "#FF0000" (red).<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">context</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Canvas2DContext<br>
-Canvas2DContext to use to generate the gradient.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;CanvasGradient<br>
-Returns CanvasGradient to be applied to canvas Context2D.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getAutoGradientMetrics()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Helper function that returns a metrics object to be used for generating a consistent gradient<br>
-relative to the canvas regardless of the elements rotation, transformation or position in the<br>
-display hierarchy. Currently this always generates a gradient at 10 degrees from the upper left<br>
-to the lower right for consistency with inset/outset borders. This is used by the auto-gradient<br>
-to create a consistent light source. More styles should be added to allow changing the degrees<br>
-for more flexibility.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
-Gradient metrics object containing {startPoint:{x,y}, endPoint:{x, y}, width, height}<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getAutoGradientRadial(color, context)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Helper function that returns a Context2D linear CanvasGradient depending on this elements<br>
-auto gradient styles. See _getAutoGradientFill().<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">color</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-Hex color to lighten and darken for gradient. Format "#FF0000" (red).<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">context</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Canvas2DContext<br>
-Canvas2DContext to use to generate the gradient.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;CanvasGradient<br>
-Returns CanvasGradient to be applied to canvas Context2D.<br>
 </td>
 </tr>
 </table>
@@ -3846,7 +3657,7 @@ the next render phase. The system calls this automatically for all existing comp
 this is only necessary for custom component development.<br>
 This should only be called when a change is made to the element that will impact its rendering.<br>
 Such as property changes or from within the elements doStylesUpdated() when a style change impacts<br>
-the element's rendering (such as BackgroundColor).<br>
+the element's rendering (such as BackgroundFill).<br>
 Do not override this function.<br>
 </td>
 <td>&nbsp;</td>
