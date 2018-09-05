@@ -208,11 +208,7 @@ TextInputElement.DisabledSkinStyleDefault = new StyleDefinition();
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderType", 					"inset");
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 				1);
 TextInputElement.DisabledSkinStyleDefault.setStyle("BorderColor", 					"#999999");
-
 TextInputElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 				"#ECECEC");
-//TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 				"linear");
-//TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-//TextInputElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 				(-.05));
 
 TextInputElement.UpSkinStyleDefault = new StyleDefinition();
 

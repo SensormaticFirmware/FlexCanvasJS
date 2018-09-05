@@ -227,44 +227,28 @@ ButtonElement.UpSkinStyleDefault = new StyleDefinition();
 ButtonElement.UpSkinStyleDefault.setStyle("BorderType", 				"solid");
 ButtonElement.UpSkinStyleDefault.setStyle("BorderThickness", 			1);
 ButtonElement.UpSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-
 ButtonElement.UpSkinStyleDefault.setStyle("BackgroundFill", 			"#EBEBEB");
-//ButtonElement.UpSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-//ButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStart", 			(+.05));
-//ButtonElement.UpSkinStyleDefault.setStyle("AutoGradientStop", 			(-.05));
 
 ButtonElement.OverSkinStyleDefault = new StyleDefinition();
 
 ButtonElement.OverSkinStyleDefault.setStyle("BorderType", 				"solid");
 ButtonElement.OverSkinStyleDefault.setStyle("BorderThickness", 			1);
 ButtonElement.OverSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-
 ButtonElement.OverSkinStyleDefault.setStyle("BackgroundFill", 			"#DDDDDD");
-//ButtonElement.OverSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-//ButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
-//ButtonElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
 
 ButtonElement.DownSkinStyleDefault = new StyleDefinition();
 
 ButtonElement.DownSkinStyleDefault.setStyle("BorderType", 				"solid");
 ButtonElement.DownSkinStyleDefault.setStyle("BorderThickness", 			1);
 ButtonElement.DownSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-
 ButtonElement.DownSkinStyleDefault.setStyle("BackgroundFill", 			"#CCCCCC");
-//ButtonElement.DownSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-//ButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStart", 		(-.06));
-//ButtonElement.DownSkinStyleDefault.setStyle("AutoGradientStop", 		(+.02));
 
 ButtonElement.DisabledSkinStyleDefault = new StyleDefinition();
 
 ButtonElement.DisabledSkinStyleDefault.setStyle("BorderType", 			"solid");
 ButtonElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 		1);
 ButtonElement.DisabledSkinStyleDefault.setStyle("BorderColor", 			"#999999");
-
 ButtonElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 		"#ECECEC");
-//ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientType", 	"linear");
-//ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStart", 	(+.05));
-//ButtonElement.DisabledSkinStyleDefault.setStyle("AutoGradientStop", 	(-.05));
 /////////////////////////////////////////////////
 
 //Apply Skin Defaults

@@ -254,6 +254,11 @@ StyleItemRenderer.prototype._updateStyleValue =
 				else
 					this._styleControlType.styleItemCodeString += "false);";
 			}
+			else if (this._styleControlType.styleType == "json")
+			{
+				this._styleControlType.styleItemCodeString += (value + ");");
+				value = JSON.parse(value);
+			}
 			else 
 			{
 				value = value.toString();

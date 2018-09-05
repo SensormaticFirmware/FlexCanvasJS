@@ -93,8 +93,14 @@ LinearGradientFill.prototype.drawFill =
 		
 		var gradient = ctx.createLinearGradient(pointStart.x, pointStart.y, pointStop.x, pointStop.y);
 		
-		for (var i = 0; i < colorStops.length; i++)
-			gradient.addColorStop(colorStops[i][0], colorStops[i][1]);
+		if (Array.isArray(colorStops) == true)
+		{
+			for (var i = 0; i < colorStops.length; i++)
+			{
+				if (colorStops[i].length > 1)
+					gradient.addColorStop(colorStops[i][0], colorStops[i][1]);
+			}
+		}
 		
 		ctx.fillStyle = gradient;
 		ctx.fill();

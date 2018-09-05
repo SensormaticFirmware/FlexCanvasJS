@@ -141,11 +141,7 @@ ScrollBarElement.DisabledTrackSkinStyleDefault = new StyleDefinition();
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderType", 				"solid");
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderThickness", 			1);
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BorderColor", 				"#999999");
-
 ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("BackgroundFill", 			"#ECECEC");
-//ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-//ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStart", 		(+.05));
-//ScrollBarElement.DisabledTrackSkinStyleDefault.setStyle("AutoGradientStop", 		(-.05));
 
 //track button
 ScrollBarElement.ButtonTrackStyleDefault = new StyleDefinition();

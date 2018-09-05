@@ -210,13 +210,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		{
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"Alpha", 									"number", 	false, 	false, 	styleDef, this,	.5,							null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"BackgroundShape", 							"class", 	true, 	true,	styleDef, this, RoundedRectangleShape,		[{label:"RoundedRectangle", value:RoundedRectangleShape}, {label:"Arrow", value:ArrowShape}, {label:"Ellipse", value:EllipseShape}]));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"BackgroundColor", 							"color", 	true, 	false,	styleDef, this, "#FFFFFF",					null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"BackgroundFill", 							"class", 	true, 	false,	styleDef, this, SolidFill,					[{label:"Solid", value:SolidFill}, {label:"LinearGradient", value:LinearGradientFill}]));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"BorderType", 								"string", 	true, 	false, 	styleDef, this,	"solid",					[{label:"solid", value:"solid"}, {label:"inset", value:"inset"}, {label:"outset", value:"outset"}]));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"BorderColor", 								"color", 	true, 	false,	styleDef, this, "#000000",					null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"BorderThickness", 							"number", 	false, 	false, 	styleDef, this,	1,							null));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"AutoGradientType", 						"string", 	true, 	false, 	styleDef, this,	"linear",					[{label:"linear", value:"linear"}, {label:"radial", value:"radial"}]));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"AutoGradientStart", 						"number", 	false, 	false, 	styleDef, this,	(+.05),						null));
-			this.styleList.addItem(new ControlStyleType("Rendering", 	"AutoGradientStop", 						"number", 	false, 	false, 	styleDef, this,	(-.05),						null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowSize", 								"number", 	false, 	false, 	styleDef, this,	0,							null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetX", 							"number", 	false, 	false, 	styleDef, this,	0,							null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowOffsetY", 							"number", 	false, 	false, 	styleDef, this,	0, 							null));
@@ -671,6 +668,18 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"RectBaseHeight", 							"number", 	true, 	true, 	styleDef, this,	6, 							null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"RectBasePercentWidth", 					"number", 	true, 	true, 	styleDef, this,	50, 						null));
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"RectBasePercentHeight", 					"number", 	true, 	true, 	styleDef, this,	50, 						null));
+		}
+		
+		if (styleDef instanceof SolidFill)
+		{
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"FillColor", 								"color", 	false, 	false, 	styleDef, this,	"#FFFF00",					null));
+		}
+		
+		if (styleDef instanceof LinearGradientFill)
+		{
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"GradientDegrees", 							"number", 	false, 	false, 	styleDef, this,	0, 							null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"GradientColorStops", 						"json", 	false, 	false, 	styleDef, this,	"[[0,'#000000'],[1,'#00FFFF']]", null));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"GradientCoverage", 						"string", 	false, 	false, 	styleDef, this,	"inner", 					[{label:"inner", value:"inner"}, {label:"outer", value:"outer"}]));
 		}
 		
 		//Get a list of all categories

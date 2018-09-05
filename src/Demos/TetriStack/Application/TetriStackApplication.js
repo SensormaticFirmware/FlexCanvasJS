@@ -82,7 +82,7 @@ function TetriStackApplication() //extends CanvasManager
 						this._controlsDivider = new CanvasElement();
 						this._controlsDivider.setStyle("Height", 1);
 						this._controlsDivider.setStyle("Width", 520);
-						this._controlsDivider.setStyle("BackgroundColor", "#DDDDDD");
+						this._controlsDivider.setStyle("BackgroundFill", "#DDDDDD");
 						
 						this._controlMoveLeftContainer = new ListContainerElement();
 						this._controlMoveLeftContainer.setStyle("LayoutDirection", "horizontal");
@@ -494,7 +494,7 @@ function TetriStackApplication() //extends CanvasManager
 				this._poweredByContainer = new ListContainerElement();
 				this._poweredByContainer.setStyle("LayoutGap", -1);
 				this._poweredByContainer.setStyle("LayoutDirection", "horizontal");
-				this._poweredByContainer.setStyle("BackgroundColor", "#777777");
+				this._poweredByContainer.setStyle("BackgroundFill", "#777777");
 				this._poweredByContainer.setStyle("Padding", 2);
 				this._poweredByContainer.setStyle("BackgroundShape", this._poweredByContainerBackgroundShape);
 				

@@ -136,16 +136,10 @@ DataRendererBaseElement.StyleDefault = new StyleDefinition();
 DataRendererBaseElement.OverSkinStyleDefault = new StyleDefinition();
 
 DataRendererBaseElement.OverSkinStyleDefault.setStyle("BackgroundFill", 			"#E0E0E0");
-//DataRendererBaseElement.OverSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-//DataRendererBaseElement.OverSkinStyleDefault.setStyle("AutoGradientStart", 			(+.03));
-//DataRendererBaseElement.OverSkinStyleDefault.setStyle("AutoGradientStop", 			(-.03));
 
 DataRendererBaseElement.SelectedSkinStyleDefault = new StyleDefinition();
 
 DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("BackgroundFill", 			"#CDCDCD");
-//DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("AutoGradientType", 			"linear");
-//DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("AutoGradientStart", 			(+.03));
-//DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("AutoGradientStop", 			(-.03));
 //////////////////////////////////////////
 
 DataRendererBaseElement.StyleDefault.setStyle("Selectable", 			true);												// intended only for reading, its proxied from DataList

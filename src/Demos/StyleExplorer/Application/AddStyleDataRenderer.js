@@ -18,7 +18,7 @@ function AddStyleDataRenderer() //extends DataRendererLabelElement
 	
 	//Used only for header
 	this._divider = new CanvasElement();
-	this._divider.setStyle("BackgroundColor", "#000000");
+	this._divider.setStyle("BackgroundFill", "#000000");
 	
 	//Used only for selectable style
 	this._checkboxSelected = new CheckboxElement();

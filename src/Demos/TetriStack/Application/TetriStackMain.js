@@ -2,7 +2,7 @@
 //////STYLES//////////////////////
 
 var applicationStyles = new StyleDefinition();
-applicationStyles.setStyle("BackgroundColor", "#444444");
+applicationStyles.setStyle("BackgroundFill", "#444444");
 
 //Increase the line padding to handle characters with low hanging decenders.
 applicationStyles.setStyle("TextLinePaddingTop", 2);
@@ -10,16 +10,16 @@ applicationStyles.setStyle("TextLinePaddingBottom", 2);
 
 /////
 var ButtonDownSkinStyle = new StyleDefinition();
-ButtonDownSkinStyle.setStyle("BackgroundColor", "#BEBEBE");
+ButtonDownSkinStyle.setStyle("BackgroundFill", "#BEBEBE");
 
 var ButtonOverSkinStyle = new StyleDefinition();
-ButtonOverSkinStyle.setStyle("BackgroundColor", "#AFAFAF");
+ButtonOverSkinStyle.setStyle("BackgroundFill", "#AFAFAF");
 
 var ButtonUpSkinStyle = new StyleDefinition();
-ButtonUpSkinStyle.setStyle("BackgroundColor", "#9F9F9F");
+ButtonUpSkinStyle.setStyle("BackgroundFill", "#9F9F9F");
 
 var ButtonDisabledSkinStyle = new StyleDefinition();
-ButtonDisabledSkinStyle.setStyle("BackgroundColor", "#777777");
+ButtonDisabledSkinStyle.setStyle("BackgroundFill", "#777777");
 
 var buttonBackgroundShapeStyle = new RoundedRectangleShape();
 buttonBackgroundShapeStyle.setStyle("CornerRadius", 5);
@@ -34,7 +34,6 @@ buttonBackgroundStyle.setStyle("SelectedOverSkinStyle", ButtonOverSkinStyle);
 buttonBackgroundStyle.setStyle("SelectedUpSkinStyle", ButtonUpSkinStyle);
 buttonBackgroundStyle.setStyle("DisabledSkinStyle", ButtonDisabledSkinStyle);
 buttonBackgroundStyle.setStyle("BorderType", null);
-buttonBackgroundStyle.setStyle("AutoGradientType", null);
 buttonBackgroundStyle.setStyle("BackgroundShape", buttonBackgroundShapeStyle);
 /////
 
@@ -99,7 +98,7 @@ labelControlsValueCol3Style.setStyle("TextHorizontalAlign", "right");
 var labelControlsDividerStyle = new StyleDefinition();
 labelControlsDividerStyle.setStyle("PercentHeight", 70);
 labelControlsDividerStyle.setStyle("Width", 1);
-labelControlsDividerStyle.setStyle("BackgroundColor", "#DDDDDD");
+labelControlsDividerStyle.setStyle("BackgroundFill", "#DDDDDD");
 
 var labelPlayFieldStyle = new StyleDefinition();
 labelPlayFieldStyle.setStyle("TextStyle", "bold");
@@ -121,19 +120,19 @@ labelPlayFieldSmallSizeStyle.setStyle("TextSize", 20);
 var scoreControlsDividerStyle = new StyleDefinition();
 scoreControlsDividerStyle.setStyle("PercentWidth", 80);
 scoreControlsDividerStyle.setStyle("Height", 1);
-scoreControlsDividerStyle.setStyle("BackgroundColor", "#DDDDDD");
+scoreControlsDividerStyle.setStyle("BackgroundFill", "#DDDDDD");
 
 ////
 var playFieldOuterContainerBackgroundShapeStyle = new RoundedRectangleShape();
 playFieldOuterContainerBackgroundShapeStyle.setStyle("CornerRadius", 5);
 
 var playFieldOuterContainerStyle = new StyleDefinition();
-playFieldOuterContainerStyle.setStyle("BackgroundColor", "#DDDDDD");
+playFieldOuterContainerStyle.setStyle("BackgroundFill", "#DDDDDD");
 playFieldOuterContainerStyle.setStyle("BackgroundShape", playFieldOuterContainerBackgroundShapeStyle);
 ////
 
 var playFieldInnerContainerStyle = new StyleDefinition();
-playFieldInnerContainerStyle.setStyle("BackgroundColor", "#202020");
+playFieldInnerContainerStyle.setStyle("BackgroundFill", "#202020");
 playFieldInnerContainerStyle.setStyle("Top", 3);
 playFieldInnerContainerStyle.setStyle("Bottom", 3);
 playFieldInnerContainerStyle.setStyle("Left", 3);

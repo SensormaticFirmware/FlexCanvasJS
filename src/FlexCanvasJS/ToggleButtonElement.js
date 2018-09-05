@@ -176,44 +176,28 @@ ToggleButtonElement.SelectedUpSkinStyleDefault = new StyleDefinition();
 ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BorderType", 				"solid");
 ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BorderThickness", 			1);
 ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BorderColor", 				"#333333");
-
 ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("BackgroundFill", 			"#CCCCCC");
-//ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-//ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("AutoGradientStart", 		(-.06));
-//ToggleButtonElement.SelectedUpSkinStyleDefault.setStyle("AutoGradientStop", 		(+.02));
 
 ToggleButtonElement.SelectedOverSkinStyleDefault = new StyleDefinition();
 
 ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BorderType", 			"solid");
 ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BorderThickness", 		1);
 ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BorderColor", 			"#333333");
-
 ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("BackgroundFill", 		"#BDBDBD");
-//ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-//ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("AutoGradientStart", 		(-.08));
-//ToggleButtonElement.SelectedOverSkinStyleDefault.setStyle("AutoGradientStop", 		(+.05));
 
 ToggleButtonElement.SelectedDownSkinStyleDefault = new StyleDefinition();
 
 ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BorderType", 			"solid");
 ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BorderThickness", 		1);
 ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BorderColor", 			"#333333");
-
 ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("BackgroundFill", 		"#B0B0B0");
-//ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("AutoGradientType", 		"linear");
-//ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("AutoGradientStart", 		(-.08));
-//ToggleButtonElement.SelectedDownSkinStyleDefault.setStyle("AutoGradientStop", 		(+.05));
 
 ToggleButtonElement.SelectedDisabledSkinStyleDefault = new StyleDefinition();
 
 ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BorderType", 		"solid");
 ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BorderThickness", 	1);
 ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BorderColor", 		"#777777");
-
 ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("BackgroundFill", 	"#C7C7C7");
-//ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("AutoGradientType", 	"linear");
-//ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("AutoGradientStart", 	(-.08));
-//ToggleButtonElement.SelectedDisabledSkinStyleDefault.setStyle("AutoGradientStop", 	(+.05));
 ///////////////////////////////////////////////////////
 
 ToggleButtonElement.StyleDefault.setStyle("SelectedUpSkinStyle", 					ToggleButtonElement.SelectedUpSkinStyleDefault);

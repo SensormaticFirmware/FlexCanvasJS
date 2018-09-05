@@ -52,8 +52,8 @@ var urlImgBlueMarble = "BlueMarble.jpg";
 //////STYLES//////////////////////
 
 var canvasManagerStyle = new StyleDefinition();
-//canvasManagerStyle.setStyle("BackgroundColor", 			"#CCDD99");
-canvasManagerStyle.setStyle("BackgroundColor", 				"#D9C7A6");
+//canvasManagerStyle.setStyle("BackgroundFill", 			"#CCDD99");
+canvasManagerStyle.setStyle("BackgroundFill", 				"#D9C7A6");
 
 var applicationContainerStyle = new StyleDefinition();
 applicationContainerStyle.setStyle("PaddingTop", 			4);
@@ -71,7 +71,7 @@ var panelBackgroundShape = new RoundedRectangleShape();
 panelBackgroundShape.setStyle("CornerRadius", 				6);
 
 var panelBackgroundStyle = new StyleDefinition();
-panelBackgroundStyle.setStyle("BackgroundColor", 			"#FFFFFF");
+panelBackgroundStyle.setStyle("BackgroundFill", 			"#FFFFFF");
 panelBackgroundStyle.setStyle("BackgroundShape", 			panelBackgroundShape);
 panelBackgroundStyle.setStyle("Alpha", 						.35);
 panelBackgroundStyle.setStyle("PercentWidth", 				100);
@@ -85,7 +85,7 @@ panelInnerContainerStyle.setStyle("PercentHeight",			100);
 var hDividerLineStyle = new StyleDefinition();				
 hDividerLineStyle.setStyle("Height", 						1); 
 hDividerLineStyle.setStyle("PercentWidth", 					100);
-hDividerLineStyle.setStyle("BackgroundColor", 				"#999999");
+hDividerLineStyle.setStyle("BackgroundFill", 				"#999999");
 
 
 //////Clear Style Button
@@ -93,13 +93,13 @@ var clearStyleButtonStyle = new StyleDefinition();
 
 //Skin styles
 var clearStyleButtonUpSkinStyleDef = new StyleDefinition();
-clearStyleButtonUpSkinStyleDef.setStyle("BackgroundColor", "#FF7777");
+clearStyleButtonUpSkinStyleDef.setStyle("BackgroundFill", "#FF7777");
 
 var clearStyleButtonOverSkinStyleDef = new StyleDefinition();
-clearStyleButtonOverSkinStyleDef.setStyle("BackgroundColor", "#EE5555");
+clearStyleButtonOverSkinStyleDef.setStyle("BackgroundFill", "#EE5555");
 
 var clearStyleButtonDownSkinStyleDef = new StyleDefinition();
-clearStyleButtonDownSkinStyleDef.setStyle("BackgroundColor", "#DD3333");
+clearStyleButtonDownSkinStyleDef.setStyle("BackgroundFill", "#DD3333");
 
 clearStyleButtonStyle.setStyle("UpSkinStyle", clearStyleButtonUpSkinStyleDef);
 clearStyleButtonStyle.setStyle("OverSkinStyle", clearStyleButtonOverSkinStyleDef);

@@ -187,7 +187,7 @@ function StyleExplorerApplication() //extends CanvasManager
 									this._sandboxControlPanelBackground.setStyle("Bottom", 5);
 									this._sandboxControlPanelBackground.setStyle("Left", 5);
 									this._sandboxControlPanelBackground.setStyle("Right", 5);
-									this._sandboxControlPanelBackground.setStyle("BackgroundColor", "#FFFFFF");
+									this._sandboxControlPanelBackground.setStyle("BackgroundFill", "#FFFFFF");
 									this._sandboxControlPanelBackground.setStyle("Alpha", .35);
 								
 									//Visibility Toggled
@@ -408,8 +408,11 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:buttonControlStyleType,
 											list:null});
 	//CanvasElement
+	var canvasElementBgFill = new SolidFill();
+	canvasElementBgFill.setStyle("FillColor", "#FFFF00");
+	
 	var canvasElementDef = new StyleDefinition();
-	canvasElementDef.setStyle("BackgroundColor", "#FFFF00");
+	canvasElementDef.setStyle("BackgroundFill", canvasElementBgFill);
 	canvasElementDef.setStyle("Width", 75);
 	canvasElementDef.setStyle("Height", 75);
 	
@@ -574,11 +577,14 @@ function StyleExplorerApplication() //extends CanvasManager
 	dataListScrollBarDef.setStyle("PaddingTop", -1);
 	dataListScrollBarDef.setStyle("PaddingBottom", -1);
 	
+	var dataListBgFill = new SolidFill();
+	dataListBgFill.setStyle("FillColor", "#FAFAFA");
+	
 	var dataListDef = new StyleDefinition();
 	dataListDef.setStyle("LayoutDirection", "vertical");
 	dataListDef.setStyle("PercentHeight", 100);
 	dataListDef.setStyle("Width", 200);
-	dataListDef.setStyle("BackgroundColor", "#FAFAFA");
+	dataListDef.setStyle("BackgroundFill", dataListBgFill);
 	dataListDef.setStyle("BorderType", "solid");
 	dataListDef.setStyle("BorderThickness", 1);
 	dataListDef.setStyle("PaddingTop", 1);
@@ -629,10 +635,13 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:dropdownControlStyleType,
 											list:null});
 	//ListContainerElement
+	var listContainerBgFill = new SolidFill();
+	listContainerBgFill.setStyle("FillColor", "#FFFFFF");
+	
 	var listContainerDef = new StyleDefinition();
 	listContainerDef.setStyle("PercentWidth", 75);
 	listContainerDef.setStyle("PercentHeight", 50);
-	listContainerDef.setStyle("BackgroundColor", "#FFFFFF");
+	listContainerDef.setStyle("BackgroundFill", listContainerBgFill);
 	listContainerDef.setStyle("LayoutDirection", "vertical");
 	
 	var listContainerControl = new ListContainerElement();
