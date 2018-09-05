@@ -118,6 +118,9 @@ StyleListRenderer.prototype._onDropdownAddListItemClick =
 			this.addElementAt(itemRenderer, 1);
 			
 			this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(styleControlType));
+			
+			//Dispatch an event from the manager to fire the styling code re-build.
+			this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
 		}
 	};
 

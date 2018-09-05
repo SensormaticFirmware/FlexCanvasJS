@@ -924,7 +924,8 @@ StyleExplorerApplication.prototype._onDataListControlsChanged =
 StyleExplorerApplication.prototype._onStylingChanged = 
 	function (event)
 	{
-		//Updating the style code is expensive, so we defer till the next frame to spread the load.
+		//Updating the style code is expensive, so we defer till the next frame to spread the load and
+		//also make sure if this event gets dispatched multiple times we only process once per frame.
 		if (this.hasEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance) == false)
 			this.addEventListener("enterframe", this._onEnterFrameStyleCodeUpdateInstance);
 	};
