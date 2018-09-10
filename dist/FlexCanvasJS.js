@@ -4364,6 +4364,10 @@ CanvasElement.EStylePriorities =
  * @broadcast
  * Dispatched at the beginning of the render frame before any life cycle processing begins.
  * 
+ * @event exitframe DispatcherEvent
+ * @broadcast
+ * Dispatched at the end of the render frame before after life cycle processing ends.
+ * 
  * @event mousemoveex ElementMouseEvent
  * @broadcast
  * Dispatched when the mouse moves anywhere, even outside of the browser window. Mouse coordinates are relative to CanvasManager.
@@ -5890,6 +5894,7 @@ CanvasElement.prototype.addEventListener =
 	
 		//Broadcast events (dispatched only by manager)
 		if ((type == "enterframe" || 
+			type == "exitframe" ||
 			type == "localechanged" || 
 			type == "mousemoveex") &&
 			this._manager != null)
@@ -5908,6 +5913,7 @@ CanvasElement.prototype.removeEventListener =
 		{
 			//Broadcast events (dispatched only by manager)
 			if ((type == "enterframe" || 
+				type == "exitframe" ||
 				type == "localechanged" || 
 				type == "mousemoveex") &&
 				this._manager != null)
@@ -23937,6 +23943,9 @@ CanvasManager.prototype.updateNow =
 		//Render redraw region
 		if (this._redrawRegionPrevMetrics != null)
 			this._invalidateCompositeRender();
+		
+		if (this._broadcastDispatcher.hasEventListener("exitframe", null) == true)
+			this._broadcastDispatcher._dispatchEvent(new DispatcherEvent("exitframe"));
 	};
 
 /////////////CanvasManager Static Public Functions///////////////	
