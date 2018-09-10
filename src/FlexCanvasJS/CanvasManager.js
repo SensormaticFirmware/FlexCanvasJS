@@ -913,6 +913,9 @@ CanvasManager.prototype.updateNow =
 		//Render redraw region
 		if (this._redrawRegionPrevMetrics != null)
 			this._invalidateCompositeRender();
+		
+		if (this._broadcastDispatcher.hasEventListener("exitframe", null) == true)
+			this._broadcastDispatcher._dispatchEvent(new DispatcherEvent("exitframe"));
 	};
 
 /////////////CanvasManager Static Public Functions///////////////	
