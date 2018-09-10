@@ -1616,9 +1616,10 @@ ToggleButtonGroup.prototype.clearButtons =
 ToggleButtonGroup.prototype.setSelectedButton = 
 	function (toggleButton)
 	{
-		if (this._selectedButton = toggleButton)
-			this._selectedButton.setSelected(true);
-		else if (toggleButton == null || this._toggleButtons.indexOf(toggleButton) > -1)
+		if (this._selectedButton == toggleButton)
+			return;
+			
+		if (toggleButton == null || this._toggleButtons.indexOf(toggleButton) > -1)
 		{
 			this._selectedButton = toggleButton;
 			
@@ -3480,7 +3481,6 @@ LinearGradientFill.prototype.drawFill =
 		if (coverage == "outer")
 			pointsIndex = 1;
 		
-		//Currently always use outer butterfly
 		var pointStart = pointsStart[pointsIndex];
 		var pointStop = pointsStop[pointsIndex];
 		
