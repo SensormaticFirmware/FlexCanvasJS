@@ -3074,6 +3074,11 @@ CanvasElement.prototype._onCanvasElementAdded =
 			for (i = 0; i < this._eventListeners["enterframe"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("enterframe", this._eventListeners["enterframe"][i]);
 		}
+		if ("exitframe" in this._eventListeners && this._eventListeners["exitframe"].length > 0)
+		{
+			for (i = 0; i < this._eventListeners["exitframe"].length; i++)
+				addedRemovedEvent.getManager()._broadcastDispatcher.addEventListener("exitframe", this._eventListeners["exitframe"][i]);
+		}
 		if ("localechanged" in this._eventListeners && this._eventListeners["localechanged"].length > 0)
 		{
 			for (i = 0; i < this._eventListeners["localechanged"].length; i++)
@@ -3189,6 +3194,11 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		{
 			for (i = 0; i < this._eventListeners["enterframe"].length; i++)
 				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("enterframe", this._eventListeners["enterframe"][i]);
+		}
+		if ("exitframe" in this._eventListeners && this._eventListeners["exitframe"].length > 0)
+		{
+			for (i = 0; i < this._eventListeners["exitframe"].length; i++)
+				addedRemovedEvent.getManager()._broadcastDispatcher.removeEventListener("exitframe", this._eventListeners["exitframe"][i]);
 		}
 		if ("localechanged" in this._eventListeners && this._eventListeners["localechanged"].length > 0)
 		{
