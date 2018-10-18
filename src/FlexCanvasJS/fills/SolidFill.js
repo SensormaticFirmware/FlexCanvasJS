@@ -21,7 +21,7 @@ function SolidFill()
 	SolidFill.base.prototype.constructor.call(this);
 }
 
-//Inherit from ShapeBase
+//Inherit from FillBase
 SolidFill.prototype = Object.create(FillBase.prototype);
 SolidFill.prototype.constructor = SolidFill;
 SolidFill.base = FillBase;
