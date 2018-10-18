@@ -172,6 +172,9 @@ StyleData.prototype.comparePriority =
 function StyleableBase()
 {
 	StyleableBase.base.prototype.constructor.call(this);
+	
+	//Map of StyleData by styleName, (allocation of StyleData can be expensive considering how often its queried) 
+	this._stylesCache = Object.create(null); // {styleData:new StyleData(styleName), cacheInvalid:true};
 }
 	
 //Inherit from StyleDefinition
@@ -216,28 +219,25 @@ StyleableBase.prototype.setStyle =
 		if (oldStyle === value)
 			return;
 		
-		if (this.hasEventListener("stylechanged", null) == true)
+		if (value === undefined)
+			delete this._styleMap[styleName];
+		else
+			this._styleMap[styleName] = value;
+		
+		//Get the cache for this style.
+		var styleCache = this._stylesCache[styleName];
+		
+		//Create cache if doesnt exist, flag cache as invalid to cause a full lookup by getStyleData()
+		if (styleCache == null)
 		{
-			var oldStyleData = this.getStyleData(styleName);			
-			
-			//Change style
-			if (value === undefined)
-				delete this._styleMap[styleName];
-			else
-				this._styleMap[styleName] = value;
-			
-			var newStyleData = this.getStyleData(styleName);
-			
-			if (oldStyleData.equals(newStyleData) == false)
-				this._dispatchEvent(new StyleChangedEvent(styleName));
+			styleCache = {styleData:new StyleData(styleName), cacheInvalid:true};
+			this._stylesCache[styleName] = styleCache;
 		}
 		else
-		{
-			if (value === undefined)
-				delete this._styleMap[styleName];
-			else
-				this._styleMap[styleName] = value;
-		}
+			styleCache.cacheInvalid = true;
+		
+		if (this.hasEventListener("stylechanged", null) == true)
+			this._dispatchEvent(new StyleChangedEvent(styleName));
 	};
 	
 /**
@@ -256,19 +256,33 @@ StyleableBase.prototype.setStyle =
 StyleableBase.prototype.getStyleData = 
 	function (styleName)
 	{
-		var styleData = new StyleData(styleName);
-	
-		styleData.value = StyleableBase.base.prototype.getStyle.call(this, styleName);
-		if (styleData.value !== undefined)
+		//Create cache if does not exist.
+		var styleCache = this._stylesCache[styleName];
+		if (styleCache == null)
 		{
-			styleData.priority.push(StyleableBase.EStylePriorities.INSTANCE);
-			return styleData;			
+			styleCache = {styleData:new StyleData(styleName), cacheInvalid:true};
+			
+			//We always only have a depth of 1, so we push this now, and just update it as necessary.
+			styleCache.styleData.priority.push(StyleableBase.EStylePriorities.INSTANCE); 
+			
+			this._stylesCache[styleName] = styleCache;
+		}
+	
+		if (styleCache.cacheInvalid == false)
+			return styleCache.styleData;
+		
+		styleCache.cacheInvalid = false;
+	
+		styleCache.styleData.value = StyleableBase.base.prototype.getStyle.call(this, styleName);
+		if (styleCache.styleData.value !== undefined)
+		{
+			styleCache.styleData.priority[0] = StyleableBase.EStylePriorities.INSTANCE;
+			return styleCache.styleData;			
 		}
 		
-		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(StyleableBase.EStylePriorities.CLASS);
-		
-		return styleData;
+		styleCache.styleData.value = this._getClassStyle(styleName);
+		styleCache.styleData.priority[0] = StyleableBase.EStylePriorities.CLASS;
+		return styleCache.styleData;
 	};
 	
 ///////////////Internal///////////////////	

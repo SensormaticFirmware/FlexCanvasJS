@@ -151,9 +151,6 @@ function CanvasElement()
 	this._stylesValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._stylesValidateNode.data = this;
 	
-	//getStyle() can potentially be an expensive operation, we cache the value for performance and comparison when external styles change.
-	this._stylesCache = Object.create(null);		
-	
 	this._measureInvalid = true;					//Dirty flag for _doMeasure()
 	this._measureValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._measureValidateNode.data = this;
