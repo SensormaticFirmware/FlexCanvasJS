@@ -170,6 +170,9 @@ function CanvasElement()
 	this._redrawRegionValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._redrawRegionValidateNode.data = this;
 	
+	this._transformRegionValidateNode = new CmLinkedNode();
+	this._transformRegionValidateNode.data = this;
+	
 	//Off screen canvas for rendering this element.
 	this._graphicsCanvas = null;
 	this._graphicsCtx = null;
@@ -178,6 +181,7 @@ function CanvasElement()
 	//Metrics used for redraw region relative to composite parents (and ourself if we're a composite layer).
 	this._compositeMetrics = [];				//Array of {element:element, metrics:DrawMetrics, drawableMetrics:DrawMetrics}
 	
+	this._forceRegionUpdate = false;			//Flag set by validateRedrawRegion() when update required due to composite effect on composite parent.
 	this._renderChanged = true;					//Dirty flag for redraw region set to true when _graphicsCanvas has been modified.
 	this._renderVisible = false; 				//False if any element in the composite parent chain is not visible.	
 	
@@ -3179,7 +3183,8 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		
 		//Reset redraw flags
 		this._renderChanged = true;					
-		this._renderVisible = false; 					
+		this._renderVisible = false; 	
+		this._forceRegionUpdate = false;
 		this._compositeEffectChanged = true;
 		
 		//Nuke composite data
@@ -4454,6 +4459,462 @@ CanvasElement.prototype._getCompositeMetrics =
 		return null;
 	};
 	
+//@private	
+CanvasElement.prototype._validateRedrawRegion = 
+	function ()
+	{
+		this._redrawRegionInvalid = false;
+	
+		var newCompositeMetrics = [];
+		var oldVisible = this._renderVisible;
+		var forceRegionUpdate = this._forceRegionUpdate; 
+		
+		//Get new visibility
+		var newVisible = true;
+		if ((this._parent != null && this._parent._renderVisible == false) || 
+			this.getStyle("Visible") == false || 
+			this.getStyle("Alpha") <= 0)
+		{
+			newVisible = false;
+		}
+		
+		//Wipe out the composite metrics (rebuild as we recurse children if we're a composite layer)
+		this._compositeVisibleMetrics = null;
+		this._transformVisibleMetrics = null;
+		this._transformDrawableMetrics = null;
+		this._forceRegionUpdate = false;
+		
+		//Composite effect on this element changed, we *must* update the region on ourself and all of our children.
+		if (this._compositeEffectChanged == true)
+			forceRegionUpdate = true;
+		
+		if ((this._renderChanged == true || this._graphicsClear == false) &&
+			(oldVisible == true || newVisible == true))
+		{
+			var parent = this;
+			var rawMetrics = this.getMetrics();		//Transformed via points up parent chain
+			
+			var drawableMetrics = rawMetrics.clone();	//Transformed via metrics up parent chain (recalculated each layer, expands, and clips)
+			
+			//Used for transforming the raw metrics up the parent chain.
+			var pointRawTl = {x:rawMetrics._x, y:rawMetrics._y};
+			var pointRawTr = {x:rawMetrics._x + rawMetrics._width, y:rawMetrics._y};
+			var pointRawBr = {x:rawMetrics._x + rawMetrics._width, y:rawMetrics._y + rawMetrics._height};
+			var pointRawBl = {x:rawMetrics._x, y:rawMetrics._y + rawMetrics._height};
+			
+			var pointDrawableTl = {x:0, y:0};
+			var pointDrawableTr = {x:0, y:0};
+			var pointDrawableBr = {x:0, y:0};
+			var pointDrawableBl = {x:0, y:0};
+			
+			var minX = null;
+			var maxX = null;
+			var minY = null;
+			var maxY = null;
+			
+			//Cached storage of previous metrics per composite parent.
+			var oldMetrics = null;	//{element:element, metrics:DrawMetrics, drawableMetrics:DrawMetrics}
+			
+			var clipMetrics = new DrawMetrics();
+			var shadowMetrics = new DrawMetrics();
+			var shadowSize = 0;
+			
+			var drawableMetricsChanged = false;
+			var rawMetricsChanged = false;
+			
+			//Walk up the parent chain invalidating the redraw region and updating _compositeVisibleMetrics
+			while (parent != null)
+			{
+				//Apply clipping to drawable metrics (Always clip root manager)
+				if (drawableMetrics != null && (parent == this || parent.getStyle("ClipContent") == true))
+				{
+					//Clip metrics relative to current element
+					clipMetrics._x = 0;
+					clipMetrics._y = 0;
+					clipMetrics._width = parent._width;
+					clipMetrics._height = parent._height;
+					
+					//Reduce drawable metrics via clipping metrics.
+					drawableMetrics.mergeReduce(clipMetrics);
+					
+					//Kill metrics if completely clipped
+					if (drawableMetrics._width <= 0 || drawableMetrics._height <= 0)
+						drawableMetrics = null;
+				}
+				
+				//Update redraw region, _compositeVisibleMetrics, and record new stored composite metrics.
+				if (parent._isCompositeElement() == true)
+				{
+					oldMetrics = this._getCompositeMetrics(parent);
+					
+					if (drawableMetrics != null && newVisible == true && this._graphicsClear == false)
+					{
+						newCompositeMetrics.push({element:parent, metrics:rawMetrics.clone(), drawableMetrics:drawableMetrics.clone()});
+						
+						//Update composite parents visible metrics
+						if (parent._compositeVisibleMetrics == null)
+							parent._compositeVisibleMetrics = drawableMetrics.clone();
+						else
+							parent._compositeVisibleMetrics.mergeExpand(drawableMetrics);
+					}
+					else
+						newMetrics = null;
+					
+					drawableMetricsChanged = true;
+					if ((oldMetrics == null && drawableMetrics == null) ||
+						(oldMetrics != null && drawableMetrics != null && oldMetrics.drawableMetrics.equals(drawableMetrics) == true))
+					{
+						drawableMetricsChanged = false;
+					}
+					
+					rawMetricsChanged = true;
+					if (oldMetrics != null && oldMetrics.metrics.equals(rawMetrics) == true)
+					{
+						rawMetricsChanged = false;
+					}
+					
+					//Update the composite element's redraw region
+					if (forceRegionUpdate == true || 		//Composite effect changed	
+						this._renderChanged == true ||		//Render changed
+						oldVisible != newVisible ||			//Visible changed
+						drawableMetricsChanged == true ||	//Drawable region changed (clipping)
+						rawMetricsChanged == true)			//Position changed
+					{
+						//If was visible, redraw old metrics
+						if (oldVisible == true && oldMetrics != null)
+							parent._updateRedrawRegion(oldMetrics.drawableMetrics);
+						
+						//Redraw new metrics
+						if (newVisible == true)
+							parent._updateRedrawRegion(drawableMetrics);
+					}
+				}				
+				
+				//Drawable metrics will be null if we've been completely clipped. No reason to do any more translation.
+				if (drawableMetrics != null)
+				{	//Fix current metrics so that we're now relative to our parent.
+					
+					//Update position
+					
+					//Drawable metrics////
+					drawableMetrics._x += parent._x;
+					drawableMetrics._y += parent._y;
+					
+					shadowSize = parent.getStyle("ShadowSize");
+					
+					//Expand metrics for shadow
+					if (shadowSize > 0 && parent.getStyle("ShadowColor") != null)
+					{
+						//Copy drawable metrics
+						shadowMetrics.copyFrom(drawableMetrics);
+						
+						//Create shadow position metrics
+						shadowMetrics._width += (shadowSize * 2);
+						shadowMetrics._height += (shadowSize * 2);
+						shadowMetrics._x -= shadowSize;
+						shadowMetrics._y -= shadowSize;
+						shadowMetrics._x += parent.getStyle("ShadowOffsetX");
+						shadowMetrics._y += parent.getStyle("ShadowOffsetY");
+						
+						//Merge the shadow metrics with the drawable metrics
+						drawableMetrics.mergeExpand(shadowMetrics);
+						
+						//Handle transform
+						if (CanvasElement.normalizeDegrees(parent._rotateDegrees) != 0)
+						{
+							//Transform drawable metrics/////////////
+							pointDrawableTl.x = drawableMetrics._x;
+							pointDrawableTl.y = drawableMetrics._y;
+							
+							pointDrawableTr.x = drawableMetrics._x + drawableMetrics._width;
+							pointDrawableTr.y = drawableMetrics._y;
+							
+							pointDrawableBr.x = drawableMetrics._x + drawableMetrics._width;
+							pointDrawableBr.y = drawableMetrics._y + drawableMetrics._height;
+							
+							pointDrawableBl.x = drawableMetrics._x;
+							pointDrawableBl.y = drawableMetrics._y + drawableMetrics._height;
+							
+							parent.rotatePoint(pointDrawableTl, false);
+							parent.rotatePoint(pointDrawableTr, false);
+							parent.rotatePoint(pointDrawableBl, false);
+							parent.rotatePoint(pointDrawableBr, false);
+							
+							minX = Math.min(pointDrawableTl.x, pointDrawableTr.x, pointDrawableBr.x, pointDrawableBl.x);
+							maxX = Math.max(pointDrawableTl.x, pointDrawableTr.x, pointDrawableBr.x, pointDrawableBl.x);
+							minY = Math.min(pointDrawableTl.y, pointDrawableTr.y, pointDrawableBr.y, pointDrawableBl.y);
+							maxY = Math.max(pointDrawableTl.y, pointDrawableTr.y, pointDrawableBr.y, pointDrawableBl.y);
+							
+							drawableMetrics._x = minX;
+							drawableMetrics._y = minY;
+							drawableMetrics._width = maxX - minX;
+							drawableMetrics._height = maxY - minY;
+						}
+						
+						//Use drawable metrics as the new raw metrics (shadow uses context of parent applying shadow)
+						rawMetrics.copyFrom(drawableMetrics);
+						
+						pointRawTl.x += rawMetrics._x;
+						pointRawTl.y += rawMetrics._y;
+						
+						pointRawTr.x += rawMetrics._x + rawMetrics._width;
+						pointRawTr.y += rawMetrics._y;
+						
+						pointRawBr.x += rawMetrics._x + rawMetrics._width;
+						pointRawBr.y += rawMetrics._y + rawMetrics._height;
+						
+						pointRawBl.x += rawMetrics._x;
+						pointRawBl.y += rawMetrics._y + rawMetrics._height;
+					}
+					else
+					{
+						//Raw metrics
+						pointRawTl.x += parent._x;
+						pointRawTl.y += parent._y;
+						
+						pointRawTr.x += parent._x;
+						pointRawTr.y += parent._y;
+						
+						pointRawBr.x += parent._x;
+						pointRawBr.y += parent._y;
+						
+						pointRawBl.x += parent._x;
+						pointRawBl.y += parent._y;
+						
+						//Handle transform
+						if (CanvasElement.normalizeDegrees(parent._rotateDegrees) != 0)
+						{
+							//Rotate raw metrics points
+							parent.rotatePoint(pointRawTl, false);
+							parent.rotatePoint(pointRawTr, false);
+							parent.rotatePoint(pointRawBl, false);
+							parent.rotatePoint(pointRawBr, false);
+							
+							//Transform drawable metrics/////////////
+							pointDrawableTl.x = drawableMetrics._x;
+							pointDrawableTl.y = drawableMetrics._y;
+							
+							pointDrawableTr.x = drawableMetrics._x + drawableMetrics._width;
+							pointDrawableTr.y = drawableMetrics._y;
+							
+							pointDrawableBr.x = drawableMetrics._x + drawableMetrics._width;
+							pointDrawableBr.y = drawableMetrics._y + drawableMetrics._height;
+							
+							pointDrawableBl.x = drawableMetrics._x;
+							pointDrawableBl.y = drawableMetrics._y + drawableMetrics._height;
+							
+							parent.rotatePoint(pointDrawableTl, false);
+							parent.rotatePoint(pointDrawableTr, false);
+							parent.rotatePoint(pointDrawableBl, false);
+							parent.rotatePoint(pointDrawableBr, false);
+							
+							minX = Math.min(pointDrawableTl.x, pointDrawableTr.x, pointDrawableBr.x, pointDrawableBl.x);
+							maxX = Math.max(pointDrawableTl.x, pointDrawableTr.x, pointDrawableBr.x, pointDrawableBl.x);
+							minY = Math.min(pointDrawableTl.y, pointDrawableTr.y, pointDrawableBr.y, pointDrawableBl.y);
+							maxY = Math.max(pointDrawableTl.y, pointDrawableTr.y, pointDrawableBr.y, pointDrawableBl.y);
+							
+							drawableMetrics._x = minX;
+							drawableMetrics._y = minY;
+							drawableMetrics._width = maxX - minX;
+							drawableMetrics._height = maxY - minY;
+							/////////////////////////////////////
+						}
+						
+						//Update transformed raw metrics
+						minX = Math.min(pointRawTl.x, pointRawTr.x, pointRawBr.x, pointRawBl.x);
+						maxX = Math.max(pointRawTl.x, pointRawTr.x, pointRawBr.x, pointRawBl.x);
+						minY = Math.min(pointRawTl.y, pointRawTr.y, pointRawBr.y, pointRawBl.y);
+						maxY = Math.max(pointRawTl.y, pointRawTr.y, pointRawBr.y, pointRawBl.y);
+						
+						rawMetrics._x = minX;
+						rawMetrics._y = minY;
+						rawMetrics._width = maxX - minX;
+						rawMetrics._height = maxY - minY;
+					}
+					
+					//Reduce the precision (random rounding errors at *very* high decimal points)
+					rawMetrics.roundToPrecision(3);
+					
+					//Reduce drawable metrics via raw metrics.
+					drawableMetrics.mergeReduce(rawMetrics);
+					
+					//Reduce the precision (random rounding errors at *very* high decimal points)
+					drawableMetrics.roundToPrecision(3);
+				}
+				
+				parent = parent._parent;
+			}
+		}
+		
+		this._compositeMetrics = newCompositeMetrics;
+		this._renderVisible = newVisible;
+		this._renderChanged = false;
+		
+		//Recurse children if we were or are visible.
+		if (oldVisible == true || newVisible == true)
+		{
+			for (var i = 0; i < this._children.length; i++)
+			{
+				if (forceRegionUpdate == true)
+					this._children[i]._forceRegionUpdate = true;
+					
+				this._children[i]._invalidateRedrawRegion();
+			}
+			
+			if (this._isCompositeElement() == true)
+				this._invalidateTransformRegion();
+		}
+	};
+		
+//@private	
+CanvasElement.prototype._validateTransformRegion = 
+	function()
+	{
+		//No transform of root manager, or invisible layers.
+		if (this == this._manager || this._compositeVisibleMetrics == null)
+			return;
+		
+		var pointTl = {x:0, y:0};
+		var pointTr = {x:0, y:0};
+		var pointBr = {x:0, y:0};
+		var pointBl = {x:0, y:0};
+		
+		var minX = null;
+		var maxX = null;
+		var minY = null;
+		var maxY = null;
+		
+		var shadowSize = 0;
+		
+		var parent = this;
+		this._transformVisibleMetrics = this._compositeVisibleMetrics.clone();
+		this._transformDrawableMetrics = this._compositeVisibleMetrics.clone();
+		
+		var clipMetrics = new DrawMetrics();
+		var done = false;
+		
+		while (true)
+		{
+			if (this._transformDrawableMetrics != null && parent.getStyle("ClipContent") == true)
+			{
+				//Clip metrics relative to current element
+				clipMetrics._x = 0;
+				clipMetrics._y = 0;
+				clipMetrics._width = parent._width;
+				clipMetrics._height = parent._height;
+				
+				//Reduce drawable metrics via clipping metrics.
+				this._transformDrawableMetrics.mergeReduce(clipMetrics);
+				
+				//Kill metrics if completely clipped
+				if (this._transformDrawableMetrics._width <= 0 || this._transformDrawableMetrics._height <= 0)
+				{
+					this._transformDrawableMetrics = null;
+					this._transformVisibleMetrics = null;
+					
+					return;
+				}
+			}
+			
+			if (done == true)
+				break;
+			
+			this._transformVisibleMetrics._x += parent._x;
+			this._transformVisibleMetrics._y += parent._y;
+			
+			this._transformDrawableMetrics._x += parent._x;
+			this._transformDrawableMetrics._y += parent._y;
+
+			shadowSize = parent.getStyle("ShadowSize");
+			
+			//Expand metrics for shadow
+			if (shadowSize > 0 && parent.getStyle("ShadowColor") != null)
+			{
+				//Copy drawable metrics
+				var shadowMetrics = this._transformDrawableMetrics.clone();
+				
+				//Create shadow position metrics
+				shadowMetrics._width += (shadowSize * 2);
+				shadowMetrics._height += (shadowSize * 2);
+				shadowMetrics._x -= shadowSize;
+				shadowMetrics._y -= shadowSize;
+				shadowMetrics._x += parent.getStyle("ShadowOffsetX");
+				shadowMetrics._y += parent.getStyle("ShadowOffsetY");
+				
+				//Merge the shadow metrics with the drawable metrics
+				this._transformDrawableMetrics.mergeExpand(shadowMetrics);
+			}
+			
+			if (CanvasElement.normalizeDegrees(parent._rotateDegrees) != 0)
+			{
+				//Transform visible
+				pointTl.x = this._transformVisibleMetrics._x;
+				pointTl.y = this._transformVisibleMetrics._y;
+				
+				pointTr.x = this._transformVisibleMetrics._x + this._transformVisibleMetrics._width;
+				pointTr.y = this._transformVisibleMetrics._y;
+
+				pointBr.x = this._transformVisibleMetrics._x + this._transformVisibleMetrics._width;
+				pointBr.y = this._transformVisibleMetrics._y + this._transformVisibleMetrics._height;
+				
+				pointBl.x = this._transformVisibleMetrics._x;
+				pointBl.y = this._transformVisibleMetrics._y + this._transformVisibleMetrics._height;
+				
+				parent.rotatePoint(pointTl, false);
+				parent.rotatePoint(pointTr, false);
+				parent.rotatePoint(pointBl, false);
+				parent.rotatePoint(pointBr, false);
+				
+				minX = Math.min(pointTl.x, pointTr.x, pointBr.x, pointBl.x);
+				maxX = Math.max(pointTl.x, pointTr.x, pointBr.x, pointBl.x);
+				minY = Math.min(pointTl.y, pointTr.y, pointBr.y, pointBl.y);
+				maxY = Math.max(pointTl.y, pointTr.y, pointBr.y, pointBl.y);
+				
+				this._transformVisibleMetrics._x = minX;
+				this._transformVisibleMetrics._y = minY;
+				this._transformVisibleMetrics._width = maxX - minX;
+				this._transformVisibleMetrics._height = maxY - minY;
+				
+				this._transformVisibleMetrics.roundToPrecision(3);
+				
+				//Transform Drawable
+				pointTl.x = this._transformDrawableMetrics._x;
+				pointTl.y = this._transformDrawableMetrics._y;
+				
+				pointTr.x = this._transformDrawableMetrics._x + this._transformDrawableMetrics._width;
+				pointTr.y = this._transformDrawableMetrics._y;
+				
+				pointBr.x = this._transformDrawableMetrics._x + this._transformDrawableMetrics._width;
+				pointBr.y = this._transformDrawableMetrics._y + this._transformDrawableMetrics._height;
+				
+				pointBl.x = this._transformDrawableMetrics._x;
+				pointBl.y = this._transformDrawableMetrics._y + this._transformDrawableMetrics._height;
+				
+				parent.rotatePoint(pointTl, false);
+				parent.rotatePoint(pointTr, false);
+				parent.rotatePoint(pointBl, false);
+				parent.rotatePoint(pointBr, false);
+				
+				minX = Math.min(pointTl.x, pointTr.x, pointBr.x, pointBl.x);
+				maxX = Math.max(pointTl.x, pointTr.x, pointBr.x, pointBl.x);
+				minY = Math.min(pointTl.y, pointTr.y, pointBr.y, pointBl.y);
+				maxY = Math.max(pointTl.y, pointTr.y, pointBr.y, pointBl.y);
+				
+				this._transformDrawableMetrics._x = minX;
+				this._transformDrawableMetrics._y = minY;
+				this._transformDrawableMetrics._width = maxX - minX;
+				this._transformDrawableMetrics._height = maxY - minY;
+				
+				this._transformDrawableMetrics.roundToPrecision(3);
+			}
+			
+			parent = parent._parent;
+			
+			if (parent._isCompositeElement() == true)
+				done = true;
+		}
+	};	
+	
 //@private
 CanvasElement.prototype._validateCompositeRender = 
 	function ()
@@ -4890,6 +5351,13 @@ CanvasElement.prototype._invalidateRedrawRegion =
 				this._manager._updateRedrawRegionQueue.addNode(this._redrawRegionValidateNode, this._displayDepth);
 		}
 	};	
+
+//@private - only called from within validateRedrawRegion()	
+CanvasElement.prototype._invalidateTransformRegion = 
+	function ()
+	{
+		this._manager._updateTransformRegionQueue.addNode(this._transformRegionValidateNode, this._displayDepth);
+	};
 	
 //@private
 CanvasElement.prototype._invalidateCompositeRender = 
