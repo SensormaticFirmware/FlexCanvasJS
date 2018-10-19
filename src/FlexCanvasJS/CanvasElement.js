@@ -1193,7 +1193,7 @@ CanvasElement.prototype.getStyleData =
 		var styleData = styleCache.styleData;
 		
 		//Reset the cache data.
-		styleData.priority = [];
+		styleData.priority.length = 0;
 		styleData.value = undefined;
 		
 		//Check instance

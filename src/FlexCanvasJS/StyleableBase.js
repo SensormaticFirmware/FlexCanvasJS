@@ -114,15 +114,15 @@ StyleData.prototype.comparePriority =
  * @returns StyleData
  * A new StyleData instance identical to the cloned instance.
  */	
-	StyleData.prototype.clone = 
-	function ()
-	{
-		var cloned = new StyleData(this.styleName);
-		cloned.value = this.value;
-		cloned.priority = this.priority.slice();
-		
-		return cloned;
-	};	
+StyleData.prototype.clone = 
+function ()
+{
+	var cloned = new StyleData(this.styleName);
+	cloned.value = this.value;
+	cloned.priority = this.priority.slice();
+	
+	return cloned;
+};	
 	
 	
 
