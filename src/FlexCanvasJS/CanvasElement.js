@@ -1193,7 +1193,6 @@ CanvasElement.prototype.getStyleData =
 		var styleData = styleCache.styleData;
 		
 		//Reset the cache data.
-		styleData.priority.length = 0;
 		styleData.value = undefined;
 		
 		//Check instance
@@ -1202,7 +1201,8 @@ CanvasElement.prototype.getStyleData =
 		
 		if (styleData.value !== undefined)
 		{
-			styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);
+			styleData.priority[0] = CanvasElement.EStylePriorities.INSTANCE;
+			styleData.priority.length = 1;
 			return styleData;
 		}
 		
@@ -1216,9 +1216,9 @@ CanvasElement.prototype.getStyleData =
 			
 			if (styleData.value !== undefined)
 			{
-				styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
-				styleData.priority.push((this._styleDefinitions.length - 1) - ctr); //StyleDefinition depth
-				
+				styleData.priority[0] = CanvasElement.EStylePriorities.DEFINITION;
+				styleData.priority[1] = (this._styleDefinitions.length - 1) - ctr; //StyleDefinition depth
+				styleData.priority.length = 2;
 				return styleData;
 			}
 		}
@@ -1252,10 +1252,10 @@ CanvasElement.prototype.getStyleData =
 				
 				if (styleData.value !== undefined)
 				{
-					styleData.priority.push(CanvasElement.EStylePriorities.PROXY);		
-					styleData.priority.push(ctr);	//Proxy depth (chained proxies)
-					styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);	
-					
+					styleData.priority[0] = CanvasElement.EStylePriorities.PROXY;		
+					styleData.priority[1] = ctr;	//Proxy depth (chained proxies)
+					styleData.priority[2] = CanvasElement.EStylePriorities.INSTANCE;	
+					styleData.priority.length = 3;
 					return styleData;
 				}
 				
@@ -1266,11 +1266,11 @@ CanvasElement.prototype.getStyleData =
 					
 					if (styleData.value !== undefined)
 					{
-						styleData.priority.push(CanvasElement.EStylePriorities.PROXY);
-						styleData.priority.push(ctr);	//Proxy depth (chained proxies)
-						styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);	
-						styleData.priority.push((proxy._proxyElement._styleDefinitions.length - 1) - ctr2); //definition depth	
-						
+						styleData.priority[0] = CanvasElement.EStylePriorities.PROXY;
+						styleData.priority[1] = ctr;	//Proxy depth (chained proxies)
+						styleData.priority[2] = CanvasElement.EStylePriorities.DEFINITION;	
+						styleData.priority[3] = (proxy._proxyElement._styleDefinitions.length - 1) - ctr2; //definition depth	
+						styleData.priority.length = 4;
 						return styleData;
 					}
 				}
@@ -1301,10 +1301,10 @@ CanvasElement.prototype.getStyleData =
 				
 				if (styleData.value !== undefined)
 				{
-					styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
-					styleData.priority.push(ctr);	//Parent depth
-					styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);
-					
+					styleData.priority[0] = CanvasElement.EStylePriorities.INHERITED;	
+					styleData.priority[1] = ctr;	//Parent depth
+					styleData.priority[2] = CanvasElement.EStylePriorities.INSTANCE;
+					styleData.priority.length = 3;					
 					return styleData;
 				}
 				
@@ -1315,11 +1315,11 @@ CanvasElement.prototype.getStyleData =
 					
 					if (styleData.value !== undefined)
 					{
-						styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
-						styleData.priority.push(ctr);	//Parent depth
-						styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
-						styleData.priority.push((parent._styleDefinitions.length - 1) - ctr2); //Definition depth	
-						
+						styleData.priority[0] = CanvasElement.EStylePriorities.INHERITED;	
+						styleData.priority[1] = ctr;	//Parent depth
+						styleData.priority[2] = CanvasElement.EStylePriorities.DEFINITION;
+						styleData.priority[3] = (parent._styleDefinitions.length - 1) - ctr2; //Definition depth	
+						styleData.priority.length = 4;
 						return styleData;
 					}
 				}
@@ -1345,12 +1345,12 @@ CanvasElement.prototype.getStyleData =
 					
 					if (styleData.value !== undefined)
 					{
-						styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);		
-						styleData.priority.push(ctr);	//Parent depth
-						styleData.priority.push(CanvasElement.EStylePriorities.PROXY);		
-						styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
-						styleData.priority.push(CanvasElement.EStylePriorities.INSTANCE);		
-						
+						styleData.priority[0] = CanvasElement.EStylePriorities.INHERITED;		
+						styleData.priority[1] = ctr;	//Parent depth
+						styleData.priority[2] = CanvasElement.EStylePriorities.PROXY;		
+						styleData.priority[3] = ctr2;	//Proxy depth (chained proxies)
+						styleData.priority[4] = CanvasElement.EStylePriorities.INSTANCE;		
+						styleData.priority.length = 5;
 						return styleData;
 					}
 					
@@ -1361,13 +1361,13 @@ CanvasElement.prototype.getStyleData =
 						
 						if (styleData.value !== undefined)
 						{
-							styleData.priority.push(CanvasElement.EStylePriorities.INHERITED);	
-							styleData.priority.push(ctr);	//Parent depth
-							styleData.priority.push(CanvasElement.EStylePriorities.PROXY);	
-							styleData.priority.push(ctr2);	//Proxy depth (chained proxies)
-							styleData.priority.push(CanvasElement.EStylePriorities.DEFINITION);
-							styleData.priority.push((parent._styleDefinitions.length - 1) - ctr3); //Definition depth	
-							
+							styleData.priority[0] = CanvasElement.EStylePriorities.INHERITED;	
+							styleData.priority[1] = ctr;	//Parent depth
+							styleData.priority[2] = CanvasElement.EStylePriorities.PROXY;	
+							styleData.priority[3] = ctr2;	//Proxy depth (chained proxies)
+							styleData.priority[4] = CanvasElement.EStylePriorities.DEFINITION;
+							styleData.priority[5] = (parent._styleDefinitions.length - 1) - ctr3; //Definition depth	
+							styleData.priority.length = 6;							
 							return styleData;
 						}
 					}
@@ -1388,17 +1388,17 @@ CanvasElement.prototype.getStyleData =
 			
 			if (styleData.value !== undefined)
 			{
-				styleData.priority.push(CanvasElement.EStylePriorities.DEFAULT_DEFINITION);
-				styleData.priority.push((this._styleDefinitionDefaults.length - 1) - ctr); //StyleDefinition depth
-				
+				styleData.priority[0] = CanvasElement.EStylePriorities.DEFAULT_DEFINITION;
+				styleData.priority[1] = (this._styleDefinitionDefaults.length - 1) - ctr; //StyleDefinition depth
+				styleData.priority.length = 2;
 				return styleData;
 			}
 		}
 		
 		//Check class
 		styleData.value = this._getClassStyle(styleName);
-		styleData.priority.push(CanvasElement.EStylePriorities.CLASS);
-		
+		styleData.priority[0] = CanvasElement.EStylePriorities.CLASS;
+		styleData.priority.length = 1;
 		return styleData;		
 	};
 	
@@ -4462,6 +4462,7 @@ CanvasElement.prototype._validateRedrawRegion =
 	{
 		this._redrawRegionInvalid = false;
 	
+		var i;
 		var newCompositeMetrics = [];
 		var oldVisible = this._renderVisible;
 		var forceRegionUpdate = this._forceRegionUpdate; 
@@ -4743,14 +4744,26 @@ CanvasElement.prototype._validateRedrawRegion =
 			}
 		}
 		
-		this._compositeMetrics = newCompositeMetrics;
+		for (i = 0; i < newCompositeMetrics.length; i++)
+		{
+			if (this._compositeMetrics[i] == null)
+				this._compositeMetrics[i] = newCompositeMetrics[i];
+			else
+			{
+				this._compositeMetrics[i].element = newCompositeMetrics[i].element;
+				this._compositeMetrics[i].metrics.copyFrom(newCompositeMetrics[i].metrics);
+				this._compositeMetrics[i].drawableMetrics.copyFrom(newCompositeMetrics[i].drawableMetrics);
+			}
+		}
+		this._compositeMetrics.length = newCompositeMetrics.length;
+		
 		this._renderVisible = newVisible;
 		this._renderChanged = false;
 		
 		//Recurse children if we were or are visible.
 		if (oldVisible == true || newVisible == true)
 		{
-			for (var i = 0; i < this._children.length; i++)
+			for (i = 0; i < this._children.length; i++)
 			{
 				if (forceRegionUpdate == true)
 					this._children[i]._forceRegionUpdate = true;
