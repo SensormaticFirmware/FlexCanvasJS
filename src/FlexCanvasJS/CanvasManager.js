@@ -67,6 +67,7 @@ function CanvasManager()
 	
 	this._currentLocale = "en-us";
 	
+	this._redrawRegionCachePool = new CmRedrawRegionCachePool();
 	this._redrawRegionPrevMetrics = null;
 	
 	//Now call base
@@ -899,7 +900,9 @@ CanvasManager.prototype.updateNow =
 		
 		//Update redraw region
 		while (this._updateRedrawRegionQueue.length > 0)
-			this._updateRedrawRegionQueue.removeSmallest().data._validateRedrawRegion();
+			this._updateRedrawRegionQueue.removeSmallest().data._validateRedrawRegion(this._redrawRegionCachePool);
+		
+		this._redrawRegionCachePool.cleanup();
 		
 		//Update transform region
 		while (this._updateTransformRegionQueue.length > 0)
@@ -1298,6 +1301,32 @@ function (paddingMetrics)
 
 
 //////////Private Helper Classes////////////////////
+
+function CmRedrawRegionCachePool()
+{
+	this.pointRawTl = {x:0, y:0};
+	this.pointRawTr = {x:0, y:0};
+	this.pointRawBr = {x:0, y:0};
+	this.pointRawBl = {x:0, y:0};
+	
+	this.pointDrawableTl = {x:0, y:0};
+	this.pointDrawableTr = {x:0, y:0};
+	this.pointDrawableBr = {x:0, y:0};
+	this.pointDrawableBl = {x:0, y:0};
+	
+	this.compositeMetrics = [];
+	
+	this.rawMetrics = new DrawMetrics();		
+	this.drawableMetrics = new DrawMetrics();	
+	this.clipMetrics = new DrawMetrics();
+	this.shadowMetrics = new DrawMetrics();
+};
+
+CmRedrawRegionCachePool.prototype.cleanup = 
+	function ()
+	{
+		this.compositeMetrics.length = 0;
+	};
 
 //Used exclusively by CanvasManager//
 

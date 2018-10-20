@@ -3185,7 +3185,7 @@ CanvasElement.prototype._onCanvasElementRemoved =
 		this._compositeEffectChanged = true;
 		
 		//Nuke composite data
-		this._compositeMetrics = [];
+		this._compositeMetrics.length = 0;
 		this._compositeVisibleMetrics = null;																						
 		this._redrawRegionMetrics = null;																												
 		this._transformVisibleMetrics = null;			
@@ -4458,12 +4458,15 @@ CanvasElement.prototype._getCompositeMetrics =
 	
 //@private	
 CanvasElement.prototype._validateRedrawRegion = 
-	function ()
+	function (cachePool)
 	{
 		this._redrawRegionInvalid = false;
 	
 		var i;
-		var newCompositeMetrics = [];
+		
+		var newCompositeMetrics = cachePool.compositeMetrics;
+		var newCompositeMetricsLength = 0;
+		
 		var oldVisible = this._renderVisible;
 		var forceRegionUpdate = this._forceRegionUpdate; 
 		
@@ -4490,20 +4493,46 @@ CanvasElement.prototype._validateRedrawRegion =
 			(oldVisible == true || newVisible == true))
 		{
 			var parent = this;
-			var rawMetrics = this.getMetrics();		//Transformed via points up parent chain
+
+			//Transformed via points up parent chain
+			var rawMetrics = cachePool.rawMetrics; 
+			rawMetrics._x = 0;
+			rawMetrics._y = 0;
+			rawMetrics._width = this._width;
+			rawMetrics._height = this._height;
 			
-			var drawableMetrics = rawMetrics.clone();	//Transformed via metrics up parent chain (recalculated each layer, expands, and clips)
+			//Transformed via metrics up parent chain (recalculated each layer, expands, and clips)
+			var drawableMetrics = cachePool.drawableMetrics; 
+			drawableMetrics.copyFrom(rawMetrics);
 			
 			//Used for transforming the raw metrics up the parent chain.
-			var pointRawTl = {x:rawMetrics._x, y:rawMetrics._y};
-			var pointRawTr = {x:rawMetrics._x + rawMetrics._width, y:rawMetrics._y};
-			var pointRawBr = {x:rawMetrics._x + rawMetrics._width, y:rawMetrics._y + rawMetrics._height};
-			var pointRawBl = {x:rawMetrics._x, y:rawMetrics._y + rawMetrics._height};
+			var pointRawTl = cachePool.pointRawTl;
+			var pointRawTr = cachePool.pointRawTr;
+			var pointRawBr = cachePool.pointRawBr;
+			var pointRawBl = cachePool.pointRawBl;
 			
-			var pointDrawableTl = {x:0, y:0};
-			var pointDrawableTr = {x:0, y:0};
-			var pointDrawableBr = {x:0, y:0};
-			var pointDrawableBl = {x:0, y:0};
+			pointRawTl.x = rawMetrics._x;
+			pointRawTl.y = rawMetrics._y;
+			pointRawTr.x = rawMetrics._x + rawMetrics._width;
+			pointRawTr.y = rawMetrics._y;
+			pointRawBr.x = rawMetrics._x + rawMetrics._width;
+			pointRawBr.y = rawMetrics._y + rawMetrics._height;
+			pointRawBl.x = rawMetrics._x;
+			pointRawBl.y = rawMetrics._y + rawMetrics._height;
+			
+			var pointDrawableTl = cachePool.pointDrawableTl;
+			var pointDrawableTr = cachePool.pointDrawableTr;
+			var pointDrawableBr = cachePool.pointDrawableBr;
+			var pointDrawableBl = cachePool.pointDrawableBl;
+			
+			pointDrawableTl.x = 0;
+			pointDrawableTl.y = 0;
+			pointDrawableTr.x = 0;
+			pointDrawableTr.y = 0;
+			pointDrawableBr.x = 0;
+			pointDrawableBr.y = 0;
+			pointDrawableBl.x = 0;
+			pointDrawableBl.y = 0;
 			
 			var minX = null;
 			var maxX = null;
@@ -4513,8 +4542,9 @@ CanvasElement.prototype._validateRedrawRegion =
 			//Cached storage of previous metrics per composite parent.
 			var oldMetrics = null;	//{element:element, metrics:DrawMetrics, drawableMetrics:DrawMetrics}
 			
-			var clipMetrics = new DrawMetrics();
-			var shadowMetrics = new DrawMetrics();
+			var clipMetrics = cachePool.clipMetrics;
+			var shadowMetrics = cachePool.shadowMetrics;
+			
 			var shadowSize = 0;
 			
 			var drawableMetricsChanged = false;
@@ -4547,7 +4577,17 @@ CanvasElement.prototype._validateRedrawRegion =
 					
 					if (drawableMetrics != null && newVisible == true && this._graphicsClear == false)
 					{
-						newCompositeMetrics.push({element:parent, metrics:rawMetrics.clone(), drawableMetrics:drawableMetrics.clone()});
+						//newCompositeMetrics.push({element:parent, metrics:rawMetrics.clone(), drawableMetrics:drawableMetrics.clone()});
+						if (newCompositeMetrics[newCompositeMetricsLength] == null)
+							newCompositeMetrics[newCompositeMetricsLength] = {element:parent, metrics:rawMetrics.clone(), drawableMetrics:drawableMetrics.clone()};
+						else
+						{
+							newCompositeMetrics[newCompositeMetricsLength].element = parent;
+							newCompositeMetrics[newCompositeMetricsLength].metrics.copyFrom(rawMetrics);
+							newCompositeMetrics[newCompositeMetricsLength].drawableMetrics.copyFrom(drawableMetrics);
+						}
+						
+						newCompositeMetricsLength++;
 						
 						//Update composite parents visible metrics
 						if (parent._compositeVisibleMetrics == null)
@@ -4555,8 +4595,6 @@ CanvasElement.prototype._validateRedrawRegion =
 						else
 							parent._compositeVisibleMetrics.mergeExpand(drawableMetrics);
 					}
-					else
-						newMetrics = null;
 					
 					drawableMetricsChanged = true;
 					if ((oldMetrics == null && drawableMetrics == null) ||
@@ -4744,10 +4782,14 @@ CanvasElement.prototype._validateRedrawRegion =
 			}
 		}
 		
-		for (i = 0; i < newCompositeMetrics.length; i++)
+		for (i = 0; i < newCompositeMetricsLength; i++)
 		{
 			if (this._compositeMetrics[i] == null)
-				this._compositeMetrics[i] = newCompositeMetrics[i];
+			{
+				this._compositeMetrics[i] = {element:newCompositeMetrics[i].element, 
+											 metrics:newCompositeMetrics[i].metrics.clone(),
+											 drawableMetrics:newCompositeMetrics[i].drawableMetrics.clone()};
+			}
 			else
 			{
 				this._compositeMetrics[i].element = newCompositeMetrics[i].element;
@@ -4755,7 +4797,7 @@ CanvasElement.prototype._validateRedrawRegion =
 				this._compositeMetrics[i].drawableMetrics.copyFrom(newCompositeMetrics[i].drawableMetrics);
 			}
 		}
-		this._compositeMetrics.length = newCompositeMetrics.length;
+		this._compositeMetrics.length = newCompositeMetricsLength;
 		
 		this._renderVisible = newVisible;
 		this._renderChanged = false;
