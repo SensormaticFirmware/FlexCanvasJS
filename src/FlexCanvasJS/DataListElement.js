@@ -342,17 +342,6 @@ DataListElement.prototype.setScrollIndex =
 	
 		this._invalidateLayout();
 		
-		if (this._contentPane._children.length == 0 || this._listCollection == null)
-		{
-			this._scrollIndex = 0;
-			
-			//No data, purge the renderers.
-			while (this._contentPane._children.length > 0)
-				this._contentPane._removeChildAt(0);
-			
-			return;
-		}
-		
 		if (scrollIndex >= this._listCollection.getLength())
 			scrollIndex = this._listCollection.getLength() - 1;
 		if (scrollIndex < 0)
@@ -364,42 +353,42 @@ DataListElement.prototype.setScrollIndex =
 		var currentIndex = this._contentPane._children[0]._listData._itemIndex;
 		
 		var renderer = null;
+		var rendererUpdatedCount = 0;
 		
-		if (itemIndex == currentIndex - 1) //Move bottom renderer to top
+		if (itemIndex < currentIndex)
 		{
-			renderer = this._contentPane._children[this._contentPane._children.length - 1];
-			this._contentPane._setChildIndex(renderer, 0);
-			
-			this._updateRendererData(renderer, itemIndex);
-		}
-		else if (itemIndex == currentIndex + 1) //Move top renderer to bottom (or delete)
-		{
-			if (this._listCollection.getLength() >= itemIndex + this._contentPane._children.length)
+			while (rendererUpdatedCount < this._contentPane._children.length)
 			{
-				renderer = this._contentPane._children[0];
-				this._contentPane._setChildIndex(renderer, this._contentPane._children.length - 1);
+				//If current renderer item index matches expected, we're done.
+				if (this._contentPane._children[rendererUpdatedCount]._listData._itemIndex == itemIndex + rendererUpdatedCount)
+					break;
 				
-				this._updateRendererData(renderer, itemIndex + this._contentPane._children.length - 1);
+				//Last renderer
+				renderer = this._contentPane._children[this._contentPane._children.length - 1];
+				
+				//Move to top
+				this._contentPane._setChildIndex(renderer, rendererUpdatedCount);
+				this._updateRendererData(renderer, itemIndex + rendererUpdatedCount);
+				
+				rendererUpdatedCount++;
 			}
-			else //No more data, purge the renderer.
-				this._contentPane._removeChildAt(0);
 		}
-		else //Reset renderer data. (Even if index hasnt changed, we call this if the collection is sorted or changed)
+		else if (itemIndex > currentIndex)
 		{
-			for (var i = 0; i < this._contentPane._children.length; i++)
+			while (currentIndex != itemIndex && rendererUpdatedCount < this._contentPane._children.length)
 			{
-				if (this._listCollection.getLength() > itemIndex + i)
-				{
-					//Update list data
-					renderer = this._contentPane._children[i];
-					this._updateRendererData(renderer, itemIndex + i);
-				}
-				else
-				{
-					//No more data, purge the rest of the renderers.
-					while (this._contentPane._children.length > i)
-						this._contentPane._removeChildAt(i);
-				}
+				//If current renderer item index matches expected, we're done.
+				if (this._contentPane._children[0]._listData._itemIndex == itemIndex)
+					break;
+				
+				//First renderer
+				renderer = this._contentPane._children[0];
+				
+				//Move to bottom
+				this._contentPane._setChildIndex(renderer, (this._contentPane._children.length - 1) - rendererUpdatedCount);
+				this._updateRendererData(renderer, itemIndex + ((this._contentPane._children.length - 1) - rendererUpdatedCount));
+				
+				rendererUpdatedCount++;
 			}
 		}
 	};
@@ -449,7 +438,7 @@ DataListElement.prototype.setListCollection =
 			}
 		}
 		
-		this.setScrollIndex(this._scrollIndex); //Reset renderer data.
+		this._resetRenderersListData();
 		this._invalidateLayout();
 	};
 	
@@ -657,7 +646,7 @@ DataListElement.prototype._onDataListCollectionChanged =
 					this._selectedItem = null;
 			}
 			
-			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
+			this._resetRenderersListData();
 		}
 		else
 		{
@@ -779,6 +768,34 @@ DataListElement.prototype._invalidateListRenderersMeasure =
 			this._contentPane._children[i]._invalidateMeasure();
 	};
 	
+/**
+ * @function _resetRenderersListData
+ * Updates list data on all renderers, such as when collection is changed.
+ */		
+DataListElement.prototype._resetRenderersListData = 
+	function ()
+	{
+		var itemIndex = Math.floor(this._scrollIndex);
+
+		for (var i = 0; i < this._contentPane._children.length; i++)
+		{
+			if (this._listCollection.getLength() > itemIndex + i)
+			{
+				//Update list data
+				renderer = this._contentPane._children[i];
+				this._updateRendererData(renderer, itemIndex + i);
+			}
+			else
+			{
+				//No more data, purge the rest of the renderers.
+				while (this._contentPane._children.length > i)
+					this._contentPane._removeChildAt(i);
+				
+				break;
+			}
+		}
+	};
+	
 //@Override
 DataListElement.prototype._doStylesUpdated =
 	function (stylesMap)
@@ -825,7 +842,7 @@ DataListElement.prototype._doStylesUpdated =
 			this._applySubStylesToElement("ScrollBarStyle", this._scrollBar);
 		
 		if ("ItemLabelFunction" in stylesMap)
-			this.setScrollIndex(this._scrollIndex); //Reset renderer data.
+			this._resetRenderersListData();
 	};
 
 /**
@@ -897,9 +914,13 @@ DataListElement.prototype._updateRendererData =
 	{
 		var listData = null;
 		
-		//Optimize, dont create new data unless its actually changed.
-		if (renderer._listData != null && renderer._listData._itemIndex == itemIndex)
+		//Optimize, dont create new data if already exists
+		if (renderer._listData != null)
+		{
 			listData = renderer._listData;
+			listData._parentList = this;
+			listData._itemIndex = itemIndex;
+		}
 		else
 			listData = new DataListData(this, itemIndex);
 	

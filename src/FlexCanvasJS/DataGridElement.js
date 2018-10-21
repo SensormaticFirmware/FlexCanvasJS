@@ -653,9 +653,13 @@ DataGridElement.prototype._updateRendererData =
 	{
 		var listData = null;
 		
-		//Optimize, dont create new data unless its actually changed.
-		if (renderer._listData != null && renderer._listData._itemIndex == itemIndex)
+		//Optimize, dont create new data if already exists.
+		if (renderer._listData != null)
+		{
 			listData = renderer._listData;
+			listData._parentList = this;
+			listData._itemIndex = itemIndex;
+		}
 		else
 			listData = new DataListData(this, itemIndex);
 	

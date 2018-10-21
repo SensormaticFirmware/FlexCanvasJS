@@ -135,7 +135,7 @@ DataRendererBaseElement.StyleDefault = new StyleDefinition();
 //Skin Defaults////////////////////////////
 DataRendererBaseElement.OverSkinStyleDefault = new StyleDefinition();
 
-DataRendererBaseElement.OverSkinStyleDefault.setStyle("BackgroundFill", 			"#E0E0E0");
+DataRendererBaseElement.OverSkinStyleDefault.setStyle("BackgroundFill", 				"#E0E0E0");
 
 DataRendererBaseElement.SelectedSkinStyleDefault = new StyleDefinition();
 
