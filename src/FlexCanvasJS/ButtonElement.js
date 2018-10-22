@@ -454,12 +454,27 @@ ButtonElement.prototype._updateTextColor =
 	
 /**
  * @function _updateText
- * Updates the buttons label text in response to style changes.
+ * Updates the buttons text per styling. 
+ * This function calls _updateLabelText(text)
+ * Override this if you need to change the source of the label text and 
+ * call _updateLabelText accordingly.
  */	
 ButtonElement.prototype._updateText = 
 	function ()
 	{
-		var text = this.getStyle("Text");
+		this._setLabelText(this.getStyle("Text"));
+	};
+
+/**
+ * @function _setLabelText
+ * Sets supplied text to the buttons label element, adds or destroys the label as necessary.
+ * 
+ * @param text String
+ * String to be used for the label text.
+ */		
+ButtonElement.prototype._setLabelText = 
+	function (text)
+	{
 		if (text == null || text == "")
 		{
 			if (this._labelElement != null)
