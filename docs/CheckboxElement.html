@@ -5050,6 +5050,29 @@ Returns true if the child's index is successfully changed, false if the element<
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setLabelText(text)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets supplied text to the buttons label element, adds or destroys the label as necessary.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">text</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+String to be used for the label text.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_setListData(listData, itemData)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -5284,7 +5307,10 @@ Updates the Button skin state.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the buttons label text in response to style changes.<br>
+Updates the buttons text per styling.<br>
+This function calls _updateLabelText(text)<br>
+Override this if you need to change the source of the label text and<br>
+call _updateLabelText accordingly.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
