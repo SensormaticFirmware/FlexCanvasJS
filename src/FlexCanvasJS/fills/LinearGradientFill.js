@@ -80,14 +80,13 @@ LinearGradientFill.prototype.drawFill =
 		var colorStops = this.getStyle("GradientColorStops");
 		var coverage = this.getStyle("GradientCoverage");
 		
-		var pointsStart = this._calculateInnerOuterPoints(degrees, metrics);
+		var pointsStart = this._calculateInnerOuterPoints(CanvasElement.normalizeDegrees(degrees), metrics);
 		var pointsStop = this._calculateInnerOuterPoints(CanvasElement.normalizeDegrees(degrees + 180), metrics);
 		
 		var pointsIndex = 0;
 		if (coverage == "outer")
 			pointsIndex = 1;
 		
-		//Currently always use outer butterfly
 		var pointStart = pointsStart[pointsIndex];
 		var pointStop = pointsStop[pointsIndex];
 		
