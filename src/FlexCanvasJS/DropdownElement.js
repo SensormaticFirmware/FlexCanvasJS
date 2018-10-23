@@ -774,29 +774,7 @@ DropdownElement.prototype._updateText =
 		else
 			text = labelFunction(this._selectedItem);
 		
-		if (text == null || text == "")
-		{
-			if (this._labelElement != null)
-			{
-				this._removeChild(this._labelElement);
-				this._labelElement = null;
-			}
-		}
-		else
-		{
-			if (this._labelElement == null)
-			{
-				this._labelElement = this._createLabel();
-				if (this._labelElement != null)
-				{
-					this._updateTextColor();
-					this._addChild(this._labelElement);
-				}
-			}
-			
-			if (this._labelElement != null)
-				this._labelElement.setStyle("Text", text);
-		}
+		this._setLabelText(text);
 	};	
 	
 /**

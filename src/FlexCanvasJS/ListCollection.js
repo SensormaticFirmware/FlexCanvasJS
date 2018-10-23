@@ -292,7 +292,7 @@ ListCollection.prototype.replaceItemAt =
 ListCollection.prototype.clear = 
 	function ()
 	{
-		this._backingArray = [];
+		this._backingArray.length = 0;
 		
 		this._dispatchEvent(new CollectionChangedEvent("reset", -1));
 	};
