@@ -2236,8 +2236,13 @@ CanvasElement._fillText =
 			CanvasElement._characterFillBitmapMap[fontString] = bitmapMap;
 		}
 		
+		var charWidth = 0;
 		for (var i = 0; i < text.length; i++)
 		{
+			charWidth = CanvasElement._measureText(text[i], fontString);
+			if (charWidth <= 0)
+				continue;
+			
 			var bitmapAndContext = bitmapMap[text[i]];
 			
 			if (bitmapAndContext == null)
@@ -2265,7 +2270,7 @@ CanvasElement._fillText =
 				bitmapAndContext.fontSize = fontSize;
 				
 				bitmapAndContext.canvas.height = fontSize + 4;
-				bitmapAndContext.canvas.width = CanvasElement._measureText(text[i], fontString);
+				bitmapAndContext.canvas.width = charWidth;
 				
 				bitmapAndContext.context = bitmapAndContext.canvas.getContext("2d");
 				bitmapAndContext.context.font = fontString;
@@ -2302,7 +2307,7 @@ CanvasElement._fillText =
 			if (text.length == 1)
 				return;
 			
-			x += CanvasElement._measureText(text[i], fontString);
+			x += charWidth;
 		}
 	};	
 	
@@ -2351,8 +2356,13 @@ CanvasElement._strokeText =
 			CanvasElement._characterStrokeBitmapMap[fontString] = bitmapMap;
 		}
 		
+		var charWidth = 0;
 		for (var i = 0; i < text.length; i++)
 		{
+			charWidth = CanvasElement._measureText(text[i], fontString);
+			if (charWidth <= 0)
+				continue;
+			
 			var bitmapAndContext = bitmapMap[text[i]];
 			
 			if (bitmapAndContext == null)
@@ -2381,7 +2391,7 @@ CanvasElement._strokeText =
 				bitmapAndContext.fontSize = fontSize;
 				
 				bitmapAndContext.canvas.height = fontSize + 4;
-				bitmapAndContext.canvas.width = CanvasElement._measureText(text[i], fontString);
+				bitmapAndContext.canvas.width = charWidth;
 				
 				bitmapAndContext.context = bitmapAndContext.canvas.getContext("2d");
 				bitmapAndContext.context.font = fontString;
@@ -2418,7 +2428,7 @@ CanvasElement._strokeText =
 			if (text.length == 1)
 				return;
 			
-			x += CanvasElement._measureText(text[i], fontString);
+			x += charWidth;
 		}
 	};		
 	
