@@ -232,20 +232,18 @@ ImageElement.prototype._doLayout =
 		if (this.getStyle("ImageScaleType") != "fit" || this._imageLoadComplete == false)
 			return;
 	
-		var x = paddingMetrics.getX();
-		var y = paddingMetrics.getY();
-		var w = paddingMetrics.getWidth();
-		var h = paddingMetrics.getHeight();
+		//Only adjust measured sizes if width OR height doesnt match measured, bail if both match, or miss match.
+		if ((this._width == this._measuredWidth && this._height == this._measuredHeight) ||
+			(this._width != this._measuredWidth && this._height != this._measuredHeight))
+			return;
+		
+		var imgW = paddingMetrics.getWidth();
+		var imgH = paddingMetrics.getHeight();
 		
 		//Zero size, bail
-		if (w <= 0 || h <= 0)
+		if (imgW <= 0 || imgH <= 0)
 			return;
-		
-		//Only adjust measured sizes if width OR height doesnt match measured, bail if both match, or miss match.
-		if ((w == this._measuredWidth && h == this._measuredHeight) ||
-			(w != this._measuredWidth && h != this._measuredHeight))
-			return;
-		
+
 		var clipX = this.getStyle("ImageSourceClipX");
 		var clipY = this.getStyle("ImageSourceClipY");
 		var clipW = this.getStyle("ImageSourceClipWidth");
@@ -264,28 +262,31 @@ ImageElement.prototype._doLayout =
 		if (clipW <= 0 || clipH <= 0)
 			return;
 		
-		var thisRatio = w / h;
+		var paddingSize = this._getPaddingSize();
+		var padW = paddingSize.width;
+		var padH = paddingSize.height;
+		
 		var imageRatio = clipW / clipH;
 		
-		var drawWidth = clipW;
-		var drawHeight = clipH;
+		var measuredWidth;
+		var measuredHeight;
 		
 		//Size to our height
-		if (h != this._measuredHeight)
+		if (this._height != this._measuredHeight) //Height must be explicitly set
 		{
-			drawHeight = h;
-			drawWidth = h * imageRatio;
+			measuredWidth = (imgH * imageRatio) + padW;
+			measuredHeight = this._height;
 		}
 		else //Size to our width
 		{
-			drawWidth = w;
-			drawHeight = w / imageRatio;
+			measuredWidth = this._width;
+			measuredHeight = (w / imageRatio) + padH;
 		}
 		
-		drawWidth = Math.round(drawWidth);
-		drawHeight = Math.round(drawHeight);
+		measuredWidth = Math.round(measuredWidth);
+		measuredHeight = Math.round(measuredHeight);
 		
-		this._setMeasuredSize(drawWidth, drawHeight);
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 	
 //@Override
