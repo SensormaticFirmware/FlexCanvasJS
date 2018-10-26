@@ -10610,6 +10610,7 @@ function TextFieldElement()
 	//Container for storing / clipping lines of text.
 	this._textLinesContainer = new CanvasElement();
 	this._textLinesContainer.setStyle("ClipContent", true);
+	this._textLinesContainer.setStyle("MouseEnabled", false); //Disable mouse so we can take focus
 	this._addChild(this._textLinesContainer);
 	
 	var _self = this;
