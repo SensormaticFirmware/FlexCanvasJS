@@ -15383,9 +15383,17 @@ DataListElement.prototype.setScrollIndex =
 				//First renderer
 				renderer = this._contentPane._children[0];
 				
-				//Move to bottom
-				this._contentPane._setChildIndex(renderer, (this._contentPane._children.length - 1) - rendererUpdatedCount);
-				this._updateRendererData(renderer, itemIndex + ((this._contentPane._children.length - 1) - rendererUpdatedCount));
+				//Make sure we have data available
+				if (itemIndex + ((this._contentPane._children.length - 1) - rendererUpdatedCount) < this._listCollection.getLength())
+				{
+					//Move to bottom
+					this._contentPane._setChildIndex(renderer, (this._contentPane._children.length - 1) - rendererUpdatedCount);
+					this._updateRendererData(renderer, itemIndex + ((this._contentPane._children.length - 1) - rendererUpdatedCount));
+				}
+				else //No data available, just remove the element
+				{
+					this._contentPane._removeChildAt(0);
+				}
 				
 				rendererUpdatedCount++;
 			}
