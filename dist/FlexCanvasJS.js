@@ -15374,7 +15374,7 @@ DataListElement.prototype.setScrollIndex =
 		}
 		else if (itemIndex > currentIndex)
 		{
-			while (currentIndex != itemIndex && rendererUpdatedCount < this._contentPane._children.length)
+			while (rendererUpdatedCount < this._contentPane._children.length)
 			{
 				//If current renderer item index matches expected, we're done.
 				if (this._contentPane._children[0]._listData._itemIndex == itemIndex)
@@ -15384,18 +15384,17 @@ DataListElement.prototype.setScrollIndex =
 				renderer = this._contentPane._children[0];
 				
 				//Make sure we have data available
-				if (itemIndex + ((this._contentPane._children.length - 1) - rendererUpdatedCount) < this._listCollection.getLength())
+				if (itemIndex + (this._contentPane._children.length - 1) - rendererUpdatedCount < this._listCollection.getLength())
 				{
 					//Move to bottom
 					this._contentPane._setChildIndex(renderer, (this._contentPane._children.length - 1) - rendererUpdatedCount);
-					this._updateRendererData(renderer, itemIndex + ((this._contentPane._children.length - 1) - rendererUpdatedCount));
+					this._updateRendererData(renderer, itemIndex + (this._contentPane._children.length - 1) - rendererUpdatedCount);
+					rendererUpdatedCount++;
 				}
 				else //No data available, just remove the element
 				{
 					this._contentPane._removeChildAt(0);
 				}
-				
-				rendererUpdatedCount++;
 			}
 		}
 	};
