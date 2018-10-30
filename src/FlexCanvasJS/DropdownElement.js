@@ -321,7 +321,7 @@ DropdownElement.prototype.setSelectedItem =
 	function (item)
 	{
 		var index = this._listCollection.getItemIndex(item);
-		this._setSelectedIndex(index);
+		this.setSelectedIndex(index);
 	};
 	
 /**
