@@ -768,6 +768,17 @@ CanvasElement._StyleTypes.RotateCenterY = 			StyleableBase.EStyleType.NORMAL;		/
 CanvasElement._StyleTypes.IncludeInLayout = 		StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
+ * @style IncludeInMeasure boolean
+ * 
+ * When false, the element is no longer considered in the parent container's measurement. 
+ * This is useful if you do not want containers to respect this child's measured size and/or
+ * do not care if content is clipped, such as when using MinSize, MaxSize, and percent sizing together.
+ * This also prevents the element's _doMeasure() function from running and forces a 0x0 measured size.
+ * However, this will not prevent the "measurecomplete" event after this element finishes its measure phase.
+ */
+CanvasElement._StyleTypes.IncludeInMeasure = 		StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
  * @style CompositeLayer boolean
  * 
  * When true, this element renders itself and all children to a single layer and is treated
@@ -965,6 +976,7 @@ CanvasElement.StyleDefault.setStyle("RotateDegrees", 					0);
 CanvasElement.StyleDefault.setStyle("RotateCenterX", 					null);
 CanvasElement.StyleDefault.setStyle("RotateCenterY", 					null);
 CanvasElement.StyleDefault.setStyle("IncludeInLayout", 					true);
+CanvasElement.StyleDefault.setStyle("IncludeInMeasure", 				true);
 CanvasElement.StyleDefault.setStyle("CompositeLayer",					false);
 
 CanvasElement.StyleDefault.setStyle("TextStyle", 						"normal");
@@ -4419,10 +4431,15 @@ CanvasElement.prototype._validateMeasure =
 	{
 		this._measureInvalid = false;
 	
-		var paddingSize = this._getPaddingSize();
-		var measuredSize = this._doMeasure(paddingSize.width, paddingSize.height);
-			
-		this._setMeasuredSize(measuredSize.width, measuredSize.height);
+		if (this.getStyle("IncludeInMeasure") == true)
+		{
+			var paddingSize = this._getPaddingSize();
+			var measuredSize = this._doMeasure(paddingSize.width, paddingSize.height);
+				
+			this._setMeasuredSize(measuredSize.width, measuredSize.height);
+		}
+		else
+			this._setMeasuredSize(0, 0);
 		
 		if (this.hasEventListener("measurecomplete", null) == true)
 			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
@@ -5506,6 +5523,8 @@ CanvasElement.prototype._doStylesUpdated =
 				this._invalidateMeasure();
 				this._invalidateLayout();
 			}
+			else if ("IncludeInMeasure" in stylesMap)
+				this._invalidateMeasure();
 		}
 		
 		if ("BorderThickness" in stylesMap || 
