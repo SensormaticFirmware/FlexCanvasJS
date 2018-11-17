@@ -9,7 +9,8 @@
  * @class GridContainerRowColumnDefinition
  * @inherits StyleableBase
  * 
- * 
+ * GridContainerRowColumnDefinition defines and stores styles used by 
+ * the GridContainerElement to layout rows and columns.
  * 
  * @constructor GridContainerRowColumnDefinition 
  * Creates new GridContainerRowColumnDefinition instance.

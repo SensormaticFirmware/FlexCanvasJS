@@ -14,12 +14,12 @@
  * elements spanning multiple rows and/or columns. 
  * 
  * The grid container does not respect any layout styling of cell elements (other
- * than measured sizes), rather it only respects layout styling of supplied row and
+ * than measured/min sizes), rather it only respects layout styling of supplied row and
  * column definitions (GridContainerRowColumnDefinition). It is recommended that
- * other containers (such as ListContainerElements) are used as the cell elements
- * to wrap the content elements being added to the GridContainerElement so that the cells
- * may stretch as necessary and can be independently aligned without stretching the 
- * content element itself.
+ * other containers (such as ListContainerElements) are used for the cell elements
+ * that wrap the content elements being added to the GridContainerElement. This way the 
+ * cells may stretch as necessary and content elements can be independently aligned
+ * within the cell without stretching the content element itself.
  * 
  * The GridContainerElement is more expensive than a ListContainerElement so should 
  * only be used when it is needed to maintain row/column alignment.
