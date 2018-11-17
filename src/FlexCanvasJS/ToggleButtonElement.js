@@ -289,7 +289,7 @@ ToggleButtonElement.prototype._onButtonClick =
 				
 				//Dispatch changed event.
 				if (this.hasEventListener("changed", null) == true)
-					this._dispatchEvent(new ElementEvent("changed", false));
+					this.dispatchEvent(new ElementEvent("changed", false));
 			}	
 		}
 	};

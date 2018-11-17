@@ -717,7 +717,7 @@ DropdownElement.prototype._onDropdownDataListPopupChanged =
 		this.close(true);
 		
 		if (this.hasEventListener("changed", null) == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
+			this.dispatchEvent(new ElementEvent("changed", false));
 	};
 
 /**
@@ -732,7 +732,7 @@ DropdownElement.prototype._onDropdownDataListPopupListItemClicked =
 	{
 		//Just proxy the event from the popup list
 		if (this.hasEventListener("listitemclick", null) == true)
-			this._dispatchEvent(elementListItemClickEvent);
+			this.dispatchEvent(elementListItemClickEvent);
 	};
 	
 /**

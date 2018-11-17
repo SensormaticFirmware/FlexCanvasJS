@@ -585,7 +585,7 @@ DataGridElement.prototype._onDataGridHeaderItemClick =
 			}
 		}
 		
-		this._dispatchEvent(new ElementGridItemClickEvent(-1, columnIndex, null));
+		this.dispatchEvent(new ElementGridItemClickEvent(-1, columnIndex, null));
 	};
 	
 /**
@@ -712,10 +712,10 @@ DataGridElement.prototype._onDataGridRowItemClick =
 				dispatchChanged = true;
 		}
 		
-		this._dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
+		this.dispatchEvent(new ElementGridItemClickEvent(itemIndex, columnIndex, itemData));
 		
 		if (dispatchChanged == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
+			this.dispatchEvent(new ElementEvent("changed", false));
 	};	
 	
 /**

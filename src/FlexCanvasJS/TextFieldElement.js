@@ -1027,7 +1027,7 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 		this._invalidateLayout();
 		
 		if (dispatchChanged == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
+			this.dispatchEvent(new ElementEvent("changed", false));
 		
 		keyboardEvent.preventDefault();
 	};
@@ -1133,7 +1133,7 @@ TextFieldElement.prototype._onTextFieldPaste =
 		this._scrollIfCaretOutOfBounds();
 		this._invalidateLayout();
 		
-		this._dispatchEvent(new ElementEvent("changed", false));
+		this.dispatchEvent(new ElementEvent("changed", false));
 	};
 
 /**
@@ -1158,7 +1158,7 @@ TextFieldElement.prototype._onTextFieldCut =
 		this._scrollIfCaretOutOfBounds();
 		this._invalidateLayout();
 		
-		this._dispatchEvent(new ElementEvent("changed", false));
+		this.dispatchEvent(new ElementEvent("changed", false));
 	};
 	
 //@Override	

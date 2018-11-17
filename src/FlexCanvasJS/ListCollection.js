@@ -73,7 +73,7 @@ ListCollection.prototype.setSourceArray =
 	function (sourceArray)
 	{
 		this._backingArray = sourceArray;
-		this._dispatchEvent(new CollectionChangedEvent("reset", -1));
+		this.dispatchEvent(new CollectionChangedEvent("reset", -1));
 	};
 	
 /**
@@ -136,7 +136,7 @@ ListCollection.prototype.sort =
 		else
 			this._collectionSort.sort(this._backingArray);
 		
-		this._dispatchEvent(new CollectionChangedEvent("reset", -1));
+		this.dispatchEvent(new CollectionChangedEvent("reset", -1));
 	};
 	
 /**
@@ -214,7 +214,7 @@ ListCollection.prototype.addItemAt =
 		
 		this._backingArray.splice(index, 0, item);
 		
-		this._dispatchEvent(new CollectionChangedEvent("add", index));
+		this.dispatchEvent(new CollectionChangedEvent("add", index));
 		
 		return item;
 	};
@@ -253,7 +253,7 @@ ListCollection.prototype.removeItemAt =
 		
 		var removed = this._backingArray.splice(index, 1)[0]; //Returns array of removed items.
 		
-		this._dispatchEvent(new CollectionChangedEvent("remove", index));
+		this.dispatchEvent(new CollectionChangedEvent("remove", index));
 		
 		return removed;
 	};
@@ -294,7 +294,7 @@ ListCollection.prototype.clear =
 	{
 		this._backingArray.length = 0;
 		
-		this._dispatchEvent(new CollectionChangedEvent("reset", -1));
+		this.dispatchEvent(new CollectionChangedEvent("reset", -1));
 	};
 	
 /**
@@ -308,5 +308,5 @@ ListCollection.prototype.clear =
 ListCollection.prototype.indexUpdated = 
 	function (index)
 	{
-		this._dispatchEvent(new CollectionChangedEvent("update", index));
+		this.dispatchEvent(new CollectionChangedEvent("update", index));
 	};

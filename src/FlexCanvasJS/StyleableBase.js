@@ -237,7 +237,7 @@ StyleableBase.prototype.setStyle =
 			styleCache.cacheInvalid = true;
 		
 		if (this.hasEventListener("stylechanged", null) == true)
-			this._dispatchEvent(new StyleChangedEvent(styleName));
+			this.dispatchEvent(new StyleChangedEvent(styleName));
 	};
 	
 /**

@@ -2913,7 +2913,7 @@ CanvasElement.prototype._onExternalStyleChanged =
 			this._invalidateStyle(styleName);
 		
 		//Re-dispatch from ourself.
-		this._dispatchEvent(styleChangedEvent); 
+		this.dispatchEvent(styleChangedEvent); 
 	};
 
 /**
@@ -3140,7 +3140,7 @@ CanvasElement.prototype._onCanvasElementAdded =
 		
 		//Always dispatch when added.
 		if (this.hasEventListener("localechanged", null) == true)
-			this._dispatchEvent(new DispatcherEvent("localechanged"));
+			this.dispatchEvent(new DispatcherEvent("localechanged"));
 	};
 
 /**
@@ -3261,12 +3261,12 @@ CanvasElement.prototype._getFontString =
 	};		
 	
 //@Override
-CanvasElement.prototype._dispatchEvent = 
+CanvasElement.prototype.dispatchEvent = 
 	function (dispatchEvent)
 	{
 		if (!(dispatchEvent instanceof ElementEvent))
 		{
-			CanvasElement.base.prototype._dispatchEvent.call(this, dispatchEvent);
+			CanvasElement.base.prototype.dispatchEvent.call(this, dispatchEvent);
 			return;
 		}
 	
@@ -3885,7 +3885,7 @@ CanvasElement.prototype._setActualSize =
 		this._invalidateRedrawRegion();
 		
 		if (this.hasEventListener("resize", null) == true)
-			this._dispatchEvent(new DispatcherEvent("resize"), false);
+			this.dispatchEvent(new DispatcherEvent("resize"), false);
 		
 		if (this._manager != null)
 			this._manager._rollOverInvalid = true;
@@ -4442,7 +4442,7 @@ CanvasElement.prototype._validateMeasure =
 			this._setMeasuredSize(0, 0);
 		
 		if (this.hasEventListener("measurecomplete", null) == true)
-			this._dispatchEvent(new DispatcherEvent("measurecomplete"));
+			this.dispatchEvent(new DispatcherEvent("measurecomplete"));
 	};
 	
 //@private	
@@ -4453,7 +4453,7 @@ CanvasElement.prototype._validateLayout =
 		this._doLayout(this._getPaddingMetrics());
 		
 		if (this._layoutInvalid == false && this.hasEventListener("layoutcomplete", null) == true)
-			this._dispatchEvent(new DispatcherEvent("layoutcomplete"));
+			this.dispatchEvent(new DispatcherEvent("layoutcomplete"));
 	};	
 	
 //@private

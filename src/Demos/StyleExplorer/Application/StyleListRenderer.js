@@ -120,7 +120,7 @@ StyleListRenderer.prototype._onDropdownAddListItemClick =
 			this._styleControlType.styleList.indexUpdated(this._styleControlType.styleList.getItemIndex(styleControlType));
 			
 			//Dispatch an event from the manager to fire the styling code re-build.
-			this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
+			this.getManager().dispatchEvent(new DispatcherEvent("stylingchanged"));
 		}
 	};
 
@@ -149,7 +149,7 @@ StyleListRenderer.prototype._clearItemRenderer =
 		this.removeElement(itemRenderer);
 		
 		//Dispatch an event from the manager to fire the styling code re-build.
-		this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
+		this.getManager().dispatchEvent(new DispatcherEvent("stylingchanged"));
 	};
 
 	

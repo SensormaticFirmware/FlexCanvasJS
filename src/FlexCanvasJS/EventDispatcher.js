@@ -109,20 +109,18 @@ EventDispatcher.prototype.hasEventListener =
 		
 		return false;
 	};
-
-///////////EventDispatcher Internal Functions///////////////////////////	
 	
 /**
- * @function _dispatchEvent
+ * @function dispatchEvent
  * Dispatches an event to be processed by registered event listeners. The Event's target is the
- * EventDispatcher which called _dispatchEvent. The Event will be cloned prior to passing to callback functions
+ * EventDispatcher which called dispatchEvent. The Event will be cloned prior to passing to callback functions
  * to ensure the callback cannot modify the Event data or properties. You can check if the event was canceled
  * by calling the Event's getIsCanceled after dispatching it. Re-dispatching the same event will re-set its canceled state to false.
  * 
  * @param event DispatcherEvent
  * The DispatcherEvent class or subclass to be dispatched. 
  */	
-EventDispatcher.prototype._dispatchEvent = 
+EventDispatcher.prototype.dispatchEvent = 
 	function (event)
 	{
 		event._canceled = false;

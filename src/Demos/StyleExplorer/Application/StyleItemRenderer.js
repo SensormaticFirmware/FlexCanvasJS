@@ -157,7 +157,7 @@ StyleItemRenderer.prototype.setStyleControlType =
 StyleItemRenderer.prototype._onButtonClearStyleClick = 
 	function (event)
 	{
-		this._dispatchEvent(new DispatcherEvent("cleared"));
+		this.dispatchEvent(new DispatcherEvent("cleared"));
 	};
 	
 StyleItemRenderer.prototype._onNullCheckboxChanged = 
@@ -326,6 +326,6 @@ StyleItemRenderer.prototype._updateStyleValue =
 		
 		//Dispatch an event from the manager to fire the styling code re-build.
 		if (this.getManager() != null)
-			this.getManager()._dispatchEvent(new DispatcherEvent("stylingchanged"));
+			this.getManager().dispatchEvent(new DispatcherEvent("stylingchanged"));
 	};	
 	

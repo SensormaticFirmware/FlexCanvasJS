@@ -876,10 +876,10 @@ DataListElement.prototype._onDataListRendererClick =
 		}
 		
 		//Dispatch events
-		this._dispatchEvent(new ElementListItemClickEvent(itemData, itemIndex));
+		this.dispatchEvent(new ElementListItemClickEvent(itemData, itemIndex));
 		
 		if (dispatchChanged == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
+			this.dispatchEvent(new ElementEvent("changed", false));
 	};
 	
 /**

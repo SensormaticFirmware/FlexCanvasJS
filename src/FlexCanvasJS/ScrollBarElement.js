@@ -418,7 +418,7 @@ ScrollBarElement.prototype.startScrollTween =
 		{
 			this.endScrollTween();
 			this.setScrollValue(tweenToValue);
-			this._dispatchEvent(new ElementEvent("changed", false));
+			this.dispatchEvent(new ElementEvent("changed", false));
 		}
 	};
 	
@@ -475,7 +475,7 @@ ScrollBarElement.prototype._onScrollBarEnterFrame =
 		else
 			this.setScrollValue(scrollValue);
 		
-		this._dispatchEvent(new ElementEvent("changed", false));
+		this.dispatchEvent(new ElementEvent("changed", false));
 	};
 	
 //@Override	
@@ -585,7 +585,7 @@ ScrollBarElement.prototype._onScrollTabDrag =
 		if (oldScrollValue != newScrollValue)
 		{
 			this.setScrollValue(newScrollValue);
-			this._dispatchEvent(new ElementEvent("changed", false));
+			this.dispatchEvent(new ElementEvent("changed", false));
 		}
 		
 		//Always invalidate layout, need to correct drag position.

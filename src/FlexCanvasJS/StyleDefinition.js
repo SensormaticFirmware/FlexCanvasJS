@@ -92,7 +92,7 @@ StyleDefinition.prototype.setStyle =
 			
 			//Strict equality required (undefined !== null)
 			if (newStyle !== oldStyle)
-				this._dispatchEvent(new StyleChangedEvent(styleName));
+				this.dispatchEvent(new StyleChangedEvent(styleName));
 		}
 		else
 		{

@@ -505,7 +505,7 @@ TetriPlayField.prototype._onPlayFieldQuitClick =
 	function (event)
 	{
 		this._resetPlayField();
-		this._dispatchEvent(new DispatcherEvent("quit"));
+		this.dispatchEvent(new DispatcherEvent("quit"));
 	};
 	
 TetriPlayField.prototype._onPlayFieldNewGame = 

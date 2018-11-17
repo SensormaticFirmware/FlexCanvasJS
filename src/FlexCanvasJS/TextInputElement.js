@@ -269,7 +269,7 @@ TextInputElement.prototype._onTextInputTextFieldChanged =
 		//Pass on the changed event
 	
 		if (this.hasEventListener("changed", null) == true)
-			this._dispatchEvent(new ElementEvent("changed", false));
+			this.dispatchEvent(new ElementEvent("changed", false));
 	};
 	
 /**
@@ -290,7 +290,7 @@ TextInputElement.prototype._onTextInputKeyDown =
 		clonedEvent._bubbles = false; //Dont bubble.
 		
 		//Dispatch non-bubbling keyboard event to our text field.
-		this._textField._dispatchEvent(clonedEvent);
+		this._textField.dispatchEvent(clonedEvent);
 		
 		if (clonedEvent.getIsCanceled() == true)
 			keyboardEvent.cancelEvent();
@@ -311,7 +311,7 @@ TextInputElement.prototype._onTextInputFocusIn =
 	function (elementEvent)
 	{
 		//This only works because TextField doesnt look at _isFocused (manages caret state with different flag)
-		this._textField._dispatchEvent(elementEvent.clone()); 
+		this._textField.dispatchEvent(elementEvent.clone()); 
 	};
 
 /**
@@ -326,7 +326,7 @@ TextInputElement.prototype._onTextInputFocusOut =
 	function (elementEvent)
 	{
 		//This only works because TextField doesnt look at _isFocused (manages caret state with different flag)
-		this._textField._dispatchEvent(elementEvent.clone());
+		this._textField.dispatchEvent(elementEvent.clone());
 	};
 	
 //@Override

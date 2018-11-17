@@ -179,7 +179,7 @@ ToggleButtonGroup.prototype._toggleButtonChanged =
 		
 		//Dispatch changed event.
 		if (this.hasEventListener("changed", null) == true)
-			this._dispatchEvent(new DispatcherEvent("changed", false));
+			this.dispatchEvent(new DispatcherEvent("changed", false));
 	};
 	
 	

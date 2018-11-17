@@ -93,7 +93,7 @@ TetriAudioSelectSettings.prototype._onCheckboxMusicChanged =
 		TetriStackApplication.MusicEnabled = this._checkboxMusic.getSelected();
 		
 		//Dispatch event from global event dispatcher (update other instances of TetriAudioSelectSettings)
-		TetriStackApplication.GlobalEventDispatcher._dispatchEvent(new DispatcherEvent("audiochanged"));
+		TetriStackApplication.GlobalEventDispatcher.dispatchEvent(new DispatcherEvent("audiochanged"));
 	};
 
 //SFX toggled	
@@ -104,7 +104,7 @@ TetriAudioSelectSettings.prototype._onCheckboxSFXChanged =
 		TetriStackApplication.SFXEnabled = this._checkboxSFX.getSelected();
 		
 		//Dispatch event from global event dispatcher (update other instances of TetriAudioSelectSettings)
-		TetriStackApplication.GlobalEventDispatcher._dispatchEvent(new DispatcherEvent("audiochanged"));
+		TetriStackApplication.GlobalEventDispatcher.dispatchEvent(new DispatcherEvent("audiochanged"));
 	};	
 
 //Listener for global event dispatcher (detect settings change from any instance of TetriAudioSelectSettings)

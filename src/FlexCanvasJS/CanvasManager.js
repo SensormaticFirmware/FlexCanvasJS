@@ -148,7 +148,7 @@ function CanvasManager()
 											browserEvent.ctrlKey, browserEvent.altKey, 
 											browserEvent.shiftKey, browserEvent.metaKey);
 				
-				_self._focusElement._dispatchEvent(keyboardEvent);
+				_self._focusElement.dispatchEvent(keyboardEvent);
 				
 				if (keyboardEvent._canceled == true || keyboardEvent._defaultPrevented == true)
 					browserEvent.preventDefault();
@@ -246,11 +246,11 @@ function CanvasManager()
 				_self._mouseDownElement = null;
 
 				//Dispatch mouseup
-				parentChain[0]._dispatchEvent(new ElementMouseEvent("mouseup", mousePoint.x, mousePoint.y));
+				parentChain[0].dispatchEvent(new ElementMouseEvent("mouseup", mousePoint.x, mousePoint.y));
 				
 				//Dispatch click if we're still over the target element.
 				if (clickElement != null)
-					clickElement._dispatchEvent(new ElementMouseEvent("click", clickPoint.x, clickPoint.y));
+					clickElement.dispatchEvent(new ElementMouseEvent("click", clickPoint.x, clickPoint.y));
 			}
 			else if (browserEvent.type == "wheel")
 			{
@@ -318,7 +318,7 @@ function CanvasManager()
 						deltaY = -1;
 					
 					var mouseWheelEvent = new ElementMouseWheelEvent(mousePoint.x, mousePoint.y, deltaX, deltaY);
-					currentElement._dispatchEvent(mouseWheelEvent);
+					currentElement.dispatchEvent(mouseWheelEvent);
 					
 					if (mouseWheelEvent._canceled == true || mouseWheelEvent._defaultPrevented == true)
 						browserEvent.preventDefault();
@@ -406,7 +406,7 @@ function CanvasManager()
 				if (draggingElement != null)
 					_self._setDraggingElement(draggingElement, draggingOffset.x, draggingOffset.y);
 				
-				currentElement._dispatchEvent(new ElementMouseEvent(browserEvent.type, mousePoint.x, mousePoint.y));
+				currentElement.dispatchEvent(new ElementMouseEvent(browserEvent.type, mousePoint.x, mousePoint.y));
 				
 				_self._updateFocusElement(focusElement, false);
 				
@@ -486,7 +486,7 @@ function CanvasManager()
 					}
 					
 					//Dispatch dragging.
-					_self._draggingElement._dispatchEvent(new ElementEvent("dragging", false));
+					_self._draggingElement.dispatchEvent(new ElementEvent("dragging", false));
 				}
 			}
 		};
@@ -635,7 +635,7 @@ CanvasManager.prototype.setLocale =
 		this._currentLocale = locale;
 		
 		if (this._broadcastDispatcher.hasEventListener("localechanged", null) == true)
-			this._broadcastDispatcher._dispatchEvent(new DispatcherEvent("localechanged"));
+			this._broadcastDispatcher.dispatchEvent(new DispatcherEvent("localechanged"));
 	};
 	
 /**
@@ -743,7 +743,7 @@ CanvasManager.prototype.updateNow =
 	function ()
 	{
 		if (this._broadcastDispatcher.hasEventListener("enterframe", null) == true)
-			this._broadcastDispatcher._dispatchEvent(new DispatcherEvent("enterframe"));
+			this._broadcastDispatcher.dispatchEvent(new DispatcherEvent("enterframe"));
 	
 		//Process state updates.
 		while (this._updateStylesQueue.length > 0 || 
@@ -863,10 +863,10 @@ CanvasManager.prototype.updateNow =
 					this._rollOverX != lastRollOverX || 
 					this._rollOverY != lastRollOverY))
 				{
-					currentElement._dispatchEvent(new ElementMouseEvent("mousemove", mousePoint.x, mousePoint.y));
+					currentElement.dispatchEvent(new ElementMouseEvent("mousemove", mousePoint.x, mousePoint.y));
 				}
 				
-				this._broadcastDispatcher._dispatchEvent(new ElementMouseEvent("mousemoveex", this._mouseX, this._mouseY));
+				this._broadcastDispatcher.dispatchEvent(new ElementMouseEvent("mousemoveex", this._mouseX, this._mouseY));
 				
 				if (lastRollOverTarget != null && this._rollOverElement != lastRollOverTarget)
 				{
@@ -880,11 +880,11 @@ CanvasManager.prototype.updateNow =
 					}
 					
 					for (i = 0; i < rollOutElements.length; i++)
-						rollOutElements[i]._dispatchEvent(new ElementEvent("rollout", false));
+						rollOutElements[i].dispatchEvent(new ElementEvent("rollout", false));
 				}
 				
 				for (i = 0; i < rollOverElements.length; i++)
-					rollOverElements[i]._dispatchEvent(new ElementEvent("rollover", false));
+					rollOverElements[i].dispatchEvent(new ElementEvent("rollover", false));
 			}
 			
 			//Process render queue.
@@ -917,7 +917,7 @@ CanvasManager.prototype.updateNow =
 			this._invalidateCompositeRender();
 		
 		if (this._broadcastDispatcher.hasEventListener("exitframe", null) == true)
-			this._broadcastDispatcher._dispatchEvent(new DispatcherEvent("exitframe"));
+			this._broadcastDispatcher.dispatchEvent(new DispatcherEvent("exitframe"));
 	};
 
 /////////////CanvasManager Static Public Functions///////////////	
@@ -1043,7 +1043,7 @@ CanvasManager.prototype._updateFocusElement =
 				this._focusElement._setRenderFocusRing(false);
 				
 				if (this._focusElement.hasEventListener("focusout", null) == true)
-					this._focusElement._dispatchEvent(new ElementEvent("focusout", false));
+					this._focusElement.dispatchEvent(new ElementEvent("focusout", false));
 			}
 			
 			this._focusElement = newFocusElement;
@@ -1054,7 +1054,7 @@ CanvasManager.prototype._updateFocusElement =
 				this._focusElement._setRenderFocusRing(renderFocusRing);
 				
 				if (this._focusElement.hasEventListener("focusin", null) == true)
-					this._focusElement._dispatchEvent(new ElementEvent("focusin", false));
+					this._focusElement.dispatchEvent(new ElementEvent("focusin", false));
 			}
 		}
 	};
@@ -1257,7 +1257,7 @@ CanvasManager.prototype._processAddRemoveDisplayChainQueue =
 		var addRemoveData = this._popAddRemoveDisplayChainQueue();
 		while (addRemoveData != null)
 		{
-			addRemoveData.element._dispatchEvent(new AddedRemovedEvent(addRemoveData.type, this));
+			addRemoveData.element.dispatchEvent(new AddedRemovedEvent(addRemoveData.type, this));
 			addRemoveData = this._popAddRemoveDisplayChainQueue();
 		}
 		

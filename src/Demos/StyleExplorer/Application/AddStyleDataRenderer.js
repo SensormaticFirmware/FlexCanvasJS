@@ -57,7 +57,7 @@ AddStyleDataRenderer.prototype._onAddStyleDataRendererClick =
 		{
 			//This is kind of hacky (we're dispatching a changed event from the list to force the dropdown to close)
 			//We need a reference from the popup list back to the dropdown (owner rather than parent).
-			this._listData._parentList._dispatchEvent(new ElementEvent("changed", false));
+			this._listData._parentList.dispatchEvent(new ElementEvent("changed", false));
 		}
 	};
 
