@@ -60,14 +60,14 @@ GridContainerElement.base = ContainerBaseElement;
 GridContainerElement._StyleTypes = Object.create(null);
 
 /**
- * @style LayoutVerticalGap Number
+ * @style LayoutVerticalGap int
  * 
  * Space in pixels to leave between rows.
  */
 GridContainerElement._StyleTypes.LayoutVerticalGap = 		StyleableBase.EStyleType.NORMAL;		// number
 
 /**
- * @style LayoutHorizontalGap Number
+ * @style LayoutHorizontalGap int
  * 
  * Space in pixels to leave between columns.
  */
@@ -639,7 +639,7 @@ GridContainerElement.prototype._getRowsAndColumnsMeasuredData =
 								endIndex:cellData.rowIndexEnd,
 								stretchSpan:rowStretchSpan,
 								maxStretch:rowMaxStretch,
-								measuredSize:cellData.element._measuredHeight,
+								minSize:Math.max(cellData.element.getStyle("MinHeight"), cellData.element._measuredHeight),
 								span:cellData.rowIndexEnd - cellData.rowIndexStart};
 				
 				cellsByRowSorted.push(cellRowData);
@@ -652,7 +652,7 @@ GridContainerElement.prototype._getRowsAndColumnsMeasuredData =
 									endIndex:cellData.columnIndexEnd,
 									stretchSpan:columnStretchSpan,
 									maxStretch:columnMaxStretch,
-									measuredSize:cellData.element._measuredWidth,
+									minSize:Math.max(cellData.element.getStyle("MinWidth"), cellData.element._measuredWidth),
 									span:cellData.columnIndexEnd - cellData.columnIndexStart};
 				
 				cellsByColumnSorted.push(cellColumnData);
@@ -702,7 +702,7 @@ GridContainerElement.prototype._getRowsAndColumnsMeasuredData =
 				stretchRowsColumns.sort(GridContainerElement._stretchPriorityActualSizeComparator);
 				
 				//Record total size that needs to be distributed, adjust for layout gap
-				distributeSizeTotal = cellData.measuredSize - actualSize - (layoutGap * cellData.span);
+				distributeSizeTotal = cellData.minSize - actualSize - (layoutGap * cellData.span);
 				
 				//Stretch the rows/columns
 				while (distributeSizeTotal >= 1 && stretchRowsColumns.length > 0)
@@ -882,6 +882,7 @@ GridContainerElement.prototype._doLayout =
 			
 			if (rowDataMap[mapKey].percentSize != null)
 			{
+				rowDataMap[mapKey].minSize = Math.max(rowDataMap[mapKey].actualSize, rowDataMap[mapKey].minSize);
 				percentSizedRows.push(rowDataMap[mapKey]);
 				rowsTotalPercent += rowDataMap[mapKey].percentSize;
 			}
@@ -893,6 +894,7 @@ GridContainerElement.prototype._doLayout =
 			
 			if (columnDataMap[mapKey].percentSize != null)
 			{
+				columnDataMap[mapKey].minSize = Math.max(columnDataMap[mapKey].actualSize, columnDataMap[mapKey].minSize);
 				percentSizedColumns.push(columnDataMap[mapKey]);
 				columnsTotalPercent += columnDataMap[mapKey].percentSize;
 			}

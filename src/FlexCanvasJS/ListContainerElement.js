@@ -303,7 +303,7 @@ ListContainerElement.prototype._doLayout =
 			if (layoutDirection == "horizontal" && childSizeData[i].width == null && childSizeData[i].pWidth != null)
 			{
 				child.percentSize = child.pWidth;
-				child.minSize = child.minWidth;
+				child.minSize = Math.max(child.minWidth, child.element._measuredWidth);
 				child.maxSize = child.maxWidth;
 				percentSizedElements.push(child);
 				
@@ -321,7 +321,7 @@ ListContainerElement.prototype._doLayout =
 			else if (layoutDirection == "vertical" && childSizeData[i].height == null && childSizeData[i].pHeight != null)
 			{
 				child.percentSize = child.pHeight;
-				child.minSize = child.minHeight;
+				child.minSize = Math.max(child.minHeight, child.element._measuredHeight);
 				child.maxSize = child.maxHeight;
 				percentSizedElements.push(child);
 				
