@@ -11,13 +11,12 @@
  * @inherits ContainerBaseElement
  * 
  * The ListContainer can be used to lay out children in a vertical or horizontal fashion.
- * This container uses children's styles Width, Height, PercentWidth, and PercentHeight.
+ * This container uses children's styles Width, Height, PercentWidth, PercentHeight, MinWidth,
+ * MaxWidth, MinHeight, and MaxHeight.
  * Nesting containers is the best way to quickly and simply build complex layouts.
  * 
  * Width, and Height are treated as highest priority and will override PercentWidth and PercentHeight styles.
  * Exact behavior of conflicting styles is not defined and subject to change. 
- * 
- * See the associated style documentation for additional details.
  * 
  * @constructor ListContainerElement 
  * Creates new ListContainerElement instance.
