@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>LinearGradientFill</title>
+<title>GridContainerRowColumnDefinition</title>
 <script type="text/javascript">
 function showHideInherited(type) {
 var tableNew = null;
@@ -97,10 +97,10 @@ lable.innerHTML = "Show Inherited";
 <a href="EventDispatcher.html">EventDispatcher</a><br>
 <a href="FillBase.html">FillBase</a><br>
 <a href="GridContainerElement.html">GridContainerElement</a><br>
-<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+GridContainerRowColumnDefinition<br>
 <a href="ImageElement.html">ImageElement</a><br>
 <a href="LabelElement.html">LabelElement</a><br>
-LinearGradientFill<br>
+<a href="LinearGradientFill.html">LinearGradientFill</a><br>
 <a href="ListCollection.html">ListCollection</a><br>
 <a href="ListContainerElement.html">ListContainerElement</a><br>
 <a href="RadioButtonElement.html">RadioButtonElement</a><br>
@@ -126,9 +126,10 @@ LinearGradientFill<br>
 <br><br>
 </td>
 <td style="vertical-align: top; padding: 10px; width: 100%;">
-<span style="font-size: 24px; font-weight: bold;">LinearGradientFill</span><br>
+<span style="font-size: 24px; font-weight: bold;">GridContainerRowColumnDefinition</span><br>
 <br>
-Fills a linear gradient across the element with supplied angle and color stops.<br>
+GridContainerRowColumnDefinition defines and stores styles used by<br>
+the GridContainerElement to layout rows and columns.<br>
 <br>
 <table>
 <tr>
@@ -136,7 +137,7 @@ Fills a linear gradient across the element with supplied angle and color stops.<
 <span style="font-weight: bold;">Inheritance: &nbsp;&nbsp;&nbsp;</span>
 </td>
 <td rowspan="2" style="vertical-align: top; width: 100%;">
-LinearGradientFill &#10142; <a href="FillBase.html">FillBase</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
+GridContainerRowColumnDefinition &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
 <tr>
 <td></td>
 </tr>
@@ -150,51 +151,79 @@ LinearGradientFill &#10142; <a href="FillBase.html">FillBase</a> &#10142; <a hre
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">GradientColorStops</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array
+<span style="font-weight: bold;">MaxSize</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">LinearGradientFill</span>
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Array of color stops to apply to the gradient.<br>
-Format like [[position, "color"], [position, "color"], ...]<br>
-Position is a number between 0 and 1 representing where on the gradient line<br>
-to place the color stop.<br>
+Maximum number of pixels the row or column should consume.<br>
+This does not affect rows or columns that have the Size style set.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">GradientCoverage</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+<span style="font-weight: bold;">MinSize</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">LinearGradientFill</span>
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Determines the size of the gradient line based on the GradientDegrees.<br>
-This style has no effect on gradients at 90 degree intervals.<br>
-Available values are "inner" and "outer".<br>
-Inner gradient will draw a line across the center of the element at the specified degrees.<br>
-Outer gradient extends the line beyond the element's bounds so that the gradient is<br>
-perpendicular to the outer most corners of the element.<br>
+Minimum number of pixels the row or column should consume.<br>
+This does not affect rows or columns that have the Size style set.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">GradientDegrees</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+<span style="font-weight: bold;">PercentSize</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">LinearGradientFill</span>
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Angle 0-360 which the gradient should be drawn across the element.<br>
+The percentage of available size the row or column should consume relative to its parent GridContainer.<br>
+Note that percentage width is calculated based on the available space left over *after* static sized rows<br>
+and columns are considered. Percentages are allowed to add to more than 100 and will consume all of the<br>
+available space. When percents add to more than 100 the elements will share the available space<br>
+per the ratio of percent vs total percent used.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Size</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Size in pixels this row or column should consume. This style overrides all other sizing styles.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">StretchPriority</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When rows or columns are forced to stretch due to cells spanning multiple rows or columns,<br>
+rows or columns with the highest StretchPriority will stretch first, equal priorities will stretch evenly.<br>
+This does not affect rows or columns that have Size or PercentSize styles set.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -206,51 +235,79 @@ Angle 0-360 which the gradient should be drawn across the element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">GradientColorStops</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array
+<span style="font-weight: bold;">MaxSize</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">LinearGradientFill</span>
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Array of color stops to apply to the gradient.<br>
-Format like [[position, "color"], [position, "color"], ...]<br>
-Position is a number between 0 and 1 representing where on the gradient line<br>
-to place the color stop.<br>
+Maximum number of pixels the row or column should consume.<br>
+This does not affect rows or columns that have the Size style set.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">GradientCoverage</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+<span style="font-weight: bold;">MinSize</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">LinearGradientFill</span>
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Determines the size of the gradient line based on the GradientDegrees.<br>
-This style has no effect on gradients at 90 degree intervals.<br>
-Available values are "inner" and "outer".<br>
-Inner gradient will draw a line across the center of the element at the specified degrees.<br>
-Outer gradient extends the line beyond the element's bounds so that the gradient is<br>
-perpendicular to the outer most corners of the element.<br>
+Minimum number of pixels the row or column should consume.<br>
+This does not affect rows or columns that have the Size style set.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">GradientDegrees</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+<span style="font-weight: bold;">PercentSize</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">LinearGradientFill</span>
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Angle 0-360 which the gradient should be drawn across the element.<br>
+The percentage of available size the row or column should consume relative to its parent GridContainer.<br>
+Note that percentage width is calculated based on the available space left over *after* static sized rows<br>
+and columns are considered. Percentages are allowed to add to more than 100 and will consume all of the<br>
+available space. When percents add to more than 100 the elements will share the available space<br>
+per the ratio of percent vs total percent used.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Size</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Size in pixels this row or column should consume. This style overrides all other sizing styles.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">StretchPriority</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerRowColumnDefinition</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When rows or columns are forced to stretch due to cells spanning multiple rows or columns,<br>
+rows or columns with the highest StretchPriority will stretch first, equal priorities will stretch evenly.<br>
+This does not affect rows or columns that have Size or PercentSize styles set.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -290,15 +347,15 @@ Dispatched when a style is added, cleared, or changed.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">LinearGradientFill()</span>
+<span style="font-weight: bold;">GridContainerRowColumnDefinition()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] LinearGradientFill</span>
+<span style="white-space: nowrap;">[Constructor] GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new LinearGradientFill instance.<br>
+Creates new GridContainerRowColumnDefinition instance.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -310,15 +367,15 @@ Creates new LinearGradientFill instance.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">LinearGradientFill()</span>
+<span style="font-weight: bold;">GridContainerRowColumnDefinition()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] LinearGradientFill</span>
+<span style="white-space: nowrap;">[Constructor] GridContainerRowColumnDefinition</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new LinearGradientFill instance.<br>
+Creates new GridContainerRowColumnDefinition instance.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -396,36 +453,6 @@ by calling the Event's getIsCanceled after dispatching it. Re-dispatching the sa
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
 The DispatcherEvent class or subclass to be dispatched.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">drawFill(ctx, metrics)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="FillBase.html">FillBase</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Used to create and set the Canvas2DContext.fillStyle<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">ctx</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Canvas2DContext<br>
-The Canvas2DContext to draw the fill on.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">metrics</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DrawMetrics.html">DrawMetrics</a><br>
-DrawMetrics object to use as the bounding box for the fill.<br>
 </td>
 </tr>
 </table>

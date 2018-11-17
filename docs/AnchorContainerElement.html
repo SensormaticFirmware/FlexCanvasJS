@@ -96,6 +96,8 @@ AnchorContainerElement<br>
 <a href="EllipseShape.html">EllipseShape</a><br>
 <a href="EventDispatcher.html">EventDispatcher</a><br>
 <a href="FillBase.html">FillBase</a><br>
+<a href="GridContainerElement.html">GridContainerElement</a><br>
+<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
 <a href="ImageElement.html">ImageElement</a><br>
 <a href="LabelElement.html">LabelElement</a><br>
 <a href="LinearGradientFill.html">LinearGradientFill</a><br>
@@ -420,6 +422,24 @@ This only works if the element is a child of an AnchorContainer.<br>
 When false, the element is no longer considered in the parent container's layout.<br>
 Typically this is used in conjunction with Visible, however sometimes you may want to<br>
 hide an element, but still have it consume container space.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">IncludeInMeasure</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+When false, the element is no longer considered in the parent container's measurement.<br>
+This is useful if you do not want containers to respect this child's measured size and/or<br>
+do not care if content is clipped, such as when using MinSize, MaxSize, and percent sizing together.<br>
+This also prevents the element's _doMeasure() function from running and forces a 0x0 measured size.<br>
+However, this will not prevent the "measurecomplete" event after this element finishes its measure phase.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1681,6 +1701,32 @@ String representing the style to clear.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Removes all style definitions from the element. This is more efficient than<br>
 removing definitions one at a time.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">dispatchEvent(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatches an event to be processed by registered event listeners. The Event's target is the<br>
+EventDispatcher which called dispatchEvent. The Event will be cloned prior to passing to callback functions<br>
+to ensure the callback cannot modify the Event data or properties. You can check if the event was canceled<br>
+by calling the Event's getIsCanceled after dispatching it. Re-dispatching the same event will re-set its canceled state to false.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
+The DispatcherEvent class or subclass to be dispatched.<br>
+</td>
+</tr>
+</table>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -3024,32 +3070,6 @@ String representing the sub style to apply.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">elementToApply</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 The sub component element to apply sub styles.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_dispatchEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatches an event to be processed by registered event listeners. The Event's target is the<br>
-EventDispatcher which called _dispatchEvent. The Event will be cloned prior to passing to callback functions<br>
-to ensure the callback cannot modify the Event data or properties. You can check if the event was canceled<br>
-by calling the Event's getIsCanceled after dispatching it. Re-dispatching the same event will re-set its canceled state to false.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-The DispatcherEvent class or subclass to be dispatched.<br>
 </td>
 </tr>
 </table>

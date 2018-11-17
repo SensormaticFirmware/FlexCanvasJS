@@ -76,14 +76,14 @@ GridContainerElement._StyleTypes.LayoutHorizontalGap = 		StyleableBase.EStyleTyp
 /**
  * @style LayoutVerticalAlign String
  * 
- * Child vertical alignment to be used when children do not fill all available space. Allowable values are "top", "bottom", or "middle". 
+ * Vertical alignment to be used when the grid does not fill all available space. Allowable values are "top", "bottom", or "middle". 
  */
 GridContainerElement._StyleTypes.LayoutVerticalAlign = 		StyleableBase.EStyleType.NORMAL;		// "top" || "bottom" || "middle" 
 
 /**
  * @style LayoutHorizontalAlign String
  * 
- * Child horizontal alignment to be used when children do not fill all available space. Allowable values are "left", "right", or "center". 
+ * Horizontal alignment to be used when the grid does not fill all available space. Allowable values are "left", "right", or "center". 
  */
 GridContainerElement._StyleTypes.LayoutHorizontalAlign = 	StyleableBase.EStyleType.NORMAL;		//"left" || "right" || "center"
 

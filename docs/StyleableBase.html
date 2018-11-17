@@ -96,6 +96,8 @@ lable.innerHTML = "Show Inherited";
 <a href="EllipseShape.html">EllipseShape</a><br>
 <a href="EventDispatcher.html">EventDispatcher</a><br>
 <a href="FillBase.html">FillBase</a><br>
+<a href="GridContainerElement.html">GridContainerElement</a><br>
+<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
 <a href="ImageElement.html">ImageElement</a><br>
 <a href="LabelElement.html">LabelElement</a><br>
 <a href="LinearGradientFill.html">LinearGradientFill</a><br>
@@ -317,6 +319,32 @@ String representing the style to clear.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">dispatchEvent(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatches an event to be processed by registered event listeners. The Event's target is the<br>
+EventDispatcher which called dispatchEvent. The Event will be cloned prior to passing to callback functions<br>
+to ensure the callback cannot modify the Event data or properties. You can check if the event was canceled<br>
+by calling the Event's getIsCanceled after dispatching it. Re-dispatching the same event will re-set its canceled state to false.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
+The DispatcherEvent class or subclass to be dispatched.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">getStyle(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -485,7 +513,6 @@ The value to store. This may be null or undefined.<br>Note that a null style is 
 <br>
 <br>
 <span style="font-weight: bold; font-size: 18px;">Internal Functions</span><br>
-<a id="labelShowHideInheritedInternalFunctions" href="" onclick="{showHideInherited('functionsInternal'); return false;}">Show Inherited</a><br>
 <table id="tableInternalFunctions" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
@@ -648,32 +675,6 @@ String representing the sub style to apply.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">elementToApply</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 The sub component element to apply sub styles.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_dispatchEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="EventDispatcher.html">EventDispatcher</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatches an event to be processed by registered event listeners. The Event's target is the<br>
-EventDispatcher which called _dispatchEvent. The Event will be cloned prior to passing to callback functions<br>
-to ensure the callback cannot modify the Event data or properties. You can check if the event was canceled<br>
-by calling the Event's getIsCanceled after dispatching it. Re-dispatching the same event will re-set its canceled state to false.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-The DispatcherEvent class or subclass to be dispatched.<br>
 </td>
 </tr>
 </table>

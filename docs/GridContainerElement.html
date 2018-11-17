@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>DataGridItemRendererBase</title>
+<title>GridContainerElement</title>
 <script type="text/javascript">
 function showHideInherited(type) {
 var tableNew = null;
@@ -77,7 +77,7 @@ lable.innerHTML = "Show Inherited";
 <a href="DataGridHeaderElement.html">DataGridHeaderElement</a><br>
 <a href="DataGridHeaderItemRenderer.html">DataGridHeaderItemRenderer</a><br>
 <a href="DataGridItemData.html">DataGridItemData</a><br>
-DataGridItemRendererBase<br>
+<a href="DataGridItemRendererBase.html">DataGridItemRendererBase</a><br>
 <a href="DataGridLabelItemRenderer.html">DataGridLabelItemRenderer</a><br>
 <a href="DataListData.html">DataListData</a><br>
 <a href="DataListElement.html">DataListElement</a><br>
@@ -96,7 +96,7 @@ DataGridItemRendererBase<br>
 <a href="EllipseShape.html">EllipseShape</a><br>
 <a href="EventDispatcher.html">EventDispatcher</a><br>
 <a href="FillBase.html">FillBase</a><br>
-<a href="GridContainerElement.html">GridContainerElement</a><br>
+GridContainerElement<br>
 <a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
 <a href="ImageElement.html">ImageElement</a><br>
 <a href="LabelElement.html">LabelElement</a><br>
@@ -126,12 +126,20 @@ DataGridItemRendererBase<br>
 <br><br>
 </td>
 <td style="vertical-align: top; padding: 10px; width: 100%;">
-<span style="font-size: 24px; font-weight: bold;">DataGridItemRendererBase</span><br>
+<span style="font-size: 24px; font-weight: bold;">GridContainerElement</span><br>
 <br>
-Abstract base class for DataGrid row item rendering. Any CanvasElement<br>
-can be a data renderer. This class is just here for convenience as it<br>
-implements some commonly used functionality if you wish to subclass it.<br>
-Adds skin states and styles for "up", "alt", "over", and "selected" states.<br>
+GridContainerElement is used to layout children in a grid or table-like manner.<br>
+This is effectively a two dimensional ListContainerElement that also supports<br>
+elements spanning multiple rows and/or columns.<br>
+The grid container does not respect any layout styling of cell elements (other<br>
+than measured/min sizes), rather it only respects layout styling of supplied row and<br>
+column definitions (GridContainerRowColumnDefinition). It is recommended that<br>
+other containers (such as ListContainerElements) are used for the cell elements<br>
+that wrap the content elements being added to the GridContainerElement. This way the<br>
+cells may stretch as necessary and content elements can be independently aligned<br>
+within the cell without stretching the content element itself.<br>
+The GridContainerElement is more expensive than a ListContainerElement so should<br>
+only be used when it is needed to maintain row/column alignment.<br>
 <br>
 <table>
 <tr>
@@ -139,7 +147,7 @@ Adds skin states and styles for "up", "alt", "over", and "selected" states.<br>
 <span style="font-weight: bold;">Inheritance: &nbsp;&nbsp;&nbsp;</span>
 </td>
 <td rowspan="2" style="vertical-align: top; width: 100%;">
-DataGridItemRendererBase &#10142; <a href="DataRendererBaseElement.html">DataRendererBaseElement</a> &#10142; <a href="SkinnableElement.html">SkinnableElement</a> &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
+GridContainerElement &#10142; <a href="ContainerBaseElement.html">ContainerBaseElement</a> &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
 <tr>
 <td></td>
 </tr>
@@ -147,6 +155,68 @@ DataGridItemRendererBase &#10142; <a href="DataRendererBaseElement.html">DataRen
 <br>
 <span style="font-weight: bold; font-size: 18px;">Styles</span><br>
 <a id="labelShowHideInheritedStyles" href="" onclick="{showHideInherited('styles'); return false;}">Show Inherited</a><br>
+<table id="tableStyles" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Style</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutHorizontalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Horizontal alignment to be used when the grid does not fill all available space. Allowable values are "left", "right", or "center".<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutHorizontalGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels to leave between columns.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutVerticalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Vertical alignment to be used when the grid does not fill all available space. Allowable values are "top", "bottom", or "middle".<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutVerticalGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels to leave between rows.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
 <table id="tableStylesInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Style</td>
@@ -165,36 +235,6 @@ DataGridItemRendererBase &#10142; <a href="DataRendererBaseElement.html">DataRen
 Alpha value to use when rendering this component. Allowable values are between 0 and 1 with<br>
 0 being transparent and 1 being opaque. This causes the element to perform composite rendering<br>
 when a value between 1 and 0 is used.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">AltSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the data renderer skin when in the "alt" state.<br>
-This is used to create different styles for alternating rows.<br>
-This will override SkinClass.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">AltSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "alt" state skin element.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -467,6 +507,62 @@ However, this will not prevent the "measurecomplete" event after this element fi
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutHorizontalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Horizontal alignment to be used when the grid does not fill all available space. Allowable values are "left", "right", or "center".<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutHorizontalGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels to leave between columns.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutVerticalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Vertical alignment to be used when the grid does not fill all available space. Allowable values are "top", "bottom", or "middle".<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutVerticalGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels to leave between rows.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">Left</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -581,35 +677,6 @@ works if the element is a child of a Container element.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 When false disables mouse events for the element.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OverSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the data renderer skin when in the "over" state.<br>
-This will override SkinClass.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OverSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "over" state skin element.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -807,49 +874,6 @@ This only works if the element is a child of an AnchorContainer.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">Selectable</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-When false, prevents "over" and "selected" states. Proxied from parent DataList.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">SelectedSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the data renderer skin when in the "selected" state.<br>
-This will override SkinClass.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">SelectedSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "selected" state skin element.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">ShadowColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -903,21 +927,6 @@ Y offset that the drop shadow will be rendered.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Size in pixels that the drop shadow should be rendered. Note that the drop shadow may be rendered<br>
 outside the elements bounding area. This will cause the element to be composite rendered.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">SkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor type to apply to all skin states.<br>
-Specific states such as UpSkinClass will override SkinClass.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1119,35 +1128,6 @@ Determines the baseline when rendering text. Available values are "top", "middle
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The distance the element should be positioned from the upper bounds of the parent container.<br>
 This only works if the element is a child of an AnchorContainer.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">UpSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the data renderer skin when in the "up" state.<br>
-This will override SkinClass.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">UpSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1569,15 +1549,267 @@ Dispatched when the mouse wheel is rolled while over this element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DataGridItemRendererBase()</span>
+<span style="font-weight: bold;">GridContainerElement()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] DataGridItemRendererBase</span>
+<span style="white-space: nowrap;">[Constructor] GridContainerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new DataGridItemRendererBase instance.<br>
+Creates new GridContainerElement instance.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearCellElements()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Clears all element from the GridContainerElement.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearColumnDefinitions()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Clears all column definitions.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearRowDefinitions()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Clears all row definitions.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getCellElement(rowIndex, columnIndex)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the CanvasElement associated with (or spanning) the supplied row and column indexes.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">rowIndex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to return the associated CanvasElement.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">columnIndex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to return the associated CanvasElement.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The CanvasElement associated with the supplied row and column index or null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getColumnDefinition(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the column definition associated with the supplied column index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to return the associated GridContainerRowColumnDefinition.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The GridContainerRowColumnDefinition associated with the supplied column index or null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getRowDefinition(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the row definition associated with the supplied row index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to return the associated GridContainerRowColumnDefinition.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The GridContainerRowColumnDefinition associated with the supplied row index or null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setCellElement(element, rowIndexStart, columnIndexStart, rowIndexEnd, columnIndexEnd)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets an element to be used for the supplied row and column indexes<br>
+or spans. If any element(s) already occupies the supplied<br>
+row or column spans, they will be removed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The element to insert into grid spanning the supplied row and column indexes.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">rowIndexStart</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to insert the element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">columnIndexStart</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to insert the element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">rowIndexEnd</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Optional - If the element is to span multiple rows this is the last<br>row index (inclusive) the element should occupy. If omitted this will<br>be automatically set to rowIndexStart.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">columnIndexEnd</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Optional - If the element is to span multiple columns this is the last<br>column index (inclusive) the element should occupy. If omitted this will<br>be automatically set to columnIndexStart.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setColumnDefinition(definition, index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets a column definition to the supplied column index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">definition</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The definition to apply to the supplied column index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to apply the definition.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setRowDefinition(definition, index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets a row definition to the supplied row index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">definition</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The definition to apply to the supplied row index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to apply the definition.<br>
+</td>
+</tr>
+</table>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1589,15 +1821,15 @@ Creates new DataGridItemRendererBase instance.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DataGridItemRendererBase()</span>
+<span style="font-weight: bold;">GridContainerElement()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] DataGridItemRendererBase</span>
+<span style="white-space: nowrap;">[Constructor] GridContainerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new DataGridItemRendererBase instance.<br>
+Creates new GridContainerElement instance.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1625,6 +1857,73 @@ String representing the event type.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">callback</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
 Function to be called when the event occurs.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">addElement(element)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Adds a content child element to the end of this element's content child list.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+CanvasElement to be added as a content child of this element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the element just added.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">addElementAt(element, index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Inserts a content child element to this element's content child list at the specified index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+CanvasElement to be added as a content child of this element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Child index to insert the element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the element just added when successful, null if the element could not<br>be added due to the index being out of range.<br>
 </td>
 </tr>
 </table>
@@ -1738,6 +2037,48 @@ Returns StyleDefinition just added when successfull, null if the StyleDefinition
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearCellElements()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Clears all element from the GridContainerElement.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearColumnDefinitions()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Clears all column definitions.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">clearRowDefinitions()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Clears all row definitions.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">clearStyle(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1795,6 +2136,133 @@ by calling the Event's getIsCanceled after dispatching it. Re-dispatching the sa
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
 The DispatcherEvent class or subclass to be dispatched.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getCellElement(rowIndex, columnIndex)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the CanvasElement associated with (or spanning) the supplied row and column indexes.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">rowIndex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to return the associated CanvasElement.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">columnIndex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to return the associated CanvasElement.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The CanvasElement associated with the supplied row and column index or null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getColumnDefinition(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the column definition associated with the supplied column index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to return the associated GridContainerRowColumnDefinition.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The GridContainerRowColumnDefinition associated with the supplied column index or null.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getElementAt(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the content child element at the supplied index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Content index of child element to return;<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The CanvasElement at the supplied index, or null if index is out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getElementIndex(element)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns the index of the supplied content child element.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Content child element to return the index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Returns the child index or -1 if the element is not<br>a content child of this element.<br>
 </td>
 </tr>
 </table>
@@ -1905,6 +2373,29 @@ The name associated with this element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getNumElements()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets this elements number of content children.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The number of content child elements.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">getNumStyleDefinitions()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1943,6 +2434,36 @@ Gets this element's parent element.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 This element's parent element.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getRowDefinition(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the row definition associated with the supplied row index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to return the associated GridContainerRowColumnDefinition.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The GridContainerRowColumnDefinition associated with the supplied row index or null.<br>
 </td>
 </tr>
 </table>
@@ -2161,6 +2682,66 @@ Returns true if the callback was successfully removed, otherwise false<br>such a
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">removeElement(element)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes a content child element from this element's content children list.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Content child to be removed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the CanvasElement just removed if successful, null if the<br>element could not be removed due to it not being a content child of this element.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">removeElementAt(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes a content child element at specified index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Content index to be removed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the CanvasElement just removed if successful, null if the element could<br>not be removed due it it not being a child of this element, or index out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">removeEventListener(type, callback)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -2290,6 +2871,126 @@ When true, rotates a point on the parent's plane, to the childs plane.<br>When f
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setCellElement(element, rowIndexStart, columnIndexStart, rowIndexEnd, columnIndexEnd)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets an element to be used for the supplied row and column indexes<br>
+or spans. If any element(s) already occupies the supplied<br>
+row or column spans, they will be removed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The element to insert into grid spanning the supplied row and column indexes.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">rowIndexStart</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to insert the element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">columnIndexStart</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to insert the element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">rowIndexEnd</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Optional - If the element is to span multiple rows this is the last<br>row index (inclusive) the element should occupy. If omitted this will<br>be automatically set to rowIndexStart.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">columnIndexEnd</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Optional - If the element is to span multiple columns this is the last<br>column index (inclusive) the element should occupy. If omitted this will<br>be automatically set to columnIndexStart.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setColumnDefinition(definition, index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets a column definition to the supplied column index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">definition</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The definition to apply to the supplied column index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The column index to apply the definition.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setElementIndex(element, index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Changes a content child element's index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Content child element to change index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+New content index of the content child element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+Returns true if the child's index is successfully changed, false if the element<br>is not a content child of this element or the index is out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">setName(name)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -2306,6 +3007,36 @@ it is for use by implementors if a way to differentiate elements is needed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">name</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
 A String to use as the element's name.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setRowDefinition(definition, index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets a row definition to the supplied row index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">definition</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
+The definition to apply to the supplied row index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The row index to apply the definition.<br>
 </td>
 </tr>
 </table>
@@ -2515,20 +3246,6 @@ The element to translate this element's point too.<br>
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Member</td>
 <td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_currentSkinState</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Read only - String representing the current state.<br>
-</td>
-<td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
@@ -2768,6 +3485,36 @@ after our parent has finished its layout phase will this be valid.<br>
 <br>
 <span style="font-weight: bold; font-size: 18px;">Internal Functions</span><br>
 <a id="labelShowHideInheritedInternalFunctions" href="" onclick="{showHideInherited('functionsInternal'); return false;}">Show Inherited</a><br>
+<table id="tableInternalFunctions" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onRowColumnDefinitionChanged(styleChangedEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">GridContainerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for row and columns GridContainerRowColumnDefinition "stylechanged" event.<br>
+Updates the GridContainerElement.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleChangedEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleChangedEvent.html">StyleChangedEvent</a><br>
+The StyleChangedEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
 <table id="tableInternalFunctionsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
@@ -2834,6 +3581,66 @@ The index position to insert the child in the elements child list.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 Returns the element just added when successfull, null if the element could not<br>be added due to the index being out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_addOverlayChild(element)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Adds an overlay child element to the end of this element's overlay child list.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Element to be added as an overlay child of this element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the element just added.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_addOverlayChildAt(element)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Inserts an overlay child element to this elements overlay child list at the specified index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Element to be added as an overlay child of this element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the element just added when successful, null if the element could not<br>be added due to the index being out of range.<br>
 </td>
 </tr>
 </table>
@@ -2915,38 +3722,6 @@ String representing the sub style to apply.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">elementToApply</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 The sub component element to apply sub styles.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_changeState(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Called when the element changes skin state. Do not call this function directly.<br>
-You may override this if you need to make additional changes to your component<br>
-when the skin state changes (such as updating a label color).<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The skin state that this element is changing too.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-Returns true if the element state has actually changed, false if it is the same state.<br>Subclasses can check what this base function returns before making additional changes for better performance.<br>
 </td>
 </tr>
 </table>
@@ -3514,6 +4289,29 @@ The number of child elements.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getNumOverlayChildren()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets this elements number of overlay children.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+The number of overlay child elements.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_getNumStyleDefinitions(isDefault)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3536,6 +4334,66 @@ When true, returns the number of default definitions.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
 The number of style definitions.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getOverlayChildAt(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the overlay child element at the supplied index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Overlay index of child element to return;<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+The element at the supplied overlay index, or null if index is out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getOverlayChildIndex(element)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns the overlay index of the supplied child element.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Child element to return the overlay index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Returns the child's overlay index or -1 if the element is not<br>an overlay child of this element.<br>
 </td>
 </tr>
 </table>
@@ -3582,61 +4440,6 @@ Helper function that returns the elements total padding width and height per its
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
 Returns an object containing<br>{width:paddingWidth, height:paddingHeight,<br>paddingBottom:paddingBottom, paddingTop:paddingTop,<br>paddingLeft:paddingLeft, paddingRight:paddingRight}.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getSkinClass(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the skin class to use per the provided state.<br>
-Override this to return different skin classes for different states.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to return a skin class.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
-Return the constructor of the appropriate skin class.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getSkinStyleProxyMap()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the Style proxy map to pass to skins. Override this if you need to pass additional styles<br>
-to custom skins. You should include all the styles provided in the default SkinnableElement style map.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
-Return a style proxy map to be applied to this element to all skins. Formatted as:<br>MyProxyMap = Object.create(null);<br>MyProxyMap.StyleName1 = true;<br>MyProxyMap.StyleName2 = true;<br>
 </td>
 </tr>
 </table>
@@ -3755,38 +4558,6 @@ String representing the style list to return.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array<br>
 Returns an array of all styles in this elements definition list and instance styles<br>for the associated style name.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getSubStyleNameForSkinState(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the style name of the sub style to be applied to the skin<br>
-for the associated state. Override this to return the associated<br>
-sub style name for the supplied state.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to return a sub style name.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;string<br>
-Sub style name to apply to the skin of the associated state.<br>
 </td>
 </tr>
 </table>
@@ -3936,46 +4707,22 @@ The AddedRemovedEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onDataRendererRollout(elementEvent)</span>
+<span style="font-weight: bold;">_onRowColumnDefinitionChanged(styleChangedEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
+<span style="white-space: nowrap;">GridContainerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "rollout" event. Updates the skin state.<br>
-Overriding this is more efficient than adding an additional "rollout" event listener.<br>
+Event handler for row and columns GridContainerRowColumnDefinition "stylechanged" event.<br>
+Updates the GridContainerElement.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-The ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onDataRendererRollover(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "rollover" event. Updates the skin state.<br>
-Overriding this is more efficient than adding an additional "rollover" event listener.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-The ElementEvent to process.<br>
+<span style="font-weight: bold;">styleChangedEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleChangedEvent.html">StyleChangedEvent</a><br>
+The StyleChangedEvent to process.<br>
 </td>
 </tr>
 </table>
@@ -4036,6 +4783,66 @@ Index to be removed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 Returns the element just removed if successfull, null if the element could<br>not be removed due it it not being a child of this element, or index out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_removeOverlayChild(element)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes an overlay child element from this elements overlay child list.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Overlay child to be removed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the element just removed if successful, null if the<br>element could not be removed due to it not being an overlay child of this element.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_removeOverlayChildAt(index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Removes an overlay child element at specified index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Overlay index to be removed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Returns the element just removed if successful, null if the element could<br>not be removed due it it not being an overlay child of this element, or index out of range.<br>
 </td>
 </tr>
 </table>
@@ -4280,6 +5087,43 @@ Selected data, differs per container.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setOverlayChildIndex(element, index)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="ContainerBaseElement.html">ContainerBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Changes an overlay child element's overlay index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">element</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+Overlay child element to change index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">index</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+New overlay index of the child element.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+Returns true if the child's index is successfully changed, false if the element<br>is not an overlay child of this element or the index is out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_setRelativePosition(x, y, relativeToElement)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -4379,68 +5223,6 @@ The StyleProxy element wrapper to use to proxy styles from the proxy element to 
 </td>
 </tr>
 </table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateSkinClass(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the skin class for the skin of the provided state. Subclasses should call<br>
-this within their _doStylesUpdated() when skin style class changes.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to update the skin class.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateSkinStyleDefinitions(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the StyleDefinition for the skin of the provided state. Subclasses should call<br>
-this within their _doStylesUpdated() when skin style definitions change.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to update the StyleDefinition.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateState()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="DataRendererBaseElement.html">DataRendererBaseElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the SkinState style in response to mouse and ListData changes.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
