@@ -476,12 +476,7 @@ GridContainerElement.prototype._onCanvasElementAdded =
 	{
 		GridContainerElement.base.prototype._onCanvasElementAdded.call(this, addedRemovedEvent);
 		
-		var i;
-		
-		for (i = 0; i < this._rowDefinitions.length; i++)
-			this._rowColumnDefinitionCount[i].definition.addEventListener("stylechanged", this._onRowColumnDefinitionChangedInstance);
-			
-		for (i = 0; i < this._columnDefinitions.length; i++)
+		for (var i = 0; i < this._rowColumnDefinitionCount.length; i++)
 			this._rowColumnDefinitionCount[i].definition.addEventListener("stylechanged", this._onRowColumnDefinitionChangedInstance);
 	};
 	
@@ -491,12 +486,7 @@ GridContainerElement.prototype._onCanvasElementRemoved =
 	{
 		GridContainerElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
 		
-		var i;
-		
-		for (i = 0; i < this._rowDefinitions.length; i++)
-			this._rowColumnDefinitionCount[i].definition.removeEventListener("stylechanged", this._onRowColumnDefinitionChangedInstance);
-			
-		for (i = 0; i < this._columnDefinitions.length; i++)
+		for (var i = 0; i < this._rowColumnDefinitionCount.length; i++)
 			this._rowColumnDefinitionCount[i].definition.removeEventListener("stylechanged", this._onRowColumnDefinitionChangedInstance);
 	};		
 	
