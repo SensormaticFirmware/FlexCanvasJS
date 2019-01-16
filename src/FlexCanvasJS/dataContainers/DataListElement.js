@@ -866,7 +866,11 @@ DataListElement.prototype._onDataListRendererClick =
 		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
 		
 		var dispatchChanged = false;
+		
+		//Only allow selection if selectable and enabled
 		var elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable");
+		if (elementIsSelectable == true)
+			elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Enabled");
 		
 		//Update selected index
 		if (this.getStyle("Selectable") == true && (elementIsSelectable === undefined || elementIsSelectable == true))

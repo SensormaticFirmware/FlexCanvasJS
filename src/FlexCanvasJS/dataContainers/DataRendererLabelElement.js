@@ -69,6 +69,14 @@ DataRendererLabelElement._StyleTypes.OverTextColor = 			StyleableBase.EStyleType
  */
 DataRendererLabelElement._StyleTypes.SelectedTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
+/**
+ * @style DisabledTextColor String
+ * 
+ * Hex color value to be used for the label when in the "disabled" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataRendererLabelElement._StyleTypes.DisabledTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
+
 
 ////////////Default Styles///////////////////////
 
@@ -83,6 +91,7 @@ DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("OverTextColor", 			"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("SelectedTextColor", 		"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("DisabledTextColor", 		"#888888");
 
 
 ////////////Internal/////////////////////////////
@@ -119,6 +128,8 @@ DataRendererLabelElement.prototype._getTextColor =
 			stateTextColor = this.getStyleData("OverTextColor");
 		else if (state == "selected")
 			stateTextColor = this.getStyleData("SelectedTextColor");
+		else if (state == "disabled")
+			stateTextColor = this.getStyleData("DisabledTextColor");
 	
 		var textColor = this.getStyleData("TextColor");
 		
