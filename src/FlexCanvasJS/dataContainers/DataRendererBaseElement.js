@@ -186,7 +186,7 @@ DataRendererBaseElement.prototype._updateState =
 	
 		if (this._listSelected == true)
 			newState = "selected";
-		if (this.getStyle("Enabled") == false)
+		else if (this.getStyle("Enabled") == false)
 			newState = "disabled";
 		else if (this._mouseIsOver == true && this.getStyle("Selectable") == true)
 			newState = "over";
