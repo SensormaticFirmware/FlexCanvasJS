@@ -14170,7 +14170,22 @@ DataRendererBaseElement._StyleTypes.SelectedSkinClass = 		StyleableBase.EStyleTy
  */
 DataRendererBaseElement._StyleTypes.SelectedSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
 
-//Proxied from DataList (intended only for reading)
+/**
+ * @style DisabledSkinClass CanvasElement
+ * 
+ * The CanvasElement constructor to be used for the data renderer skin when in the "disabled" state. 
+ * This will override SkinClass.
+ */
+DataRendererBaseElement._StyleTypes.DisabledSkinClass = 		StyleableBase.EStyleType.NORMAL;		//Element constructor()
+
+/**
+ * @style DisabledSkinStyle StyleDefinition
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.
+ */
+DataRendererBaseElement._StyleTypes.DisabledSkinStyle = 		StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
+
+//Proxied from DataList
 /**
  * @style Selectable boolean
  * 
@@ -14193,18 +14208,20 @@ DataRendererBaseElement.SelectedSkinStyleDefault = new StyleDefinition();
 DataRendererBaseElement.SelectedSkinStyleDefault.setStyle("BackgroundFill", 			"#CDCDCD");
 //////////////////////////////////////////
 
-DataRendererBaseElement.StyleDefault.setStyle("Selectable", 			true);												// intended only for reading, its proxied from DataList
+DataRendererBaseElement.StyleDefault.setStyle("Selectable", 			true);												//Proxied from List - may be overridden in _setListData()
 
 DataRendererBaseElement.StyleDefault.setStyle("SkinClass", 				CanvasElement);										// Element constructor()
 DataRendererBaseElement.StyleDefault.setStyle("UpSkinClass", 			CanvasElement);										// Element constructor()
 DataRendererBaseElement.StyleDefault.setStyle("AltSkinClass", 			CanvasElement);										// Element constructor()
 DataRendererBaseElement.StyleDefault.setStyle("OverSkinClass", 			CanvasElement);										// Element constructor()
 DataRendererBaseElement.StyleDefault.setStyle("SelectedSkinClass", 		CanvasElement);										// Element constructor()
+DataRendererBaseElement.StyleDefault.setStyle("DisabledSkinClass", 		CanvasElement);										// Element constructor()
 
 DataRendererBaseElement.StyleDefault.setStyle("UpSkinStyle", 			null);												// StyleDefinition
 DataRendererBaseElement.StyleDefault.setStyle("AltSkinStyle", 			null);												// StyleDefinition
 DataRendererBaseElement.StyleDefault.setStyle("OverSkinStyle", 			DataRendererBaseElement.OverSkinStyleDefault);		// StyleDefinition
 DataRendererBaseElement.StyleDefault.setStyle("SelectedSkinStyle", 		DataRendererBaseElement.SelectedSkinStyleDefault);	// StyleDefinition
+DataRendererBaseElement.StyleDefault.setStyle("DisabledSkinStyle", 		null);												// StyleDefinition
 
 
 /////////////Internal///////////////////////////
@@ -14220,6 +14237,8 @@ DataRendererBaseElement.prototype._updateState =
 	
 		if (this._listSelected == true)
 			newState = "selected";
+		if (this.getStyle("Enabled") == false)
+			newState = "disabled";
 		else if (this._mouseIsOver == true && this.getStyle("Selectable") == true)
 			newState = "over";
 		else // "up"
@@ -14247,6 +14266,8 @@ DataRendererBaseElement.prototype._getSkinClass =
 			stateSkinClass = this.getStyleData("OverSkinClass");
 		else if (state == "selected")
 			stateSkinClass = this.getStyleData("SelectedSkinClass");
+		else if (state == "disabled")
+			stateSkinClass = this.getStyleData("DisabledSkinClass");
 		
 		var skinClass = this.getStyleData("SkinClass");
 		
@@ -14269,6 +14290,8 @@ DataRendererBaseElement.prototype._getSubStyleNameForSkinState =
 			return "OverSkinStyle";
 		if (state == "selected")
 			return "SelectedSkinStyle";
+		if (state == "disabled")
+			return "DisabledSkinStyle";
 		
 		return DataRendererBaseElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
 	};	
@@ -14316,6 +14339,16 @@ DataRendererBaseElement.prototype._setListData =
 	{
 		DataRendererBaseElement.base.prototype._setListData.call(this, listData, itemData);
 		
+		if (itemData.hasOwnProperty("enabled") == true)
+			this.setStyle("Enabled", itemData.enabled);
+		else
+			this.clearStyle("Enabled");
+			
+		if (itemData.hasOwnProperty("selectable") == true)
+			this.setStyle("Selectable", itemData.selectable);
+		else
+			this.clearStyle("Selectable");
+		
 		this._updateState();
 	};
 
@@ -14347,7 +14380,12 @@ DataRendererBaseElement.prototype._doStylesUpdated =
 		if ("SelectedSkinStyle" in stylesMap)
 			this._updateSkinStyleDefinitions("selected");		
 		
-		if ("Selectable" in stylesMap)
+		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
+			this._updateSkinClass("disabled");
+		if ("DisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("disabled");
+		
+		if ("Selectable" in stylesMap || "Enabled" in stylesMap)
 			this._updateState();
 	};
 	
@@ -14424,6 +14462,14 @@ DataRendererLabelElement._StyleTypes.OverTextColor = 			StyleableBase.EStyleType
  */
 DataRendererLabelElement._StyleTypes.SelectedTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
 
+/**
+ * @style DisabledTextColor String
+ * 
+ * Hex color value to be used for the label when in the "disabled" state. Format like "#FF0000" (red).
+ * This will override the TextColor style of equal priority.
+ */
+DataRendererLabelElement._StyleTypes.DisabledTextColor = 		StyleableBase.EStyleType.NORMAL;		//"#000000"
+
 
 ////////////Default Styles///////////////////////
 
@@ -14438,6 +14484,7 @@ DataRendererLabelElement.StyleDefault.setStyle("UpTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("AltTextColor", 				"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("OverTextColor", 			"#000000");
 DataRendererLabelElement.StyleDefault.setStyle("SelectedTextColor", 		"#000000");
+DataRendererLabelElement.StyleDefault.setStyle("DisabledTextColor", 		"#888888");
 
 
 ////////////Internal/////////////////////////////
@@ -14474,6 +14521,8 @@ DataRendererLabelElement.prototype._getTextColor =
 			stateTextColor = this.getStyleData("OverTextColor");
 		else if (state == "selected")
 			stateTextColor = this.getStyleData("SelectedTextColor");
+		else if (state == "disabled")
+			stateTextColor = this.getStyleData("DisabledTextColor");
 	
 		var textColor = this.getStyleData("TextColor");
 		
@@ -15418,7 +15467,11 @@ DataListElement.prototype._onDataListRendererClick =
 		var itemData = elementMouseEvent.getCurrentTarget()._itemData;
 		
 		var dispatchChanged = false;
+		
+		//Only allow selection if selectable and enabled
 		var elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable");
+		if (elementIsSelectable == true)
+			elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Enabled");
 		
 		//Update selected index
 		if (this.getStyle("Selectable") == true && (elementIsSelectable === undefined || elementIsSelectable == true))
