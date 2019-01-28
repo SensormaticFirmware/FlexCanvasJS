@@ -522,7 +522,7 @@ CanvasManager._StyleTypes.ShowRedrawRegion = 								StyleableBase.EStyleType.NO
 CanvasManager._StyleTypes.AlertModalClass = 								StyleableBase.EStyleType.NORMAL;		
 
 /**
- * @style AlertModalStyle CanvasElement
+ * @style AlertModalStyle StyleDefinition
  * 
  * The StyleDefinition or [StyleDefinition] array to apply to the alert modal overlay.
  * Default definition sets BackgroundFill to "rgba(180,180,180,.4)".

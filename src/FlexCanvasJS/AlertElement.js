@@ -110,8 +110,9 @@ AlertElement._StyleTypes.ContentTextStyle = 								StyleableBase.EStyleType.SUB
 /**
  * @style ButtonClass CanvasElement
  * 
- * The CanvasElement constructor type used to generate the alert selection buttons. 
- * Note that any CanvasElement type may be used, but must support the "Text" style. 
+ * The CanvasElement or subclass constructor type used to generate the alert selection buttons.
+ * Default value is ButtonElement. Alert will set the "Text" style and the _listData on this element 
+ * via the text supplied by the array passed to setButtons().
  */
 AlertElement._StyleTypes.ButtonClass = 										StyleableBase.EStyleType.NORMAL;
 
@@ -271,8 +272,6 @@ AlertElement.prototype.setButtons =
 		{
 			while (this._buttonContainer.getNumElements() > 0)
 				this._buttonContainer.removeElementAt(0);
-				
-			return;
 		}
 		
 		//Purge excess buttons
@@ -280,18 +279,22 @@ AlertElement.prototype.setButtons =
 			this._buttonContainer.removeElementAt(this._buttonContainer.getNumElements() - 1);
 		
 		//Create new buttons & set text
-		for (i = 0; i < buttonTextArray.length; i++)
+		if (buttonClass != null)
 		{
-			button = this._buttonContainer.getElementAt(i);
-			
-			if (button == null)
+			for (i = 0; i < buttonTextArray.length; i++)
 			{
-				button = new (buttonClass)();
-				this._applySubStylesToElement("ButtonStyle", button);
-				this._buttonContainer.addElementAt(button, i);
+				button = this._buttonContainer.getElementAt(i);
+				
+				if (button == null)
+				{
+					button = new (buttonClass)();
+					this._applySubStylesToElement("ButtonStyle", button);
+					this._buttonContainer.addElementAt(button, i);
+				}
+				
+				button.setStyle("Text", buttonTextArray[i]);
+				button._setListData(new DataListData(this, i), buttonTextArray[i]);
 			}
-			
-			button.setStyle("Text", buttonTextArray[i]);
 		}
 	};
 
