@@ -73,6 +73,9 @@ function CanvasManager()
 	//Now call base
 	CanvasManager.base.prototype.constructor.call(this);
 
+	this._alertQueue = [];
+	this._alertModal = null;
+	
 	this._cursorContainer = new CanvasElement();
 	this._cursorContainer.setStyle("MouseEnabled", false);
 	this._addOverlayChild(this._cursorContainer);	
@@ -509,12 +512,36 @@ CanvasManager._StyleTypes = Object.create(null);
  */
 CanvasManager._StyleTypes.ShowRedrawRegion = 								StyleableBase.EStyleType.NORMAL;		
 
+/**
+ * @style AlertModalClass CanvasElement
+ * 
+ * CanvasElement constructor to be used for the alert overlay. Defaults to CanvasElement.
+ * This may be set to null if you do not wish to block interactivity with the underlying UI when
+ * and alert is triggered. 
+ */
+CanvasManager._StyleTypes.AlertModalClass = 								StyleableBase.EStyleType.NORMAL;		
+
+/**
+ * @style AlertModalStyle CanvasElement
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the alert modal overlay.
+ * Default definition sets BackgroundFill to "rgba(180,180,180,.4)".
+ * If styled to be transparent, the modal element will still block user interactivity.
+ */
+CanvasManager._StyleTypes.AlertModalStyle = 								StyleableBase.EStyleType.SUBSTYLE;		
+
 
 /////////////Default Styles///////////////////////////////
 
+CanvasManager.AlertModalStyle = new StyleDefinition();
+CanvasManager.AlertModalStyle.setStyle("BackgroundFill", 					"rgba(180,180,180,.4)");
+
+
 CanvasManager.StyleDefault = new StyleDefinition();
 
-CanvasManager.StyleDefault.setStyle("ShowRedrawRegion", 					false);		// true || false
+CanvasManager.StyleDefault.setStyle("ShowRedrawRegion", 					false);							// true || false
+CanvasManager.StyleDefault.setStyle("AlertModalClass", 						CanvasElement);
+CanvasManager.StyleDefault.setStyle("AlertModalStyle", 						CanvasManager.AlertModalStyle);	
 
 
 
@@ -616,6 +643,74 @@ CanvasManager.prototype.getCanvas =
 		return this._canvas;
 	};
 
+/**
+ * @function addAlert
+ * Adds an element to be displayed as an alert. Only one alert may
+ * be displayed at a time, subsequent will be queued and displayed in the
+ * order they have been queued as previous alerts are removed. 
+ * If an AlertModalClass style is set (defaults to CanvasElement), the modal 
+ * element will be placed covering all content under the alert element.
+ * 
+ * @returns CanvasElement
+ * The element supplied to addAlert().
+ */		
+CanvasManager.prototype.addAlert = 
+	function (element)
+	{
+		this._alertQueue.push(element);
+		
+		if (this._alertQueue.length == 1)
+		{
+			if (this._alertModal != null)
+				this.addElement(this._alertModal);
+			
+			this.addElement(element);
+		}
+		
+		return element;
+	};
+	
+/**
+ * @function removeAlert
+ * Removes an alert element. If this is the last alert, the modal
+ * element will also be removed.
+ * 
+ * @param element CanvasElement
+ * The element to remove from the alert list.
+ * 
+ * @returns CanvasElement
+ * The element supplied to removeAlert() or null if invalid.
+ */		
+CanvasManager.prototype.removeAlert = 
+	function (element)
+	{
+		var index = this._alertQueue.indexOf(element);
+		if (index == -1)
+			return null;
+	
+		this._alertQueue.splice(index, 1);
+		
+		//We removed the current alert
+		if (index == 0)
+		{
+			this.removeElement(element);
+			
+			if (this._alertModal != null)
+			{
+				if (this._alertQueue.length == 0)
+					this.removeElement(this._alertModal); //No more alerts, remove modal
+				else
+					this.setElementIndex(this._alertModal, this.getNumElements()); //more alerts in queue, push modal to end
+			}
+			
+			//Add next alert in queue
+			if (this._alertQueue.length > 0)
+				this.addElement(this._alertQueue[0]);
+		}			
+		
+		return element;
+	};
+	
 /**
  * @function setLocale
  * Sets the locale to be used when using localized strings. The actual
@@ -1289,14 +1384,52 @@ CanvasManager.prototype._setDraggingElement =
 		this._draggingOffsetY = offsetY;
 	};
 	
-//@Override	
-CanvasManager.prototype._doLayout = 
-function (paddingMetrics)
-{
-	CanvasManager.base.prototype._doLayout.call(this, paddingMetrics);
+//@override	
+CanvasManager.prototype._doStylesUpdated = 
+	function (stylesMap)
+	{
+		CanvasManager.base.prototype._doStylesUpdated.call(this, stylesMap);
 	
-	this._cursorContainer._setActualSize(this._width, this._height);
-};	
+		var newModal = false;
+		if ("AlertModalClass" in stylesMap)
+		{
+			var modalClass = this.getStyle("AlertModalClass");
+			
+			//Destroy if class is null or does not match existing
+			if ((modalClass == null && this._alertModal != null) ||
+				this._alertModal != null && this._alertModal.constructor != modalClass)
+			{
+				//Try to remove it (it may not be attached)
+				this.removeElementAt(this.getElementIndex(this._alertModal));
+				this._alertModal = null;
+			}
+			
+			//Create
+			if (modalClass != null && this._alertModal == null)
+			{
+				newModal = true;
+				this._alertModal = new (modalClass)();
+				this._alertModal.setStyle("IncludeInLayout", false); //Always false, we do this manually to prevent layout styles
+				
+				//Add behind first alert position
+				if (this._alertQueue.length > 0)
+					this.addElementAt(this._alertModal, this.getElementIndex(this._alertQueue[0]));
+			}
+		}
+		
+		if (this._alertModal != null && ("AlertModalStyle" in stylesMap || newModal == true))
+			this._applySubStylesToElement("AlertModalStyle", this._alertModal);
+	};
+	
+//@override	
+CanvasManager.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		CanvasManager.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		this._alertModal._setActualSize(this._width, this._height);
+		this._cursorContainer._setActualSize(this._width, this._height);
+	};	
 
 
 
