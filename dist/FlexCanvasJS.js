@@ -14065,7 +14065,9 @@ ImageElement.prototype._doRender =
  * can be a data renderer. This class is just here for convenience as it
  * implements some commonly used functionality if you wish to subclass it. 
  * 
- * Adds skin states and styles for "up", "alt", "over", and "selected" states. 
+ * Adds skin states and styles for "up", "alt", "over", "disabled", and "selected" states. 
+ * DataRendererBaseElement automatically checks for properties "selectable"
+ * and "enabled" on supplied itemData and adjusts styles and skin states.
  *  
  * 
  * @constructor DataRendererBaseElement 
