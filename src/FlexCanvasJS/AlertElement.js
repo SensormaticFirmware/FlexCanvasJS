@@ -26,18 +26,10 @@ function AlertElement() //extends ListContainerElement
 	AlertElement.base.prototype.constructor.call(this);
 	
 		this._labelTitle = new LabelElement();
-		this._labelTitle.setStyle("PercentWidth", 100);
-		
 		this._contentContainer = new ListContainerElement();
-		this._contentContainer.setStyle("PercentWidth", 100);
-		this._contentContainer.setStyle("PercentHeight", 100);
-	
+		
 			this._textContent = new TextElement();
-			this._textContent.setStyle("PercentWidth", 100);
-			this._textContent.setStyle("PercentHeight", 100);
-			
 			this._buttonContainer = new ListContainerElement();
-			this._buttonContainer.setStyle("PercentWidth", 100);
 			
 		this._contentContainer.addElement(this._textContent);
 		this._contentContainer.addElement(this._buttonContainer);
@@ -131,19 +123,25 @@ AlertElement.AlertTitleLabelStyle.setStyle("TextStyle", 						"bold");
 AlertElement.AlertTitleLabelStyle.setStyle("Padding", 							5);
 AlertElement.AlertTitleLabelStyle.setStyle("PaddingTop", 						10);
 AlertElement.AlertTitleLabelStyle.setStyle("TextHorizontalAlign", 				"center");
+AlertElement.AlertTitleLabelStyle.setStyle("PercentWidth", 						100);
 
 AlertElement.AlertContentListContainerStyle = new StyleDefinition();
 AlertElement.AlertContentListContainerStyle.setStyle("Padding", 				5);
 AlertElement.AlertContentListContainerStyle.setStyle("LayoutGap", 				10);
+AlertElement.AlertContentListContainerStyle.setStyle("PercentWidth", 			100);
+AlertElement.AlertContentListContainerStyle.setStyle("PercentHeight", 			100);
 
 AlertElement.AlertContentTextStyle = new StyleDefinition();
 AlertElement.AlertContentTextStyle.setStyle("TextHorizontalAlign", 				"center");
+AlertElement.AlertContentTextStyle.setStyle("PercentWidth", 					100);
+AlertElement.AlertContentTextStyle.setStyle("PercentHeight", 					100);
 
 AlertElement.AlertButtonListContainerStyle = new StyleDefinition();
 AlertElement.AlertButtonListContainerStyle.setStyle("LayoutHorizontalAlign", 	"center");
 AlertElement.AlertButtonListContainerStyle.setStyle("LayoutDirection", 			"horizontal");
 AlertElement.AlertButtonListContainerStyle.setStyle("LayoutGap", 				10);
 AlertElement.AlertButtonListContainerStyle.setStyle("Padding", 					5);
+AlertElement.AlertButtonListContainerStyle.setStyle("PercentWidth", 			100);
 
 AlertElement.AlertButtonStyle = new StyleDefinition();
 AlertElement.AlertButtonStyle.setStyle("MinWidth", 								70);
