@@ -78,93 +78,93 @@ AlertElement.base = ListContainerElement;
 AlertElement._StyleTypes = Object.create(null);
 
 /**
- * @style TitleLabelStyle StyleDefinition
+ * @style AlertTitleLabelStyle StyleDefinition
  * 
  * The StyleDefinition or [StyleDefinition] array to apply to the title LabelElement.
  */
-AlertElement._StyleTypes.TitleLabelStyle = 									StyleableBase.EStyleType.SUBSTYLE;
+AlertElement._StyleTypes.AlertTitleLabelStyle = 							StyleableBase.EStyleType.SUBSTYLE;
 
 /**
- * @style ContentListContainerStyle StyleDefinition
+ * @style AlertContentListContainerStyle StyleDefinition
  * 
  * The StyleDefinition or [StyleDefinition] array to apply to content ListContainer.
  * This container parents the content text and button list.
  */
-AlertElement._StyleTypes.ContentListContainerStyle = 						StyleableBase.EStyleType.SUBSTYLE;
+AlertElement._StyleTypes.AlertContentListContainerStyle = 					StyleableBase.EStyleType.SUBSTYLE;
 
 /**
- * @style ButtonListContainerStyle StyleDefinition
+ * @style AlertButtonListContainerStyle StyleDefinition
  * 
  * The StyleDefinition or [StyleDefinition] array to apply to button ListContainer.
  * This container parents the alert selection buttons.
  */
-AlertElement._StyleTypes.ButtonListContainerStyle = 						StyleableBase.EStyleType.SUBSTYLE;
+AlertElement._StyleTypes.AlertButtonListContainerStyle = 					StyleableBase.EStyleType.SUBSTYLE;
 
 /**
- * @style ContentTextStyle StyleDefinition
+ * @style AlertContentTextStyle StyleDefinition
  * 
  * The StyleDefinition or [StyleDefinition] array to apply to the content TextElement.
  */
-AlertElement._StyleTypes.ContentTextStyle = 								StyleableBase.EStyleType.SUBSTYLE;
+AlertElement._StyleTypes.AlertContentTextStyle = 							StyleableBase.EStyleType.SUBSTYLE;
 
 /**
- * @style ButtonClass CanvasElement
+ * @style AlertButtonClass CanvasElement
  * 
  * The CanvasElement or subclass constructor type used to generate the alert selection buttons.
  * Default value is ButtonElement. Alert will set the "Text" style and the _listData on this element 
  * via the text supplied by the array passed to setButtons().
  */
-AlertElement._StyleTypes.ButtonClass = 										StyleableBase.EStyleType.NORMAL;
+AlertElement._StyleTypes.AlertButtonClass = 								StyleableBase.EStyleType.NORMAL;
 
 /**
- * @style ButtonStyle StyleDefinition
+ * @style AlertButtonStyle StyleDefinition
  * 
  * The StyleDefinition or [StyleDefinition] array to apply to the alert selection buttons.
  */
-AlertElement._StyleTypes.ButtonStyle = 										StyleableBase.EStyleType.SUBSTYLE;
+AlertElement._StyleTypes.AlertButtonStyle = 								StyleableBase.EStyleType.SUBSTYLE;
 
 
 ////////////Default Styles///////////////////////////
 
-AlertElement.TitleLabelStyle = new StyleDefinition();
-AlertElement.TitleLabelStyle.setStyle("TextStyle", 							"bold");
-AlertElement.TitleLabelStyle.setStyle("Padding", 							5);
-AlertElement.TitleLabelStyle.setStyle("PaddingTop", 						10);
-AlertElement.TitleLabelStyle.setStyle("TextHorizontalAlign", 				"center");
+AlertElement.AlertTitleLabelStyle = new StyleDefinition();
+AlertElement.AlertTitleLabelStyle.setStyle("TextStyle", 						"bold");
+AlertElement.AlertTitleLabelStyle.setStyle("Padding", 							5);
+AlertElement.AlertTitleLabelStyle.setStyle("PaddingTop", 						10);
+AlertElement.AlertTitleLabelStyle.setStyle("TextHorizontalAlign", 				"center");
 
-AlertElement.ContentListContainerStyle = new StyleDefinition();
-AlertElement.ContentListContainerStyle.setStyle("Padding", 					5);
-AlertElement.ContentListContainerStyle.setStyle("LayoutGap", 				10);
+AlertElement.AlertContentListContainerStyle = new StyleDefinition();
+AlertElement.AlertContentListContainerStyle.setStyle("Padding", 				5);
+AlertElement.AlertContentListContainerStyle.setStyle("LayoutGap", 				10);
 
-AlertElement.ContentTextStyle = new StyleDefinition();
-AlertElement.ContentTextStyle.setStyle("TextHorizontalAlign", 				"center");
+AlertElement.AlertContentTextStyle = new StyleDefinition();
+AlertElement.AlertContentTextStyle.setStyle("TextHorizontalAlign", 				"center");
 
-AlertElement.ButtonListContainerStyle = new StyleDefinition();
-AlertElement.ButtonListContainerStyle.setStyle("LayoutHorizontalAlign", 	"center");
-AlertElement.ButtonListContainerStyle.setStyle("LayoutDirection", 			"horizontal");
-AlertElement.ButtonListContainerStyle.setStyle("LayoutGap", 				10);
-AlertElement.ButtonListContainerStyle.setStyle("Padding", 					5);
+AlertElement.AlertButtonListContainerStyle = new StyleDefinition();
+AlertElement.AlertButtonListContainerStyle.setStyle("LayoutHorizontalAlign", 	"center");
+AlertElement.AlertButtonListContainerStyle.setStyle("LayoutDirection", 			"horizontal");
+AlertElement.AlertButtonListContainerStyle.setStyle("LayoutGap", 				10);
+AlertElement.AlertButtonListContainerStyle.setStyle("Padding", 					5);
 
-AlertElement.ButtonStyle = new StyleDefinition();
-AlertElement.ButtonStyle.setStyle("MinWidth", 70);
+AlertElement.AlertButtonStyle = new StyleDefinition();
+AlertElement.AlertButtonStyle.setStyle("MinWidth", 								70);
 
 AlertElement.StyleDefault = new StyleDefinition();
-AlertElement.StyleDefault.setStyle("BorderType", 							"solid");
-AlertElement.StyleDefault.setStyle("BorderThickness", 						1);
-AlertElement.StyleDefault.setStyle("BackgroundFill", 						"#FFFFFF");
-AlertElement.StyleDefault.setStyle("ShadowSize", 							2);
-AlertElement.StyleDefault.setStyle("ShadowOffsetX", 						1);
-AlertElement.StyleDefault.setStyle("ShadowOffsetY", 						1);
-AlertElement.StyleDefault.setStyle("HorizontalCenter", 						0);
-AlertElement.StyleDefault.setStyle("VerticalCenter", 						0);
-AlertElement.StyleDefault.setStyle("MinWidth", 								300);
-AlertElement.StyleDefault.setStyle("MinHeight", 							100);
-AlertElement.StyleDefault.setStyle("ButtonClass", 							ButtonElement);
-AlertElement.StyleDefault.setStyle("ButtonStyle", 							AlertElement.ButtonStyle);
-AlertElement.StyleDefault.setStyle("TitleLabelStyle", 						AlertElement.TitleLabelStyle);
-AlertElement.StyleDefault.setStyle("ContentListContainerStyle", 			AlertElement.ContentListContainerStyle);
-AlertElement.StyleDefault.setStyle("ContentTextStyle", 						AlertElement.ContentTextStyle);
-AlertElement.StyleDefault.setStyle("ButtonListContainerStyle", 				AlertElement.ButtonListContainerStyle);
+AlertElement.StyleDefault.setStyle("BorderType", 								"solid");
+AlertElement.StyleDefault.setStyle("BorderThickness", 							1);
+AlertElement.StyleDefault.setStyle("BackgroundFill", 							"#FFFFFF");
+AlertElement.StyleDefault.setStyle("ShadowSize", 								2);
+AlertElement.StyleDefault.setStyle("ShadowOffsetX", 							1);
+AlertElement.StyleDefault.setStyle("ShadowOffsetY", 							1);
+AlertElement.StyleDefault.setStyle("HorizontalCenter", 							0);
+AlertElement.StyleDefault.setStyle("VerticalCenter", 							0);
+AlertElement.StyleDefault.setStyle("MinWidth", 									300);
+AlertElement.StyleDefault.setStyle("MinHeight", 								100);
+AlertElement.StyleDefault.setStyle("AlertButtonClass", 							ButtonElement);
+AlertElement.StyleDefault.setStyle("AlertButtonStyle", 							AlertElement.AlertButtonStyle);
+AlertElement.StyleDefault.setStyle("AlertTitleLabelStyle", 						AlertElement.AlertTitleLabelStyle);
+AlertElement.StyleDefault.setStyle("AlertContentListContainerStyle", 			AlertElement.AlertContentListContainerStyle);
+AlertElement.StyleDefault.setStyle("AlertContentTextStyle", 					AlertElement.AlertContentTextStyle);
+AlertElement.StyleDefault.setStyle("AlertButtonListContainerStyle", 			AlertElement.AlertButtonListContainerStyle);
 
 /**
  * @function createAlert
@@ -264,7 +264,7 @@ AlertElement.prototype.setButtons =
 	
 		var i;
 		var button;
-		var buttonClass = this.getStyle("ButtonClass");
+		var buttonClass = this.getStyle("AlertButtonClass");
 		
 		//Handle button class change - happens when called due to style change (purge all buttons)
 		if (buttonClass == null || 
@@ -288,7 +288,7 @@ AlertElement.prototype.setButtons =
 				if (button == null)
 				{
 					button = new (buttonClass)();
-					this._applySubStylesToElement("ButtonStyle", button);
+					this._applySubStylesToElement("AlertButtonStyle", button);
 					this._buttonContainer.addElementAt(button, i);
 				}
 				
@@ -322,19 +322,19 @@ AlertElement.prototype._doStylesUpdated =
 	
 		////Update Substyles/////////
 		
-		if ("TitleLabelStyle" in stylesMap)
-			this._applySubStylesToElement("TitleLabelStyle", this._labelTitle);
+		if ("AlertTitleLabelStyle" in stylesMap)
+			this._applySubStylesToElement("AlertTitleLabelStyle", this._labelTitle);
 		
-		if ("ContentListContainerStyle" in stylesMap)
-			this._applySubStylesToElement("ContentListContainerStyle", this._contentContainer);
+		if ("AlertContentListContainerStyle" in stylesMap)
+			this._applySubStylesToElement("AlertContentListContainerStyle", this._contentContainer);
 		
-		if ("ButtonListContainerStyle" in stylesMap)
-			this._applySubStylesToElement("ButtonListContainerStyle", this._buttonContainer);
+		if ("AlertButtonListContainerStyle" in stylesMap)
+			this._applySubStylesToElement("AlertButtonListContainerStyle", this._buttonContainer);
 		
-		if ("ContentTextStyle" in stylesMap)
-			this._applySubStylesToElement("ContentTextStyle", this._textContent);
+		if ("AlertContentTextStyle" in stylesMap)
+			this._applySubStylesToElement("AlertContentTextStyle", this._textContent);
 		
-		if ("ButtonStyle" in stylesMap || "ButtonClass" in stylesMap)
+		if ("AlertButtonStyle" in stylesMap || "AlertButtonClass" in stylesMap)
 			this.setButtons(this._buttonTextArray);
 	};	
 
