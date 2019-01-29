@@ -428,6 +428,25 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:canvasElementControl, 
 											rootControlStyleType:canvasElementControlStyleType,
 											list:null});
+	
+	//AlertElement
+	var alertElementDef = new StyleDefinition();
+	
+	var alertElementControl = new AlertElement();
+	alertElementControl.setStyleDefinitions(alertElementDef);
+	alertElementControl.setTitleText("Lorem Ipsum");
+	alertElementControl.setContentText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam feugiat ultricies ante et semper.");
+	alertElementControl.setButtons(["Ante", "Elit"]);
+	
+	var alertElementControlStyleType = new ControlStyleType("", "AlertStyle", "root", false, false, alertElementControl, null, null, null);
+	alertElementControlStyleType.styleListCodeString = "var AlertStyle = new StyleDefinition();\r\n";
+	
+	alertElementControlStyleType.buildControlStyleTypeLists(alertElementDef);
+	
+	this._dataListControlsCollection.addItem({label:"AlertElement", 
+											control:alertElementControl, 
+											rootControlStyleType:alertElementControlStyleType,
+											list:null});
 	//ToggleButtonElement
 	var toggleButtonDef = new StyleDefinition();
 	toggleButtonDef.setStyle("Text", "My Text");

@@ -137,7 +137,12 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonIncrementStyle" || 
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
-			this.styleName == "ButtonTabStyle")
+			this.styleName == "ButtonTabStyle" || 
+			this.styleName == "AlertButtonStyle" ||
+			this.styleName == "AlertContentListContainerStyle" ||
+			this.styleName == "AlertButtonListContainerStyle" ||
+			this.styleName == "AlertTitleLabelStyle" ||
+			this.styleName == "AlertContentTextStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Container", 	"PercentWidth", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
 			this.styleList.addItem(new ControlStyleType("Container", 	"PercentHeight", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
@@ -151,9 +156,14 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "HeaderItemStyle" ||
 			this.styleName == "RowItemStyle" ||
-			this.styleName == "ListItemStyle")
+			this.styleName == "ListItemStyle" ||
+			this.styleName == "AlertContentListContainerStyle" ||
+			this.styleName == "AlertButtonListContainerStyle" ||
+			this.styleName == "AlertTitleLabelStyle" ||
+			this.styleName == "AlertContentTextStyle")
 		{
 			if (this.hasParentStyleName("DataGridStyle") == false && this.styleName != "HeaderItemStyle" && this.styleName != "RowItemStyle")
 				this.styleList.addItem(new ControlStyleType("Container", 	"MinWidth", 							"number", 	true, 	true, 	styleDef, this,	50, 						null));
@@ -167,6 +177,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
 			this.styleName == "VerticalGridLinesStyle" ||
@@ -176,7 +187,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "SortDescIconStyle" ||
 			this.styleName == "HeaderItemStyle" ||
 			this.styleName == "RowItemStyle" ||
-			this.styleName == "ListItemStyle")
+			this.styleName == "ListItemStyle" ||
+			this.styleName == "AlertContentListContainerStyle" ||
+			this.styleName == "AlertButtonListContainerStyle" ||
+			this.styleName == "AlertTitleLabelStyle" ||
+			this.styleName == "AlertContentTextStyle")
 		{
 			var whValue = 10;
 			if (this.styleType == "root")
@@ -195,6 +210,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "PopupDataListStyle" ||
 			this.styleName == "HeaderStyle" ||
@@ -206,6 +222,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "RowItemStyle" ||
 			this.styleName == "SortAscIconStyle" ||
 			this.styleName == "SortDescIconStyle" ||
+			this.styleName == "AlertContentListContainerStyle" ||
+			this.styleName == "AlertButtonListContainerStyle" ||
 			this.styleName.indexOf("SkinStyle") >= 0) 
 		{
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"Alpha", 									"number", 	false, 	false, 	styleDef, this,	.5,							null));
@@ -235,6 +253,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "HeaderStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
 			this.styleName == "HeaderItemStyle" ||
@@ -244,8 +263,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "LabelStyle" || 
+			this.styleName == "AlertTitleLabelStyle" ||
+			this.styleName == "AlertContentTextStyle" ||
 			this.styleName == "TextInputStyle" ||
 			this.styleName == "ButtonStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -271,8 +293,14 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "LabelStyle" || 
+			this.styleName == "AlertStyle" ||
+			this.styleName == "AlertTitleLabelStyle" ||
+			this.styleName == "AlertContentTextStyle" ||
+			this.styleName == "AlertContentListContainerStyle" ||
+			this.styleName == "AlertButtonListContainerStyle" ||
 			this.styleName == "TextInputStyle" ||
 			this.styleName == "ButtonStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -335,6 +363,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "TextInputStyle" ||
 			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
@@ -349,6 +378,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -392,6 +422,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -412,6 +443,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -424,6 +456,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -442,6 +475,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -486,7 +520,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Text", 		"TextCaretColor", 							"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 		}
 		
-		if (this.styleName == "LabelStyle")
+		if (this.styleName == "LabelStyle"||
+			this.styleName == "AlertTitleLabelStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"TruncateToFit", 							"string", 	false, 	false, 	styleDef, this, "...",						null));
 		}
@@ -503,7 +538,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Layout", 		"ImageHorizontalAlign", 					"string", 	false, 	false, 	styleDef, this,	"center",				[{label:"left", value:"left"}, {label:"center", value:"center"}, {label:"right", value:"right"}]));
 		}
 		
-		if (this.styleName == "TextStyle")
+		if (this.styleName == "TextStyle" ||
+			this.styleName == "AlertContentTextStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Text", 		"Multiline", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 			this.styleList.addItem(new ControlStyleType("Text", 		"WordWrap", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
@@ -513,7 +549,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		
 		if (this.styleName == "DataListStyle" ||
 			this.styleName == "ScrollBarStyle" ||
-			this.styleName == "ListContainerStyle")
+			this.styleName == "AlertStyle" ||
+			this.styleName == "ListContainerStyle" ||
+			this.styleName == "AlertContentListContainerStyle" ||
+			this.styleName == "AlertButtonListContainerStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutDirection", 							"string", 	false, 	false, 	styleDef, this,	"vertical",					[{label:"vertical", value:"vertical"}, {label:"horizontal", value:"horizontal"}]));
 			this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutGap", 								"number", 	false, 	false, 	styleDef, this,	-1,							null));
@@ -532,6 +571,15 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollBarStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ListItemStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+		}
+		
+		if (this.styleName == "AlertStyle")
+		{
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AlertTitleLabelStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AlertContentListContainerStyle", 			"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AlertButtonListContainerStyle", 			"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AlertContentTextStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"AlertButtonStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 		}
 		
 		if (this.styleName == "DataGridStyle")
