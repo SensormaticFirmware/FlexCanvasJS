@@ -8886,17 +8886,17 @@ CanvasElement.prototype._validateRedrawRegion =
 						//Use drawable metrics as the new raw metrics (shadow uses context of parent applying shadow)
 						rawMetrics.copyFrom(drawableMetrics);
 						
-						pointRawTl.x += rawMetrics._x;
-						pointRawTl.y += rawMetrics._y;
+						pointRawTl.x = rawMetrics._x;
+						pointRawTl.y = rawMetrics._y;
 						
-						pointRawTr.x += rawMetrics._x + rawMetrics._width;
-						pointRawTr.y += rawMetrics._y;
+						pointRawTr.x = rawMetrics._x + rawMetrics._width;
+						pointRawTr.y = rawMetrics._y;
 						
-						pointRawBr.x += rawMetrics._x + rawMetrics._width;
-						pointRawBr.y += rawMetrics._y + rawMetrics._height;
+						pointRawBr.x = rawMetrics._x + rawMetrics._width;
+						pointRawBr.y = rawMetrics._y + rawMetrics._height;
 						
-						pointRawBl.x += rawMetrics._x;
-						pointRawBl.y += rawMetrics._y + rawMetrics._height;
+						pointRawBl.x = rawMetrics._x;
+						pointRawBl.y = rawMetrics._y + rawMetrics._height;
 					}
 					else
 					{
