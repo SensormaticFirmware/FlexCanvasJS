@@ -187,10 +187,15 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyle
 
 ////////////Default Styles////////////////////
 
-
 DropdownElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
 DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
 DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
+
+DropdownElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
+DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
+DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
+DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
+DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 			"#888888");
 
 /////Arrow default style///////
 DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
@@ -202,7 +207,7 @@ DropdownElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 				false);
 DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
 DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
 DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			DropdownElement.ArrowButtonSkinStyleDefault);
+DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			DropdownElement.ArrowButtonDisabledSkinStyleDefault);
 ///////////////////////////////
 
 /////Dropdown DataList Style//////
