@@ -132,7 +132,9 @@ DataRendererBaseElement<br>
 Abstract base class for DataList item rendering. Any CanvasElement<br>
 can be a data renderer. This class is just here for convenience as it<br>
 implements some commonly used functionality if you wish to subclass it.<br>
-Adds skin states and styles for "up", "alt", "over", and "selected" states.<br>
+Adds skin states and styles for "up", "alt", "over", "disabled", and "selected" states.<br>
+DataRendererBaseElement automatically checks for properties "selectable"<br>
+and "enabled" on supplied itemData and adjusts styles and skin states.<br>
 <br>
 <table>
 <tr>
