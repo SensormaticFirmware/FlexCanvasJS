@@ -443,7 +443,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	
 	alertElementControlStyleType.buildControlStyleTypeLists(alertElementDef);
 	
-	this._dataListControlsCollection.addItem({label:"AlertElement", 
+	this._dataListControlsCollection.addItem({label:"Alert", 
 											control:alertElementControl, 
 											rootControlStyleType:alertElementControlStyleType,
 											list:null});
