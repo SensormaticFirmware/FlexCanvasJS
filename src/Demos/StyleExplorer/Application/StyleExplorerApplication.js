@@ -866,23 +866,34 @@ StyleExplorerApplication.prototype._onDropdownLocaleChanged =
 StyleExplorerApplication.prototype._onDataListControlsChanged = 
 	function (event)
 	{
-		//Purge sandbox
-		while (this._sandboxControlContainer.getNumElements() > 0)
-			this._sandboxControlContainer.removeElementAt(0);
+		var i;
+		var element;
+		
+		//Hide - much less expensive than adding/removing
+		for (i = 0; i < this._sandboxControlContainer.getNumElements(); i++)
+		{
+			element = this._sandboxControlContainer.getElementAt(i);
+			element.setStyle("Visible", false);
+			element.setStyle("IncludeInLayout", false);
+		}
 		
 		//Bail if no selection
 		if (this._dataListControls.getSelectedIndex() == -1)
 		{
 			//Purge style code
 			this._textSandboxStyleCode.setStyle("Text", "");
-			
 			return;
 		}
 		
 		var controlData = this._dataListControls.getSelectedItem();
 		
 		//Add control to sandbox
-		this._sandboxControlContainer.addElement(controlData.control);
+		if (controlData.control.getParent() == null)
+			this._sandboxControlContainer.addElement(controlData.control);
+		
+		//Turn on visibility
+		controlData.control.setStyle("Visible", true);
+		controlData.control.setStyle("IncludeInLayout", true);
 		
 		//Create Select Style root StyleListRenderer if does not exist.
 		if (controlData.list == null)
