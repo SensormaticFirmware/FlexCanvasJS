@@ -206,7 +206,7 @@ AlertElement.createAlert =
 				canvasManager.removeAlert(alert);
 				
 				if (alertClosedCallback != null)
-					alertCloseCallback(index, text);
+					alertClosedCallback(index, text);
 			});
 		
 		canvasManager.addAlert(alert);
