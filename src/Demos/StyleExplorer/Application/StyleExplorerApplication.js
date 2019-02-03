@@ -429,6 +429,25 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:canvasElementControlStyleType,
 											list:null});
 	
+	//ProgressElement
+	var progressDef = new StyleDefinition();
+	progressDef.setStyle("Width", 350);
+	progressDef.setStyle("Height", 25);
+	
+	var progressControl = new ProgressElement();
+	progressControl.setStyleDefinitions(progressDef);
+	progressControl.setProgressValue(.5);
+	
+	var progressControlStyleType = new ControlStyleType("", "ProgressStyle", "root", false, false, progressControl, null, null, null);
+	progressControlStyleType.styleListCodeString = "var ProgressStyle = new StyleDefinition();\r\n";
+	
+	progressControlStyleType.buildControlStyleTypeLists(progressDef);
+	
+	this._dataListControlsCollection.addItem({label:"Progress", 
+											control:progressControl, 
+											rootControlStyleType:progressControlStyleType,
+											list:null});	
+	
 	//AlertElement
 	var alertElementDef = new StyleDefinition();
 	

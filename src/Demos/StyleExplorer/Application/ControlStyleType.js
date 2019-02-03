@@ -262,6 +262,12 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Functional", 	"Cursor", 									"string", 	true, 	true, 	styleDef, this, false,						[{label:"pointer", value:"pointer"}, {label:"text", value:"text"}, {label:"none", value:"none"}]));
 		}
 		
+		if (this.styleName == "ProgressStyle")
+		{
+			this.styleList.addItem(new ControlStyleType("Functional", 	"ProgressFillStart", 						"string", 	true, 	true, 	styleDef, this, false,						[{label:"left", value:"left"}, {label:"right", value:"right"}, {label:"top", value:"top"}, {label:"bottom", value:"bottom"}]));
+			this.styleList.addItem(new ControlStyleType("Rendering", 	"ProgressFill", 							"class", 	true, 	false,	styleDef, this, SolidFill,					[{label:"Solid", value:SolidFill}, {label:"LinearGradient", value:LinearGradientFill}]));
+		}
+		
 		if (this.styleName == "LabelStyle" || 
 			this.styleName == "AlertTitleLabelStyle" ||
 			this.styleName == "AlertContentTextStyle" ||
