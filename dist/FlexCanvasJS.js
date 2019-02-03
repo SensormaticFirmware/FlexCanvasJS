@@ -20912,7 +20912,7 @@ CanvasManager.prototype.removeAlert =
 				if (this._alertQueue.length == 0)
 					this.removeElement(this._alertModal); //No more alerts, remove modal
 				else
-					this.setElementIndex(this._alertModal, this.getNumElements()); //more alerts in queue, push modal to end
+					this.setElementIndex(this._alertModal, this.getNumElements() - 1); //more alerts in queue, push modal to end
 			}
 			
 			//Add next alert in queue
@@ -26727,7 +26727,7 @@ AlertElement.createAlert =
 				canvasManager.removeAlert(alert);
 				
 				if (alertClosedCallback != null)
-					alertCloseCallback(index, text);
+					alertClosedCallback(index, text);
 			});
 		
 		canvasManager.addAlert(alert);
