@@ -20600,10 +20600,15 @@ function CanvasManager()
 	this._canvasResizeEventHandler = 
 		function ()
 		{
+			var clientRect = _self._canvas.getBoundingClientRect();
+			
+			var w = Math.round(clientRect.width * window.devicePixelRatio);
+			var h = Math.round(clientRect.height * window.devicePixelRatio);
+		
 			//Fix canvas manager size.
-			_self.setStyle("Width", _self._canvas.clientWidth);
-			_self.setStyle("Height", _self._canvas.clientHeight);
-			_self._setActualSize(_self._canvas.clientWidth, _self._canvas.clientHeight);
+			_self.setStyle("Width", w);
+			_self.setStyle("Height", h);
+			_self._setActualSize(w, h);
 			
 			_self._redrawRegionPrevMetrics = null;
 			_self._updateRedrawRegion(_self.getMetrics(null));
