@@ -73,14 +73,14 @@ function ColorPickerElement() //extends CanvasElement
 			
 			this._textInputColor = new TextInputElement();
 			this._textInputColor.setStyle("MaxChars", 7);
-			this._textInputColor.setText("#FF0000");
+			this._textInputColor.setText("#FFFFFF");
 			
 			this._selectedColorSwatch = new CanvasElement();
 			this._selectedColorSwatch.setStyle("PercentHeight", 100);
 			this._selectedColorSwatch.setStyle("PercentWidth", 100);
 			this._selectedColorSwatch.setStyle("BorderType", "solid");
 			this._selectedColorSwatch.setStyle("BorderColor", "#CFCFCF");
-			this._selectedColorSwatch.setStyle("BackgroundFill", "#FF0000");
+			this._selectedColorSwatch.setStyle("BackgroundFill", "#FFFFFF");
 			
 		this._colorSelectionContainer.addElement(this._textInputColor);
 		this._colorSelectionContainer.addElement(this._selectedColorSwatch);	
