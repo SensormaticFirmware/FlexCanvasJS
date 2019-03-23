@@ -477,7 +477,7 @@ ColorPickerElement.prototype._fixInvalidHexColor =
 				value[i] != "E" &&
 				value[i] != "F")
 			{
-				value[i] = "F";
+				value = value.slice(0, i) + "F" + value.slice(i + 1);
 			}
 		}
 		
