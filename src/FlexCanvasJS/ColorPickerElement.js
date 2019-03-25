@@ -72,8 +72,8 @@ function ColorPickerElement() //extends CanvasElement
 		this._colorSelectionContainer.setStyle("PercentWidth", 100);
 			
 			this._textInputColor = new TextInputElement();
-			this._textInputColor.setStyle("MaxChars", 7);
-			this._textInputColor.setText("#FFFFFF");
+			this._textInputColor.setStyle("MaxChars", 6);
+			this._textInputColor.setText("FFFFFF");
 			
 			this._selectedColorSwatch = new CanvasElement();
 			this._selectedColorSwatch.setStyle("PercentHeight", 100);
@@ -234,6 +234,31 @@ ColorPickerElement.StyleDefault.setStyle("PaddingTop", 				5);
 //Static Internal, all color pickers can use the same fill/shape instances
 ColorPickerElement._HueBarLinearGradientFill = null;
 ColorPickerElement._CaretRoundedRectangleShape = null;
+
+/**
+ * @function hexToRgb
+ * @static
+ * Converts Hex color string to RGB values.
+ * 
+ * @param hex String
+ * Hex string value formatted like "#FF0000"
+ * 
+ * @returns Object
+ * An object {r:0, g:0, b:0} containing r, g, and b  
+ * properties representing red, green, and blue channels.
+ */
+ColorPickerElement.hexToRgb = 
+	function (hex)
+	{
+		var result = {r:0, g:0, b:0};
+	
+		//Get rgb from hex
+		result.r = parseInt(hex.substr(1, 2), 16);
+		result.g = parseInt(hex.substr(3, 2), 16);
+		result.b = parseInt(hex.substr(5, 2), 16);
+	
+		return result;
+	};
 
 /**
  * @function rgbToHex
@@ -399,25 +424,11 @@ ColorPickerElement.hslToRgb =
 ColorPickerElement.prototype.setHexColor = 
 	function (value)
 	{
-		this._textInputColor.setText(value);
 		value = this._fixInvalidHexColor(value);
-	
-		//Get rgb from hex
-		var r = parseInt(value.substr(1, 2), 16);
-		var g = parseInt(value.substr(3, 2), 16);
-		var b = parseInt(value.substr(5, 2), 16);
 		
-		//Translate to hsl
-		var hsl = ColorPickerElement.rgbToHsl(r, g, b);
+		this._textInputColor.setText(value.slice(1));
 		
-		//Update selection
-		this._selectedHue = hsl.h;
-		this._selectedSat = hsl.s;
-		this._selectedLight = hsl.l;
-		
-		//Fix UI
-		this._updateSelectedHue();
-		this._selectedColorSwatch.setStyle("BackgroundFill", value);
+		this._updateSelectedRgb();
 	};
 	
 /**
@@ -496,7 +507,7 @@ ColorPickerElement.prototype._onTextInputColorMeasureComplete =
 	function (event)
 	{
 		var textInputPadding = this._textInputColor._getPaddingSize();
-		var textWidth = CanvasElement._measureText("#BBBBBB", this._textInputColor._getFontString());
+		var textWidth = CanvasElement._measureText("BBBBBB", this._textInputColor._getFontString());
 		
 		var textInputWidth = textWidth + textInputPadding.width + 10;
 		var textInputHeight = this._textInputColor._getStyledOrMeasuredHeight();
@@ -529,7 +540,7 @@ ColorPickerElement.prototype._onHueBarMouseDown =
 			
 			//Fix UI for new hue
 			this._updateSelectedHue();
-			this._updateSelectedColor();
+			this._updateSelectedHsl();
 			
 			//Dispatch changed event.
 			if (this.hasEventListener("changed", null) == true)
@@ -568,7 +579,7 @@ ColorPickerElement.prototype._onHueBarMouseMoveEx =
 			
 			//Fix UI for new hue
 			this._updateSelectedHue();
-			this._updateSelectedColor();
+			this._updateSelectedHsl();
 			
 			//Dispatch changed event.
 			if (this.hasEventListener("changed", null) == true)
@@ -592,22 +603,6 @@ ColorPickerElement.prototype._onHueBarMouseUp =
 	};	
 	
 /**
- * @function _updateSelectedHue
- * Updates the picker area's background hue.  
- */
-ColorPickerElement.prototype._updateSelectedHue =
-	function ()
-	{
-		//Get color of current hue
-		var rgb = ColorPickerElement.hslToRgb(this._selectedHue, 100, 50);
-		var rgbX = ColorPickerElement.rgbToHex(rgb.r, rgb.g, rgb.b);
-		
-		//Set picker area hue
-		this._pickerAreaFill.setStyle("FillColor", rgbX);
-		this._invalidateLayout();	//Need to move caret
-	};
-	
-/**
  * @function _onPickerAreaMouseDown
  * Event handler for the picker area's "mousedown" event. 
  * Updates the ColorPicker's selected color and dispatches changed event.
@@ -627,7 +622,7 @@ ColorPickerElement.prototype._onPickerAreaMouseDown =
 		this._selectedLight = 100 - ((elementMouseEvent.getY() / this._pickerArea._height) * 100);
 		
 		//Fix UI for new color
-		this._updateSelectedColor();
+		this._updateSelectedHsl();
 		
 		//Dispatch changed event.
 		if (this.hasEventListener("changed", null) == true)
@@ -665,7 +660,7 @@ ColorPickerElement.prototype._onPickerAreaMouseMoveEx =
 		this._selectedLight = 100 - ((mousePoint.y / this._pickerArea._height) * 100);
 		
 		//Fix UI for new color
-		this._updateSelectedColor();
+		this._updateSelectedHsl();
 		
 		//Dispatch changed event.
 		if (this.hasEventListener("changed", null) == true)
@@ -686,12 +681,28 @@ ColorPickerElement.prototype._onPickerAreaMouseUp =
 		if (this.hasEventListener("mousemoveex", this._onPickerAreaMouseMoveExInstance) == true)
 			this.removeEventListener("mousemoveex", this._onPickerAreaMouseMoveExInstance);
 	};	
+
+/**
+ * @function _updateSelectedHue
+ * Updates the picker area's background hue.  
+ */
+ColorPickerElement.prototype._updateSelectedHue =
+	function ()
+	{
+		//Get color of current hue
+		var rgb = ColorPickerElement.hslToRgb(this._selectedHue, 100, 50);
+		var rgbX = ColorPickerElement.rgbToHex(rgb.r, rgb.g, rgb.b);
+		
+		//Set picker area hue
+		this._pickerAreaFill.setStyle("FillColor", rgbX);
+		this._invalidateLayout();	//Need to move caret
+	};	
 	
 /**
- * @function _updateSelectedColor
- * Updates the selected color swatch and TextInput text.  
+ * @function _updateSelectedHsl
+ * Updates the selected color swatch and TextInput when color is set via HSL.
  */
-ColorPickerElement.prototype._updateSelectedColor = 
+ColorPickerElement.prototype._updateSelectedHsl = 
 	function ()
 	{
 		//Translate hsl color selection to hex rgb string
@@ -700,7 +711,32 @@ ColorPickerElement.prototype._updateSelectedColor =
 		
 		//Fix UI
 		this._selectedColorSwatch.setStyle("BackgroundFill", rgbX);
-		this._textInputColor.setText(rgbX);
+		this._textInputColor.setText(rgbX.slice(1));
+		this._invalidateLayout();	//Need to move caret
+	};
+	
+/**
+ * @function _updateSelectedRgb
+ * Updates the selected color swatch and HSL values when color set via RGB.
+ */
+ColorPickerElement.prototype._updateSelectedRgb = 
+	function ()
+	{
+		var value = this._fixInvalidHexColor(this._textInputColor.getText());
+	
+		var rgb = ColorPickerElement.hexToRgb(value);
+		
+		//Translate to hsl
+		var hsl = ColorPickerElement.rgbToHsl(rgb.r, rgb.g, rgb.b);
+		
+		//Update selection
+		this._selectedHue = hsl.h;
+		this._selectedSat = hsl.s;
+		this._selectedLight = hsl.l;
+		
+		//Fix UI
+		this._updateSelectedHue();
+		this._selectedColorSwatch.setStyle("BackgroundFill", value);
 		this._invalidateLayout();	//Need to move caret
 	};
 	
@@ -715,7 +751,7 @@ ColorPickerElement.prototype._updateSelectedColor =
 ColorPickerElement.prototype._onTextInputColorChanged = 
 	function (elementEvent)
 	{
-		this.setHexColor(this._textInputColor.getText());
+		this._updateSelectedRgb();
 		
 		//Dispatch changed event.
 		if (this.hasEventListener("changed", null) == true)
