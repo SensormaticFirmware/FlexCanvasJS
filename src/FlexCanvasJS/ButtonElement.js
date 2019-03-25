@@ -532,8 +532,13 @@ ButtonElement.prototype._doStylesUpdated =
 			this._updateText();
 		
 		//Only update the state if mouse is enabled, when disabled it means states are being manually controlled.
-		if ("Enabled" in stylesMap && this.getStyle("MouseEnabled") == true)
+		if (("Enabled" in stylesMap && this.getStyle("MouseEnabled") == true) ||
+			("MouseEnabled" in stylesMap && this.getStyle("MouseEnabled" == true)))
+		{
 			this._updateState();
+		}
+		else
+			this.clearStyle("SkinState");
 		
 		if ("TextHorizontalAlign" in stylesMap && this._labelElement != null)
 			this._labelElement.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
