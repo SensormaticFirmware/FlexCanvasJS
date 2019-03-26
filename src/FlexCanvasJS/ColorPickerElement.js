@@ -201,7 +201,6 @@ ColorPickerElement.base = CanvasElement;
 
 /**
  * @event changed ElementEvent
- * 
  * Dispatched when the ColorPicker's selection state changes as a result of user interaction.
  */
 

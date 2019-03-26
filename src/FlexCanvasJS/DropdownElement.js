@@ -414,9 +414,6 @@ DropdownElement.prototype.open =
 			this._dataListPopupClipContainer._addChild(this._dataListPopup);
 		}
 		
-		if (this._dropdownManagerMetrics == null)
-			this._dropdownManagerMetrics = this.getMetrics(this._manager);
-		
 		//Add the pop-up list. Wait for layoutcomplete to adjust positioning and size (will set openHeight once done)
 		this._addDataListPopup(); 
 		
@@ -424,11 +421,11 @@ DropdownElement.prototype.open =
 		
 		if (animate == false || tweenDuration <= 0)
 		{
-			if (this._openCloseTween != null && this._openHeight != null) //Tween running 
-			{
+			if (this._openCloseTween != null) //Tween running 
 				this._endOpenCloseTween();
+
+			if (this._openHeight != null)
 				this._updateTweenPosition(this._openHeight);
-			}
 		}
 		else
 		{
@@ -437,7 +434,7 @@ DropdownElement.prototype.open =
 				if (this._openCloseTween.startVal != 0) //Reverse if closing, ignore if opening.
 					this._reverseTween();
 			}
-			else if (this._openHeight == null) //Dont open if already open
+			else if (this._openHeight == null && this._openCloseTween == null) //Dont open if already open
 			{
 				this._openCloseTween = new Tween();
 				this._openCloseTween.startVal = 0; 
@@ -523,16 +520,6 @@ DropdownElement.prototype._addDataListPopup =
 		if (this._dataListPopupClipContainer._parent != null)
 			return;
 		
-		var popupHeight = this.getStyle("MaxPopupHeight");
-		
-		this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
-		this._dataListPopupClipContainer.setStyle("Height", popupHeight);
-		this._dataListPopupClipContainer.setStyle("X", this._dropdownManagerMetrics._x);
-		this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y + this._dropdownManagerMetrics._height);
-		
-		this._dataListPopup._setActualPosition(0, 0);
-		this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, popupHeight);
-		
 		this._manager.addElement(this._dataListPopupClipContainer);
 		
 		this._dataListPopupClipContainer._manager.addCaptureListener("wheel", this._onDropdownManagerCaptureEventInstance);
@@ -556,9 +543,9 @@ DropdownElement.prototype._onDropDownEnterFrame =
 		if (value == this._openCloseTween.endVal)
 		{
 			if (value == 0)
-				this.close(false);
+				this.close(false);			//Finished closing
 			else
-				this._endOpenCloseTween();
+				this._endOpenCloseTween();	//Finished opening
 		}
 	};
 	
@@ -580,9 +567,15 @@ DropdownElement.prototype._updateTweenPosition =
 		this._dataListPopupClipContainer.setStyle("Height", value);
 		
 		if (this._openDirection == "up")
+		{
 			this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y - value);
+			this._dataListPopup._setActualPosition(0, 0);
+		}
 		else //if (this._openDirection == "down")
+		{
+			this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y + this._dropdownManagerMetrics._height);
 			this._dataListPopup._setActualPosition(0, value - this._dataListPopup._height);
+		}
 	};
 	
 /**
@@ -638,6 +631,7 @@ DropdownElement.prototype._onDropdownManagerResizeEvent =
 DropdownElement.prototype._onDropdownDataListPopupLayoutComplete =
 	function (event)
 	{
+		this._dropdownManagerMetrics = this.getMetrics(this._manager);
 		var maxHeight = this.getStyle("MaxPopupHeight");
 		var height = null;
 		
@@ -688,10 +682,11 @@ DropdownElement.prototype._onDropdownDataListPopupLayoutComplete =
 				}
 			}
 		}
-
-		//Fix list height
-		this._dataListPopup._setActualSize(this._dataListPopup._width, this._openHeight);
-		this._dataListPopupClipContainer.setStyle("Height", this._openHeight);
+		
+		this._dataListPopupClipContainer.setStyle("X", this._dropdownManagerMetrics._x);
+		this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
+		
+		this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, this._openHeight);
 		
 		var clipTopOrBottom = this.getStyle("PopupDataListClipTopOrBottom");
 		
@@ -1030,7 +1025,6 @@ DropdownElement.prototype._doLayout =
 			//it may change the width of the dropdown button, so we need to make sure we keep the widths in sync.
 			this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
 			this._dataListPopupClipContainer.setStyle("X", this._dropdownManagerMetrics._x);
-			this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y + this._dropdownManagerMetrics._height);
 			
 			this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, this._dataListPopup._height);
 		}
