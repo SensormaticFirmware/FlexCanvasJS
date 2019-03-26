@@ -415,7 +415,7 @@ DropdownElement.prototype.open =
 		}
 		
 		//Add the pop-up list. Wait for layoutcomplete to adjust positioning and size (will set openHeight once done)
-		this._addDataListPopup(); 
+		var added = this._addDataListPopup(); 
 		
 		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
 		
@@ -434,11 +434,11 @@ DropdownElement.prototype.open =
 				if (this._openCloseTween.startVal != 0) //Reverse if closing, ignore if opening.
 					this._reverseTween();
 			}
-			else if (this._openHeight == null && this._openCloseTween == null) //Dont open if already open
+			else if (added == true) //Only start tween if popup did not already exist
 			{
 				this._openCloseTween = new Tween();
 				this._openCloseTween.startVal = 0; 
-				this._openCloseTween.endVal = null;	//Dont know the end val yet (popup size unknown)
+				this._openCloseTween.endVal = this._openHeight;	//Might be null, fixed by layoutcomplete
 				this._openCloseTween.duration = tweenDuration;
 				this._openCloseTween.startTime = Date.now();
 				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
@@ -472,10 +472,14 @@ DropdownElement.prototype.close =
 				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
 					this._reverseTween();
 			}
-			else if (this._openHeight != null) //Dont close if already closed
+			else if (this._dataListPopupClipContainer._parent != null) //Dont close if already closed
 			{
+				var startVal = null;
+				if (this._openHeight != null)
+					startVal = this._openHeight - this.getStyle("PopupDataListClipTopOrBottom");
+				
 				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = this._openHeight - this.getStyle("PopupDataListClipTopOrBottom");
+				this._openCloseTween.startVal = startVal;	//Fixed by layout complete
 				this._openCloseTween.endVal = 0;
 				this._openCloseTween.duration = tweenDuration;
 				this._openCloseTween.startTime = Date.now();
@@ -492,12 +496,15 @@ DropdownElement.prototype.close =
 /**
  * @function _removeDataListPopup
  * Removes the pop up list and cleans up event listeners.
+ * 
+ * @returns bool
+ * Returns true if the pop up was removed, false if the pop up does not exist.
  */	
 DropdownElement.prototype._removeDataListPopup = 
 	function ()
 	{
 		if (this._dataListPopupClipContainer._parent == null)
-			return;
+			return false;
 	
 		this._dataListPopupClipContainer._manager.removeCaptureListener("wheel", this._onDropdownManagerCaptureEventInstance);
 		this._dataListPopupClipContainer._manager.removeCaptureListener("mousedown", this._onDropdownManagerCaptureEventInstance);
@@ -508,23 +515,30 @@ DropdownElement.prototype._removeDataListPopup =
 		this._dropdownManagerMetrics = null;
 		this._openDirection = null;
 		this._openHeight = null;
+		
+		return true;
 	};
 
 /**
  * @function _addDataListPopup
  * Adds the pop up list and registers event listeners.
+ * 
+ * @returns bool
+ * Returns true if the pop up was added, false if the pop up already exists.
  */		
 DropdownElement.prototype._addDataListPopup = 
 	function ()
 	{
 		if (this._dataListPopupClipContainer._parent != null)
-			return;
+			return false;
 		
 		this._manager.addElement(this._dataListPopupClipContainer);
 		
 		this._dataListPopupClipContainer._manager.addCaptureListener("wheel", this._onDropdownManagerCaptureEventInstance);
 		this._dataListPopupClipContainer._manager.addCaptureListener("mousedown", this._onDropdownManagerCaptureEventInstance);
 		this._dataListPopupClipContainer._manager.addEventListener("resize", this._onDropdownManagerResizeEventInstance);
+		
+		return true;
 	};
 	
 //@private	
@@ -534,7 +548,7 @@ DropdownElement.prototype._onDropDownEnterFrame =
 		//Tween created, but layoutcomplete has not yet finished. 
 		//When we first create the popup list, we need to wait a cycle for the list layout to finish.
 		//However, enter frame fires first *before* the list cycle has finished.
-		if (this._openCloseTween.endVal == null)
+		if (this._openCloseTween.endVal == null || this._openCloseTween.startVal == null)
 			return;
 	
 		var value = this._openCloseTween.getValue(Date.now());
