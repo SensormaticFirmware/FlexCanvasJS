@@ -69,6 +69,7 @@ lable.innerHTML = "Show Inherited";
 <a href="CheckboxSkinElement.html">CheckboxSkinElement</a><br>
 <a href="CollectionChangedEvent.html">CollectionChangedEvent</a><br>
 <a href="CollectionSort.html">CollectionSort</a><br>
+<a href="ColorPickerButtonElement.html">ColorPickerButtonElement</a><br>
 ColorPickerElement<br>
 <a href="ContainerBaseElement.html">ContainerBaseElement</a><br>
 <a href="CursorDefinition.html">CursorDefinition</a><br>
@@ -1528,6 +1529,36 @@ RGB hex color value formatted as "#FF0000".<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">hexToRgb(hex)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Static] ColorPickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Converts Hex color string to RGB values.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">hex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Hex string value formatted like "#FF0000"<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+An object {r:0, g:0, b:0} containing r, g, and b<br>properties representing red, green, and blue channels.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">hslToRgb(h, s, l)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -2240,6 +2271,36 @@ Function callback to be called when the event occurs. This may be null to check<
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
 Returns true if the EventDispatcher has the provided callback registered for the<br>provided type, or any callback for the provided type if the callback parameter is null.<br>Otherwise, returns false.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">hexToRgb(hex)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Static] ColorPickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Converts Hex color string to RGB values.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">hex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Hex string value formatted like "#FF0000"<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+An object {r:0, g:0, b:0} containing r, g, and b<br>properties representing red, green, and blue channels.<br>
 </td>
 </tr>
 </table>
@@ -3221,7 +3282,7 @@ The ElementEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateSelectedColor()</span>
+<span style="font-weight: bold;">_updateSelectedHsl()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;">ColorPickerElement</span>
@@ -3229,7 +3290,7 @@ The ElementEvent to process.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the selected color swatch and TextInput text.<br>
+Updates the selected color swatch and TextInput when color is set via HSL.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -3244,6 +3305,20 @@ Updates the selected color swatch and TextInput text.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Updates the picker area's background hue.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_updateSelectedRgb()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ColorPickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Updates the selected color swatch and HSL values when color set via RGB.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -4877,7 +4952,7 @@ The StyleProxy element wrapper to use to proxy styles from the proxy element to 
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateSelectedColor()</span>
+<span style="font-weight: bold;">_updateSelectedHsl()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
 <span style="white-space: nowrap;">ColorPickerElement</span>
@@ -4885,7 +4960,7 @@ The StyleProxy element wrapper to use to proxy styles from the proxy element to 
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the selected color swatch and TextInput text.<br>
+Updates the selected color swatch and TextInput when color is set via HSL.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -4900,6 +4975,20 @@ Updates the selected color swatch and TextInput text.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Updates the picker area's background hue.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_updateSelectedRgb()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">ColorPickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Updates the selected color swatch and HSL values when color set via RGB.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
