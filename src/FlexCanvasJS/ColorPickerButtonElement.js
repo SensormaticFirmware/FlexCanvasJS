@@ -509,7 +509,11 @@ ColorPickerButtonElement.prototype._onColorPickerChanged =
 ColorPickerButtonElement.prototype._onColorPickerKeydown = 
 	function (elementKeyboardEvent)
 	{
-	
+		if (elementKeyboardEvent.getKeyCode() == 13 ||
+			elementKeyboardEvent.getKeyCode() == 9)
+		{
+			this.close(true);
+		}
 	};
 	
 //@override	
@@ -731,8 +735,11 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 	function ()
 	{
 		//Color picker not displayed - bail.
-		if (this._colorPickerPopup._parent == null || this._colorPicker._layoutInvalid == true)
+		if (this._colorPickerPopup._parent == null || 
+			this._colorPicker._layoutInvalid == true)
+		{
 			return;
+		}
 	
 		var managerMetrics = this.getMetrics(this._manager);
 		
