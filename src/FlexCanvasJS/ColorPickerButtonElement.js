@@ -171,14 +171,12 @@ ColorPickerButtonElement._StyleTypes.PopupColorPickerDistance = 		StyleableBase.
 ColorPickerButtonElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
 ColorPickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
 ColorPickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
-ColorPickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("PaddingLeft", 					6);
 
 ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
 ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
 ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
 ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
 ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 				"#888888");
-ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("PaddingLeft", 			5);
 
 
 /////Arrow default style///////
@@ -700,11 +698,11 @@ ColorPickerButtonElement.prototype._doMeasure =
 			arrowHeight = this._arrowButton.getStyle("Height");
 		}
 		
-		if (arrowWidth == null)
-			arrowWidth = 20; 
 		if (arrowHeight == null)
-			arrowHeight = textHeight;
-		
+			arrowHeight = textHeight + padHeight;
+		if (arrowWidth == null)
+			arrowWidth = Math.round(arrowHeight * .85); 
+			
 		var swatchWidth = null;
 		var swatchHeight = null;
 		
@@ -719,7 +717,10 @@ ColorPickerButtonElement.prototype._doMeasure =
 		if (swatchHeight == null)
 			swatchHeight = textHeight;
 		
-		return {width:padWidth + swatchWidth + arrowWidth, height:padHeight + Math.max(textHeight, swatchHeight, arrowHeight)};
+		var h = Math.max(swatchHeight + padHeight, arrowHeight, textHeight + padHeight);
+		var w = padWidth + swatchWidth + arrowWidth;
+		
+		return {width:w, height:h};
 	};	
 	
 /**
@@ -730,7 +731,7 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 	function ()
 	{
 		//Color picker not displayed - bail.
-		if (this._colorPickerPopup._parent == null)
+		if (this._colorPickerPopup._parent == null || this._colorPicker._layoutInvalid == true)
 			return;
 	
 		var managerMetrics = this.getMetrics(this._manager);
@@ -798,9 +799,9 @@ ColorPickerButtonElement.prototype._doLayout =
 			arrowHeight = this._arrowButton.getStyle("Height");
 			
 			if (arrowHeight == null)
-				arrowHeight = h;
+				arrowHeight = this._height;
 			if (arrowWidth == null)
-				arrowWidth = 20;
+				arrowWidth = Math.round(this._height * .85);
 			
 			if (w < arrowWidth)
 			{
@@ -810,7 +811,7 @@ ColorPickerButtonElement.prototype._doLayout =
 			}
 			else
 			{
-				this._arrowButton._setActualPosition(w - arrowWidth, y + (h / 2) - (arrowHeight / 2));
+				this._arrowButton._setActualPosition(this._width - arrowWidth, y + (h / 2) - (arrowHeight / 2));
 				this._arrowButton._setActualSize(arrowWidth, arrowHeight);
 			}
 		}

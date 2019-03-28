@@ -787,8 +787,11 @@ ColorPickerElement.prototype._layoutCarets =
 	function ()
 	{
 		//Children not done with layout
-		if (this._pickerArea._width <= 0 || this._pickerArea._height <= 0)
+		if (this._rootListContainer._layoutInvalid == true ||
+			this._pickerAreaBorderContainer._layoutInvalid == true) 
+		{
 			return;
+		}
 	
 		//Hue caret
 		this._hueCaret._setActualSize(4, this._hueBar._height + 2);
