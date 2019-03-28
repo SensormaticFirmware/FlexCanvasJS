@@ -117,7 +117,7 @@ LabelElement.prototype._doMeasure =
 			this._textWidth = CanvasElement._measureText(measureText, this._getFontString());
 		}
 		
-		return {width:this._textWidth + padWidth, height:this._textHeight + padHeight};
+		this._setMeasuredSize(this._textWidth + padWidth, this._textHeight + padHeight);
 	};	
 
 //@override

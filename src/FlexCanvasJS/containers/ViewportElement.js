@@ -350,7 +350,7 @@ ViewportElement.prototype._doMeasure =
 		w += vBarWidth;
 		h += hBarHeight;
 		
-		return {width:w + padWidth, height:h + padHeight};
+		this._setMeasuredSize(w + padWidth, h + padHeight);
 	};
 	
 //@Override	

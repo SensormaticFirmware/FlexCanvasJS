@@ -800,7 +800,7 @@ DataGridElement.prototype._doStylesUpdated =
 DataGridElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width:16, height:16};
+		this._setMeasuredSize(padWidth + 16, padWidth + 16);
 	};
 	
 /**

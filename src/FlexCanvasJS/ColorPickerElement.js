@@ -776,7 +776,7 @@ ColorPickerElement.prototype._doMeasure =
 		var totalGap = this._rootListContainer.getStyle("LayoutGap") * (this._rootListContainer.getNumElements() - 1);
 		
 		//176 x 176 measured picker area, 176 x 24 measured hue bar
-		return {width:padWidth + 176, height:padHeight + 24 + 176 + textInputHeight + totalGap};
+		this._setMeasuredSize(padWidth + 176, padHeight + 24 + 176 + textInputHeight + totalGap);
 	};
 
 /**

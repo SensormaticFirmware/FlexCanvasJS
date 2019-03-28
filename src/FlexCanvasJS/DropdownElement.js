@@ -1004,23 +1004,23 @@ DropdownElement.prototype._doMeasure =
 		
 		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
 		
-		var measuredSize = {width: this._sampledTextWidth + padWidth, height: textHeight + padHeight};
-		measuredSize.width += 20; //Add some extra space
+		var measuredWidth = this._sampledTextWidth + padWidth + 20; //Add some extra space
+		var measuredHeight = textHeight + padHeight;
 		
 		if (this._arrowButton != null)
 		{
 			var iconWidth = this._arrowButton.getStyle("Width");
 			var iconHeight = this._arrowButton.getStyle("Height");
 			
-			if (iconHeight != null && iconHeight > measuredSize.height)
-				measuredSize.height = iconHeight;
+			if (iconHeight != null && iconHeight > measuredHeight)
+				measuredHeight = iconHeight;
 			if (iconWidth != null)
-				measuredSize.width += iconWidth;
+				measuredWidth += iconWidth;
 			else
-				measuredSize.width += Math.round(measuredSize.height * .85);
+				measuredWidth += Math.round(measuredHeight * .85);
 		}
 
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};	
 	
 //@Override	

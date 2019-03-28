@@ -72,7 +72,7 @@ CheckboxSkinElement.prototype._doStylesUpdated =
 CheckboxSkinElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width:14, height:14};
+		this._setMeasuredSize(14, 14);
 	};
 
 //@Override

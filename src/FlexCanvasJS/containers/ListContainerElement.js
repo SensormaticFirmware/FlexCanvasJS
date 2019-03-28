@@ -97,7 +97,8 @@ ListContainerElement.prototype._doStylesUpdated =
 ListContainerElement.prototype._doMeasure = 
 	function (padWidth, padHeight)
 	{
-		var contentSize = {width:0, height:0};
+		var measuredWidth = 0;
+		var measuredHeight = 0;
 		
 		var layoutGap = this.getStyle("LayoutGap");
 		var layoutDirection = this.getStyle("LayoutDirection");
@@ -156,37 +157,37 @@ ListContainerElement.prototype._doMeasure =
 			if (layoutDirection == "horizontal")
 			{
 				//Increment width
-				contentSize.width += width;
+				measuredWidth += width;
 				
 				//Use maximum child height
-				if (height > contentSize.height)
-					contentSize.height = height;
+				if (height > measuredHeight)
+					measuredHeight = height;
 			}
 			else //if (layoutDirection == "vertical")
 			{
 				//Increment height
-				contentSize.height += height;
+				measuredHeight += height;
 				
 				//Use maximum child height
-				if (width > contentSize.width)
-					contentSize.width = width;
+				if (width > measuredWidth)
+					measuredWidth = width;
 			}
 			
 			if (insertGap == true)
 			{
 				if (layoutDirection == "horizontal")
-					contentSize.width += layoutGap;
+					measuredWidth += layoutGap;
 				else //if (layoutDirection == "vertical")
-					contentSize.height += layoutGap;
+					measuredHeight += layoutGap;
 			}
 			else
 				insertGap = true;
 		}
 		
-		contentSize.width += padWidth;
-		contentSize.height += padHeight;
+		measuredWidth += padWidth;
+		measuredHeight += padHeight;
 		
-		return contentSize;		
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 
 //@Override

@@ -1462,11 +1462,7 @@ TextFieldElement.prototype._doMeasure =
 		
 		//Always add 1 for text caret 
 		//TODO: This should be the text caret's width only when editable
-		var measuredSize = {width:0, height:0};
-		measuredSize.width = 1 + textWidth + padWidth;
-		measuredSize.height = textHeight + padHeight;
-		
-		return measuredSize;
+		this._setMeasuredSize(1 + textWidth + padWidth, textHeight + padHeight);
 	};	
 	
 //@Override	

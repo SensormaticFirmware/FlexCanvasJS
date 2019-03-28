@@ -690,8 +690,14 @@ ScrollBarElement.prototype._doMeasure =
 	function(padWidth, padHeight)
 	{
 		//Get the ListContainer measured height
-		var measuredSize = ScrollBarElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
 	
+		//TODO: Fix this, its not efficient to changed measured size twice, always forces layout
+		//		even if the measured size doesn't actually change.
+		ScrollBarElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
+	
+		var measuredWidth = this._measuredWidth;
+		var measuredHeight = this._measuredHeight;
+		
 		//Account for the tab and track (container doesnt measure)
 		
 		//TODO: Handle rotation of tab?? 
@@ -702,12 +708,12 @@ ScrollBarElement.prototype._doMeasure =
 			var trackWidth = this._buttonTrack._getStyledOrMeasuredWidth() + padWidth;
 			var tabWidth = this._buttonTab._getStyledOrMeasuredWidth() + padWidth;
 			
-			measuredSize.height += (tabMinHeight * 2);
+			measuredHeight += (tabMinHeight * 2);
 			
-			if (tabWidth > measuredSize.width)
-				measuredSize.width = tabWidth;
-			if (trackWidth > measuredSize.width)
-				measuredSize.width = trackWidth;
+			if (tabWidth > measuredWidth)
+				measuredWidth = tabWidth;
+			if (trackWidth > measuredWidth)
+				measuredWidth = trackWidth;
 		}
 		else //horizontal
 		{
@@ -715,15 +721,15 @@ ScrollBarElement.prototype._doMeasure =
 			var tabHeight = this._buttonTab._getStyledOrMeasuredHeight() + padHeight;
 			var trackHeight = this._buttonTrack._getStyledOrMeasuredHeight() + padHeight;
 			
-			measuredSize.width += (tabMinWidth * 2);
+			measuredWidth += (tabMinWidth * 2);
 			
-			if (tabHeight > measuredSize.height)
-				measuredSize.height = tabHeight;
-			if (trackHeight > measuredSize.height)
-				measuredSize.height = trackHeight;
+			if (tabHeight > measuredHeight)
+				measuredHeight = tabHeight;
+			if (trackHeight > measuredHeight)
+				measuredHeight = trackHeight;
 		}
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};	
 	
 //@Override	

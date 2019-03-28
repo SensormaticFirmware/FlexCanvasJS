@@ -4434,9 +4434,7 @@ CanvasElement.prototype._validateMeasure =
 		if (this.getStyle("IncludeInMeasure") == true)
 		{
 			var paddingSize = this._getPaddingSize();
-			var measuredSize = this._doMeasure(paddingSize.width, paddingSize.height);
-				
-			this._setMeasuredSize(measuredSize.width, measuredSize.height);
+			this._doMeasure(paddingSize.width, paddingSize.height);
 		}
 		else
 			this._setMeasuredSize(0, 0);
@@ -5675,7 +5673,7 @@ CanvasElement.prototype._updateRolloverCursorDefinition =
  * Lifecycle method for custom component development. Never call this function directly. The system
  * calls this function in response to changes that effect measurement or elements being added to the display hierarchy.
  * Override this function to calculate the measured size of the element based on its styling, children, etc. 
- * Return a object containing {width, height}.
+ * You should set the elements measured size by calling _setMeasuredSize() from within this function.
  * 
  * @param padWidth Number
  * Simply a convienence as padding typically effects measurement (but not always) depending on the component.
@@ -5684,17 +5682,13 @@ CanvasElement.prototype._updateRolloverCursorDefinition =
  * @param padHeight Number
  * Simply a convienence as padding typically effects measurement (but not always) depending on the component.
  * Use any supporting functions such as _getBorderThickness that are needed to measure the element.
- * 
- * @returns Object
- * An object containing the elements measured size. {width, height}
  */		
 CanvasElement.prototype._doMeasure = 
 	function (padWidth, padHeight)
 	{
 		//Stub for override.
 	
-		//Always return a size... 
-		return {width: padWidth, height: padHeight};
+		this._setMeasuredSize(padWidth, padHeight);
 	};
 	
 /**

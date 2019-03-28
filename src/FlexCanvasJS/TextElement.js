@@ -129,7 +129,7 @@ TextElement.prototype._doMeasure =
 	function(padWidth, padHeight)
 	{
 		//Ignore padding, proxied to TextField
-		return {width:this._textField._measuredWidth, height:this._textField._measuredHeight};
+		this._setMeasuredSize(this._textField._measuredWidth, this._textField._measuredHeight);
 	};	
 
 //@Override	

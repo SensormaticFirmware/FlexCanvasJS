@@ -191,7 +191,8 @@ ImageElement.prototype._doStylesUpdated =
 ImageElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = {width: padWidth, height: padHeight};
+		var measuredWidth = padWidth;
+		var measuredHeight = padHeight;
 		
 		var clipX = this.getStyle("ImageSourceClipX");
 		var clipY = this.getStyle("ImageSourceClipY");
@@ -206,19 +207,19 @@ ImageElement.prototype._doMeasure =
 			clipY = 0;
 		
 		if (clipWidth != null)
-			measuredSize.width += clipWidth;
+			measuredWidth += clipWidth;
 		else if (this._imageLoadComplete == true)
-			measuredSize.width += (this._imageLoader.naturalWidth - clipX);
+			measuredWidth += (this._imageLoader.naturalWidth - clipX);
 
 		if (clipHeight != null)
-			measuredSize.height += clipHeight;
+			measuredHeight += clipHeight;
 		else if (this._imageLoadComplete == true)
-			measuredSize.height += (this._imageLoader.naturalHeight - clipY);
+			measuredHeight += (this._imageLoader.naturalHeight - clipY);
 		
 		if (this.getStyle("ImageScaleType") == "fit")
 			this._invalidateLayout();
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};	
 	
 //@override	

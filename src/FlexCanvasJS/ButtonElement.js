@@ -572,7 +572,8 @@ ButtonElement.prototype._createLabel =
 ButtonElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = null;
+		var measuredWidth = 0;
+		var measuredHeight = 0;
 	
 		//Base size off of label.
 		if (this._labelElement != null)
@@ -580,12 +581,13 @@ ButtonElement.prototype._doMeasure =
 			var labelWidth = this._labelElement._getStyledOrMeasuredWidth();
 			var labelHeight = this._labelElement._getStyledOrMeasuredHeight();
 			
-			measuredSize = {width:labelWidth + padWidth, height:labelHeight + padHeight};
+			measuredWidth = labelWidth + padWidth;
+			measuredHeight = labelHeight + padHeight;
+
+			this._setMeasuredSize(measuredWidth, measuredHeight);
 		}
 		else
-			measuredSize = ButtonElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
-
-		return measuredSize;
+			ButtonElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
 	};
 
 //@override	

@@ -953,7 +953,7 @@ DataListElement.prototype._doMeasure =
 	function(padWidth, padHeight)
 	{
 		//TODO: Sample text widths if label function is set.
-		return {width:16, height:16};
+		this._setMeasuredSize(padWidth + 16, padHeight + 16);
 	};	
 	
 //@override	

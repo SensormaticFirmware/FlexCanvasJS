@@ -42,7 +42,8 @@ AnchorContainerElement.base = ContainerBaseElement;
 AnchorContainerElement.prototype._doMeasure = 
 	function (padWidth, padHeight)
 	{
-		var contentSize = {width:0, height:0}; 
+		var measuredWidth = 0;
+		var measuredHeight = 0;
 		
 		var child = null; //for convienence
 		
@@ -167,11 +168,11 @@ AnchorContainerElement.prototype._doMeasure =
 			childSize.width += x;
 			childSize.height += y;
 			
-			contentSize.width = Math.max(contentSize.width, Math.ceil(childSize.width));
-			contentSize.height = Math.max(contentSize.height, Math.ceil(childSize.height));
+			measuredWidth = Math.max(measuredWidth, Math.ceil(childSize.width));
+			measuredHeight = Math.max(measuredHeight, Math.ceil(childSize.height));
 		}
 		
-		return contentSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 	
 //@Override

@@ -822,7 +822,7 @@ GridContainerElement.prototype._doMeasure =
 				columnsTotalSize += layoutHorizontalGap;
 		}
 		
-		return {width:padWidth + columnsTotalSize, height:padHeight + rowsTotalSize};
+		this._setMeasuredSize(padWidth + columnsTotalSize, padHeight + rowsTotalSize);
 	};	
 	
 //@override

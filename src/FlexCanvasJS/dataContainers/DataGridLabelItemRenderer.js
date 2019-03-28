@@ -181,8 +181,8 @@ DataGridLabelItemRenderer.prototype._doStylesUpdated =
 DataGridLabelItemRenderer.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width: this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
-				height: this._labelElement._getStyledOrMeasuredHeight() + padHeight};
+		this._setMeasuredSize(this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
+							this._labelElement._getStyledOrMeasuredHeight() + padHeight);
 	};
 
 //@override	

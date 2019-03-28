@@ -768,7 +768,7 @@ ColorPickerButtonElement.prototype._doMeasure =
 		var h = Math.max(swatchHeight + padHeight, arrowHeight, textHeight + padHeight);
 		var w = padWidth + swatchWidth + arrowWidth;
 		
-		return {width:w, height:h};
+		this._setMeasuredSize(w, h);
 	};	
 	
 /**

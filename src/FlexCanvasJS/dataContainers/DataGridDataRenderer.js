@@ -157,23 +157,25 @@ DataGridDataRenderer.prototype._setListSelected =
 DataGridDataRenderer.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = {width: 0, height: 0};
+		var measuredWidth = 0;
+		var measuredHeight = 0;
+		
 		var childSize = 0;
 		
 		for (var i = 0; i < this._itemRenderersContainer._children.length; i++)
 		{
 			childSize = this._itemRenderersContainer._children[i]._getStyledOrMeasuredHeight();
 			
-			if (measuredSize.height < childSize)
-				measuredSize.height = childSize;
+			if (measuredHeight < childSize)
+				measuredHeight = childSize;
 			
-			measuredSize.width += this._itemRenderersContainer._children[i]._getStyledOrMeasuredWidth();
+			measuredWidth += this._itemRenderersContainer._children[i]._getStyledOrMeasuredWidth();
 		}
 	
-		measuredSize.width += padWidth;
-		measuredSize.height += padHeight;
+		measuredWidth += padWidth;
+		measuredHeight += padHeight;
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 	
 //@Override	

@@ -166,23 +166,24 @@ RadioButtonElement.prototype._doStylesUpdated =
 RadioButtonElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = {width: padWidth, height: padHeight};
-	
+		var measuredWidth = 0;
+		var measuredHeight = 0;
+		
 		if (this._labelElement != null)
 		{
 			var labelWidth = this._labelElement._getStyledOrMeasuredWidth();
 			var labelHeight = this._labelElement._getStyledOrMeasuredHeight();
 			
-			measuredSize.height = padHeight + labelHeight;
-			measuredSize.width = measuredSize.height + padWidth + labelWidth + this.getStyle("LabelGap");
+			measuredHeight = padHeight + labelHeight;
+			measuredWidth = measuredHeight + padWidth + labelWidth + this.getStyle("LabelGap");
 		}
 		else
 		{
-		    measuredSize.height = padHeight + 14;
-		    measuredSize.width = padWidth + 14;
+		    measuredHeight = padHeight + 14;
+		    measuredWidth = padWidth + 14;
 		}
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 
 //@override	
