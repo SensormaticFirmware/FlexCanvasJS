@@ -569,7 +569,7 @@ TextInputElement.prototype._doMeasure =
 	function(padWidth, padHeight)
 	{
 		var measuredHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
-		var measuredWidth = measuredSize.height * 10;
+		var measuredWidth = measuredHeight * 10;
 		
 		measuredWidth += padWidth;
 		measuredHeight += padHeight;
