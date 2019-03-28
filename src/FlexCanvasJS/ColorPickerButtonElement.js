@@ -89,12 +89,17 @@ ColorPickerButtonElement.base = ButtonElement;
 
 /**
  * @event changed ElementEvent
+ * 
  * Dispatched when the color selection changes as a result of user input.
  * 
+ * 
  * @event opened ElementEvent
+ * 
  * Dispatched when the ColorPicker pop up is opened as a result of user input.
  * 
+ * 
  * @event closed ElementEvent
+ * 
  * Dispatched when the ColorPicker pop up is closed as a result of user input.
  */
 
@@ -159,8 +164,8 @@ ColorPickerButtonElement._StyleTypes.OpenCloseTweenEasingFunction = 	StyleableBa
 /**
  * @style PopupColorPickerDistance Number
  * 
- * Vertican distance in pixels to place the ColorPicker pop up from the button.
- * Defaults to -1 to collapse default 1 pixel borders
+ * Vertical distance in pixels to place the ColorPicker pop up from the button.
+ * Defaults to -1 to collapse default 1 pixel borders.
  */
 ColorPickerButtonElement._StyleTypes.PopupColorPickerDistance = 		StyleableBase.EStyleType.NORMAL; 		
 
@@ -269,7 +274,7 @@ ColorPickerButtonElement.prototype.open =
 		if (this._manager == null)
 			return;
 	
-		//Add the pop-up ColorPicker. Wait for layoutcomplete to adjust positioning and size (will set _openDirection)
+		//Add the pop-up ColorPicker. Wait for layoutcomplete to adjust positioning and size.
 		var added = this._addColorPickerPopup(); 
 		
 		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
@@ -288,7 +293,7 @@ ColorPickerButtonElement.prototype.open =
 				if (this._openCloseTween.startVal == 1) //Reverse if closing, ignore if opening.
 					this._reverseTween();
 			}
-			else if (added == true) //Only add tween if pop up did not already exist
+			else if (added == true) //Start tween if popup is new
 			{
 				this._openCloseTween = new Tween();
 				this._openCloseTween.startVal = 0; 
@@ -326,7 +331,7 @@ ColorPickerButtonElement.prototype.close =
 				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
 					this._reverseTween();
 			}
-			else if (this._colorPickerPopup._parent != null) 
+			else if (this._colorPickerPopup._parent != null) //Start tween if popup exists.
 			{
 				this._openCloseTween = new Tween();
 				this._openCloseTween.startVal = 1;
@@ -450,6 +455,10 @@ ColorPickerButtonElement.prototype._onColorButtonManagerCaptureEvent =
 		}
 		
 		this.close(false);
+		
+		//Dispatch closed event.
+		if (this.hasEventListener("closed", null) == true)
+			this.dispatchEvent(new ElementEvent("closed", false));
 	};
 	
 /**
@@ -464,6 +473,10 @@ ColorPickerButtonElement.prototype._onColorButtonManagerResizeEvent =
 	function (event)
 	{
 		this.close(false);
+		
+		//Dispatch closed event.
+		if (this.hasEventListener("closed", null) == true)
+			this.dispatchEvent(new ElementEvent("closed", false));
 	};
 
 /**
@@ -513,6 +526,10 @@ ColorPickerButtonElement.prototype._onColorPickerKeydown =
 			elementKeyboardEvent.getKeyCode() == 9)
 		{
 			this.close(true);
+			
+			//Dispatch closed event.
+			if (this.hasEventListener("closed", null) == true)
+				this.dispatchEvent(new ElementEvent("closed", false));
 		}
 	};
 	
@@ -550,13 +567,40 @@ ColorPickerButtonElement.prototype._onButtonClick =
 			return;
 		
 		if (this._openCloseTween != null)
+		{
 			this._reverseTween();
+			
+			if (this._openCloseTween.startVal == 0) //Now opening
+			{
+				//Dispatch opened event.
+				if (this.hasEventListener("opened", null) == true)
+					this.dispatchEvent(new ElementEvent("opened", false));
+			}
+			else //Now closing
+			{
+				//Dispatch closed event.
+				if (this.hasEventListener("closed", null) == true)
+					this.dispatchEvent(new ElementEvent("closed", false));
+			}
+		}
 		else 
 		{
 			if (this._colorPickerPopup._parent == null)
+			{
 				this.open(true);
+				
+				//Dispatch opened event.
+				if (this.hasEventListener("opened", null) == true)
+					this.dispatchEvent(new ElementEvent("opened", false));
+			}
 			else
+			{
 				this.close(true);
+				
+				//Dispatch closed event.
+				if (this.hasEventListener("closed", null) == true)
+					this.dispatchEvent(new ElementEvent("closed", false));
+			}
 		}
 	};	
 	
