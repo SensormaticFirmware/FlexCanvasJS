@@ -881,7 +881,7 @@ DropdownElement.prototype._onButtonClick =
  * @function _createArrowButton
  * Generates and sets up the arrow element instance per styling.
  * 
- * @returns DataListElement
+ * @returns CanvasElement
  * New arrow element instance.
  */		
 DropdownElement.prototype._createArrowButton = 

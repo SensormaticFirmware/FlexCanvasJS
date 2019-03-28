@@ -124,10 +124,10 @@ function ColorPickerElement() //extends CanvasElement
 	
 	var _self = this;
 	
-	this._onRootListContainerLayoutCompleteInstance = 
+	this._onChildContainerLayoutCompleteInstance = 
 		function (event)
 		{
-			_self._onRootListContainerLayoutComplete(event);
+			_self._onChildContainerLayoutComplete(event);
 		};
 	this._onTextInputColorMeasureCompleteInstance = 
 		function (event)
@@ -170,9 +170,10 @@ function ColorPickerElement() //extends CanvasElement
 			_self._onTextInputColorChanged(event);
 		};
 		
-	//For adjusting caret position when the list container finishes layout	
-	this._rootListContainer.addEventListener("layoutcomplete", this._onRootListContainerLayoutCompleteInstance);	
-		
+	//For adjusting caret position when nested container layouts finished
+	this._rootListContainer.addEventListener("layoutcomplete", this._onChildContainerLayoutCompleteInstance);	
+	this._pickerAreaBorderContainer.addEventListener("layoutcomplete", this._onChildContainerLayoutCompleteInstance);
+	
 	//We're tweaking the TextInput's measured width
 	this._textInputColor.addEventListener("measurecomplete", this._onTextInputColorMeasureCompleteInstance);	
 	this._textInputColor.addEventListener("changed", this._onTextInputColorChangedInstance);
@@ -188,7 +189,7 @@ function ColorPickerElement() //extends CanvasElement
 	
 	this._selectedHue = 0;
 	this._selectedSat = 0;
-	this._selectedLight = 0;
+	this._selectedLight = 100;
 }
 
 //Inherit from CanvasElement
@@ -495,7 +496,7 @@ ColorPickerElement.prototype._fixInvalidHexColor =
 	};	
 	
 //@private - Root list's layout complete handler, adjusts caret positions.
-ColorPickerElement.prototype._onRootListContainerLayoutComplete = 
+ColorPickerElement.prototype._onChildContainerLayoutComplete = 
 	function (event)
 	{
 		this._layoutCarets();
@@ -785,6 +786,10 @@ ColorPickerElement.prototype._doMeasure =
 ColorPickerElement.prototype._layoutCarets = 
 	function ()
 	{
+		//Children not done with layout
+		if (this._pickerArea._width <= 0 || this._pickerArea._height <= 0)
+			return;
+	
 		//Hue caret
 		this._hueCaret._setActualSize(4, this._hueBar._height + 2);
 		
@@ -799,9 +804,11 @@ ColorPickerElement.prototype._layoutCarets =
 		//Picker caret
 		this._pickerCaret._setActualSize(12, 12);
 	
+		//We have to layout based on the border container, since the picker area 
+		//will not be sized yet since its a child of a nested anchor container.
 		var pickerCaretPos = {x:0, y:0};
-		pickerCaretPos.x = (this._selectedSat / 100) * this._pickerArea._width;
-		pickerCaretPos.y = ((100 - this._selectedLight) / 100) * this._pickerArea._height;
+		pickerCaretPos.x = (this._selectedSat / 100) * (this._pickerArea._width);
+		pickerCaretPos.y = ((100 - this._selectedLight) / 100) * (this._pickerArea._height);
 		this.translatePointFrom(pickerCaretPos, this._pickerArea);
 		
 		pickerCaretPos.x = Math.round(pickerCaretPos.x - (this._pickerCaret._width / 2));
