@@ -367,7 +367,7 @@ ColorPickerButtonElement.prototype._removeColorPickerPopup =
 
 /**
  * @function _addColorPickerPopup
- * Adds the pop ColorPicker and registers event listeners.
+ * Adds the ColorPicker pop up to CanvasManager and registers event listeners.
  * 
  * @returns bool
  * Returns true if the pop up was added, false if the pop up already exists.
@@ -426,7 +426,7 @@ ColorPickerButtonElement.prototype._updateTweenPosition =
  * @function _onColorButtonManagerCaptureEvent
  * Capture event handler for CanvasManager "wheel" and "mousedown". Used to close 
  * the ColorPicker when events happen outside the Button or pop up ColorPicker. 
- * Only active when pop up list is open.
+ * Only active when pop up is open.
  * 
  * @param event ElementEvent
  * ElementEvent to process.
@@ -442,7 +442,9 @@ ColorPickerButtonElement.prototype._onColorButtonManagerCaptureEvent =
 			//Yes, leave the ColorPicker open
 			if (target == this._colorPickerPopup || 
 				(event.getType() == "mousedown" && target == this))
+			{
 				return;
+			}
 			
 			target = target._parent;
 		}
@@ -500,8 +502,6 @@ ColorPickerButtonElement.prototype._onColorPickerChanged =
  * @function _onColorPickerKeydown
  * Event handler for pop up ColorPicker "keydown" event. 
  * Closes the pop up when enter or tab is pressed. 
- * Note that only the TextInput of the color picker is focus-able so 
- * keydown only fires when TextInput is focused.
  * 
  * @param elementKeyboardEvent ElementKeyboardEvent
  * ElementKeyboardEvent to process.
