@@ -8593,9 +8593,7 @@ CanvasElement.prototype._validateMeasure =
 		if (this.getStyle("IncludeInMeasure") == true)
 		{
 			var paddingSize = this._getPaddingSize();
-			var measuredSize = this._doMeasure(paddingSize.width, paddingSize.height);
-				
-			this._setMeasuredSize(measuredSize.width, measuredSize.height);
+			this._doMeasure(paddingSize.width, paddingSize.height);
 		}
 		else
 			this._setMeasuredSize(0, 0);
@@ -9834,7 +9832,7 @@ CanvasElement.prototype._updateRolloverCursorDefinition =
  * Lifecycle method for custom component development. Never call this function directly. The system
  * calls this function in response to changes that effect measurement or elements being added to the display hierarchy.
  * Override this function to calculate the measured size of the element based on its styling, children, etc. 
- * Return a object containing {width, height}.
+ * You should set the elements measured size by calling _setMeasuredSize() from within this function.
  * 
  * @param padWidth Number
  * Simply a convienence as padding typically effects measurement (but not always) depending on the component.
@@ -9843,17 +9841,13 @@ CanvasElement.prototype._updateRolloverCursorDefinition =
  * @param padHeight Number
  * Simply a convienence as padding typically effects measurement (but not always) depending on the component.
  * Use any supporting functions such as _getBorderThickness that are needed to measure the element.
- * 
- * @returns Object
- * An object containing the elements measured size. {width, height}
  */		
 CanvasElement.prototype._doMeasure = 
 	function (padWidth, padHeight)
 	{
 		//Stub for override.
 	
-		//Always return a size... 
-		return {width: padWidth, height: padHeight};
+		this._setMeasuredSize(padWidth, padHeight);
 	};
 	
 /**
@@ -11411,11 +11405,7 @@ TextFieldElement.prototype._doMeasure =
 		
 		//Always add 1 for text caret 
 		//TODO: This should be the text caret's width only when editable
-		var measuredSize = {width:0, height:0};
-		measuredSize.width = 1 + textWidth + padWidth;
-		measuredSize.height = textHeight + padHeight;
-		
-		return measuredSize;
+		this._setMeasuredSize(1 + textWidth + padWidth, textHeight + padHeight);
 	};	
 	
 //@Override	
@@ -11746,7 +11736,7 @@ TextElement.prototype._doMeasure =
 	function(padWidth, padHeight)
 	{
 		//Ignore padding, proxied to TextField
-		return {width:this._textField._measuredWidth, height:this._textField._measuredHeight};
+		this._setMeasuredSize(this._textField._measuredWidth, this._textField._measuredHeight);
 	};	
 
 //@Override	
@@ -11961,7 +11951,7 @@ RadioButtonSkinElement.prototype._doStylesUpdated =
 RadioButtonSkinElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width:14, height:14};
+		this._setMeasuredSize(14, 14);
 	};
 
 //@Override
@@ -12321,7 +12311,7 @@ CheckboxSkinElement.prototype._doStylesUpdated =
 CheckboxSkinElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width:14, height:14};
+		this._setMeasuredSize(14, 14);
 	};
 
 //@Override
@@ -13270,13 +13260,13 @@ TextInputElement.prototype._doStylesUpdated =
 TextInputElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = {width:0, height:this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom")};
-		measuredSize.width = measuredSize.height * 10;
+		var measuredHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
+		var measuredWidth = measuredSize.height * 10;
 		
-		measuredSize.width += padWidth;
-		measuredSize.height += padHeight;
+		measuredWidth += padWidth;
+		measuredHeight += padHeight;
 	
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 	
 //@Override	
@@ -13692,7 +13682,7 @@ LabelElement.prototype._doMeasure =
 			this._textWidth = CanvasElement._measureText(measureText, this._getFontString());
 		}
 		
-		return {width:this._textWidth + padWidth, height:this._textHeight + padHeight};
+		this._setMeasuredSize(this._textWidth + padWidth, this._textHeight + padHeight);
 	};	
 
 //@override
@@ -14004,7 +13994,8 @@ ImageElement.prototype._doStylesUpdated =
 ImageElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = {width: padWidth, height: padHeight};
+		var measuredWidth = padWidth;
+		var measuredHeight = padHeight;
 		
 		var clipX = this.getStyle("ImageSourceClipX");
 		var clipY = this.getStyle("ImageSourceClipY");
@@ -14019,19 +14010,19 @@ ImageElement.prototype._doMeasure =
 			clipY = 0;
 		
 		if (clipWidth != null)
-			measuredSize.width += clipWidth;
+			measuredWidth += clipWidth;
 		else if (this._imageLoadComplete == true)
-			measuredSize.width += (this._imageLoader.naturalWidth - clipX);
+			measuredWidth += (this._imageLoader.naturalWidth - clipX);
 
 		if (clipHeight != null)
-			measuredSize.height += clipHeight;
+			measuredHeight += clipHeight;
 		else if (this._imageLoadComplete == true)
-			measuredSize.height += (this._imageLoader.naturalHeight - clipY);
+			measuredHeight += (this._imageLoader.naturalHeight - clipY);
 		
 		if (this.getStyle("ImageScaleType") == "fit")
 			this._invalidateLayout();
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};	
 	
 //@override	
@@ -14866,8 +14857,8 @@ DataRendererLabelElement.prototype._doStylesUpdated =
 DataRendererLabelElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width: this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
-				height: this._labelElement._getStyledOrMeasuredHeight() + padHeight};
+		this._setMeasuredSize(this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
+							this._labelElement._getStyledOrMeasuredHeight() + padHeight);
 	};
 
 //@Override	
@@ -15837,7 +15828,7 @@ DataListElement.prototype._doMeasure =
 	function(padWidth, padHeight)
 	{
 		//TODO: Sample text widths if label function is set.
-		return {width:16, height:16};
+		this._setMeasuredSize(padWidth + 16, padHeight + 16);
 	};	
 	
 //@override	
@@ -16417,8 +16408,8 @@ DataGridLabelItemRenderer.prototype._doStylesUpdated =
 DataGridLabelItemRenderer.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width: this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
-				height: this._labelElement._getStyledOrMeasuredHeight() + padHeight};
+		this._setMeasuredSize(this._labelElement._getStyledOrMeasuredWidth() + padWidth, 
+							this._labelElement._getStyledOrMeasuredHeight() + padHeight);
 	};
 
 //@override	
@@ -16592,23 +16583,25 @@ DataGridDataRenderer.prototype._setListSelected =
 DataGridDataRenderer.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = {width: 0, height: 0};
+		var measuredWidth = 0;
+		var measuredHeight = 0;
+		
 		var childSize = 0;
 		
 		for (var i = 0; i < this._itemRenderersContainer._children.length; i++)
 		{
 			childSize = this._itemRenderersContainer._children[i]._getStyledOrMeasuredHeight();
 			
-			if (measuredSize.height < childSize)
-				measuredSize.height = childSize;
+			if (measuredHeight < childSize)
+				measuredHeight = childSize;
 			
-			measuredSize.width += this._itemRenderersContainer._children[i]._getStyledOrMeasuredWidth();
+			measuredWidth += this._itemRenderersContainer._children[i]._getStyledOrMeasuredWidth();
 		}
 	
-		measuredSize.width += padWidth;
-		measuredSize.height += padHeight;
+		measuredWidth += padWidth;
+		measuredHeight += padHeight;
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 	
 //@Override	
@@ -17001,7 +16994,7 @@ ViewportElement.prototype._doMeasure =
 		w += vBarWidth;
 		h += hBarHeight;
 		
-		return {width:w + padWidth, height:h + padHeight};
+		this._setMeasuredSize(w + padWidth, h + padHeight);
 	};
 	
 //@Override	
@@ -17751,7 +17744,8 @@ ListContainerElement.prototype._doStylesUpdated =
 ListContainerElement.prototype._doMeasure = 
 	function (padWidth, padHeight)
 	{
-		var contentSize = {width:0, height:0};
+		var measuredWidth = 0;
+		var measuredHeight = 0;
 		
 		var layoutGap = this.getStyle("LayoutGap");
 		var layoutDirection = this.getStyle("LayoutDirection");
@@ -17810,37 +17804,37 @@ ListContainerElement.prototype._doMeasure =
 			if (layoutDirection == "horizontal")
 			{
 				//Increment width
-				contentSize.width += width;
+				measuredWidth += width;
 				
 				//Use maximum child height
-				if (height > contentSize.height)
-					contentSize.height = height;
+				if (height > measuredHeight)
+					measuredHeight = height;
 			}
 			else //if (layoutDirection == "vertical")
 			{
 				//Increment height
-				contentSize.height += height;
+				measuredHeight += height;
 				
 				//Use maximum child height
-				if (width > contentSize.width)
-					contentSize.width = width;
+				if (width > measuredWidth)
+					measuredWidth = width;
 			}
 			
 			if (insertGap == true)
 			{
 				if (layoutDirection == "horizontal")
-					contentSize.width += layoutGap;
+					measuredWidth += layoutGap;
 				else //if (layoutDirection == "vertical")
-					contentSize.height += layoutGap;
+					measuredHeight += layoutGap;
 			}
 			else
 				insertGap = true;
 		}
 		
-		contentSize.width += padWidth;
-		contentSize.height += padHeight;
+		measuredWidth += padWidth;
+		measuredHeight += padHeight;
 		
-		return contentSize;		
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 
 //@Override
@@ -18826,8 +18820,14 @@ ScrollBarElement.prototype._doMeasure =
 	function(padWidth, padHeight)
 	{
 		//Get the ListContainer measured height
-		var measuredSize = ScrollBarElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
 	
+		//TODO: Fix this, its not efficient to changed measured size twice, always forces layout
+		//		even if the measured size doesn't actually change.
+		ScrollBarElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
+	
+		var measuredWidth = this._measuredWidth;
+		var measuredHeight = this._measuredHeight;
+		
 		//Account for the tab and track (container doesnt measure)
 		
 		//TODO: Handle rotation of tab?? 
@@ -18838,12 +18838,12 @@ ScrollBarElement.prototype._doMeasure =
 			var trackWidth = this._buttonTrack._getStyledOrMeasuredWidth() + padWidth;
 			var tabWidth = this._buttonTab._getStyledOrMeasuredWidth() + padWidth;
 			
-			measuredSize.height += (tabMinHeight * 2);
+			measuredHeight += (tabMinHeight * 2);
 			
-			if (tabWidth > measuredSize.width)
-				measuredSize.width = tabWidth;
-			if (trackWidth > measuredSize.width)
-				measuredSize.width = trackWidth;
+			if (tabWidth > measuredWidth)
+				measuredWidth = tabWidth;
+			if (trackWidth > measuredWidth)
+				measuredWidth = trackWidth;
 		}
 		else //horizontal
 		{
@@ -18851,15 +18851,15 @@ ScrollBarElement.prototype._doMeasure =
 			var tabHeight = this._buttonTab._getStyledOrMeasuredHeight() + padHeight;
 			var trackHeight = this._buttonTrack._getStyledOrMeasuredHeight() + padHeight;
 			
-			measuredSize.width += (tabMinWidth * 2);
+			measuredWidth += (tabMinWidth * 2);
 			
-			if (tabHeight > measuredSize.height)
-				measuredSize.height = tabHeight;
-			if (trackHeight > measuredSize.height)
-				measuredSize.height = trackHeight;
+			if (tabHeight > measuredHeight)
+				measuredHeight = tabHeight;
+			if (trackHeight > measuredHeight)
+				measuredHeight = trackHeight;
 		}
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};	
 	
 //@Override	
@@ -19892,7 +19892,7 @@ GridContainerElement.prototype._doMeasure =
 				columnsTotalSize += layoutHorizontalGap;
 		}
 		
-		return {width:padWidth + columnsTotalSize, height:padHeight + rowsTotalSize};
+		this._setMeasuredSize(padWidth + columnsTotalSize, padHeight + rowsTotalSize);
 	};	
 	
 //@override
@@ -20164,7 +20164,8 @@ AnchorContainerElement.base = ContainerBaseElement;
 AnchorContainerElement.prototype._doMeasure = 
 	function (padWidth, padHeight)
 	{
-		var contentSize = {width:0, height:0}; 
+		var measuredWidth = 0;
+		var measuredHeight = 0;
 		
 		var child = null; //for convienence
 		
@@ -20289,11 +20290,11 @@ AnchorContainerElement.prototype._doMeasure =
 			childSize.width += x;
 			childSize.height += y;
 			
-			contentSize.width = Math.max(contentSize.width, Math.ceil(childSize.width));
-			contentSize.height = Math.max(contentSize.height, Math.ceil(childSize.height));
+			measuredWidth = Math.max(measuredWidth, Math.ceil(childSize.width));
+			measuredHeight = Math.max(measuredHeight, Math.ceil(childSize.height));
 		}
 		
-		return contentSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 	
 //@Override
@@ -21269,7 +21270,7 @@ ColorPickerElement.prototype._doMeasure =
 		var totalGap = this._rootListContainer.getStyle("LayoutGap") * (this._rootListContainer.getNumElements() - 1);
 		
 		//176 x 176 measured picker area, 176 x 24 measured hue bar
-		return {width:padWidth + 176, height:padHeight + 24 + 176 + textInputHeight + totalGap};
+		this._setMeasuredSize(padWidth + 176, padHeight + 24 + 176 + textInputHeight + totalGap);
 	};
 
 /**
@@ -23644,7 +23645,8 @@ ButtonElement.prototype._createLabel =
 ButtonElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = null;
+		var measuredWidth = 0;
+		var measuredHeight = 0;
 	
 		//Base size off of label.
 		if (this._labelElement != null)
@@ -23652,12 +23654,13 @@ ButtonElement.prototype._doMeasure =
 			var labelWidth = this._labelElement._getStyledOrMeasuredWidth();
 			var labelHeight = this._labelElement._getStyledOrMeasuredHeight();
 			
-			measuredSize = {width:labelWidth + padWidth, height:labelHeight + padHeight};
+			measuredWidth = labelWidth + padWidth;
+			measuredHeight = labelHeight + padHeight;
+
+			this._setMeasuredSize(measuredWidth, measuredHeight);
 		}
 		else
-			measuredSize = ButtonElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
-
-		return measuredSize;
+			ButtonElement.base.prototype._doMeasure.call(this, padWidth, padHeight);
 	};
 
 //@override	
@@ -24239,23 +24242,24 @@ RadioButtonElement.prototype._doStylesUpdated =
 RadioButtonElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var measuredSize = {width: padWidth, height: padHeight};
-	
+		var measuredWidth = 0;
+		var measuredHeight = 0;
+		
 		if (this._labelElement != null)
 		{
 			var labelWidth = this._labelElement._getStyledOrMeasuredWidth();
 			var labelHeight = this._labelElement._getStyledOrMeasuredHeight();
 			
-			measuredSize.height = padHeight + labelHeight;
-			measuredSize.width = measuredSize.height + padWidth + labelWidth + this.getStyle("LabelGap");
+			measuredHeight = padHeight + labelHeight;
+			measuredWidth = measuredHeight + padWidth + labelWidth + this.getStyle("LabelGap");
 		}
 		else
 		{
-		    measuredSize.height = padHeight + 14;
-		    measuredSize.width = padWidth + 14;
+		    measuredHeight = padHeight + 14;
+		    measuredWidth = padWidth + 14;
 		}
 		
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};
 
 //@override	
@@ -25302,23 +25306,23 @@ DropdownElement.prototype._doMeasure =
 		
 		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
 		
-		var measuredSize = {width: this._sampledTextWidth + padWidth, height: textHeight + padHeight};
-		measuredSize.width += 20; //Add some extra space
+		var measuredWidth = this._sampledTextWidth + padWidth + 20; //Add some extra space
+		var measuredHeight = textHeight + padHeight;
 		
 		if (this._arrowButton != null)
 		{
 			var iconWidth = this._arrowButton.getStyle("Width");
 			var iconHeight = this._arrowButton.getStyle("Height");
 			
-			if (iconHeight != null && iconHeight > measuredSize.height)
-				measuredSize.height = iconHeight;
+			if (iconHeight != null && iconHeight > measuredHeight)
+				measuredHeight = iconHeight;
 			if (iconWidth != null)
-				measuredSize.width += iconWidth;
+				measuredWidth += iconWidth;
 			else
-				measuredSize.width += Math.round(measuredSize.height * .85);
+				measuredWidth += Math.round(measuredHeight * .85);
 		}
 
-		return measuredSize;
+		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};	
 	
 //@Override	
@@ -26987,7 +26991,7 @@ DataGridElement.prototype._doStylesUpdated =
 DataGridElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		return {width:16, height:16};
+		this._setMeasuredSize(padWidth + 16, padWidth + 16);
 	};
 	
 /**
@@ -28112,7 +28116,7 @@ ColorPickerButtonElement.prototype._doMeasure =
 		var h = Math.max(swatchHeight + padHeight, arrowHeight, textHeight + padHeight);
 		var w = padWidth + swatchWidth + arrowWidth;
 		
-		return {width:w, height:h};
+		this._setMeasuredSize(w, h);
 	};	
 	
 /**
