@@ -757,13 +757,13 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 		var pickerY = 0;
 		
 		//Open bottom
-		if (availableBottom > colorPickerHeight || colorPickerHeight > availableTop)
+		if (availableBottom > colorPickerHeight || colorPickerHeight < availableTop)
 			pickerY = managerMetrics._y + managerMetrics._height + colorPickerDistance;
 		else //Open top
 			pickerY = managerMetrics._y - colorPickerHeight - colorPickerDistance;
 
 		//Left aligned
-		if (availableRight > colorPickerWidth || colorPickerWidth > availableRight)
+		if (availableRight > colorPickerWidth || colorPickerWidth < availableRight)
 			pickerX = managerMetrics._x;
 		else //Right aligned
 			pickerX = managerMetrics._x + managerMetrics._width - colorPickerWidth;
