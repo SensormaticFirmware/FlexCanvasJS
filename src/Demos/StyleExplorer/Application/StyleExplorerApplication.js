@@ -429,6 +429,36 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:canvasElementControlStyleType,
 											list:null});
 	
+	var colorPickerDef = new StyleDefinition();
+	
+	var colorPickerControl = new ColorPickerElement();
+	colorPickerControl.setStyleDefinitions(colorPickerDef);
+	
+	var colorPickerControlStyleType = new ControlStyleType("", "ColorPickerStyle", "root", false, false, colorPickerControl, null, null, null);
+	colorPickerControlStyleType.styleListCodeString = "var ColorPickerStyle = new StyleDefinition();\r\n";
+	
+	colorPickerControlStyleType.buildControlStyleTypeLists(colorPickerDef);
+	
+	this._dataListControlsCollection.addItem({label:"ColorPicker", 
+											control:colorPickerControl, 
+											rootControlStyleType:colorPickerControlStyleType,
+											list:null});
+	
+	var colorPickerButtonDef = new StyleDefinition();
+	
+	var colorPickerButtonControl = new ColorPickerButtonElement();
+	colorPickerButtonControl.setStyleDefinitions(colorPickerButtonDef);
+	
+	var colorPickerButtonControlStyleType = new ControlStyleType("", "ColorPickerButtonStyle", "root", false, false, colorPickerButtonControl, null, null, null);
+	colorPickerButtonControlStyleType.styleListCodeString = "var ColorPickerButtonStyle = new StyleDefinition();\r\n";
+	
+	colorPickerButtonControlStyleType.buildControlStyleTypeLists(colorPickerDef);
+	
+	this._dataListControlsCollection.addItem({label:"ColorPickerButton", 
+											control:colorPickerButtonControl, 
+											rootControlStyleType:colorPickerButtonControlStyleType,
+											list:null});
+	
 	//ProgressElement
 	var progressDef = new StyleDefinition();
 	progressDef.setStyle("Width", 350);
