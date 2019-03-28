@@ -4222,7 +4222,7 @@ Contains metrics to use after considering the element's padding. Simply a convie
 Lifecycle method for custom component development. Never call this function directly. The system<br>
 calls this function in response to changes that effect measurement or elements being added to the display hierarchy.<br>
 Override this function to calculate the measured size of the element based on its styling, children, etc.<br>
-Return a object containing {width, height}.<br>
+You should set the elements measured size by calling _setMeasuredSize() from within this function.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -4236,13 +4236,6 @@ Simply a convienence as padding typically effects measurement (but not always) d
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">padHeight</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number<br>
 Simply a convienence as padding typically effects measurement (but not always) depending on the component.<br>Use any supporting functions such as _getBorderThickness that are needed to measure the element.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
-An object containing the elements measured size. {width, height}<br>
 </td>
 </tr>
 </table>
