@@ -757,7 +757,7 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 		var pickerY = 0;
 		
 		//Open bottom
-		if (availableBottom > colorPickerHeight || colorPickerHeight < availableTop)
+		if (availableBottom > colorPickerHeight || colorPickerHeight > availableTop)
 			pickerY = managerMetrics._y + managerMetrics._height + colorPickerDistance;
 		else //Open top
 			pickerY = managerMetrics._y - colorPickerHeight - colorPickerDistance;
