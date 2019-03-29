@@ -50,7 +50,7 @@ function init()
 	//Attach the DOM canvas to our CanvasManager
 	canvasManager.setCanvas(document.getElementById("flexCanvasApplication"));
 	
-	//Set up our checkbox - add style definitions, event listeners, etc.
+	//Set up our color picker - add style definitions, event listeners, etc.
 	colorPicker.setStyle("X", 50);
 	colorPicker.setStyle("Y", 50);
 	
