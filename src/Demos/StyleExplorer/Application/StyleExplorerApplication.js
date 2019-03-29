@@ -452,7 +452,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var colorPickerButtonControlStyleType = new ControlStyleType("", "ColorPickerButtonStyle", "root", false, false, colorPickerButtonControl, null, null, null);
 	colorPickerButtonControlStyleType.styleListCodeString = "var ColorPickerButtonStyle = new StyleDefinition();\r\n";
 	
-	colorPickerButtonControlStyleType.buildControlStyleTypeLists(colorPickerDef);
+	colorPickerButtonControlStyleType.buildControlStyleTypeLists(colorPickerButtonDef);
 	
 	this._dataListControlsCollection.addItem({label:"ColorPickerButton", 
 											control:colorPickerButtonControl, 
