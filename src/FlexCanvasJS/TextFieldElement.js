@@ -123,7 +123,7 @@ TextFieldLineElement.prototype._doRender =
 			if (maskCharacter != null)
 				printChar = maskCharacter;
 			
-			if (this._highlightMinIndex <= i && this._highlightMaxIndex > i)
+			if (this._highlightMinIndex <= i + this._charMetricsStartIndex && this._highlightMaxIndex > i + this._charMetricsStartIndex)
 			{
 				ctx.fillStyle = backgroundHighlightTextColor;
 				
@@ -652,22 +652,34 @@ TextFieldElement.prototype._onTextFieldFocusOut =
 TextFieldElement.prototype._getCaretIndexFromMouse = 
 	function (mouseX, mouseY)
 	{
-		if (this._charMetrics == null || this._charMetrics.length == 0)
+		if (this._charMetrics == null || this._charMetrics.length == 0 || this._textLinesContainer._getNumChildren() == 0)
 			return 0;
 	
+		var i;
+		
 		var x = this._textLinesContainer._x;
+		var y = this._textLinesContainer._y;
 		var w = this._textLinesContainer._width;
 		mouseX += 2; //Text cursor is slightly offset. TODO: make this a style
 		
-		var textFieldLine1 = this._textLinesContainer._getChildAt(0);
+		var textFieldLine = this._textLinesContainer._getChildAt(0);
+		if (mouseY > y + textFieldLine._y + textFieldLine._height)
+		{
+			for (i = 1; i < this._textLinesContainer._getNumChildren(); i++)
+			{
+				textFieldLine = this._textLinesContainer._getChildAt(i)
+				if (mouseY >= y + textFieldLine._y && mouseY < y + textFieldLine._y + textFieldLine._height)
+					break;
+			}
+		}
 		
 		var charX = 0;
 		var charW = 0;
 		
 		var newCaretIndex = 0;
-		for (var i = 0; i <= this._text.length; i++)
+		for (i = textFieldLine._charMetricsStartIndex; i <= textFieldLine._charMetricsEndIndex; i++)
 		{
-			charX = this._charMetrics[i].x + x + textFieldLine1._x;
+			charX = (this._charMetrics[i].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x) + x + textFieldLine._x;
 			charW = this._charMetrics[i].width;
 			
 			if (charX < x)
