@@ -50,7 +50,11 @@ function ElementKeyboardEvent(type, key, keyCode, ctrl, alt, shift, meta)
 	else if (key == "Left")
 		key = "ArrowLeft";
 	else if (key == "Right")
-		key = "ArrowRight";		
+		key = "ArrowRight";
+	else if (key == "Up")
+		key = "ArrowUp";
+	else if (key == "Down")
+		key = "ArrowDown";
 	else if (key == "Del")
 		key = "Delete";
 	

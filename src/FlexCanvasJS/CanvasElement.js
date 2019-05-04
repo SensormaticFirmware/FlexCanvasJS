@@ -990,8 +990,8 @@ CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
 CanvasElement.StyleDefault.setStyle("TextColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
-CanvasElement.StyleDefault.setStyle("TextHighlightedColor", 			"#FFFFFF");
-CanvasElement.StyleDefault.setStyle("TextHighlightedBackgroundColor", 	"#000000");
+CanvasElement.StyleDefault.setStyle("TextHighlightedColor", 			"#000000");
+CanvasElement.StyleDefault.setStyle("TextHighlightedBackgroundColor", 	"#CCCCCC");
 CanvasElement.StyleDefault.setStyle("TextCaretColor", 					"#000000");
 CanvasElement.StyleDefault.setStyle("PasswordMaskCharacter", 			"●");
 

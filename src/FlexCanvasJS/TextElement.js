@@ -76,7 +76,7 @@ TextElement.StyleDefault.setStyle("TextVerticalAlign", 				"top");
 
 //TextElement specific styles
 TextElement.StyleDefault.setStyle("Text", 							null);
-TextElement.StyleDefault.setStyle("Selectable", 					false);
+TextElement.StyleDefault.setStyle("Selectable", 					true);
 TextElement.StyleDefault.setStyle("Multiline", 						true);
 TextElement.StyleDefault.setStyle("WordWrap", 						true);
 
