@@ -105,6 +105,7 @@ function TextFieldElement()
 						_self._onTextFieldCopy(event.clipboardData);
 					else if (event.type == "paste")
 						_self._onTextFieldPaste(event.clipboardData);
+					else
 						_self._onTextFieldCut(event.clipboardData);
 				}
 				
