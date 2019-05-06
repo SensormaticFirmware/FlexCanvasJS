@@ -120,6 +120,7 @@ lable.innerHTML = "Show Inherited";
 <a href="StyleData.html">StyleData</a><br>
 <a href="StyleDefinition.html">StyleDefinition</a><br>
 <a href="StyleProxy.html">StyleProxy</a><br>
+<a href="TextAreaElement.html">TextAreaElement</a><br>
 <a href="TextElement.html">TextElement</a><br>
 TextFieldElement<br>
 <a href="TextInputElement.html">TextInputElement</a><br>
@@ -132,10 +133,10 @@ TextFieldElement<br>
 <td style="vertical-align: top; padding: 10px; width: 100%;">
 <span style="font-size: 24px; font-weight: bold;">TextFieldElement</span><br>
 <br>
-Internal class used for consistently rendering text used by controls like TextElement and TextInput.<br>
+Internal class used for consistently rendering text used by controls like TextElement, TextInput, and TextArea.<br>
 You typically should not use this class directly it is designed to be wrapped by a higher level control.<br>
-This class allows text to be selected and edited, it renders a text position caret and watches<br>
-focus/mouse/keyboard events, maintains position of individual characters and allows copy/cut/paste.<br>
+This class allows text to be selected and edited, it renders a text position caret, watches<br>
+focus/mouse/keyboard events, maintains position of individual characters, and allows copy/cut/paste.<br>
 TextField also normalizes text width. The canvas natively will give<br>
 different widths for strings than when measuring and adding character widths<br>
 which will not work for highlighting or editing.<br>
@@ -3062,6 +3063,82 @@ Corresponding caret character index.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getHorizontalScrollParameters()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns parameters representing the vertical scroll page, view, line, and value sizes.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+An object containing both width and height: {page:100, view:100, line:14, value:0}<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getLineIndexFromCharIndex(charIndex)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the line index from the supplied character index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">charIndex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Character index to get the line index from.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Corresponding line index.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getVerticalScrollParameters()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns parameters representing the vertical scroll page, view, and line sizes.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+An object containing both width and height: {page:100, view:100, line:14}<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_onTextFieldCopy(clipboardData)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3147,6 +3224,76 @@ Handles editing and cursor navigation / selection.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">keyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
 ElementKeyboardEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onTextFieldKeyUp(keyboardEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for "keyup" event. Only active when TextField is enabled and focused.<br>
+Handles editing and cursor navigation / selection.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">keyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
+ElementKeyboardEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setHorizontalScrollValue(value)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the horizontal scroll position.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+X position to scroll too<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setVerticalScrollValue(value)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the vertical scroll position.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Y position to scroll too<br>
 </td>
 </tr>
 </table>
@@ -3883,6 +4030,29 @@ Canvas context used when rendering this element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getHorizontalScrollParameters()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns parameters representing the vertical scroll page, view, line, and value sizes.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+An object containing both width and height: {page:100, view:100, line:14, value:0}<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_getInstanceStyle(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3905,6 +4075,36 @@ String representing the style to return.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Any<br>
 Returns the associated style value or undefined if none specified.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getLineIndexFromCharIndex(charIndex)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the line index from the supplied character index.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">charIndex</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Character index to get the line index from.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Corresponding line index.<br>
 </td>
 </tr>
 </table>
@@ -4122,6 +4322,29 @@ String representing the style list to return.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Array<br>
 Returns an array of all styles in this elements definition list and instance styles<br>for the associated style name.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getVerticalScrollParameters()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns parameters representing the vertical scroll page, view, and line sizes.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+An object containing both width and height: {page:100, view:100, line:14}<br>
 </td>
 </tr>
 </table>
@@ -4349,6 +4572,30 @@ The browser clipboard object to copy text too.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Event handler for "keydown" event. Only active when TextField is enabled and focused.<br>
+Handles editing and cursor navigation / selection.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">keyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
+ElementKeyboardEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onTextFieldKeyUp(keyboardEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for "keyup" event. Only active when TextField is enabled and focused.<br>
 Handles editing and cursor navigation / selection.<br>
 <table style="width: 100%;">
 <tr>
@@ -4601,6 +4848,29 @@ Returns true if the child's index is successfully changed, false if the element<
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setHorizontalScrollValue(value)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the horizontal scroll position.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+X position to scroll too<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_setListData(listData, itemData)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -4756,6 +5026,29 @@ This should be set prior to added this element to the display hierarchy via addE
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleProxy</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleProxy.html">StyleProxy</a><br>
 The StyleProxy element wrapper to use to proxy styles from the proxy element to this element.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setVerticalScrollValue(value)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TextFieldElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the vertical scroll position.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Y position to scroll too<br>
 </td>
 </tr>
 </table>
