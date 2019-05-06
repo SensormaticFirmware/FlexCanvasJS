@@ -981,7 +981,11 @@ function ElementKeyboardEvent(type, key, keyCode, ctrl, alt, shift, meta)
 	else if (key == "Left")
 		key = "ArrowLeft";
 	else if (key == "Right")
-		key = "ArrowRight";		
+		key = "ArrowRight";
+	else if (key == "Up")
+		key = "ArrowUp";
+	else if (key == "Down")
+		key = "ArrowDown";
 	else if (key == "Del")
 		key = "Delete";
 	
@@ -3012,11 +3016,14 @@ function ListCollection(sourceArray)
 {
 	ListCollection.base.prototype.constructor.call(this);
 	
-	this._backingArray = [];		
-	this._collectionSort = null;	
-	
 	if (sourceArray != null)
 		this._backingArray = sourceArray;
+	else
+		this._backingArray = [];
+	
+	this._collectionSort = null;	
+	
+	
 }
 
 //Inherit from EventDispatcher
@@ -3026,6 +3033,7 @@ ListCollection.base = EventDispatcher;
 
 /**
  * @event collectionchanged CollectionChangedEvent
+ * 
  * Dispatched when the collection is modified. CollectionChangedEvents can be of kinds "add", "remove", "update", "reset",
  * and include the index which has been changed.
  */
@@ -5149,8 +5157,8 @@ CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
 CanvasElement.StyleDefault.setStyle("TextColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
-CanvasElement.StyleDefault.setStyle("TextHighlightedColor", 			"#FFFFFF");
-CanvasElement.StyleDefault.setStyle("TextHighlightedBackgroundColor", 	"#000000");
+CanvasElement.StyleDefault.setStyle("TextHighlightedColor", 			"#000000");
+CanvasElement.StyleDefault.setStyle("TextHighlightedBackgroundColor", 	"#CCCCCC");
 CanvasElement.StyleDefault.setStyle("TextCaretColor", 					"#000000");
 CanvasElement.StyleDefault.setStyle("PasswordMaskCharacter", 			"●");
 
@@ -9946,172 +9954,6 @@ CanvasElement.prototype._setListSelected =
  * @depends CanvasElement.js
  */
 
-///////Internal class for rendering lines of text/////////////////
-
-//This class is only used for rendering lines. 
-//No measure() or layout() needed (handled by parent TextField).
-function TextFieldLineElement()
-{
-	TextFieldLineElement.base.prototype.constructor.call(this);
-	
-	this._text = "";
-	
-	this._highlightMinIndex = 0;
-	this._highlightMaxIndex = 0;
-	
-	this._parentTextField = null;
-	this._charMetricsStartIndex = -1;
-	this._charMetricsEndIndex = -1;	//Non-inclusive
-}
-	
-//Inherit from CanvasElement
-TextFieldLineElement.prototype = Object.create(CanvasElement.prototype);
-TextFieldLineElement.prototype.constructor = TextFieldLineElement;
-TextFieldLineElement.base = CanvasElement;	
-
-//Optimize - turn off inheriting for rendering styles. We'll pull styles from parent so
-//we can utilize the parents cache rather than each line having to lookup and cache styles.
-//Parent also responsible for invalidating our render when styles changes.
-TextFieldLineElement._StyleTypes = Object.create(null);
-TextFieldLineElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.NORMAL;		
-TextFieldLineElement._StyleTypes.TextFont =							StyleableBase.EStyleType.NORMAL;		
-TextFieldLineElement._StyleTypes.TextSize =							StyleableBase.EStyleType.NORMAL;		
-TextFieldLineElement._StyleTypes.TextColor =						StyleableBase.EStyleType.NORMAL;			
-TextFieldLineElement._StyleTypes.TextFillType =						StyleableBase.EStyleType.NORMAL;			
-TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;			
-TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;	
-TextFieldLineElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.NORMAL;
-
-TextFieldLineElement.prototype.setParentLineMetrics = 
-	function (parentTextField, charStartIndex, charEndIndex)
-	{
-		this._parentTextField = parentTextField;
-		this._charMetricsStartIndex = charStartIndex;
-		this._charMetricsEndIndex = charEndIndex;
-		
-		var newText = parentTextField._text.substring(charStartIndex, charEndIndex);
-		if (newText != this._text)
-		{
-			this._text = newText;
-			this._invalidateRender();
-		}
-	};
-
-TextFieldLineElement.prototype.setParentSelection = 
-	function (startIndex, endIndex)
-	{
-		var minIndex = Math.min(startIndex, endIndex);
-		var maxIndex = Math.max(startIndex, endIndex);
-		
-		if (minIndex < this._charMetricsStartIndex)
-			minIndex = this._charMetricsStartIndex;
-		if (maxIndex > this._charMetricsEndIndex)
-			maxIndex = this._charMetricsEndIndex;
-		
-		//Highlight is outside of bounds, nuke it.
-		if (minIndex > maxIndex || minIndex == maxIndex)
-		{
-			minIndex = 0;
-			maxIndex = 0;
-		}
-		
-		if (this._highlightMinIndex == minIndex && this._highlightMaxIndex == maxIndex)
-			return;
-		
-		this._highlightMinIndex = minIndex;
-		this._highlightMaxIndex = maxIndex;
-		
-		this._invalidateRender();
-	};
-
-TextFieldLineElement.prototype.getLineWidth = 
-	function ()
-	{
-		if (this._charMetricsStartIndex > -1 && this._charMetricsEndIndex > -1)
-			return this._parentTextField._charMetrics[this._charMetricsEndIndex].x - this._parentTextField._charMetrics[this._charMetricsStartIndex].x;
-		
-		return 0;
-	};	
-	
-//@Override
-TextFieldLineElement.prototype._doRender =
-	function()
-	{
-		TextFieldLineElement.base.prototype._doRender.call(this);
-		
-		if (this._text.length == 0)
-			return;
-		
-		var paddingMetrics = this._getPaddingMetrics();
-		var ctx = this._getGraphicsCtx();
-		
-		//Get styles
-		var textFillType = this._parentTextField.getStyle("TextFillType");
-		var textColor = this._parentTextField.getStyle("TextColor");
-		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
-		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
-		var fontString = this._parentTextField._getFontString();
-		var textDecoration = this._parentTextField.getStyle("TextDecoration");	
-		var maskCharacter = this._parentTextField.getStyle("MaskCharacter");
-		
-		var x = paddingMetrics.getX();
-		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
-		var w = paddingMetrics.getWidth();
-		
-		for (var i = 0; i < this._text.length; i++)
-		{
-			var charWidth = this._parentTextField._charMetrics[i + this._charMetricsStartIndex].width;
-			
-			var printChar = this._text[i];
-			if (maskCharacter != null)
-				printChar = maskCharacter;
-			
-			if (this._highlightMinIndex <= i && this._highlightMaxIndex > i)
-			{
-				ctx.fillStyle = backgroundHighlightTextColor;
-				
-				ctx.beginPath();
-				ctx.moveTo(x, 0);
-				ctx.lineTo(x + charWidth, 0);
-				ctx.lineTo(x + charWidth, this._height);
-				ctx.lineTo(x, this._height);
-				ctx.closePath();
-				ctx.fill();
-				
-				if (textFillType == "stroke")
-					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
-				else
-					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
-			}
-			else
-			{
-				if (textFillType == "stroke")
-					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "middle");
-				else
-					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "middle");
-			}
-			
-			x += charWidth;
-		}
-		
-		if (textDecoration == "underline")
-		{
-			y = this._height - .5;
-			
-			ctx.beginPath();
-			ctx.moveTo(x, y);
-			ctx.lineTo(x + w, y);
-			ctx.lineWidth = 1;
-			
-			if (this._highlightMinIndex == this._highlightMaxIndex)
-				ctx.strokeStyle = textColor;
-			else 
-				ctx.strokeStyle = highlightTextColor;
-			
-			ctx.stroke();
-		}
-	};	
-
 /////////////////////////////////////////////////////////
 /////////////////TextFieldElement////////////////////////
 
@@ -10119,10 +9961,10 @@ TextFieldLineElement.prototype._doRender =
  * @class TextFieldElement
  * @inherits CanvasElement
  * 
- * Internal class used for consistently rendering text used by controls like TextElement and TextInput.
+ * Internal class used for consistently rendering text used by controls like TextElement, TextInput, and TextArea.
  * You typically should not use this class directly it is designed to be wrapped by a higher level control. 
- * This class allows text to be selected and edited, it renders a text position caret and watches
- * focus/mouse/keyboard events, maintains position of individual characters and allows copy/cut/paste.
+ * This class allows text to be selected and edited, it renders a text position caret, watches
+ * focus/mouse/keyboard events, maintains position of individual characters, and allows copy/cut/paste.
  * 
  * TextField also normalizes text width. The canvas natively will give
  * different widths for strings than when measuring and adding character widths 
@@ -10144,21 +9986,26 @@ function TextFieldElement()
 	this._caretEnabled = false;
 	this._caretBlinkTime = 0;
 	this._caretBlinkVisible = false;
+	this._dragScrollTime = 0;
+	this._layoutShouldScroll = false;
 	
 	this._text = "";
 	
+	this._shiftPressed = false;
 	this._charMetrics = null; 	// array of {x, w}
 	this._spaceSpans = null; 	// array of {start, end, type} _charMetric positions of spaces for wrapping text.
 	
-	this._dragHighlightScrollCharacterTime = 0;
-	this._dragHighlightScrollCharacterDuration = 0;
-	this._dragHighlightScrollCharacterDirection = 0;
+	//Container clipping
+	this._textClipContainer = new CanvasElement();
+	this._textClipContainer.setStyle("ClipContent", true);
+	this._textClipContainer.setStyle("MouseEnabled", false);
 	
-	//Container for storing / clipping lines of text.
-	this._textLinesContainer = new CanvasElement();
-	this._textLinesContainer.setStyle("ClipContent", true);
-	this._textLinesContainer.setStyle("MouseEnabled", false); //Disable mouse so we can take focus
-	this._addChild(this._textLinesContainer);
+		//Container for lines of text, we slide this container around to scroll the block of text when needed.
+		this._textLinesContainer = new CanvasElement();
+		this._textLinesContainer._addChild(new TextFieldLineElement()); //Always need at least one line
+		
+	this._textClipContainer._addChild(this._textLinesContainer);	
+	this._addChild(this._textClipContainer);
 	
 	var _self = this;
 	
@@ -10172,10 +10019,13 @@ function TextFieldElement()
 				_self._onTextFieldFocusOut(event);
 		};
 	
-	this._onTextFieldKeyDownInstance = 
+	this._onTextFieldKeyInstance = 
 		function (keyboardEvent)
 		{
-			_self._onTextFieldKeyDown(keyboardEvent);
+			if (keyboardEvent.getType() == "keydown")
+				_self._onTextFieldKeyDown(keyboardEvent);
+			else if (keyboardEvent.getType() == "keyup")
+				_self._onTextFieldKeyUp(keyboardEvent);
 		};
 		
 	this._onTextFieldMouseEventInstance =
@@ -10185,8 +10035,6 @@ function TextFieldElement()
 				_self._onTextFieldMouseDown(mouseEvent);
 			else if (mouseEvent.getType() == "mouseup")
 				_self._onTextFieldMouseUp(mouseEvent);
-			else if (mouseEvent.getType() == "mousemoveex")
-				_self._onTextFieldCanvasMouseMoveEx(mouseEvent); 
 		};
 	
 	this._onTextFieldEnterFrameInstance =
@@ -10208,7 +10056,6 @@ function TextFieldElement()
 						_self._onTextFieldCopy(event.clipboardData);
 					else if (event.type == "paste")
 						_self._onTextFieldPaste(event.clipboardData);
-					else // "cut"
 						_self._onTextFieldCut(event.clipboardData);
 				}
 				
@@ -10219,7 +10066,7 @@ function TextFieldElement()
 			}
 			catch (ex)
 			{
-				
+				//Swallow
 			}
 		};
 }
@@ -10293,8 +10140,8 @@ TextFieldElement.StyleDefault.setStyle("TabStop",						0);
 TextFieldElement.StyleDefault.setStyle("Cursor", 						"text");			
 
 TextFieldElement.StyleDefault.setStyle("BorderType", 					"none");
-TextFieldElement.StyleDefault.setStyle("PaddingTop", 					0);
-TextFieldElement.StyleDefault.setStyle("PaddingBottom",					0);
+TextFieldElement.StyleDefault.setStyle("PaddingTop", 					1);
+TextFieldElement.StyleDefault.setStyle("PaddingBottom",					1);
 TextFieldElement.StyleDefault.setStyle("PaddingLeft", 					3);
 TextFieldElement.StyleDefault.setStyle("PaddingRight", 					2);
 TextFieldElement.StyleDefault.setStyle("BackgroundFill",				null);
@@ -10342,8 +10189,7 @@ TextFieldElement.prototype.setText =
 			this.setSelection(0, 0);
 			
 			//Reset scroll position
-			if (this._textLinesContainer._getNumChildren() > 0 && this.getStyle("Multiline") == false && this.getStyle("WordWrap") == false)
-				this._textLinesContainer._getChildAt(0)._setActualPosition(0, 0);
+			this._textLinesContainer._setActualPosition(0, 0);
 			
 			this._invalidateMeasure();
 			this._invalidateLayout();
@@ -10399,9 +10245,7 @@ TextFieldElement.prototype.setSelection =
 			this._caretBlinkTime = Date.now() + 800;
 		}
 		
-		this._updateEnterFrameListener();
 		this._updateCaretVisibility();
-		
 		this._invalidateLayout();
 	};
 	
@@ -10443,8 +10287,7 @@ TextFieldElement.prototype._updateCaretVisibility =
 	{
 		if (this._caretEnabled == true &&
 			this._caretBlinkVisible == true && 
-			this._caretIndex > -1 && this._caretIndex <= this._text.length && //Dont think this line is necessary
-			this._caretIndex == this._textHighlightStartIndex)
+			this._caretIndex > -1 && this._caretIndex <= this._text.length) //Dont think this line is necessary
 		{
 			if (this._textCaret == null)
 			{
@@ -10462,12 +10305,12 @@ TextFieldElement.prototype._updateCaretVisibility =
 TextFieldElement.prototype._onTextFieldEnterFrame = 
 	function (event)
 	{
+		var i;
 		var currentTime = Date.now();
 		
 		if (currentTime > this._caretBlinkTime && 
 			this._caretEnabled == true &&
-			this._caretIndex > -1 && this._caretIndex <= this._text.length && //Dont think this line is necessary
-			this._caretIndex == this._textHighlightStartIndex)
+			this._caretIndex > -1 && this._caretIndex <= this._text.length) //Dont think this line is necessary
 		{	
 			if (this._caretBlinkVisible == true)
 			{//Shutting off caret
@@ -10490,45 +10333,60 @@ TextFieldElement.prototype._onTextFieldEnterFrame =
 			this._updateCaretVisibility();
 		}
 		
-		if (currentTime > this._dragHighlightScrollCharacterTime && 
-			this._dragHighlightScrollCharacterDuration > 0)
+		//Handle drag highlight / scroll
+		if (this._mouseIsDown == true)
 		{
-			this._dragHighlightScrollCharacterTime += this._dragHighlightScrollCharacterDuration;
-			var caretIndexChanged = false;
-				
-			if (this._dragHighlightScrollCharacterDirection == "left" && this._caretIndex > 0)
+			//Get mouse position
+			var mousePos = {x:this._manager._mouseX, y:this._manager._mouseY};
+			this.translatePointFrom(mousePos, this._manager);
+			
+			//Get caret index from mouse
+			var caretIndex = this._getCaretIndexFromMouse(mousePos.x, mousePos.y);
+			
+			//Find the line
+			var textFieldLine = this._textLinesContainer._getChildAt(0);
+			if (caretIndex > textFieldLine._charMetricsEndIndex)
 			{
-				this.setSelection(this._textHighlightStartIndex, this._caretIndex - 1);
-				caretIndexChanged = true;
-			}
-			else if (this._dragHighlightScrollCharacterDirection == "right" && this._caretIndex < this._text.length)
-			{
-				this.setSelection(this._textHighlightStartIndex, this._caretIndex + 1);
-				caretIndexChanged = true;
+				for (i = 1; i < this._textLinesContainer._getNumChildren(); i++)
+				{
+					textFieldLine = this._textLinesContainer._getChildAt(i);
+					if (caretIndex >= textFieldLine._charMetricsStartIndex && caretIndex <= textFieldLine._charMetricsEndIndex)
+						break;
+				}
 			}
 			
-			if (caretIndexChanged == true)
+			//Get caret position
+			var caretX = this._textLinesContainer._x + textFieldLine._x + (this._charMetrics[caretIndex].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x);
+			var caretW = 1;
+			var caretY = this._textLinesContainer._y + textFieldLine._y;
+			var caretH = textFieldLine._height;
+			
+			var caretXWithinBounds = false;
+			var caretYWithinBounds = false;
+			
+			if (caretX >= 0 && caretX + caretW <= this._textClipContainer._width)
+				caretXWithinBounds = true;
+			
+			if (caretY + caretH > 0 && caretY < this._textClipContainer._height)
+				caretYWithinBounds = true;
+			
+			//Set selection and scroll immediately
+			if ((caretXWithinBounds == true && caretYWithinBounds == true) || 
+				(caretYWithinBounds == true && (caretIndex == textFieldLine._charMetricsStartIndex || caretIndex == textFieldLine._charMetricsEndIndex)))
 			{
-				var w = this._textLinesContainer._width;
-				var textFieldLine1 = this._textLinesContainer._getChildAt(0);
+				this.setSelection(this._textHighlightStartIndex, caretIndex);
 				
-				//Adjust text scroll position if cursor is out of bounds.
-				var scrollDistance = 3;
-				var caretPosition = this._charMetrics[this._caretIndex].x + textFieldLine1._x;
-						
-				//Adjust scroll position.
-				if (caretPosition < 1)
-				{
-					textFieldLine1._setActualPosition(
-							Math.min(0, (this._charMetrics[this._caretIndex].x * -1) + scrollDistance), 
-							textFieldLine1._y);
-				}
-				else if (caretPosition > w - 1)
-				{
-					textFieldLine1._setActualPosition(
-							Math.max(w - textFieldLine1._width, (this._charMetrics[this._caretIndex].x * -1) + w - scrollDistance), 
-							textFieldLine1._y);
-				}
+				this._layoutShouldScroll = true;
+				this._invalidateLayout();
+			}
+			else if (currentTime > this._dragScrollTime) //Wait for time expiration
+			{
+				this._dragScrollTime = currentTime + 220;
+				
+				this.setSelection(this._textHighlightStartIndex, caretIndex);
+				
+				this._layoutShouldScroll = true;
+				this._invalidateLayout();
 			}
 		}
 	};
@@ -10580,6 +10438,33 @@ TextFieldElement.prototype._onTextFieldFocusOut =
 	};
 
 /**
+ * @function _getLineIndexFromCharIndex
+ * Gets the line index from the supplied character index.
+ * 
+ * @param charIndex int
+ * Character index to get the line index from.
+ * 
+ * @returns int
+ * Corresponding line index.
+ */	
+TextFieldElement.prototype._getLineIndexFromCharIndex = 
+	function (charIndex)
+	{
+		var textFieldLineIndex = 0;	
+		var textFieldLine = this._textLinesContainer._getChildAt(0);
+		for (var i = 1; i < this._textLinesContainer._getNumChildren(); i++)
+		{
+			if (textFieldLine._charMetricsEndIndex >= charIndex)
+				break;
+			
+			textFieldLine = this._textLinesContainer._getChildAt(i);
+			textFieldLineIndex = i;
+		}
+		
+		return textFieldLineIndex;
+	};
+	
+/**
  * @function _getCaretIndexFromMouse
  * Gets the position to place the text caret based on the position of the mouse.
  * 
@@ -10595,29 +10480,35 @@ TextFieldElement.prototype._onTextFieldFocusOut =
 TextFieldElement.prototype._getCaretIndexFromMouse = 
 	function (mouseX, mouseY)
 	{
-		if (this._charMetrics == null || this._charMetrics.length == 0)
+		if (this._charMetrics == null || this._charMetrics.length == 0 || this._textLinesContainer._getNumChildren() == 0)
 			return 0;
 	
-		var x = this._textLinesContainer._x;
-		var w = this._textLinesContainer._width;
-		mouseX += 2; //Text cursor is slightly offset. TODO: make this a style
+		var i;
 		
-		var textFieldLine1 = this._textLinesContainer._getChildAt(0);
+		var x = this._textClipContainer._x + this._textLinesContainer._x;
+		var y = this._textClipContainer._y + this._textLinesContainer._y;
+		mouseX += 2; //Text cursor is slightly offset.
+		
+		//Find the line 
+		//TODO: Account for gap due to line spacing
+		var textFieldLine = this._textLinesContainer._getChildAt(0);
+		for (i = 1; i < this._textLinesContainer._getNumChildren(); i++)
+		{
+			if (mouseY < y + textFieldLine._y + textFieldLine._height)
+				break;
+			
+			textFieldLine = this._textLinesContainer._getChildAt(i);
+		}
 		
 		var charX = 0;
 		var charW = 0;
 		
+		//Find the position
 		var newCaretIndex = 0;
-		for (var i = 0; i <= this._text.length; i++)
+		for (i = textFieldLine._charMetricsStartIndex; i <= textFieldLine._charMetricsEndIndex; i++)
 		{
-			charX = this._charMetrics[i].x + x + textFieldLine1._x;
+			charX = (this._charMetrics[i].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x) + x + textFieldLine._x;
 			charW = this._charMetrics[i].width;
-			
-			if (charX < x)
-				continue;
-			
-			if (charX > x + w)
-				break;
 			
 			newCaretIndex = i;
 			
@@ -10628,98 +10519,189 @@ TextFieldElement.prototype._getCaretIndexFromMouse =
 		return newCaretIndex;
 	};
 
+/**
+ * @function _getVerticalScrollParameters
+ * Returns parameters representing the vertical scroll page, view, and line sizes.
+ * 
+ * @returns Object
+ * An object containing both width and height: {page:100, view:100, line:14}
+ */	
+TextFieldElement.prototype._getVerticalScrollParameters = 
+	function ()
+	{
+		var params = {page:0, view:0, line:14, value:0};
+		
+		params.page = this._textLinesContainer._height;
+		params.view = this._textClipContainer._height;
+	
+		var textSize = this.getStyle("TextSize");
+		var lineSpacing = this.getStyle("TextLineSpacing");
+		var linePaddingTop = this.getStyle("TextLinePaddingTop");
+		var linePaddingBottom = this.getStyle("TextLinePaddingBottom");
+		
+		params.line = textSize + linePaddingTop + linePaddingBottom + lineSpacing;
+		
+		params.value = this._textLinesContainer._y * -1;
+		
+		return params;
+	};
+	
+/**
+ * @function _setVerticalScrollValue
+ * Sets the vertical scroll position.
+ * 
+ * @param value int
+ * Y position to scroll too
+ */		
+TextFieldElement.prototype._setVerticalScrollValue = 
+	function (value)
+	{
+		value = Math.round(value);
+		
+		this._textLinesContainer._setActualPosition(this._textLinesContainer._x, value * -1);
+	};	
+	
+/**
+ * @function _getHorizontalScrollParameters
+ * Returns parameters representing the vertical scroll page, view, line, and value sizes.
+ * 
+ * @returns Object
+ * An object containing both width and height: {page:100, view:100, line:14, value:0}
+ */	
+TextFieldElement.prototype._getHorizontalScrollParameters = 
+	function ()
+	{
+		var params = {page:0, view:0, line:14, value:0};
+		
+		params.page = this._textLinesContainer._width;
+		params.view = this._textClipContainer._width;
+	
+		var textSize = this.getStyle("TextSize");
+		var lineSpacing = this.getStyle("TextLineSpacing");
+		var linePaddingTop = this.getStyle("TextLinePaddingTop");
+		var linePaddingBottom = this.getStyle("TextLinePaddingBottom");
+		
+		params.line = textSize + linePaddingTop + linePaddingBottom + lineSpacing;
+		
+		params.value = this._textLinesContainer._x * -1;
+		
+		return params;
+	};	
+	
+/**
+ * @function _setHorizontalScrollValue
+ * Sets the horizontal scroll position.
+ * 
+ * @param value int
+ * X position to scroll too
+ */		
+TextFieldElement.prototype._setHorizontalScrollValue = 
+	function (value)
+	{
+		value = Math.round(value);
+		
+		this._textLinesContainer._setActualPosition(value * -1, this._textLinesContainer._y);
+	};
 	
 //@private - Only active if TextField is Enabled or Selectable.		
 TextFieldElement.prototype._onTextFieldMouseDown = 
 	function (mouseEvent)
 	{
-		if (this.hasEventListener("mousemoveex", this._onTextFieldMouseEventInstance) == false)
-			this.addEventListener("mousemoveex", this._onTextFieldMouseEventInstance);
-
 		var caretIndex = this._getCaretIndexFromMouse(mouseEvent.getX(), mouseEvent.getY());
 		
 		if (this.getStyle("Enabled") == true)
 			this._enableCaret();
 		
-		this.setSelection(caretIndex, caretIndex);
+		if (this._shiftPressed == true)
+			this.setSelection(this._textHighlightStartIndex, caretIndex);
+		else
+			this.setSelection(caretIndex, caretIndex);
+		
+		this._layoutShouldScroll = true;
+		this._invalidateLayout();
+		
+		this._dragScrollTime = 0;
+		
+		this._updateEnterFrameListener();
 	};
 	
 //@private - Only active if TextField is Enabled or Selectable.		
 TextFieldElement.prototype._onTextFieldMouseUp = 
 	function (mouseEvent)
 	{
-		if (this.hasEventListener("mousemoveex", this._onTextFieldMouseEventInstance) == true)
-			this.removeEventListener("mousemoveex", this._onTextFieldMouseEventInstance);
-		
-		this._dragHighlightScrollCharacterDuration = 0;
 		this._updateEnterFrameListener();
 	};	
 	
-//@private - Only active if selectable or enabled and mouse is down.	
-TextFieldElement.prototype._onTextFieldCanvasMouseMoveEx = 
-	function (mouseEvent)
-	{
-		var mousePoint = {x:mouseEvent.getX(), y:mouseEvent.getY()};
-		this.translatePointFrom(mousePoint, this._manager);
-		
-		var x = this._textLinesContainer._x;
-		var w = this._textLinesContainer._width;
-		
-		var scrollDuration = 0;
-		
-		var caretIndex = this._getCaretIndexFromMouse(mousePoint.x, mousePoint.y);
-		if (caretIndex == this._caretIndex)
-		{
-			if (mousePoint.x <= x + 2 && this._caretIndex > 0)
-			{
-				var range = Math.abs(x + 2 - mousePoint.x) * 3;
-				scrollDuration = Math.max(20, 120 - range);
-				
-				if (this._dragHighlightScrollCharacterDuration == 0)
-					this._dragHighlightScrollCharacterTime = Date.now() + scrollDuration;
-				
-				this._dragHighlightScrollCharacterDirection = "left";
-			}
-			else if (mousePoint.x >= x + w - 2 && this._caretIndex < this._text.length)
-			{
-				var range = Math.abs(x + w - 2 - mousePoint.x) * 3;
-				scrollDuration = Math.max(20, 120 - range);
-				
-				if (this._dragHighlightScrollCharacterDuration == 0)
-					this._dragHighlightScrollCharacterTime = Date.now() + scrollDuration;
-				
-				this._dragHighlightScrollCharacterDirection = "right";
-			}
-		}
-		else
-			this.setSelection(this._textHighlightStartIndex, caretIndex);
-		
-		this._dragHighlightScrollCharacterDuration = scrollDuration;
-		this._updateEnterFrameListener();
-	};
-	
 //@private	
-TextFieldElement.prototype._updateCharXPositions = 
-	function (startAfterIndex)
+TextFieldElement.prototype._updateCharMetricsAndSpaceSpans = 
+	function ()
 	{
 		if (this._charMetrics == null || this._charMetrics.length == 0)
 			return;
 		
-		if (startAfterIndex > this._charMetrics.length - 2)
-			return;
+		if (this._spaceSpans == null)
+			this._spaceSpans = [];
 		
-		if (startAfterIndex < 0)
+		var currentPos = 0;
+		var currentSpaceSpan = null;	
+		var spaceSpanIndex = 0;
+		
+		for (var i = 0; i < this._charMetrics.length; i++)
 		{
-			startAfterIndex = 0;
-			this._charMetrics[0].x = 0;
-		}
-			
-		var currentPos = this._charMetrics[startAfterIndex].x + this._charMetrics[startAfterIndex].width;
-		for (var i = startAfterIndex + 1; i < this._charMetrics.length; i++)
-		{
+			//Update metrics position
 			this._charMetrics[i].x = currentPos;
 			currentPos += this._charMetrics[i].width;
+			
+			//Update space spans (re-use existing array items to save memory/GC)
+			if (this._text.length > i)
+			{
+				if (this._text[i] == " ")
+				{
+					if (currentSpaceSpan == null)
+					{
+						currentSpaceSpan = this._spaceSpans[spaceSpanIndex];
+						if (currentSpaceSpan == null)
+						{
+							this._spaceSpans[spaceSpanIndex] = {start:i, end:i, type:"space"};
+							currentSpaceSpan = this._spaceSpans[spaceSpanIndex];
+						}
+						else
+						{
+							currentSpaceSpan.start = i;
+							currentSpaceSpan.end = i;
+							currentSpaceSpan.type = "space";
+						}
+						
+						spaceSpanIndex++;
+					}
+					else
+						currentSpaceSpan.end = i;
+				}
+				else 
+				{
+					if (this._text[i] == '\n')
+					{
+						currentSpaceSpan = this._spaceSpans[spaceSpanIndex];
+						if (currentSpaceSpan == null)
+							this._spaceSpans[spaceSpanIndex] = {start:i, end:i, type:"nline"};
+						else
+						{
+							currentSpaceSpan.start = i;
+							currentSpaceSpan.end = i;
+							currentSpaceSpan.type = "nline";
+						}	
+						
+						spaceSpanIndex++;
+					}
+					
+					currentSpaceSpan = null;
+				}
+			}
 		}
+		
+		//Purge excess
+		if (this._spaceSpans.length > spaceSpanIndex)
+			this._spaceSpans.splice(spaceSpanIndex, this._spaceSpans.length - spaceSpanIndex);
 	};
 
 //@private	
@@ -10732,18 +10714,37 @@ TextFieldElement.prototype._deleteHighlightChars =
 		var highlightBegin = Math.min(this._caretIndex, this._textHighlightStartIndex);
 		var highlightEnd = Math.max(this._caretIndex, this._textHighlightStartIndex);
 	
-		//Fix char metrics
-		this._charMetrics.splice(highlightBegin, highlightEnd - highlightBegin);
-		this._updateCharXPositions(highlightBegin - 1);
-		
 		//Update string
 		var strLeft = this._text.substring(0, highlightBegin);
 		var strRight = this._text.substring(highlightEnd);
 		this._text = strLeft + strRight;
 		
+		//Fix char metrics
+		this._charMetrics.splice(highlightBegin, highlightEnd - highlightBegin);
+		
 		//Move caret
 		this.setSelection(highlightBegin, highlightBegin);
 	};	
+	
+/**
+ * @function _onTextFieldKeyUp
+ * Event handler for "keyup" event. Only active when TextField is enabled and focused.
+ * Handles editing and cursor navigation / selection.
+ * 
+ * @param keyboardEvent ElementKeyboardEvent
+ * ElementKeyboardEvent to process.
+ */		
+TextFieldElement.prototype._onTextFieldKeyUp = 
+	function (keyboardEvent)
+	{
+		if (keyboardEvent.getDefaultPrevented() == true)
+			return;
+		
+		if (keyboardEvent.getKey() == "Shift")
+		{
+			this._shiftPressed = false;
+		}
+	};
 	
 /**
  * @function _onTextFieldKeyDown
@@ -10760,8 +10761,14 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 			return;
 	
 		var enabled = this.getStyle("Enabled");
+		var multiline = this.getStyle("Multiline");
+		var maxChars = this.getStyle("MaxChars");
+		
 		var keyString = keyboardEvent.getKey();
 		var dispatchChanged = false;
+		var i;
+		var textFieldLineIndex;
+		var textFieldLine;
 		
 		if (keyString == "c" && keyboardEvent.getCtrl() == true)
 		{
@@ -10784,6 +10791,10 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 			}
 			
 			return;
+		}
+		else if (keyString == "Shift")
+		{
+			this._shiftPressed = true;
 		}
 		else if (keyString == "ArrowLeft")
 		{
@@ -10815,25 +10826,107 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 					this.setSelection(this._caretIndex + 1, this._caretIndex + 1);
 			}
 		}
-		else if (keyString == "End")
+		else if (keyString == "ArrowDown" || keyString == "ArrowUp")
 		{
-			if (keyboardEvent.getShift() == true && 
-				(this._textHighlightStartIndex != this._caretIndex || enabled == true))
+			//Find the current line
+			textFieldLineIndex = this._getLineIndexFromCharIndex(this._caretIndex);
+			textFieldLine = this._textLinesContainer._getChildAt(textFieldLineIndex);
+			
+			//Get the new caret index
+			var newIndex = -1;
+			
+			if (keyString == "ArrowUp" && textFieldLineIndex == 0)
+				newIndex = 0;
+			else if (keyString == "ArrowDown" && textFieldLineIndex == this._textLinesContainer._getNumChildren() - 1)
+				newIndex = this._charMetrics.length -1;
+			else
 			{
-				this.setSelection(this._textHighlightStartIndex, this._text.length);
+				var charX = this._textLinesContainer._x + textFieldLine._x + (this._charMetrics[this._caretIndex].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x);
+				
+				var moveToTextFieldLine = null;
+				
+				if (keyString == "ArrowUp")
+					moveToTextFieldLine = this._textLinesContainer._getChildAt(textFieldLineIndex - 1);
+				else
+					moveToTextFieldLine = this._textLinesContainer._getChildAt(textFieldLineIndex + 1);
+				
+				var moveToCharX;
+				var moveToCharW;
+				
+				for (i = moveToTextFieldLine._charMetricsStartIndex; i <= moveToTextFieldLine._charMetricsEndIndex; i++)
+				{
+					moveToCharX = this._textLinesContainer._x + moveToTextFieldLine._x + (this._charMetrics[i].x - this._charMetrics[moveToTextFieldLine._charMetricsStartIndex].x);
+					moveToCharW = this._charMetrics[i].width;
+					
+					newIndex = i;
+					
+					if (charX <= moveToCharX + (moveToCharW / 2))
+						break;
+				}
+			}	
+				
+			if (keyboardEvent.getShift() == true && (this._textHighlightStartIndex != this._caretIndex || enabled == true))
+			{
+				this.setSelection(this._textHighlightStartIndex, newIndex);
 			}
 			else if (enabled == true)
-				this.setSelection(this._text.length, this._text.length);
+			{
+				this.setSelection(newIndex, newIndex);
+			}
+		}
+		else if (keyString == "End")
+		{
+			if (keyboardEvent.getCtrl() == true)
+			{
+				if (keyboardEvent.getShift() == true && 
+					(this._textHighlightStartIndex != this._caretIndex || enabled == true))
+				{
+					this.setSelection(this._textHighlightStartIndex, this._text.length);
+				}
+				else if (enabled == true)
+					this.setSelection(this._text.length, this._text.length);
+			}
+			else
+			{
+				//Find the current line
+				textFieldLineIndex = this._getLineIndexFromCharIndex(this._caretIndex);
+				textFieldLine = this._textLinesContainer._getChildAt(textFieldLineIndex);
+				
+				if (keyboardEvent.getShift() == true && 
+					(this._textHighlightStartIndex != this._caretIndex || enabled == true))
+				{
+					this.setSelection(this._textHighlightStartIndex, textFieldLine._charMetricsEndIndex);
+				}
+				else if (enabled == true)
+					this.setSelection(textFieldLine._charMetricsEndIndex, textFieldLine._charMetricsEndIndex);
+			}
 		}
 		else if (keyString == "Home")
 		{
-			if (keyboardEvent.getShift() == true && 
-				(this._textHighlightStartIndex != this._caretIndex || enabled == true))
+			if (keyboardEvent.getCtrl() == true)
 			{
-				this.setSelection(this._textHighlightStartIndex, 0);
+				if (keyboardEvent.getShift() == true && 
+					(this._textHighlightStartIndex != this._caretIndex || enabled == true))
+				{
+					this.setSelection(this._textHighlightStartIndex, 0);
+				}
+				else if (enabled == true)
+					this.setSelection(0, 0);
 			}
-			else if (enabled == true)
-				this.setSelection(0, 0);
+			else
+			{
+				//Find the current line
+				textFieldLineIndex = this._getLineIndexFromCharIndex(this._caretIndex);
+				textFieldLine = this._textLinesContainer._getChildAt(textFieldLineIndex);
+				
+				if (keyboardEvent.getShift() == true && 
+					(this._textHighlightStartIndex != this._caretIndex || enabled == true))
+				{
+					this.setSelection(this._textHighlightStartIndex, textFieldLine._charMetricsStartIndex);
+				}
+				else if (enabled == true)
+					this.setSelection(textFieldLine._charMetricsStartIndex, textFieldLine._charMetricsStartIndex);
+			}
 		}
 		else if (enabled == false) 
 		{
@@ -10851,14 +10944,13 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 					return;
 				}
 				
-				//Fix char metrics
-				this._charMetrics.splice(this._caretIndex - 1, 1);
-				this._updateCharXPositions(this._caretIndex - 2);
-				
 				//Update string
 				var strLeft = this._text.substring(0, this._caretIndex - 1);
 				var strRight = this._text.substring(this._caretIndex);
 				this._text = strLeft + strRight;
+				
+				//Fix char metrics
+				this._charMetrics.splice(this._caretIndex - 1, 1);
 				
 				//Move caret
 				this.setSelection(this._caretIndex - 1, this._caretIndex - 1);
@@ -10878,14 +10970,13 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 					return;
 				}
 	
-				//Fix char metrics
-				this._charMetrics.splice(this._caretIndex, 1);
-				this._updateCharXPositions(this._caretIndex - 1);
-				
 				//Update string
 				var strLeft = this._text.substring(0, this._caretIndex);
 				var strRight = this._text.substring(this._caretIndex + 1);
 				this._text = strLeft + strRight;
+				
+				//Fix char metrics
+				this._charMetrics.splice(this._caretIndex, 1);
 			}
 			
 			dispatchChanged = true;
@@ -10928,11 +11019,32 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 			
 			return;
 		}
-		else if (keyString.length == 1)
+		else if (keyString == "Enter" && multiline == true)
 		{
 			this._deleteHighlightChars();
 			
-			var maxChars = this.getStyle("MaxChars");
+			if (maxChars > 0 && maxChars <= this._text.length)
+			{
+				keyboardEvent.preventDefault();
+				return;
+			}
+			
+			//Update string
+			var strLeft = this._text.substring(0, this._caretIndex);
+			var strRight = this._text.substring(this._caretIndex);
+			this._text = strLeft + "\n" + strRight;
+			
+			//Fix char metrics
+			this._charMetrics.splice(this._caretIndex, 0, {x:0, width:CanvasElement._measureText("\n", this._getFontString())});
+			
+			//Move caret
+			this.setSelection(this._caretIndex + 1, this._caretIndex + 1);
+			
+			dispatchChanged = true;
+		}
+		else if (keyString.length == 1)
+		{
+			this._deleteHighlightChars();
 			
 			if (maxChars > 0 && maxChars <= this._text.length)
 			{
@@ -10949,14 +11061,13 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 			
 			var newCharMetrics = {x:0, width:CanvasElement._measureText(printCharacter, this._getFontString())};
 			
-			//Fix char metrics
-			this._charMetrics.splice(this._caretIndex, 0, newCharMetrics);
-			this._updateCharXPositions(this._caretIndex - 1);
-			
 			//Update string
 			var strLeft = this._text.substring(0, this._caretIndex);
 			var strRight = this._text.substring(this._caretIndex);
 			this._text = strLeft + keyString + strRight;
+			
+			//Fix char metrics
+			this._charMetrics.splice(this._caretIndex, 0, newCharMetrics);
 			
 			//Move caret
 			this.setSelection(this._caretIndex + 1, this._caretIndex + 1);
@@ -10966,41 +11077,18 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 		else
 			return;
 		
-		this._scrollIfCaretOutOfBounds();
-		this._invalidateLayout();
-		
 		if (dispatchChanged == true)
+		{
+			this._updateCharMetricsAndSpaceSpans();
 			this.dispatchEvent(new ElementEvent("changed", false));
+		}
+		
+		this._layoutShouldScroll = true;
+		this._invalidateLayout();
 		
 		keyboardEvent.preventDefault();
 	};
 
-//@private	
-TextFieldElement.prototype._scrollIfCaretOutOfBounds = 
-	function ()
-	{
-		var textFieldLine1 = this._textLinesContainer._getChildAt(0);
-		var w = this._textLinesContainer._width;
-		var scrollDistance = Math.min(Math.floor(w * 0.3), 35);
-		
-		//Adjust text scroll position if cursor is out of bounds.
-		var caretPosition = this._charMetrics[this._caretIndex].x + textFieldLine1._x;
-				
-		//Adjust scroll position (we dont know the width of the text line yet...) layout will fix if we overshoot
-		if (caretPosition < 2)
-		{
-			textFieldLine1._setActualPosition(
-				(this._charMetrics[this._caretIndex].x * -1) + scrollDistance,
-				textFieldLine1._y);
-		}
-		else if (caretPosition > w - 2)
-		{
-			textFieldLine1._setActualPosition(
-				(this._charMetrics[this._caretIndex].x * -1) + w - scrollDistance, 
-				textFieldLine1._y);
-		}
-	};
-	
 /**
  * @function _onTextFieldCopy
  * Event handler for native browser "copy" event. Copies selected text to clipboard.
@@ -11042,6 +11130,11 @@ TextFieldElement.prototype._onTextFieldPaste =
 		
 		var maskCharacter = this.getStyle("MaskCharacter");
 		
+		//Update string
+		var strLeft = this._text.substring(0, this._caretIndex);
+		var strRight = this._text.substring(this._caretIndex);
+		this._text = strLeft + pasteString + strRight;
+		
 		//Measure new chars
 		var fontString = this._getFontString();
 		for (var i = 0; i < pasteString.length; i++)
@@ -11055,12 +11148,7 @@ TextFieldElement.prototype._onTextFieldPaste =
 		}
 
 		//Fix char metrics
-		this._updateCharXPositions(this._caretIndex - 1);
-		
-		//Update string
-		var strLeft = this._text.substring(0, this._caretIndex);
-		var strRight = this._text.substring(this._caretIndex);
-		this._text = strLeft + pasteString + strRight;
+		this._updateCharMetricsAndSpaceSpans();
 		
 		//Move caret
 		this.setSelection(this._caretIndex + pasteString.length, this._caretIndex + pasteString.length);
@@ -11073,7 +11161,7 @@ TextFieldElement.prototype._onTextFieldPaste =
 			this.setSelection(this._text.length, this._text.length);
 		}
 		
-		this._scrollIfCaretOutOfBounds();
+		this._layoutShouldScroll = true;
 		this._invalidateLayout();
 		
 		this.dispatchEvent(new ElementEvent("changed", false));
@@ -11097,8 +11185,9 @@ TextFieldElement.prototype._onTextFieldCut =
 		clipboardData.setData("Text", copyText);
 		
 		this._deleteHighlightChars();
+		this._updateCharMetricsAndSpaceSpans();
 		
-		this._scrollIfCaretOutOfBounds();
+		this._layoutShouldScroll = true;
 		this._invalidateLayout();
 		
 		this.dispatchEvent(new ElementEvent("changed", false));
@@ -11112,8 +11201,8 @@ TextFieldElement.prototype._onCanvasElementRemoved =
 		
 		this._disableCaret();
 		
-		if (this.hasEventListener("mousemoveex", this._onTextFieldMouseEventInstance) == true)
-			this.removeEventListener("mousemoveex", this._onTextFieldMouseEventInstance);
+		this._shiftPressed = false;
+		this._layoutShouldScroll = false;
 		
 		if (this.hasEventListener("enterframe", this._onTextFieldEnterFrameInstance) == true)
 			this.removeEventListener("enterframe", this._onTextFieldEnterFrameInstance);
@@ -11123,8 +11212,7 @@ TextFieldElement.prototype._onCanvasElementRemoved =
 TextFieldElement.prototype._updateEnterFrameListener = 
 	function ()
 	{
-		if (this._dragHighlightScrollCharacterDuration > 0 ||
-			(this._caretEnabled == true && this._textHighlightStartIndex == this._caretIndex))
+		if (this._caretEnabled == true || (this._mouseIsDown == true && this.getStyle("Selectable") == true))
 		{
 			if (this.hasEventListener("enterframe", this._onTextFieldEnterFrameInstance) == false)
 				this.addEventListener("enterframe", this._onTextFieldEnterFrameInstance);
@@ -11149,8 +11237,11 @@ TextFieldElement.prototype._updateEventListeners =
 		
 		if (selectable == true || enabled == true)
 		{
-			if (this.hasEventListener("keydown", this._onTextFieldKeyDownInstance) == false)
-				this.addEventListener("keydown", this._onTextFieldKeyDownInstance);
+			if (this.hasEventListener("keydown", this._onTextFieldKeyInstance) == false)
+				this.addEventListener("keydown", this._onTextFieldKeyInstance);
+			
+			if (this.hasEventListener("keyup", this._onTextFieldKeyInstance) == false)
+				this.addEventListener("keyup", this._onTextFieldKeyInstance);
 			
 			if (this.hasEventListener("mousedown", this._onTextFieldMouseEventInstance) == false)
 				this.addEventListener("mousedown", this._onTextFieldMouseEventInstance);
@@ -11166,8 +11257,11 @@ TextFieldElement.prototype._updateEventListeners =
 		}
 		else
 		{
-			if (this.hasEventListener("keydown", this._onTextFieldKeyDownInstance) == true)
-				this.removeEventListener("keydown", this._onTextFieldKeyDownInstance);
+			if (this.hasEventListener("keydown", this._onTextFieldKeyInstance) == true)
+				this.removeEventListener("keydown", this._onTextFieldKeyInstance);
+			
+			if (this.hasEventListener("keyup", this._onTextFieldKeyInstance) == true)
+				this.removeEventListener("keyup", this._onTextFieldKeyInstance);
 			
 			if (this.hasEventListener("mousedown", this._onTextFieldMouseEventInstance) == true)
 				this.removeEventListener("mousedown", this._onTextFieldMouseEventInstance);
@@ -11255,35 +11349,6 @@ TextFieldElement.prototype._doStylesUpdated =
 		this._updateCaretVisibility();
 	};	
 	
-///**
-// * @function _getCharMetrics
-// * Gets a DrawMetrics object containing position and size data of character at supplied index.
-// * 
-// * @param charIndex int
-// * Index of character to return metrics.
-// * 
-// * @returns DrawMetrics
-// * DrawMetrics object containing position and size data of character at supplied index.
-// */	
-//TextFieldElement.prototype._getCharMetrics = 
-//	function (charIndex)
-//	{
-//		if (this._charMetrics == null || 
-//			charIndex < 0 ||
-//			charIndex >= this._text.length)
-//		{
-//			return null;
-//		}
-//		
-//		var metrics = new DrawMetrics();
-//		metrics._height = this._textHeight;
-//		metrics._width = this._charMetrics[charIndex].width;
-//		metrics._x = this._charMetrics[charIndex].x + this._textXScrollPosition;
-//		metrics._y = this._textYPosition;
-//		
-//		return metrics;
-//	};
-	
 //@private	
 TextFieldElement.prototype._createCharMetrics = 
 	function ()
@@ -11299,19 +11364,22 @@ TextFieldElement.prototype._createCharMetrics =
 		
 		var currentSpaceSpan = null;
 		
-		var maskCharacter = this.getStyle("MaskCharacter");
-		
 		if (this._text.length > 0)
 		{
 			var fontString = this._getFontString();	
 			
+			var maskCharacter = this.getStyle("MaskCharacter");
+			var maskCharacterWidth = 0;
+			
+			if (maskCharacter != null)
+				maskCharacterWidth = CanvasElement._measureText(maskCharacter, fontString);
+			
 			for (var i = 0; i < this._text.length; i++)
 			{
-				var printCharacter = this._text[i];
-				if (maskCharacter != null)
-					printCharacter = maskCharacter;
+				currentWidth = CanvasElement._measureText(this._text[i], fontString);
 				
-				currentWidth = CanvasElement._measureText(printCharacter, fontString);
+				if (maskCharacter != null && currentWidth > 0)
+					currentWidth = maskCharacterWidth;				
 				
 				this._charMetrics.push(
 					{
@@ -11420,16 +11488,16 @@ TextFieldElement.prototype._doLayout =
 		var h = paddingMetrics.getHeight();
 		
 		//Adjust text x position per scroll / align.
-		var availableWidth = w - 1; // account for caret width - TODO: width should be width of caret element, always 1 for now.
+		var availableWidth = w - 1; // account for caret width.
 		
 		//Size / Position the line container.
-		this._textLinesContainer._setActualPosition(x, y);
-		this._textLinesContainer._setActualSize(availableWidth, h);
+		this._textClipContainer._setActualPosition(x, y);
+		this._textClipContainer._setActualSize(availableWidth, h);
 		
 		var isMultiline = this.getStyle("Multiline");
 		var isWordWrap = this.getStyle("WordWrap");
-		var textAlign = this.getStyle("TextHorizontalAlign");
-		var textBaseline = this.getStyle("TextVerticalAlign");
+		var textHorizontalAlign = this.getStyle("TextHorizontalAlign");
+		var textVerticalAlign = this.getStyle("TextVerticalAlign");
 		var textSize = this.getStyle("TextSize");
 		var lineSpacing = this.getStyle("TextLineSpacing");
 		var linePaddingTop = this.getStyle("TextLinePaddingTop");
@@ -11443,9 +11511,13 @@ TextFieldElement.prototype._doLayout =
 		var newLineData = null;
 		var lines = [];
 		
+		var textHeight = 0;
+		var textWidth = 0;
+		
 		var caretLineIndex = 0;
 		var newlineFound = false;
 		
+		//Calculate lines of text based on multiline, wordwrap, spaces, and newlines.
 		while (lineStartCharIndex < this._charMetrics.length)
 		{
 			newLineData = {charMetricsStartIndex:-1, charMetricsEndIndex:-1};
@@ -11471,7 +11543,7 @@ TextFieldElement.prototype._doLayout =
 						continue;
 					}
 					
-					if (textAlign == "left")
+					if (textHorizontalAlign == "left")
 						lineEndCharIndex = this._spaceSpans[i].end;
 					else
 						lineEndCharIndex = this._spaceSpans[i].start;
@@ -11504,24 +11576,23 @@ TextFieldElement.prototype._doLayout =
 				}
 			}
 			
+			//Record max line width
+			if (textWidth < this._charMetrics[newLineData.charMetricsEndIndex].x - this._charMetrics[newLineData.charMetricsStartIndex].x)
+				textWidth = this._charMetrics[newLineData.charMetricsEndIndex].x - this._charMetrics[newLineData.charMetricsStartIndex].x;
+			
 			lines.push(newLineData);
 		}
 		
-		var totalTextHeight = (lines.length * lineHeight) + ((lines.length - 1) * lineSpacing); 
+		textHeight = (lines.length * lineHeight) + ((lines.length - 1) * lineSpacing); 
 		
-		//Update the measured size now that we know the height. (May cause another layout pass)
+		//Update the measured size now that we know the height. (May cause another layout pass if causes parent to change our size)
 		if (isWordWrap == true)
-			this._setMeasuredSize(this._measuredWidth, totalTextHeight + this._getPaddingSize().height);
+			this._setMeasuredSize(this._measuredWidth, textHeight + this._getPaddingSize().height);
 			
-		var textYPosition;
-		if (textBaseline == "top")
-			textYPosition = 0;
-		else if (textBaseline == "bottom")
-			textYPosition = h - totalTextHeight;
-		else //middle
-			textYPosition = Math.round((h / 2) - (totalTextHeight / 2));
-		 
-		//Update actual line data
+		//Size the lines container to the size of lines of text
+		this._textLinesContainer._setActualSize(textWidth, textHeight);
+		
+		//Update text lines
 		
 		//Purge excess
 		while (this._textLinesContainer._getNumChildren() > lines.length)
@@ -11531,6 +11602,7 @@ TextFieldElement.prototype._doLayout =
 		var textFieldLine = null;
 		var lineWidth = 0;
 		var lineXPosition;
+		var lineYPosition = 0;
 		for (var i = 0; i < lines.length; i++)
 		{
 			if (i < this._textLinesContainer._getNumChildren()) //Update line
@@ -11551,49 +11623,137 @@ TextFieldElement.prototype._doLayout =
 			lineWidth = textFieldLine.getLineWidth();
 			textFieldLine._setActualSize(lineWidth, lineHeight);
 			
-			if (lineWidth < availableWidth || isMultiline == true) //align
-			{
-				if (textAlign == "right")
-					lineXPosition = availableWidth - lineWidth;
-				else if (textAlign == "center")
-					lineXPosition = Math.round((availableWidth / 2) - (lineWidth / 2));
-				else // "left"
-					lineXPosition = 0;
-			}
-			else //fill excess (over-scroll or resize)
-			{
-				if (textFieldLine._x > 0)
-					lineXPosition = 0;					
-				else if (textFieldLine._x + lineWidth < availableWidth)
-					lineXPosition = availableWidth - lineWidth;
-				else
-					lineXPosition = textFieldLine._x;
-			}
+			//Handle horizontal alignment
+			if (textHorizontalAlign == "right")
+				lineXPosition = this._textLinesContainer._width - lineWidth;
+			else if (textHorizontalAlign == "center")
+				lineXPosition = Math.round((this._textLinesContainer._width / 2) - (lineWidth / 2));
+			else // "left"
+				lineXPosition = 0;
 			
-			textFieldLine._setActualPosition(lineXPosition, textYPosition);
-			
-			textYPosition += (lineHeight + lineSpacing);
+			textFieldLine._setActualPosition(lineXPosition, lineYPosition);
+			lineYPosition += (lineHeight + lineSpacing);
 		}
 		
+		//Position the lines container
+		var lineContainerX = this._textLinesContainer._x;
+		var lineContainerY = this._textLinesContainer._y;
 		
+		//Handle vertical alignment
+		if (this._textLinesContainer._height <= this._textClipContainer._height)
+		{
+			if (textVerticalAlign == "bottom")
+				lineContainerY = this._textClipContainer._height - this._textLinesContainer._height;
+			else if (textVerticalAlign == "middle")
+				lineContainerY = Math.round((this._textClipContainer._height / 2) - (this._textLinesContainer._height / 2));
+			else
+				lineContainerY = 0;
+		}
+		else //Fix resize
+		{
+			if (this._textLinesContainer._y > 0)
+				lineContainerY = 0;
+			else if (this._textLinesContainer._y + this._textLinesContainer._height < this._textClipContainer._height)
+				lineContainerY = this._textClipContainer._height - this._textLinesContainer._height;
+		}
+		
+		//Handle horizontal alignment
+		if (this._textLinesContainer._width <= this._textClipContainer._width)
+		{
+			if (textHorizontalAlign == "right")
+				lineContainerX = this._textClipContainer._width - this._textLinesContainer._width;
+			else if (textHorizontalAlign == "center")
+				lineContainerX = Math.round((this._textClipContainer._width / 2) - (this._textLinesContainer._width / 2));
+			else
+				lineContainerX = 0;
+		}
+		else //Fix resize
+		{
+			if (this._textLinesContainer._x > 0)
+				lineContainerX = 0;
+			else if (this._textLinesContainer._x + this._textLinesContainer._width < this._textClipContainer._width)
+				lineContainerX = this._textClipContainer._width - this._textLinesContainer._width;
+		}
+			
+		//Scroll if caret out of bounds - we only scroll if caret moved out of bounds due to user input
+		if (this._layoutShouldScroll == true)
+		{
+			this._layoutShouldScroll = false;
+			
+			//Only need to scroll if text size is larger than clip region
+			if (this._textLinesContainer._height > this._textClipContainer._height ||
+				this._textLinesContainer._width > this._textClipContainer._width)
+			{
+				//Find the line the caret is on
+				textFieldLine = this._textLinesContainer._getChildAt(this._getLineIndexFromCharIndex(this._caretIndex));
+			
+				//Get the carets actual position
+				var caretX = lineContainerX + textFieldLine._x + (this._charMetrics[this._caretIndex].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x);
+				var caretY = lineContainerY + textFieldLine._y;
+				
+				//Scroll the text lines container if caret out of bounds
+				if (caretX < 0)
+					lineContainerX = lineContainerX + (caretX * -1) + 35; //Arbitrary 35 pixel X over-scroll (this should probably be a style)
+				else if (caretX + 1 > this._textClipContainer._width) 
+					lineContainerX = lineContainerX - ((caretX + 1) - this._textClipContainer._width) - 35;
+	
+				if (caretY < 0)
+					lineContainerY = lineContainerY + (caretY * -1);
+				else if (caretY + textFieldLine._height > this._textClipContainer._height)
+					lineContainerY = lineContainerY - ((caretY + textFieldLine._height) - this._textClipContainer._height);
+				
+				//Fix over-scroll
+				if (this._textLinesContainer._height > this._textClipContainer._height)
+				{
+					if (lineContainerY > 0)
+						lineContainerY = 0;
+					else if (lineContainerY + this._textLinesContainer._height < this._textClipContainer._height)
+						lineContainerY = this._textClipContainer._height - this._textLinesContainer._height;
+				}
+				
+				if (this._textLinesContainer._width > this._textClipContainer._width)
+				{
+					if (lineContainerX > 0)
+						lineContainerX = 0;
+					else if (lineContainerX + this._textLinesContainer._width < this._textClipContainer._width)
+						lineContainerX = this._textClipContainer._width - this._textLinesContainer._width;
+				}
+			}
+		}
+		
+		//Set the position of the text lines container
+		this._textLinesContainer._setActualPosition(lineContainerX, lineContainerY);
+		
+		//Handle caret placement
 		if (this._textCaret != null)
 		{
 			if (this._caretIndex < 0 || this._caretIndex > this._text.length)
-				this._textCaret._setActualSize(0, lineHeight);
+				this._textCaret._setActualSize(0, 0);
 			else
 			{
 				//Find the line the caret is on.
-				textFieldLine = this._textLinesContainer._getChildAt(caretLineIndex);
+				textFieldLine = this._textLinesContainer._getChildAt(this._getLineIndexFromCharIndex(this._caretIndex));
 
-				var caretXPosition = this._charMetrics[this._caretIndex].x + textFieldLine._x + x;
+				//Get the text area metrics		
+				var visibleMetrics = new DrawMetrics();
+				visibleMetrics._x = x;
+				visibleMetrics._y = y;
+				visibleMetrics._width = w;
+				visibleMetrics._height = h;
 				
-				if (caretXPosition >= x && caretXPosition <= x + w - 1) //account for caret width
-				{		
-					this._textCaret._setActualPosition(caretXPosition, textFieldLine._y + y);
-					this._textCaret._setActualSize(1, lineHeight);
-				}
-				else
-					this._textCaret._setActualSize(0, lineHeight);
+				//Get the caret metrics
+				var caretMetrics = new DrawMetrics();
+				caretMetrics._x = x + this._textLinesContainer._x + textFieldLine._x + (this._charMetrics[this._caretIndex].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x);
+				caretMetrics._y = y + this._textLinesContainer._y + textFieldLine._y;
+				caretMetrics._width = 1;
+				caretMetrics._height = textFieldLine._height;
+				
+				//Clip caret metrics to text area
+				caretMetrics.mergeReduce(visibleMetrics);
+				
+				//Size and position caret
+				this._textCaret._setActualSize(Math.max(0, caretMetrics._width), Math.max(0, caretMetrics._height));
+				this._textCaret._setActualPosition(caretMetrics._x, caretMetrics._y);
 			}
 		}
 		
@@ -11602,6 +11762,174 @@ TextFieldElement.prototype._doLayout =
 		window.removeEventListener("paste", this._onTextFieldCopyPasteInstance);
 		window.removeEventListener("cut", this._onTextFieldCopyPasteInstance);
 	};		
+	
+	
+///////Internal class for rendering lines of text/////////////////
+
+//This class is only used for rendering lines. 
+//No measure() or layout() needed (handled by parent TextField).
+function TextFieldLineElement()
+{
+	TextFieldLineElement.base.prototype.constructor.call(this);
+	
+	this._text = "";
+	
+	this._highlightMinIndex = 0;
+	this._highlightMaxIndex = 0;
+	
+	this._parentTextField = null;
+	this._charMetricsStartIndex = -1;
+	this._charMetricsEndIndex = -1;	//Non-inclusive
+}
+	
+//Inherit from CanvasElement
+TextFieldLineElement.prototype = Object.create(CanvasElement.prototype);
+TextFieldLineElement.prototype.constructor = TextFieldLineElement;
+TextFieldLineElement.base = CanvasElement;	
+
+//Optimize - turn off inheriting for rendering styles. We'll pull styles from parent so
+//we can utilize the parents cache rather than each line having to lookup and cache styles.
+//Parent also responsible for invalidating our render when styles changes.
+TextFieldLineElement._StyleTypes = Object.create(null);
+TextFieldLineElement._StyleTypes.TextStyle =						StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextFont =							StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextSize =							StyleableBase.EStyleType.NORMAL;		
+TextFieldLineElement._StyleTypes.TextColor =						StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextFillType =						StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedColor = 			StyleableBase.EStyleType.NORMAL;			
+TextFieldLineElement._StyleTypes.TextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;	
+TextFieldLineElement._StyleTypes.TextDecoration =					StyleableBase.EStyleType.NORMAL;
+
+TextFieldLineElement.prototype.setParentLineMetrics = 
+	function (parentTextField, charStartIndex, charEndIndex)
+	{
+		this._parentTextField = parentTextField;
+		this._charMetricsStartIndex = charStartIndex;
+		this._charMetricsEndIndex = charEndIndex;
+		
+		var newText = parentTextField._text.substring(charStartIndex, charEndIndex);
+		if (newText != this._text)
+		{
+			this._text = newText;
+			this._invalidateRender();
+		}
+	};
+
+TextFieldLineElement.prototype.setParentSelection = 
+	function (startIndex, endIndex)
+	{
+		var minIndex = Math.min(startIndex, endIndex);
+		var maxIndex = Math.max(startIndex, endIndex);
+		
+		if (minIndex < this._charMetricsStartIndex)
+			minIndex = this._charMetricsStartIndex;
+		if (maxIndex > this._charMetricsEndIndex)
+			maxIndex = this._charMetricsEndIndex;
+		
+		//Highlight is outside of bounds, nuke it.
+		if (minIndex > maxIndex || minIndex == maxIndex)
+		{
+			minIndex = 0;
+			maxIndex = 0;
+		}
+		
+		if (this._highlightMinIndex == minIndex && this._highlightMaxIndex == maxIndex)
+			return;
+		
+		this._highlightMinIndex = minIndex;
+		this._highlightMaxIndex = maxIndex;
+		
+		this._invalidateRender();
+	};
+
+TextFieldLineElement.prototype.getLineWidth = 
+	function ()
+	{
+		if (this._charMetricsStartIndex > -1 && this._charMetricsEndIndex > -1)
+			return this._parentTextField._charMetrics[this._charMetricsEndIndex].x - this._parentTextField._charMetrics[this._charMetricsStartIndex].x;
+		
+		return 0;
+	};	
+	
+//@override
+TextFieldLineElement.prototype._doRender =
+	function()
+	{
+		TextFieldLineElement.base.prototype._doRender.call(this);
+		
+		if (this._text.length == 0)
+			return;
+		
+		var paddingMetrics = this._getPaddingMetrics();
+		var ctx = this._getGraphicsCtx();
+		
+		//Get styles
+		var textFillType = this._parentTextField.getStyle("TextFillType");
+		var textColor = this._parentTextField.getStyle("TextColor");
+		var highlightTextColor = this._parentTextField.getStyle("TextHighlightedColor");
+		var backgroundHighlightTextColor = this._parentTextField.getStyle("TextHighlightedBackgroundColor");
+		var fontString = this._parentTextField._getFontString();
+		var textDecoration = this._parentTextField.getStyle("TextDecoration");	
+		var maskCharacter = this._parentTextField.getStyle("MaskCharacter");
+		
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
+		var w = paddingMetrics.getWidth();
+		
+		for (var i = 0; i < this._text.length; i++)
+		{
+			var charWidth = this._parentTextField._charMetrics[i + this._charMetricsStartIndex].width;
+			
+			var printChar = this._text[i];
+			if (maskCharacter != null)
+				printChar = maskCharacter;
+			
+			if (this._highlightMinIndex <= i + this._charMetricsStartIndex && this._highlightMaxIndex > i + this._charMetricsStartIndex)
+			{
+				ctx.fillStyle = backgroundHighlightTextColor;
+				
+				ctx.beginPath();
+				ctx.moveTo(x, 0);
+				ctx.lineTo(x + charWidth, 0);
+				ctx.lineTo(x + charWidth, this._height);
+				ctx.lineTo(x, this._height);
+				ctx.closePath();
+				ctx.fill();
+				
+				if (textFillType == "stroke")
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
+				else
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
+			}
+			else
+			{
+				if (textFillType == "stroke")
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "middle");
+				else
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "middle");
+			}
+			
+			x += charWidth;
+		}
+		
+		if (textDecoration == "underline")
+		{
+			y = this._height - .5;
+			
+			ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x + w, y);
+			ctx.lineWidth = 1;
+			
+			if (this._highlightMinIndex == this._highlightMaxIndex)
+				ctx.strokeStyle = textColor;
+			else 
+				ctx.strokeStyle = highlightTextColor;
+			
+			ctx.stroke();
+		}
+	};		
+	
 	
 	
 
@@ -11648,7 +11976,7 @@ TextElement._StyleTypes = Object.create(null);
  * @style Text String
  * Text to be rendered by the TextElement.
  */
-TextElement._StyleTypes.Text = 				StyleableBase.EStyleType.NORMAL;		// "any string" || null
+TextElement._StyleTypes.Text = 					StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style Selectable boolean
@@ -11660,7 +11988,7 @@ TextElement._StyleTypes.Selectable = 			StyleableBase.EStyleType.NORMAL;		// tru
  * @style Multiline boolean
  * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
  */
-TextElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		// true || false
+TextElement._StyleTypes.Multiline = 			StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style WordWrap boolean
@@ -11680,10 +12008,11 @@ TextElement.StyleDefault.setStyle("PaddingLeft", 					2);
 TextElement.StyleDefault.setStyle("PaddingRight", 					2);
 TextElement.StyleDefault.setStyle("TextHorizontalAlign", 			"left");
 TextElement.StyleDefault.setStyle("TextVerticalAlign", 				"top");
+TextElement.StyleDefault.setStyle("Cursor", 						"text");
 
 //TextElement specific styles
 TextElement.StyleDefault.setStyle("Text", 							null);
-TextElement.StyleDefault.setStyle("Selectable", 					false);
+TextElement.StyleDefault.setStyle("Selectable", 					true);
 TextElement.StyleDefault.setStyle("Multiline", 						true);
 TextElement.StyleDefault.setStyle("WordWrap", 						true);
 
@@ -12714,7 +13043,6 @@ function TextInputElement()
 	
 	this._textField = new TextFieldElement();
 	this._textField.setStyle("Selectable", true);
-	this._textField.setStyle("Cursor", null);
 	this._textField.setStyle("TabStop", -1);
 	this._addChild(this._textField);
 	
@@ -12730,10 +13058,13 @@ function TextInputElement()
 				_self._onTextInputFocusOut(event);
 		};
 	
-	this._onTextInputKeyDownInstance = 
+	this._onTextInputKeyUpDownInstance = 
 		function (keyboardEvent)
 		{
-			_self._onTextInputKeyDown(keyboardEvent);
+			if (keyboardEvent.getType() == "keydown")
+				_self._onTextInputKeyDown(keyboardEvent);
+			else // if (keyboardEvent.getType() == "keyup")
+				_self._onTextInputKeyUp(keyboardEvent);
 		};
 		
 	this._onTextInputTextFieldChangedInstance = 
@@ -12815,7 +13146,7 @@ TextInputElement._StyleTypes.UpTextHighlightedColor = 					StyleableBase.EStyleT
  * Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextHighlightedBackgroundColor style.
  */
-TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			// color "#000000"
+TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 		StyleableBase.EStyleType.NORMAL;			// color "#000000"
 
 /**
  * @style DisabledSkinClass CanvasElement
@@ -12869,16 +13200,14 @@ TextInputElement._StyleTypes.DisplayAsPassword = 						StyleableBase.EStyleType.
 
 TextInputElement.StyleDefault = new StyleDefinition();
 
+TextInputElement.StyleDefault.setStyle("TextHorizontalAlign", 						"left");
+TextInputElement.StyleDefault.setStyle("TextVerticalAlign", 						"middle");
+
 TextInputElement.StyleDefault.setStyle("MaxChars", 									0);
 TextInputElement.StyleDefault.setStyle("Enabled", 									true);
 
 TextInputElement.StyleDefault.setStyle("UpTextColor", 								"#000000");
-TextInputElement.StyleDefault.setStyle("UpTextHighlightedColor", 					"#FFFFFF");
-TextInputElement.StyleDefault.setStyle("UpTextHighlightedBackgroundColor", 			"#000000");
-
 TextInputElement.StyleDefault.setStyle("DisabledTextColor", 						"#888888");
-TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedColor", 				"#FFFFFF");
-TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedBackgroundColor", 	"#000000");
 
 TextInputElement.StyleDefault.setStyle("DisplayAsPassword", 						false);
 
@@ -12888,7 +13217,6 @@ TextInputElement.StyleDefault.setStyle("PaddingLeft",								3);
 TextInputElement.StyleDefault.setStyle("PaddingRight",								3);
 
 TextInputElement.StyleDefault.setStyle("TabStop", 									0);
-TextInputElement.StyleDefault.setStyle("Cursor", 									"text");
 
 TextInputElement.StyleDefault.setStyle("SkinClass", 								CanvasElement);
 TextInputElement.StyleDefault.setStyle("UpSkinClass", 								CanvasElement);
@@ -12908,7 +13236,7 @@ TextInputElement.UpSkinStyleDefault.setStyle("BorderType", 							"inset");
 TextInputElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 TextInputElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#606060");
 
-TextInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 					"#F5F5F5");
+TextInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 						"#F5F5F5");
 
 //Apply skin defaults
 TextInputElement.StyleDefault.setStyle("UpSkinStyle", 								TextInputElement.UpSkinStyleDefault);
@@ -12991,6 +13319,33 @@ TextInputElement.prototype._onTextInputKeyDown =
 			keyboardEvent.preventDefault();
 	};
 
+/**
+ * @function _onTextInputKeyUp
+ * Event handler for "keyup" event. Only active when TextInput is enabled. 
+ * Proxies keyboard event to internal TextField.
+ * 
+ * @param keyboardEvent ElementKeyboardEvent
+ * ElementKeyboardEvent to process.
+ */	
+TextInputElement.prototype._onTextInputKeyUp = 
+	function (keyboardEvent)
+	{
+		if (keyboardEvent.getDefaultPrevented() == true)
+			return;
+		
+		var clonedEvent = keyboardEvent.clone();
+		clonedEvent._bubbles = false; //Dont bubble.
+		
+		//Dispatch non-bubbling keyboard event to our text field.
+		this._textField.dispatchEvent(clonedEvent);
+		
+		if (clonedEvent.getIsCanceled() == true)
+			keyboardEvent.cancelEvent();
+			
+		if (clonedEvent.getDefaultPrevented() == true)
+			keyboardEvent.preventDefault();
+	};	
+	
 /**
  * @function _onTextInputFocusIn
  * Event handler for "focusin" event. 
@@ -13182,6 +13537,12 @@ TextInputElement.prototype._doStylesUpdated =
 	{
 		TextInputElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
+		//Force the textField to use our defaults rather than inherited.
+		if ("TextHorizontalAlign" in stylesMap)
+			this._textField.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+		if ("TextVerticalAlign" in stylesMap)
+			this._textField.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
+		
 		if ("MaxChars" in stylesMap)
 			this._textField.setStyle("MaxChars", this.getStyle("MaxChars"));
 		
@@ -13192,16 +13553,22 @@ TextInputElement.prototype._doStylesUpdated =
 			
 			if (enabled == true)
 			{
-				if (this.hasEventListener("keydown", this._onTextInputKeyDownInstance) == false)
-					this.addEventListener("keydown", this._onTextInputKeyDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keydown", this._onTextInputKeyUpDownInstance);
+				
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
 				if (this._textField.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
 					this._textField.addEventListener("changed", this._onTextInputTextFieldChangedInstance);					
 			}
 			else
 			{
-				if (this.hasEventListener("keydown", this._onTextInputKeyDownInstance) == true)
-					this.removeEventListener("keydown", this._onTextInputKeyDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keydown", this._onTextInputKeyUpDownInstance);
+				
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
 				if (this._textField.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
 					this._textField.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
@@ -13281,6 +13648,531 @@ TextInputElement.prototype._doLayout =
 	};
 	
 	
+
+
+/**
+ * @depends TextInputElement.js
+ */
+
+/////////////////////////////////////////////////////////
+///////////////TextAreaElement///////////////////////////	
+	
+/**
+ * @class TextAreaElement
+ * @inherits TextInputElement
+ * 
+ * TextAreaElement is a skin-able multi-line editable text box
+ * which supports two skin states, "up" and "disabled".
+ * Scroll bars will optionally be added when the text becomes
+ * larger than the TextArea's visible region.
+ * 
+ * @constructor TextAreaElement 
+ * Creates new TextAreaElement instance.
+ */
+function TextAreaElement() //extends TextInputElement
+{
+	TextAreaElement.base.prototype.constructor.call(this);
+	
+	this._horizontalScrollBar = null;
+	this._verticalScrollBar = null;
+	
+	var _self = this;
+	
+	this._onTextAreaTextFieldLayoutCompleteInstance = 
+		function (event)
+		{
+			_self._onTextAreaTextFieldLayoutComplete(event);
+		};
+	
+	this._onTextAreaMouseWheelEventInstance = 
+		function (elementMouseWheelEvent)
+		{
+			_self._onTextAreaMouseWheelEvent(elementMouseWheelEvent);
+		};
+		
+	this._onTextAreaScrollBarChangeInstance =
+		function (elementEvent)
+		{
+			_self._onTextAreaScrollBarChange(elementEvent);
+		};	
+		
+	this.addEventListener("wheel", this._onTextAreaMouseWheelEventInstance);	
+	this._textField.addEventListener("layoutcomplete", this._onTextAreaTextFieldLayoutCompleteInstance);
+}
+
+//Inherit from SkinnableElement
+TextAreaElement.prototype = Object.create(TextInputElement.prototype);
+TextAreaElement.prototype.constructor = TextAreaElement;
+TextAreaElement.base = TextInputElement;
+
+
+/////////////Style Types///////////////////////////////
+
+TextAreaElement._StyleTypes = Object.create(null);
+
+/**
+ * @style Selectable boolean
+ * When true, text can be highlighted and copied.
+ */
+TextAreaElement._StyleTypes.Selectable = 						StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style Multiline boolean
+ * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
+ */
+TextAreaElement._StyleTypes.Multiline = 						StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style WordWrap boolean
+ * When true, text will wrap when width is constrained and will be rendered on multiple lines if necessary. 
+ */
+TextAreaElement._StyleTypes.WordWrap = 							StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style MeasureContentWidth boolean
+ * When true, the TextArea's measured width will use its text measured width. 
+ * Use this when you want the TextArea to expand its width when possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+TextAreaElement._StyleTypes.MeasureContentWidth = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style MeasureContentHeight boolean
+ * When true, the TextArea's measured height will use its text measured height.
+ * Use this when you want the TextArea to expand when its height possible rather than scroll, 
+ * causing scrolling to happen on a parent viewport.
+ */
+TextAreaElement._StyleTypes.MeasureContentHeight = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
+ * @style HorizontalScrollBarDisplay String
+ * Determines the behavior of the horizontal scroll bar. Allowable values are "on", "off", or "auto".
+ */
+TextAreaElement._StyleTypes.HorizontalScrollBarDisplay = 		StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
+
+/**
+ * @style HorizontalScrollBarPlacement String
+ * Determines the position of the horizontal scroll bar. Allowable values are "top" or "bottom".
+ */
+TextAreaElement._StyleTypes.HorizontalScrollBarPlacement = 		StyleableBase.EStyleType.NORMAL;		// "top" || "bottom"
+
+/**
+ * @style VerticalScrollBarDisplay String
+ * Determines the behavior of the vertical scroll bar. Allowable values are "on", "off", or "auto".
+ */
+TextAreaElement._StyleTypes.VerticalScrollBarDisplay = 			StyleableBase.EStyleType.NORMAL;		// "on" || "off" || "auto"
+
+/**
+ * @style VerticalScrollBarPlacement String
+ * Determines the position of the vertical scroll bar. Allowable values are "left" or "right".
+ */
+TextAreaElement._StyleTypes.VerticalScrollBarPlacement = 		StyleableBase.EStyleType.NORMAL;		// "left" || "right"
+
+//ScrollBar styles.
+/**
+ * @style HorizontalScrollBarStyle StyleDefinition
+ * The StyleDefinition or [StyleDefinition] array to be applied to the horizontal scroll bar.
+ */
+TextAreaElement._StyleTypes.HorizontalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+
+/**
+ * @style VerticalScrollBarStyle StyleDefinition
+ * The StyleDefinition or [StyleDefinition] array to be applied to the vertical scroll bar.
+ */
+TextAreaElement._StyleTypes.VerticalScrollBarStyle = 			StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+
+
+////////////Default Styles////////////////////////////
+
+TextAreaElement.StyleDefault = new StyleDefinition();
+
+TextAreaElement.StyleDefault.setStyle("TextHorizontalAlign", 						"left");
+TextAreaElement.StyleDefault.setStyle("TextVerticalAlign", 							"top");
+
+TextAreaElement.StyleDefault.setStyle("Selectable", 								true);
+TextAreaElement.StyleDefault.setStyle("Multiline", 									true);
+TextAreaElement.StyleDefault.setStyle("WordWrap", 									true);
+
+TextAreaElement.StyleDefault.setStyle("Cursor", 									null);
+
+TextAreaElement.StyleDefault.setStyle("HorizontalScrollBarDisplay", 				"auto");
+TextAreaElement.StyleDefault.setStyle("HorizontalScrollBarPlacement", 				"bottom");
+
+TextAreaElement.StyleDefault.setStyle("VerticalScrollBarDisplay", 					"auto");
+TextAreaElement.StyleDefault.setStyle("VerticalScrollBarPlacement", 				"right");
+
+TextAreaElement.StyleDefault.setStyle("HorizontalScrollBarStyle", 					null);
+TextAreaElement.StyleDefault.setStyle("VerticalScrollBarStyle", 					null);
+
+TextAreaElement.StyleDefault.setStyle("MeasureContentWidth", 						false);
+TextAreaElement.StyleDefault.setStyle("MeasureContentHeight", 						false);
+
+
+/////////////Internal Functions///////////////////
+
+/**
+ * @function _onTextAreaTextFieldLayoutComplete
+ * Event handler for the scroll bar "layoutcomplete" event. 
+ * Updates the scroll bar position.
+ * 
+ * @param event DispatcherEvent
+ * The DispatcherEvent to process.
+ */	
+TextAreaElement.prototype._onTextAreaTextFieldLayoutComplete = 
+	function (event)
+	{
+		//Our layout is dependent on the TextField layout for determining
+		//scroll bars and actual content size. TextField itself requires
+		//multiple layout passes due to the word wrap. If not careful
+		//we can end up with an infinite loop because of this dependency.
+	
+		this._invalidateMeasure();
+		this._invalidateLayout();
+	};
+
+/**
+ * @function _onTextAreaScrollBarChange
+ * Event handler for the scroll bar "changed" event. 
+ * Updates the child elements position within the Viewport.
+ * 
+ * @param elementEvent ElementEvent
+ * The ElementEvent to process.
+ */		
+TextAreaElement.prototype._onTextAreaScrollBarChange = 
+	function (elementEvent)
+	{
+		if (elementEvent.getTarget() == this._horizontalScrollBar)
+			this._textField._setHorizontalScrollValue(this._horizontalScrollBar.getScrollValue());
+		else // if (elementEvent.getTarget() == this._verticalScrollBar)
+			this._textField._setVerticalScrollValue(this._verticalScrollBar.getScrollValue());
+	};
+
+/**
+ * @function _onTextAreaMouseWheelEvent
+ * Event handler for the Viewport's "wheel" event. Starts the scroll bar tween.
+ * 
+ * @param elementMouseWheelEvent ElementMouseWheelEvent
+ * The ElementMouseWheelEvent to process.
+ */		
+TextAreaElement.prototype._onTextAreaMouseWheelEvent = 
+	function (elementMouseWheelEvent)
+	{
+		if (elementMouseWheelEvent.getDefaultPrevented() == true)
+			return;
+	
+		var consumeEvent = false;
+		
+		var scrollPageSize = null;
+		var scrollViewSize = null;
+		var scrollLineSize = null;
+		var scrollValue = null;
+		var maxScrollValue = null;
+		
+		var deltaX = elementMouseWheelEvent.getDeltaX();
+		var deltaY = elementMouseWheelEvent.getDeltaY();
+		
+		if (deltaX != 0 && this._horizontalScrollBar != null)
+		{
+			scrollPageSize = this._horizontalScrollBar.getScrollPageSize();
+			scrollViewSize = this._horizontalScrollBar.getScrollViewSize();
+			scrollLineSize = this._horizontalScrollBar.getScrollLineSize();
+			
+			maxScrollValue = scrollPageSize - scrollViewSize;
+			if (maxScrollValue > 0)
+			{
+				scrollValue = this._horizontalScrollBar.getTweenToValue();
+				if (scrollValue == null)
+					scrollValue = this._horizontalScrollBar.getScrollValue();
+				
+				if (deltaX < 0 && scrollValue > 0)
+				{
+					this._horizontalScrollBar.startScrollTween(Math.max(scrollValue + (deltaX * (scrollLineSize * 3)), 0));
+					consumeEvent = true;
+				}
+				else if (deltaX > 0 && scrollValue < maxScrollValue)
+				{
+					this._horizontalScrollBar.startScrollTween(Math.min(scrollValue + (deltaX * (scrollLineSize * 3)), maxScrollValue));
+					consumeEvent = true;
+				}
+			}
+		}
+		
+		if (deltaY != 0 && this._verticalScrollBar != null)
+		{
+			scrollPageSize = this._verticalScrollBar.getScrollPageSize();
+			scrollViewSize = this._verticalScrollBar.getScrollViewSize();
+			scrollLineSize = this._verticalScrollBar.getScrollLineSize();
+			
+			maxScrollValue = scrollPageSize - scrollViewSize;
+			if (maxScrollValue > 0)
+			{
+				scrollValue = this._verticalScrollBar.getTweenToValue();
+				if (scrollValue == null)
+					scrollValue = this._verticalScrollBar.getScrollValue();
+				
+				if (deltaY < 0 && scrollValue > 0)
+				{
+					this._verticalScrollBar.startScrollTween(Math.max(scrollValue + (deltaY * (scrollLineSize * 3)), 0));
+					consumeEvent = true;
+				}
+				else if (deltaY > 0 && scrollValue < maxScrollValue)
+				{
+					this._verticalScrollBar.startScrollTween(Math.min(scrollValue + (deltaY * (scrollLineSize * 3)), maxScrollValue));
+					consumeEvent = true;
+				}
+			}
+		}
+		
+		//We've consumed the wheel event, don't want parents double scrolling.
+		if (consumeEvent == true)
+		{
+			elementMouseWheelEvent.preventDefault();
+			this._invalidateLayout();
+		}
+	};
+
+//@override
+TextAreaElement.prototype._doStylesUpdated =
+	function (stylesMap)
+	{
+		TextAreaElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+	
+		if ("Selectable" in stylesMap)
+			this._textField.setStyle("Selectable", this.getStyle("Selectable"));
+		
+		if ("Multiline" in stylesMap)
+			this._textField.setStyle("Multiline", this.getStyle("Multiline"));
+		
+		if ("WordWrap" in stylesMap)
+			this._textField.setStyle("WordWrap", this.getStyle("WordWrap"));
+		
+		if ("HorizontalScrollBarDisplay" in stylesMap ||
+			"VerticalScrollBarDisplay" in stylesMap)
+		{
+			this._invalidateLayout();
+			this._invalidateMeasure();
+		}
+		else 
+		{	
+			if ("HorizontalScrollBarPlacement" in stylesMap ||
+				"VerticalScrollBarPlacement" in stylesMap)
+			{
+				this._invalidateLayout();
+			}
+			
+			if ("MeasureContentWidth" in stylesMap || 
+				"MeasureContentHeight" in stylesMap)
+			{
+				this._invalidateMeasure();
+			}
+		}
+		
+		if ("HorizontalScrollBarStyle" in stylesMap && this._horizontalScrollBar != null)
+			this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
+		if ("VerticalScrollBarStyle" in stylesMap && this._verticalScrollBar != null)
+			this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
+	};
+	
+//@override
+TextAreaElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		var vBarWidth = 0;
+		var vBarHeight = 0;
+		
+		var hBarWidth = 0;
+		var hBarHeight = 0;
+		
+		var w = 0;
+		var h = 0;
+		
+		if (this.getStyle("MeasureContentWidth") == true)
+			w = this._textField._getStyledOrMeasuredWidth();
+		
+		if (this.getStyle("MeasureContentHeight") == true)
+			h = this._textField._getStyledOrMeasuredHeight();
+		
+		if (this._verticalScrollBar != null)
+		{
+			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
+			vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
+		}
+		if (this._horizontalScrollBar != null)
+		{
+			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
+			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
+		}
+		
+		if (w == 0)
+			w = hBarWidth;
+		
+		if (h == 0)
+			h = vBarHeight;
+		
+		w += vBarWidth;
+		h += hBarHeight;
+		
+		//Padding included by textField
+		this._setMeasuredSize(w, h);
+	};	
+
+//@override
+TextAreaElement.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		//base.base - Skip the TextInput _doLayout()
+		TextAreaElement.base.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		var hDisplay = this.getStyle("HorizontalScrollBarDisplay");
+		var vDisplay = this.getStyle("VerticalScrollBarDisplay");
+		
+		var horizontalBarPlacement = this.getStyle("HorizontalScrollBarPlacement");
+		var verticalBarPlacement = this.getStyle("VerticalScrollBarPlacement");
+		
+		var vScrollParams = this._textField._getVerticalScrollParameters();
+		var hScrollParams = this._textField._getHorizontalScrollParameters();
+		
+		//Need full padding data, we put the padding into the TextField on sides with no scroll bar
+		var paddingSize = this._getPaddingSize();
+		
+		var needsHScroll = false;
+		var needsVScroll = false;
+		
+		//We need the scroll bar.
+		if (hDisplay == "on" || (hDisplay == "auto" && hScrollParams.page > hScrollParams.view))
+			needsHScroll = true;
+			
+		if (vDisplay == "on" || (vDisplay == "auto" && vScrollParams.page > vScrollParams.view))
+			needsVScroll = true;
+		
+		//Destroy
+		if (needsHScroll == false)
+		{
+			if (this._horizontalScrollBar != null)
+			{
+				this._removeChild(this._horizontalScrollBar);
+				this._horizontalScrollBar = null;
+			}
+		}
+		else //Create
+		{
+			if (this._horizontalScrollBar == null)
+			{
+				this._horizontalScrollBar = new ScrollBarElement();
+				this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
+	
+				this._horizontalScrollBar.setStyle("LayoutDirection", "horizontal");
+				
+				this._horizontalScrollBar.addEventListener("changed", this._onTextAreaScrollBarChangeInstance);
+				this._addChild(this._horizontalScrollBar);
+			}
+		}
+		
+		//Destroy
+		if (needsVScroll == false)
+		{
+			if (this._verticalScrollBar != null)
+			{
+				this._removeChild(this._verticalScrollBar);
+				this._verticalScrollBar = null;
+			}
+		}
+		else //Create
+		{
+			if (this._verticalScrollBar == null)
+			{
+				this._verticalScrollBar = new ScrollBarElement();
+				this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
+				
+				this._verticalScrollBar.setStyle("LayoutDirection", "vertical");
+				
+				this._verticalScrollBar.addEventListener("changed", this._onTextAreaScrollBarChangeInstance);
+				this._addChild(this._verticalScrollBar);
+			}
+		}
+		
+		var verticalBarWidth = 0;
+		var horizontalBarHeight = 0;
+		
+		//Distribute horizontal padding and setup vertical scroll bar
+		if (this._verticalScrollBar != null)
+		{
+			this._verticalScrollBar.setScrollPageSize(vScrollParams.page);
+			this._verticalScrollBar.setScrollViewSize(vScrollParams.view);
+			this._verticalScrollBar.setScrollLineSize(vScrollParams.line);
+			this._verticalScrollBar.setScrollValue(vScrollParams.value);
+			
+			verticalBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
+		}
+		
+		//Distribute vertical padding and setup horizontal scroll bar
+		if (this._horizontalScrollBar != null)
+		{
+			this._horizontalScrollBar.setScrollPageSize(hScrollParams.page);
+			this._horizontalScrollBar.setScrollViewSize(hScrollParams.view);
+			this._horizontalScrollBar.setScrollLineSize(hScrollParams.line);
+			this._horizontalScrollBar.setScrollValue(hScrollParams.value);
+			
+			horizontalBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
+		}			
+
+		
+		//Size and position vertical scroll bar
+		if (this._verticalScrollBar != null)
+		{
+			this._verticalScrollBar._setActualSize(verticalBarWidth, this._height - horizontalBarHeight);
+			
+			if (verticalBarPlacement == "left")
+			{
+				if (horizontalBarPlacement == "top")
+					this._verticalScrollBar._setActualPosition(0, horizontalBarHeight);
+				else
+					this._verticalScrollBar._setActualPosition(0, 0);
+			}
+			else //if (verticalBarPlacement == "right")
+			{
+				if (horizontalBarPlacement == "top")
+					this._verticalScrollBar._setActualPosition(this._width - verticalBarWidth, horizontalBarHeight);
+				else
+					this._verticalScrollBar._setActualPosition(this._width - verticalBarWidth, 0);
+			}				
+		}
+		
+		//Size and position horizontal scroll bar
+		if (this._horizontalScrollBar != null)
+		{
+			this._horizontalScrollBar._setActualSize(this._width - verticalBarWidth, horizontalBarHeight);
+			
+			if (horizontalBarPlacement == "top")
+			{
+				if (verticalBarPlacement == "left")
+					this._horizontalScrollBar._setActualPosition(verticalBarWidth, 0);
+				else
+					this._horizontalScrollBar._setActualPosition(0, 0);
+			}
+			else //if (horizontalBarPlacement == "bottom")
+			{
+				if (verticalBarPlacement == "left")
+					this._horizontalScrollBar._setActualPosition(verticalBarWidth, this._height - horizontalBarHeight);
+				else
+					this._horizontalScrollBar._setActualPosition(0, this._height - horizontalBarHeight);
+			}	
+		}
+		
+		//Size and position the TextField
+		this._textField._setActualSize(this._width - verticalBarWidth, this._height - horizontalBarHeight);
+		
+		var tfX = 0;
+		if (this._verticalScrollBar != null && verticalBarPlacement == "left")
+			tfX = verticalBarWidth;
+		
+		var tfY = 0;
+		if (this._horizontalScrollBar != null && horizontalBarPlacement == "top")
+			tfY = horizontalBarHeight;
+		
+		this._textField._setActualPosition(tfX, tfY);
+	};
+
 
 
 /**
@@ -16997,15 +17889,14 @@ ViewportElement.prototype._doMeasure =
 		this._setMeasuredSize(w + padWidth, h + padHeight);
 	};
 	
-//@Override	
+//@override	
 ViewportElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
+		ViewportElement.base.prototype._doLayout.call(this, paddingMetrics);
+	
 		var hDisplay = this.getStyle("HorizontalScrollBarDisplay");
 		var vDisplay = this.getStyle("VerticalScrollBarDisplay");
-		
-		var paneWidth = paddingMetrics.getWidth();
-		var paneHeight = paddingMetrics.getHeight();
 		
 		var contentWidth = 0;
 		var contentHeight = 0;
@@ -17015,27 +17906,32 @@ ViewportElement.prototype._doLayout =
 			contentHeight = this._viewElement._getStyledOrMeasuredHeight();
 		}
 		
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY();
+		var w = paddingMetrics.getWidth();
+		var h = paddingMetrics.getHeight();
+		
 		var scrollBarsChanged = false;
 		var needsHScroll = false;
 		var needsVScroll = false;
 		
 		//We need the scroll bar.
-		if (hDisplay == "on" || (hDisplay == "auto" && contentWidth > paneWidth))
+		if (hDisplay == "on" || (hDisplay == "auto" && contentWidth > w))
 			needsHScroll = true;
 			
-		if (vDisplay == "on" || (vDisplay == "auto" && contentHeight > paneHeight))
+		if (vDisplay == "on" || (vDisplay == "auto" && contentHeight > h))
 			needsVScroll = true;
 		
 		//2nd pass, we need the *other* scroll bar because the first took some of our content area.
 		if (needsHScroll == true && needsVScroll == false && vDisplay == "auto" && this._horizontalScrollBar != null)
 		{
-			if (contentHeight > paneHeight - this._horizontalScrollBar._getStyledOrMeasuredHeight())
+			if (contentHeight > h - this._horizontalScrollBar._getStyledOrMeasuredHeight())
 				needsVScroll = true;
 		}
 
 		if (needsVScroll == true && needsHScroll == false && hDisplay == "auto" && this._verticalScrollBar != null)
 		{
-			if (contentWidth > paneWidth - this._verticalScrollBar._getStyledOrMeasuredWidth())
+			if (contentWidth > w - this._verticalScrollBar._getStyledOrMeasuredWidth())
 				needsHScroll = true;
 		}
 		
@@ -17105,91 +18001,85 @@ ViewportElement.prototype._doLayout =
 		{
 			horizontalScrollValue = this._horizontalScrollBar.getScrollValue();
 			horizontalBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
-			paneHeight -= horizontalBarHeight;
+			h -= horizontalBarHeight;
 		}
 		
 		if (this._verticalScrollBar != null)
 		{
 			verticalScrollValue = this._verticalScrollBar.getScrollValue();
 			verticalBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
-			paneWidth -= verticalBarWidth;
+			w -= verticalBarWidth;
 		}
 		
 		//Fix scroll values (size reduction forces us to scroll up)
-		horizontalScrollValue = Math.min(horizontalScrollValue, contentWidth - paneWidth);
+		horizontalScrollValue = Math.min(horizontalScrollValue, contentWidth - w);
 		horizontalScrollValue = Math.max(horizontalScrollValue, 0);
 		
-		verticalScrollValue = Math.min(verticalScrollValue, contentHeight - paneHeight);
+		verticalScrollValue = Math.min(verticalScrollValue, contentHeight - h);
 		verticalScrollValue = Math.max(verticalScrollValue, 0);
 		
 		var horizontalBarPlacement = this.getStyle("HorizontalScrollBarPlacement");
 		var verticalBarPlacement = this.getStyle("VerticalScrollBarPlacement");
 		
-		var x = paddingMetrics.getX();
-		var y = paddingMetrics.getY();
-		
 		if (this._horizontalScrollBar != null)
 		{
 			this._horizontalScrollBar.setScrollPageSize(contentWidth);
-			this._horizontalScrollBar.setScrollViewSize(paneWidth);
+			this._horizontalScrollBar.setScrollViewSize(w);
 			this._horizontalScrollBar.setScrollValue(horizontalScrollValue);
 			
-			this._horizontalScrollBar._setActualSize(paneWidth, horizontalBarHeight);
+			this._horizontalScrollBar._setActualSize(this._width - verticalBarWidth, horizontalBarHeight);
 			
 			if (horizontalBarPlacement == "top")
 			{
 				if (verticalBarPlacement == "left")
-					this._horizontalScrollBar._setActualPosition(x + verticalBarWidth, y);
+					this._horizontalScrollBar._setActualPosition(verticalBarWidth, 0);
 				else
-					this._horizontalScrollBar._setActualPosition(x, y);
+					this._horizontalScrollBar._setActualPosition(0, 0);
 			}
 			else
 			{
 				if (verticalBarPlacement == "left")
-					this._horizontalScrollBar._setActualPosition(x + verticalBarWidth, y + paneHeight);
+					this._horizontalScrollBar._setActualPosition(verticalBarWidth, this._height - horizontalBarHeight);
 				else
-					this._horizontalScrollBar._setActualPosition(x, y + paneHeight);
+					this._horizontalScrollBar._setActualPosition(0, this._height - horizontalBarHeight);
 			}
 		}
 		
 		if (this._verticalScrollBar != null)
 		{
 			this._verticalScrollBar.setScrollPageSize(contentHeight);
-			this._verticalScrollBar.setScrollViewSize(paneHeight);
+			this._verticalScrollBar.setScrollViewSize(h);
 			this._verticalScrollBar.setScrollValue(verticalScrollValue);
 			
-			this._verticalScrollBar._setActualSize(verticalBarWidth, paneHeight);
+			this._verticalScrollBar._setActualSize(verticalBarWidth, this._height - horizontalBarHeight);
 			
 			if (verticalBarPlacement == "left")
 			{
 				if (horizontalBarPlacement == "top")
-					this._verticalScrollBar._setActualPosition(x, y + horizontalBarHeight);
+					this._verticalScrollBar._setActualPosition(0, horizontalBarHeight);
 				else
-					this._verticalScrollBar._setActualPosition(x, y);
+					this._verticalScrollBar._setActualPosition(0, 0);
 			}
 			else
 			{
 				if (horizontalBarPlacement == "top")
-					this._verticalScrollBar._setActualPosition(x + paneWidth, y + horizontalBarHeight);
+					this._verticalScrollBar._setActualPosition(this._width - verticalBarWidth, horizontalBarHeight);
 				else
-					this._verticalScrollBar._setActualPosition(x + paneWidth, y);
+					this._verticalScrollBar._setActualPosition(this._width - verticalBarWidth, 0);
 			}
 		}
 		
-		var containerX = x;
-		var containerY = y;
-		
 		if (horizontalBarPlacement == "top")
-			containerY += horizontalBarHeight;
+			y += horizontalBarHeight;
 		if (verticalBarPlacement == "left")
-			containerX += verticalBarWidth;		
+			x += verticalBarWidth;		
 		
-		this._viewPortContainer._setActualSize(paneWidth, paneHeight);
-		this._viewPortContainer._setActualPosition(containerX, containerY);
+		this._viewPortContainer._setActualSize(w, h);
+		this._viewPortContainer._setActualPosition(x, y);
 		
 		if (this._viewElement != null)
 		{
-			this._viewElement._setActualSize(Math.max(paneWidth, contentWidth), Math.max(paneHeight, contentHeight));
+			this._viewElement._setActualSize(Math.max(w, contentWidth), Math.max(h, contentHeight));
 			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1);
 		}
 	};
@@ -18301,17 +19191,17 @@ ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault = new StyleDefinition
 ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 			"#777777");
 
 //up / over / down skin of arrow buttons
-ScrollBarElement.ButtonScrollArraySkinStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonScrollArraySkinStyleDefault.setStyle("ArrowColor", 					"#000000");
+ScrollBarElement.ButtonScrollArrowSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.ButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 					"#000000");
 
 //arrow buttons common
 ScrollBarElement.ButtonScrollArrowStyleDefault = new StyleDefinition();
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("SkinClass", 						ScrollButtonSkinElement);	
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinWidth", 						15);
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinHeight", 						15);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("UpSkinStyle", 						ScrollBarElement.ButtonScrollArraySkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("UpSkinStyle", 						ScrollBarElement.ButtonScrollArrowSkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.ButtonScrollArrowSkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.ButtonScrollArrowSkinStyleDefault);
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault);
 
 ////Dynamically added based on LayoutDirection
@@ -24317,7 +25207,7 @@ RadioButtonElement.prototype._doLayout =
  * @inherits ButtonElement
  * 
  * DropdownElement is a compound button that creates a pop-up drop-down list which the user
- * can select a value which is then displayed on the by the Dropdown. The values
+ * can select a value which is then displayed by the Dropdown. The values
  * in the list are generated by a supplied ListCollection and associated styling.
  * 
  * The Dropdown button itself contains a child button which is used to render
