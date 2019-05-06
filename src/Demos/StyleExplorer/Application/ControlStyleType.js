@@ -183,6 +183,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "VerticalGridLinesStyle" ||
 			this.styleName == "HorizontalGridLinesStyle" ||
 			this.styleName == "ScrollBarStyle" ||
+			this.styleName == "VerticalScrollBarStyle" ||
+			this.styleName == "HorizontalScrollBarStyle" ||
 			this.styleName == "SortAscIconStyle" ||
 			this.styleName == "SortDescIconStyle" ||
 			this.styleName == "HeaderItemStyle" ||
@@ -266,7 +268,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "HeaderItemStyle" ||
 			this.styleName == "RowItemStyle" ||
 			this.styleName == "TextInputColorStyle" ||
-			this.styleName == "PopupColorPickerStyle") 
+			this.styleName == "PopupColorPickerStyle" ||
+			this.styleName == "ScrollBarStyle" ||
+			this.styleName == "VerticalScrollBarStyle" ||
+			this.styleName == "HorizontalScrollBarStyle") 
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"Cursor", 									"string", 	true, 	true, 	styleDef, this, false,						[{label:"pointer", value:"pointer"}, {label:"text", value:"text"}, {label:"none", value:"none"}]));
 		}
@@ -281,6 +286,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "AlertTitleLabelStyle" ||
 			this.styleName == "AlertContentTextStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			this.styleName == "ButtonStyle" || 
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
@@ -315,12 +321,15 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "AlertContentListContainerStyle" ||
 			this.styleName == "AlertButtonListContainerStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			this.styleName == "ButtonStyle" || 
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "ScrollBarStyle" ||
+			this.styleName == "VerticalScrollBarStyle" ||
+			this.styleName == "HorizontalScrollBarStyle" ||
 			this.styleName == "ButtonIncrementStyle" || 
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
@@ -358,11 +367,14 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			this.styleName == "ButtonStyle" || 
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "ScrollBarStyle" ||
+			this.styleName == "VerticalScrollBarStyle" ||
+			this.styleName == "HorizontalScrollBarStyle" ||
 			this.styleName == "ButtonIncrementStyle" || 
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
@@ -387,6 +399,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTabStyle" || 
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
@@ -407,6 +420,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "HeaderItemStyle" ||
@@ -425,6 +439,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" || 
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
@@ -442,6 +457,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "HeaderItemStyle" ||
 			this.styleName == "TextInputColorStyle")
@@ -540,6 +556,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "TextInputStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			this.styleName == "TextInputColorStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"MaxChars", 								"number", 	false, 	false, 	styleDef, this,	0,							null));
@@ -573,6 +590,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "TextStyle" ||
+			this.styleName == "TextAreaStyle" ||
 			this.styleName == "AlertContentTextStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Text", 		"Multiline", 								"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
@@ -583,6 +601,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		
 		if (this.styleName == "DataListStyle" ||
 			this.styleName == "ScrollBarStyle" ||
+			this.styleName == "VerticalScrollBarStyle" ||
+			this.styleName == "HorizontalScrollBarStyle" ||
 			this.styleName == "AlertStyle" ||
 			this.styleName == "ListContainerStyle" ||
 			this.styleName == "AlertContentListContainerStyle" ||
@@ -605,6 +625,21 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ScrollBarStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
 			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ListItemStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+		}
+		
+		if (this.styleName == "TextAreaStyle")
+		{
+			this.styleList.addItem(new ControlStyleType("Layout", 		"VerticalScrollBarPlacement", 				"string", 	false, 	false, 	styleDef, this,	"right",					[{label:"left", value:"left"}, {label:"right", value:"right"}]));
+			this.styleList.addItem(new ControlStyleType("Layout", 		"HorizontalScrollBarPlacement", 			"string", 	false, 	false, 	styleDef, this,	"bottom",					[{label:"bottom", value:"bottom"}, {label:"top", value:"top"}]));
+			
+			this.styleList.addItem(new ControlStyleType("Layout", 		"MeasureContentWidth", 						"bool", 	false, 	false, 	styleDef, this,	false,						[{label:"true", value:true}, {label:"false", value:false}]));
+			this.styleList.addItem(new ControlStyleType("Layout", 		"MeasureContentHeight", 					"bool", 	false, 	false, 	styleDef, this,	false,						[{label:"true", value:true}, {label:"false", value:false}]));
+			
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"VerticalScrollBarStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"HorizontalScrollBarStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			
+			this.styleList.addItem(new ControlStyleType("Functional", 	"VerticalScrollBarDisplay", 				"string", 	false, 	false, 	styleDef, this,	"auto",						[{label:"auto", value:"auto"}, {label:"on", value:"on"}, {label:"off", value:"off"}]));
+			this.styleList.addItem(new ControlStyleType("Functional", 	"HorizontalScrollBarDisplay", 				"string", 	false, 	false, 	styleDef, this,	"auto",						[{label:"auto", value:"auto"}, {label:"on", value:"on"}, {label:"off", value:"off"}]));
 		}
 		
 		if (this.styleName == "ColorPickerStyle" ||
@@ -674,7 +709,9 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"DividerArrowColor", 						"color", 	true, 	false, 	styleDef, this,	"#000000",					null));
 		}
 		
-		if (this.styleName == "ScrollBarStyle")
+		if (this.styleName == "ScrollBarStyle" ||
+			this.styleName == "VerticalScrollBarStyle" ||
+			this.styleName == "HorizontalScrollBarStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"ScrollTweenDuration", 						"number", 	false, 	false, 	styleDef, this,	180,						null));
 			
