@@ -135,6 +135,9 @@ TextAreaElement._StyleTypes.VerticalScrollBarStyle = 			StyleableBase.EStyleType
 
 TextAreaElement.StyleDefault = new StyleDefinition();
 
+TextAreaElement.StyleDefault.setStyle("MinWidth", 									10);
+TextAreaElement.StyleDefault.setStyle("MinHeight", 									10);
+
 TextAreaElement.StyleDefault.setStyle("TextHorizontalAlign", 						"left");
 TextAreaElement.StyleDefault.setStyle("TextVerticalAlign", 							"top");
 
@@ -352,12 +355,6 @@ TextAreaElement.prototype._doMeasure =
 			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		}
 		
-		if (w == 0)
-			w = hBarWidth;
-		
-		if (h == 0)
-			h = vBarHeight;
-		
 		w += vBarWidth;
 		h += hBarHeight;
 		
@@ -380,9 +377,6 @@ TextAreaElement.prototype._doLayout =
 		
 		var vScrollParams = this._textField._getVerticalScrollParameters();
 		var hScrollParams = this._textField._getHorizontalScrollParameters();
-		
-		//Need full padding data, we put the padding into the TextField on sides with no scroll bar
-		var paddingSize = this._getPaddingSize();
 		
 		var needsHScroll = false;
 		var needsVScroll = false;
