@@ -529,6 +529,33 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:imageControl, 
 											rootControlStyleType:imageControlStyleType,
 											list:null});
+	//TextInputElement
+	var textAreaDef = new StyleDefinition();
+	textAreaDef.setStyle("PercentWidth", 50);
+	textAreaDef.setStyle("PercentHeight", 50);
+	textAreaDef.setStyle("WordWrap", true);
+	textAreaDef.setStyle("Multiline", true);
+	
+	var textAreaControl = new TextAreaElement();
+	textAreaControl.setStyleDefinitions(textAreaDef);
+	textAreaControl.setText("1) Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n" +
+		"2) Cras posuere sem varius, luctus erat id, tincidunt nibh.\n" +
+		"3) Nam nec augue imperdiet massa porta ultricies nec vel eros.\n" +
+		"4) Nulla tincidunt quam vitae nisi hendrerit, ut commodo mauris pretium.\n" +
+		"5) Maecenas mattis ante in sapien lacinia, in consectetur urna vulputate.\n" +
+		"\n" +
+		"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam feugiat ultricies ante et semper. Quisque eget vulputate massa. In hac habitasse platea dictumst. Cras consequat leo nec mauris facilisis, vel bibendum dui vulputate. Nulla facilisi.");
+	
+	var textAreaControlStyleType = new ControlStyleType("", "TextAreaStyle", "root", false, false, textAreaControl, null, null, null);
+	textAreaControlStyleType.styleListCodeString = "var TextAreaStyle = new StyleDefinition();\r\n";
+	
+	textAreaControlStyleType.buildControlStyleTypeLists(textAreaDef);
+	
+	this._dataListControlsCollection.addItem({label:"TextArea", 
+											control:textAreaControl, 
+											rootControlStyleType:textAreaControlStyleType,
+											list:null});
+	
 	//TextElement
 	var textDef = new StyleDefinition();
 	textDef.setStyle("PercentWidth", 100);
