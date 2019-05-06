@@ -164,8 +164,8 @@ TextAreaElement.StyleDefault.setStyle("MeasureContentHeight", 						false);
 
 /**
  * @function _onTextAreaTextFieldLayoutComplete
- * Event handler for the scroll bar "layoutcomplete" event. 
- * Updates the scroll bar position.
+ * Event handler for the TextField "layoutcomplete" event. 
+ * Invalidates measure and layout to adjust scroll bars.
  * 
  * @param event DispatcherEvent
  * The DispatcherEvent to process.
@@ -437,7 +437,7 @@ TextAreaElement.prototype._doLayout =
 		var verticalBarWidth = 0;
 		var horizontalBarHeight = 0;
 		
-		//Distribute horizontal padding and setup vertical scroll bar
+		//Setup vertical scroll bar
 		if (this._verticalScrollBar != null)
 		{
 			this._verticalScrollBar.setScrollPageSize(vScrollParams.page);
@@ -448,7 +448,7 @@ TextAreaElement.prototype._doLayout =
 			verticalBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
 		}
 		
-		//Distribute vertical padding and setup horizontal scroll bar
+		//Setup horizontal scroll bar
 		if (this._horizontalScrollBar != null)
 		{
 			this._horizontalScrollBar.setScrollPageSize(hScrollParams.page);
@@ -459,7 +459,6 @@ TextAreaElement.prototype._doLayout =
 			horizontalBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		}			
 
-		
 		//Size and position vertical scroll bar
 		if (this._verticalScrollBar != null)
 		{
