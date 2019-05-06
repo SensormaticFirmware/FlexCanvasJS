@@ -362,9 +362,6 @@ ViewportElement.prototype._doLayout =
 		var hDisplay = this.getStyle("HorizontalScrollBarDisplay");
 		var vDisplay = this.getStyle("VerticalScrollBarDisplay");
 		
-		var paneWidth = paddingMetrics.getWidth();
-		var paneHeight = paddingMetrics.getHeight();
-		
 		var contentWidth = 0;
 		var contentHeight = 0;
 		if (this._viewElement != null)
@@ -373,27 +370,32 @@ ViewportElement.prototype._doLayout =
 			contentHeight = this._viewElement._getStyledOrMeasuredHeight();
 		}
 		
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY();
+		var w = paddingMetrics.getWidth();
+		var h = paddingMetrics.getHeight();
+		
 		var scrollBarsChanged = false;
 		var needsHScroll = false;
 		var needsVScroll = false;
 		
 		//We need the scroll bar.
-		if (hDisplay == "on" || (hDisplay == "auto" && contentWidth > paneWidth))
+		if (hDisplay == "on" || (hDisplay == "auto" && contentWidth > w))
 			needsHScroll = true;
 			
-		if (vDisplay == "on" || (vDisplay == "auto" && contentHeight > paneHeight))
+		if (vDisplay == "on" || (vDisplay == "auto" && contentHeight > h))
 			needsVScroll = true;
 		
 		//2nd pass, we need the *other* scroll bar because the first took some of our content area.
 		if (needsHScroll == true && needsVScroll == false && vDisplay == "auto" && this._horizontalScrollBar != null)
 		{
-			if (contentHeight > paneHeight - this._horizontalScrollBar._getStyledOrMeasuredHeight())
+			if (contentHeight > h - this._horizontalScrollBar._getStyledOrMeasuredHeight())
 				needsVScroll = true;
 		}
 
 		if (needsVScroll == true && needsHScroll == false && hDisplay == "auto" && this._verticalScrollBar != null)
 		{
-			if (contentWidth > paneWidth - this._verticalScrollBar._getStyledOrMeasuredWidth())
+			if (contentWidth > w - this._verticalScrollBar._getStyledOrMeasuredWidth())
 				needsHScroll = true;
 		}
 		
@@ -463,91 +465,85 @@ ViewportElement.prototype._doLayout =
 		{
 			horizontalScrollValue = this._horizontalScrollBar.getScrollValue();
 			horizontalBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
-			paneHeight -= horizontalBarHeight;
+			h -= horizontalBarHeight;
 		}
 		
 		if (this._verticalScrollBar != null)
 		{
 			verticalScrollValue = this._verticalScrollBar.getScrollValue();
 			verticalBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
-			paneWidth -= verticalBarWidth;
+			w -= verticalBarWidth;
 		}
 		
 		//Fix scroll values (size reduction forces us to scroll up)
-		horizontalScrollValue = Math.min(horizontalScrollValue, contentWidth - paneWidth);
+		horizontalScrollValue = Math.min(horizontalScrollValue, contentWidth - w);
 		horizontalScrollValue = Math.max(horizontalScrollValue, 0);
 		
-		verticalScrollValue = Math.min(verticalScrollValue, contentHeight - paneHeight);
+		verticalScrollValue = Math.min(verticalScrollValue, contentHeight - h);
 		verticalScrollValue = Math.max(verticalScrollValue, 0);
 		
 		var horizontalBarPlacement = this.getStyle("HorizontalScrollBarPlacement");
 		var verticalBarPlacement = this.getStyle("VerticalScrollBarPlacement");
 		
-		var x = paddingMetrics.getX();
-		var y = paddingMetrics.getY();
-		
 		if (this._horizontalScrollBar != null)
 		{
 			this._horizontalScrollBar.setScrollPageSize(contentWidth);
-			this._horizontalScrollBar.setScrollViewSize(paneWidth);
+			this._horizontalScrollBar.setScrollViewSize(w);
 			this._horizontalScrollBar.setScrollValue(horizontalScrollValue);
 			
-			this._horizontalScrollBar._setActualSize(paneWidth, horizontalBarHeight);
+			this._horizontalScrollBar._setActualSize(this._width - verticalBarWidth, horizontalBarHeight);
 			
 			if (horizontalBarPlacement == "top")
 			{
 				if (verticalBarPlacement == "left")
-					this._horizontalScrollBar._setActualPosition(x + verticalBarWidth, y);
+					this._horizontalScrollBar._setActualPosition(verticalBarWidth, 0);
 				else
-					this._horizontalScrollBar._setActualPosition(x, y);
+					this._horizontalScrollBar._setActualPosition(0, 0);
 			}
 			else
 			{
 				if (verticalBarPlacement == "left")
-					this._horizontalScrollBar._setActualPosition(x + verticalBarWidth, y + paneHeight);
+					this._horizontalScrollBar._setActualPosition(verticalBarWidth, this._height - horizontalBarHeight);
 				else
-					this._horizontalScrollBar._setActualPosition(x, y + paneHeight);
+					this._horizontalScrollBar._setActualPosition(0, this._height - horizontalBarHeight);
 			}
 		}
 		
 		if (this._verticalScrollBar != null)
 		{
 			this._verticalScrollBar.setScrollPageSize(contentHeight);
-			this._verticalScrollBar.setScrollViewSize(paneHeight);
+			this._verticalScrollBar.setScrollViewSize(h);
 			this._verticalScrollBar.setScrollValue(verticalScrollValue);
 			
-			this._verticalScrollBar._setActualSize(verticalBarWidth, paneHeight);
+			this._verticalScrollBar._setActualSize(verticalBarWidth, this._height - horizontalBarHeight);
 			
 			if (verticalBarPlacement == "left")
 			{
 				if (horizontalBarPlacement == "top")
-					this._verticalScrollBar._setActualPosition(x, y + horizontalBarHeight);
+					this._verticalScrollBar._setActualPosition(0, horizontalBarHeight);
 				else
-					this._verticalScrollBar._setActualPosition(x, y);
+					this._verticalScrollBar._setActualPosition(0, 0);
 			}
 			else
 			{
 				if (horizontalBarPlacement == "top")
-					this._verticalScrollBar._setActualPosition(x + paneWidth, y + horizontalBarHeight);
+					this._verticalScrollBar._setActualPosition(this._width - verticalBarWidth, horizontalBarHeight);
 				else
-					this._verticalScrollBar._setActualPosition(x + paneWidth, y);
+					this._verticalScrollBar._setActualPosition(this._width - verticalBarWidth, 0);
 			}
 		}
 		
-		var containerX = x;
-		var containerY = y;
-		
 		if (horizontalBarPlacement == "top")
-			containerY += horizontalBarHeight;
+			y += horizontalBarHeight;
 		if (verticalBarPlacement == "left")
-			containerX += verticalBarWidth;		
+			x += verticalBarWidth;		
 		
-		this._viewPortContainer._setActualSize(paneWidth, paneHeight);
-		this._viewPortContainer._setActualPosition(containerX, containerY);
+		this._viewPortContainer._setActualSize(w, h);
+		this._viewPortContainer._setActualPosition(x, y);
 		
 		if (this._viewElement != null)
 		{
-			this._viewElement._setActualSize(Math.max(paneWidth, contentWidth), Math.max(paneHeight, contentHeight));
+			this._viewElement._setActualSize(Math.max(w, contentWidth), Math.max(h, contentHeight));
 			this._viewElement._setActualPosition(horizontalScrollValue * -1, verticalScrollValue * -1);
 		}
 	};
