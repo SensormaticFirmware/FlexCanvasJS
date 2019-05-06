@@ -10,10 +10,10 @@
  * @class TextFieldElement
  * @inherits CanvasElement
  * 
- * Internal class used for consistently rendering text used by controls like TextElement and TextInput.
+ * Internal class used for consistently rendering text used by controls like TextElement, TextInput, and TextArea.
  * You typically should not use this class directly it is designed to be wrapped by a higher level control. 
- * This class allows text to be selected and edited, it renders a text position caret and watches
- * focus/mouse/keyboard events, maintains position of individual characters and allows copy/cut/paste.
+ * This class allows text to be selected and edited, it renders a text position caret, watches
+ * focus/mouse/keyboard events, maintains position of individual characters, and allows copy/cut/paste.
  * 
  * TextField also normalizes text width. The canvas natively will give
  * different widths for strings than when measuring and adding character widths 
@@ -538,7 +538,8 @@ TextFieldElement.prototype._getCaretIndexFromMouse =
 		var y = this._textClipContainer._y + this._textLinesContainer._y;
 		mouseX += 2; //Text cursor is slightly offset.
 		
-		//Find the line
+		//Find the line 
+		//TODO: Account for gap due to line spacing
 		var textFieldLine = this._textLinesContainer._getChildAt(0);
 		for (i = 1; i < this._textLinesContainer._getNumChildren(); i++)
 		{
@@ -567,6 +568,89 @@ TextFieldElement.prototype._getCaretIndexFromMouse =
 		return newCaretIndex;
 	};
 
+/**
+ * @function _getVerticalScrollParameters
+ * Returns parameters representing the vertical scroll page, view, and line sizes.
+ * 
+ * @returns Object
+ * An object containing both width and height: {page:100, view:100, line:14}
+ */	
+TextFieldElement.prototype._getVerticalScrollParameters = 
+	function ()
+	{
+		var params = {page:0, view:0, line:14, value:0};
+		
+		params.page = this._textLinesContainer._height;
+		params.view = this._textClipContainer._height;
+	
+		var textSize = this.getStyle("TextSize");
+		var lineSpacing = this.getStyle("TextLineSpacing");
+		var linePaddingTop = this.getStyle("TextLinePaddingTop");
+		var linePaddingBottom = this.getStyle("TextLinePaddingBottom");
+		
+		params.line = textSize + linePaddingTop + linePaddingBottom + lineSpacing;
+		
+		params.value = this._textLinesContainer._y * -1;
+		
+		return params;
+	};
+	
+/**
+ * @function _setVerticalScrollValue
+ * Sets the vertical scroll position.
+ * 
+ * @param value int
+ * Y position to scroll too
+ */		
+TextFieldElement.prototype._setVerticalScrollValue = 
+	function (value)
+	{
+		value = Math.round(value);
+		
+		this._textLinesContainer._setActualPosition(this._textLinesContainer._x, value * -1);
+	};	
+	
+/**
+ * @function _getHorizontalScrollParameters
+ * Returns parameters representing the vertical scroll page, view, line, and value sizes.
+ * 
+ * @returns Object
+ * An object containing both width and height: {page:100, view:100, line:14, value:0}
+ */	
+TextFieldElement.prototype._getHorizontalScrollParameters = 
+	function ()
+	{
+		var params = {page:0, view:0, line:14, value:0};
+		
+		params.page = this._textLinesContainer._width;
+		params.view = this._textClipContainer._width;
+	
+		var textSize = this.getStyle("TextSize");
+		var lineSpacing = this.getStyle("TextLineSpacing");
+		var linePaddingTop = this.getStyle("TextLinePaddingTop");
+		var linePaddingBottom = this.getStyle("TextLinePaddingBottom");
+		
+		params.line = textSize + linePaddingTop + linePaddingBottom + lineSpacing;
+		
+		params.value = this._textLinesContainer._x * -1;
+		
+		return params;
+	};	
+	
+/**
+ * @function _setHorizontalScrollValue
+ * Sets the horizontal scroll position.
+ * 
+ * @param value int
+ * X position to scroll too
+ */		
+TextFieldElement.prototype._setHorizontalScrollValue = 
+	function (value)
+	{
+		value = Math.round(value);
+		
+		this._textLinesContainer._setActualPosition(value * -1, this._textLinesContainer._y);
+	};
 	
 //@private - Only active if TextField is Enabled or Selectable.		
 TextFieldElement.prototype._onTextFieldMouseDown = 
@@ -686,7 +770,6 @@ TextFieldElement.prototype._deleteHighlightChars =
 		
 		//Fix char metrics
 		this._charMetrics.splice(highlightBegin, highlightEnd - highlightBegin);
-		this._updateCharMetricsAndSpaceSpans();
 		
 		//Move caret
 		this.setSelection(highlightBegin, highlightBegin);
@@ -1151,6 +1234,7 @@ TextFieldElement.prototype._onTextFieldCut =
 		clipboardData.setData("Text", copyText);
 		
 		this._deleteHighlightChars();
+		this._updateCharMetricsAndSpaceSpans();
 		
 		this._layoutShouldScroll = true;
 		this._invalidateLayout();
@@ -1605,7 +1689,7 @@ TextFieldElement.prototype._doLayout =
 		var lineContainerY = this._textLinesContainer._y;
 		
 		//Handle vertical alignment
-		if (this._textLinesContainer._height < this._textClipContainer._height)
+		if (this._textLinesContainer._height <= this._textClipContainer._height)
 		{
 			if (textVerticalAlign == "bottom")
 				lineContainerY = this._textClipContainer._height - this._textLinesContainer._height;
@@ -1623,7 +1707,7 @@ TextFieldElement.prototype._doLayout =
 		}
 		
 		//Handle horizontal alignment
-		if (this._textLinesContainer._width < this._textClipContainer._width)
+		if (this._textLinesContainer._width <= this._textClipContainer._width)
 		{
 			if (textHorizontalAlign == "right")
 				lineContainerX = this._textClipContainer._width - this._textLinesContainer._width;
@@ -1645,67 +1729,75 @@ TextFieldElement.prototype._doLayout =
 		{
 			this._layoutShouldScroll = false;
 			
-			//Find the line
-			textFieldLine = this._textLinesContainer._getChildAt(this._getLineIndexFromCharIndex(this._caretIndex));
-		
-			var caretX = lineContainerX + textFieldLine._x + (this._charMetrics[this._caretIndex].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x);
-			var caretY = lineContainerY + textFieldLine._y;
-			
-			if (caretX < 0)
-				lineContainerX = lineContainerX + (caretX * -1) + 35;
-			else if (caretX + 1 > this._textClipContainer._width) 
-				lineContainerX = lineContainerX - ((caretX + 1) - this._textClipContainer._width) - 35;
-
-			if (caretY < 0)
-				lineContainerY = lineContainerY + (caretY * -1);
-			else if (caretY + textFieldLine._height > this._textClipContainer._height)
-				lineContainerY = lineContainerY - ((caretY + textFieldLine._height) - this._textClipContainer._height);
-			
-			//Fix over-scroll
-			if (this._textLinesContainer._height > this._textClipContainer._height)
+			//Only need to scroll if text size is larger than clip region
+			if (this._textLinesContainer._height > this._textClipContainer._height ||
+				this._textLinesContainer._width > this._textClipContainer._width)
 			{
-				if (lineContainerY > 0)
-					lineContainerY = 0;
-				else if (lineContainerY + this._textLinesContainer._height < this._textClipContainer._height)
-					lineContainerY = this._textClipContainer._height - this._textLinesContainer._height;
-			}
+				//Find the line the caret is on
+				textFieldLine = this._textLinesContainer._getChildAt(this._getLineIndexFromCharIndex(this._caretIndex));
 			
-			if (this._textLinesContainer._width > this._textClipContainer._width)
-			{
-				if (lineContainerX > 0)
-					lineContainerX = 0;
-				else if (lineContainerX + this._textLinesContainer._width < this._textClipContainer._width)
-					lineContainerX = this._textClipContainer._width - this._textLinesContainer._width;
+				//Get the carets actual position
+				var caretX = lineContainerX + textFieldLine._x + (this._charMetrics[this._caretIndex].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x);
+				var caretY = lineContainerY + textFieldLine._y;
+				
+				//Scroll the text lines container if caret out of bounds
+				if (caretX < 0)
+					lineContainerX = lineContainerX + (caretX * -1) + 35; //Arbitrary 35 pixel X over-scroll (this should probably be a style)
+				else if (caretX + 1 > this._textClipContainer._width) 
+					lineContainerX = lineContainerX - ((caretX + 1) - this._textClipContainer._width) - 35;
+	
+				if (caretY < 0)
+					lineContainerY = lineContainerY + (caretY * -1);
+				else if (caretY + textFieldLine._height > this._textClipContainer._height)
+					lineContainerY = lineContainerY - ((caretY + textFieldLine._height) - this._textClipContainer._height);
+				
+				//Fix over-scroll
+				if (this._textLinesContainer._height > this._textClipContainer._height)
+				{
+					if (lineContainerY > 0)
+						lineContainerY = 0;
+					else if (lineContainerY + this._textLinesContainer._height < this._textClipContainer._height)
+						lineContainerY = this._textClipContainer._height - this._textLinesContainer._height;
+				}
+				
+				if (this._textLinesContainer._width > this._textClipContainer._width)
+				{
+					if (lineContainerX > 0)
+						lineContainerX = 0;
+					else if (lineContainerX + this._textLinesContainer._width < this._textClipContainer._width)
+						lineContainerX = this._textClipContainer._width - this._textLinesContainer._width;
+				}
 			}
 		}
 		
+		//Set the position of the text lines container
 		this._textLinesContainer._setActualPosition(lineContainerX, lineContainerY);
 		
 		//Handle caret placement
-		
 		if (this._textCaret != null)
 		{
 			if (this._caretIndex < 0 || this._caretIndex > this._text.length)
-				this._textCaret._setActualSize(0, lineHeight);
+				this._textCaret._setActualSize(0, 0);
 			else
 			{
 				//Find the line the caret is on.
 				textFieldLine = this._textLinesContainer._getChildAt(this._getLineIndexFromCharIndex(this._caretIndex));
 
-				//Get the visible and caret metrics				
+				//Get the text area metrics		
 				var visibleMetrics = new DrawMetrics();
 				visibleMetrics._x = x;
 				visibleMetrics._y = y;
 				visibleMetrics._width = w;
 				visibleMetrics._height = h;
 				
+				//Get the caret metrics
 				var caretMetrics = new DrawMetrics();
 				caretMetrics._x = x + this._textLinesContainer._x + textFieldLine._x + (this._charMetrics[this._caretIndex].x - this._charMetrics[textFieldLine._charMetricsStartIndex].x);
 				caretMetrics._y = y + this._textLinesContainer._y + textFieldLine._y;
 				caretMetrics._width = 1;
 				caretMetrics._height = textFieldLine._height;
 				
-				//Clip caret metrics to visible area
+				//Clip caret metrics to text area
 				caretMetrics.mergeReduce(visibleMetrics);
 				
 				//Size and position caret
@@ -1808,7 +1900,7 @@ TextFieldLineElement.prototype.getLineWidth =
 		return 0;
 	};	
 	
-//@Override
+//@override
 TextFieldLineElement.prototype._doRender =
 	function()
 	{

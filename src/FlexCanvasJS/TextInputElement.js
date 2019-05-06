@@ -22,7 +22,6 @@ function TextInputElement()
 	
 	this._textField = new TextFieldElement();
 	this._textField.setStyle("Selectable", true);
-	this._textField.setStyle("Cursor", null);
 	this._textField.setStyle("TabStop", -1);
 	this._addChild(this._textField);
 	
@@ -38,10 +37,13 @@ function TextInputElement()
 				_self._onTextInputFocusOut(event);
 		};
 	
-	this._onTextInputKeyDownInstance = 
+	this._onTextInputKeyUpDownInstance = 
 		function (keyboardEvent)
 		{
-			_self._onTextInputKeyDown(keyboardEvent);
+			if (keyboardEvent.getType() == "keydown")
+				_self._onTextInputKeyDown(keyboardEvent);
+			else // if (keyboardEvent.getType() == "keyup")
+				_self._onTextInputKeyUp(keyboardEvent);
 		};
 		
 	this._onTextInputTextFieldChangedInstance = 
@@ -123,7 +125,7 @@ TextInputElement._StyleTypes.UpTextHighlightedColor = 					StyleableBase.EStyleT
  * Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).
  * This will override the TextHighlightedBackgroundColor style.
  */
-TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;			// color "#000000"
+TextInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 		StyleableBase.EStyleType.NORMAL;			// color "#000000"
 
 /**
  * @style DisabledSkinClass CanvasElement
@@ -177,16 +179,14 @@ TextInputElement._StyleTypes.DisplayAsPassword = 						StyleableBase.EStyleType.
 
 TextInputElement.StyleDefault = new StyleDefinition();
 
+TextInputElement.StyleDefault.setStyle("TextHorizontalAlign", 						"left");
+TextInputElement.StyleDefault.setStyle("TextVerticalAlign", 						"middle");
+
 TextInputElement.StyleDefault.setStyle("MaxChars", 									0);
 TextInputElement.StyleDefault.setStyle("Enabled", 									true);
 
 TextInputElement.StyleDefault.setStyle("UpTextColor", 								"#000000");
-TextInputElement.StyleDefault.setStyle("UpTextHighlightedColor", 					"#FFFFFF");
-TextInputElement.StyleDefault.setStyle("UpTextHighlightedBackgroundColor", 			"#000000");
-
 TextInputElement.StyleDefault.setStyle("DisabledTextColor", 						"#888888");
-TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedColor", 				"#FFFFFF");
-TextInputElement.StyleDefault.setStyle("DisabledTextHighlightedBackgroundColor", 	"#000000");
 
 TextInputElement.StyleDefault.setStyle("DisplayAsPassword", 						false);
 
@@ -196,7 +196,6 @@ TextInputElement.StyleDefault.setStyle("PaddingLeft",								3);
 TextInputElement.StyleDefault.setStyle("PaddingRight",								3);
 
 TextInputElement.StyleDefault.setStyle("TabStop", 									0);
-TextInputElement.StyleDefault.setStyle("Cursor", 									"text");
 
 TextInputElement.StyleDefault.setStyle("SkinClass", 								CanvasElement);
 TextInputElement.StyleDefault.setStyle("UpSkinClass", 								CanvasElement);
@@ -216,7 +215,7 @@ TextInputElement.UpSkinStyleDefault.setStyle("BorderType", 							"inset");
 TextInputElement.UpSkinStyleDefault.setStyle("BorderThickness", 					1);
 TextInputElement.UpSkinStyleDefault.setStyle("BorderColor", 						"#606060");
 
-TextInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 					"#F5F5F5");
+TextInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 						"#F5F5F5");
 
 //Apply skin defaults
 TextInputElement.StyleDefault.setStyle("UpSkinStyle", 								TextInputElement.UpSkinStyleDefault);
@@ -299,6 +298,33 @@ TextInputElement.prototype._onTextInputKeyDown =
 			keyboardEvent.preventDefault();
 	};
 
+/**
+ * @function _onTextInputKeyUp
+ * Event handler for "keyup" event. Only active when TextInput is enabled. 
+ * Proxies keyboard event to internal TextField.
+ * 
+ * @param keyboardEvent ElementKeyboardEvent
+ * ElementKeyboardEvent to process.
+ */	
+TextInputElement.prototype._onTextInputKeyUp = 
+	function (keyboardEvent)
+	{
+		if (keyboardEvent.getDefaultPrevented() == true)
+			return;
+		
+		var clonedEvent = keyboardEvent.clone();
+		clonedEvent._bubbles = false; //Dont bubble.
+		
+		//Dispatch non-bubbling keyboard event to our text field.
+		this._textField.dispatchEvent(clonedEvent);
+		
+		if (clonedEvent.getIsCanceled() == true)
+			keyboardEvent.cancelEvent();
+			
+		if (clonedEvent.getDefaultPrevented() == true)
+			keyboardEvent.preventDefault();
+	};	
+	
 /**
  * @function _onTextInputFocusIn
  * Event handler for "focusin" event. 
@@ -490,6 +516,12 @@ TextInputElement.prototype._doStylesUpdated =
 	{
 		TextInputElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
+		//Force the textField to use our defaults rather than inherited.
+		if ("TextHorizontalAlign" in stylesMap)
+			this._textField.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+		if ("TextVerticalAlign" in stylesMap)
+			this._textField.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
+		
 		if ("MaxChars" in stylesMap)
 			this._textField.setStyle("MaxChars", this.getStyle("MaxChars"));
 		
@@ -500,16 +532,22 @@ TextInputElement.prototype._doStylesUpdated =
 			
 			if (enabled == true)
 			{
-				if (this.hasEventListener("keydown", this._onTextInputKeyDownInstance) == false)
-					this.addEventListener("keydown", this._onTextInputKeyDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keydown", this._onTextInputKeyUpDownInstance);
+				
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
 				if (this._textField.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
 					this._textField.addEventListener("changed", this._onTextInputTextFieldChangedInstance);					
 			}
 			else
 			{
-				if (this.hasEventListener("keydown", this._onTextInputKeyDownInstance) == true)
-					this.removeEventListener("keydown", this._onTextInputKeyDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keydown", this._onTextInputKeyUpDownInstance);
+				
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
 				if (this._textField.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
 					this._textField.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);

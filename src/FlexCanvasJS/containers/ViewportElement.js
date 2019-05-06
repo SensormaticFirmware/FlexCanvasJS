@@ -353,10 +353,12 @@ ViewportElement.prototype._doMeasure =
 		this._setMeasuredSize(w + padWidth, h + padHeight);
 	};
 	
-//@Override	
+//@override	
 ViewportElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
+		ViewportElement.base.prototype._doLayout.call(this, paddingMetrics);
+	
 		var hDisplay = this.getStyle("HorizontalScrollBarDisplay");
 		var vDisplay = this.getStyle("VerticalScrollBarDisplay");
 		

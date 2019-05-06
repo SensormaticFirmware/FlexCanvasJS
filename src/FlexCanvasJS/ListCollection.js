@@ -28,11 +28,14 @@ function ListCollection(sourceArray)
 {
 	ListCollection.base.prototype.constructor.call(this);
 	
-	this._backingArray = [];		
-	this._collectionSort = null;	
-	
 	if (sourceArray != null)
 		this._backingArray = sourceArray;
+	else
+		this._backingArray = [];
+	
+	this._collectionSort = null;	
+	
+	
 }
 
 //Inherit from EventDispatcher
@@ -42,6 +45,7 @@ ListCollection.base = EventDispatcher;
 
 /**
  * @event collectionchanged CollectionChangedEvent
+ * 
  * Dispatched when the collection is modified. CollectionChangedEvents can be of kinds "add", "remove", "update", "reset",
  * and include the index which has been changed.
  */

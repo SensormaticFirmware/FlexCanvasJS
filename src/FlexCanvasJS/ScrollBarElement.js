@@ -171,17 +171,17 @@ ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault = new StyleDefinition
 ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 			"#777777");
 
 //up / over / down skin of arrow buttons
-ScrollBarElement.ButtonScrollArraySkinStyleDefault = new StyleDefinition();
-ScrollBarElement.ButtonScrollArraySkinStyleDefault.setStyle("ArrowColor", 					"#000000");
+ScrollBarElement.ButtonScrollArrowSkinStyleDefault = new StyleDefinition();
+ScrollBarElement.ButtonScrollArrowSkinStyleDefault.setStyle("ArrowColor", 					"#000000");
 
 //arrow buttons common
 ScrollBarElement.ButtonScrollArrowStyleDefault = new StyleDefinition();
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("SkinClass", 						ScrollButtonSkinElement);	
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinWidth", 						15);
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("MinHeight", 						15);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("UpSkinStyle", 						ScrollBarElement.ButtonScrollArraySkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
-ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.ButtonScrollArraySkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("UpSkinStyle", 						ScrollBarElement.ButtonScrollArrowSkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("OverSkinStyle", 					ScrollBarElement.ButtonScrollArrowSkinStyleDefault);
+ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DownSkinStyle", 					ScrollBarElement.ButtonScrollArrowSkinStyleDefault);
 ScrollBarElement.ButtonScrollArrowStyleDefault.setStyle("DisabledSkinStyle", 				ScrollBarElement.DisabledButtonScrollArrowSkinStyleDefault);
 
 ////Dynamically added based on LayoutDirection

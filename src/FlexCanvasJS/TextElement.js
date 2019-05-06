@@ -41,7 +41,7 @@ TextElement._StyleTypes = Object.create(null);
  * @style Text String
  * Text to be rendered by the TextElement.
  */
-TextElement._StyleTypes.Text = 				StyleableBase.EStyleType.NORMAL;		// "any string" || null
+TextElement._StyleTypes.Text = 					StyleableBase.EStyleType.NORMAL;		// "any string" || null
 
 /**
  * @style Selectable boolean
@@ -53,7 +53,7 @@ TextElement._StyleTypes.Selectable = 			StyleableBase.EStyleType.NORMAL;		// tru
  * @style Multiline boolean
  * When true, newline characters are respected and text will be rendered on multiple lines if necessary.
  */
-TextElement._StyleTypes.Multiline = 				StyleableBase.EStyleType.NORMAL;		// true || false
+TextElement._StyleTypes.Multiline = 			StyleableBase.EStyleType.NORMAL;		// true || false
 
 /**
  * @style WordWrap boolean
@@ -73,6 +73,7 @@ TextElement.StyleDefault.setStyle("PaddingLeft", 					2);
 TextElement.StyleDefault.setStyle("PaddingRight", 					2);
 TextElement.StyleDefault.setStyle("TextHorizontalAlign", 			"left");
 TextElement.StyleDefault.setStyle("TextVerticalAlign", 				"top");
+TextElement.StyleDefault.setStyle("Cursor", 						"text");
 
 //TextElement specific styles
 TextElement.StyleDefault.setStyle("Text", 							null);
