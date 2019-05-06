@@ -174,10 +174,6 @@ function StyleExplorerApplication() //extends CanvasManager
 							this._dividerSandbox = new CanvasElement();
 							this._dividerSandbox.setStyleDefinitions(hDividerLineStyle);
 							
-							this._sandboxControlOuterContainer = new ListContainerElement();
-							this._sandboxControlOuterContainer.setStyle("PercentWidth", 100);
-							this._sandboxControlOuterContainer.setStyle("PercentHeight", 100);
-							
 								this._sandboxControlAndCodeContainer = new AnchorContainerElement();
 								this._sandboxControlAndCodeContainer.setStyle("PercentWidth", 100);
 								this._sandboxControlAndCodeContainer.setStyle("PercentHeight", 100);
@@ -213,25 +209,10 @@ function StyleExplorerApplication() //extends CanvasManager
 								this._sandboxControlAndCodeContainer.addElement(this._sandboxControlPanelBackground);
 								this._sandboxControlAndCodeContainer.addElement(this._sandboxControlContainer);
 								this._sandboxControlAndCodeContainer.addElement(this._viewportSandboxStyleCode);
-								
-								this._sandboxCopyCodeContainer = new ListContainerElement();
-								this._sandboxCopyCodeContainer.setStyle("PercentWidth", 100);
-								this._sandboxCopyCodeContainer.setStyle("MinWidth", 200);	
-								this._sandboxCopyCodeContainer.setStyle("PaddingLeft", 5);
-								this._sandboxCopyCodeContainer.setStyle("PaddingRight", 5);
-								
-									this._toggleButtonCopyCode = new ToggleButtonElement();
-									this._toggleButtonCopyCode.setStyle("PercentWidth", 100);
-									this._toggleButtonCopyCode.setStyle("AllowDeselect", false);
-								
-								this._sandboxCopyCodeContainer.addElement(this._toggleButtonCopyCode);
-									
-							this._sandboxControlOuterContainer.addElement(this._sandboxControlAndCodeContainer);
-							this._sandboxControlOuterContainer.addElement(this._sandboxCopyCodeContainer);
 							
 						this._sandboxInnerContainer.addElement(this._sandboxHeaderContainer);	
 						this._sandboxInnerContainer.addElement(this._dividerSandbox);
-						this._sandboxInnerContainer.addElement(this._sandboxControlOuterContainer);
+						this._sandboxInnerContainer.addElement(this._sandboxControlAndCodeContainer);
 						
 					this._sandboxOuterContainer.addElement(this._sandboxPanelBackground);
 					this._sandboxOuterContainer.addElement(this._sandboxInnerContainer);
@@ -319,44 +300,6 @@ function StyleExplorerApplication() //extends CanvasManager
 				_self._onButtonFontLargerClick(event);
 		};
 		
-	//////Handle code copy... (Multi-line text highlight / copy is not yet implemented)	
-	this._onToggleButtonCopyCodeEventHandlerInstance = 
-		function (event)
-		{
-			if (event.getType() == "changed")
-				_self._onToggleButtonCopyCodeChanged(event);
-			else if (event.getType() == "keydown")
-				_self._onToggleButtonCopyCodeKeydown(event);
-			else if (event.getType() == "focusout")
-				_self._onToggleButtonCopyCodeFocusout(event);
-		};	
- 	this._onCopyCutCodeInstance = //Handles *browser* event (FF, Chrome, Webkit)
- 		function (event)
- 		{
-	 		window.removeEventListener("copy", _self._onCopyCutCodeInstance);
-			
-			try
-			{
-				if (event.clipboardData)
-					_self._onCopyCutCode(event.clipboardData);
-				
-				if (event.preventDefault)
-					event.preventDefault();
-				
-				return false;
-			}
-			catch (ex)
-			{
-				
-			}
- 		};
-	this._onCopyCutCodeEnterFrameCleanupInstance = 
-		function (event)
-		{
-			_self.removeEventListener("enterframe", _self._onCopyCutCodeEnterFrameCleanupInstance);
-			window.removeEventListener("copy", _self._onCopyCutCodeInstance);
-		};	
-		
 	//Add event listeners	
 	this.addEventListener("localechanged", this._onLocaleChangedInstance);
 	this.addEventListener("stylingchanged", this._onStylingChangedInstance); //Custom event
@@ -366,12 +309,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	this._buttonFontSmaller.addEventListener("click", this._onButtonFontClickInstance);
 	this._buttonFontLarger.addEventListener("click", this._onButtonFontClickInstance);
 	
-	//Handle code copy... (Multi-line text highlight / copy is not yet implemented)
-	this._toggleButtonCopyCode.addEventListener("changed", this._onToggleButtonCopyCodeEventHandlerInstance);
-	this._toggleButtonCopyCode.addEventListener("keydown", this._onToggleButtonCopyCodeEventHandlerInstance);
-	this._toggleButtonCopyCode.addEventListener("focusout", this._onToggleButtonCopyCodeEventHandlerInstance);
-	
-	
+
 	/////////////////FUNCTIONAL///////////////////////////////
 	
 	var i = 0;
@@ -855,7 +793,6 @@ StyleExplorerApplication.prototype._onLocaleChanged =
 		this._labelSelectStyle.setStyle("Text", 			localeStrings[currentLocale]["Select Styles"]);
 		this._radioButtonSandbox.setStyle("Text", 			localeStrings[currentLocale]["Sandbox"] + " (AnchorContainer)");
 		this._radioButtonStyleCode.setStyle("Text", 		localeStrings[currentLocale]["Style Code"]);
-		this._toggleButtonCopyCode.setStyle("Text", 		localeStrings[currentLocale]["Copy"] + " " + localeStrings[currentLocale]["Style Code"]);
 	};
 
 StyleExplorerApplication.prototype._onButtonFontLargerClick =
@@ -891,17 +828,11 @@ StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
 		{
 			this._sandboxControlContainer.setStyle("Visible", true);
 			this._viewportSandboxStyleCode.setStyle("Visible", false);
-			
-			this._sandboxCopyCodeContainer.setStyle("Visible", false);
-			this._sandboxCopyCodeContainer.setStyle("IncludeInLayout", false);
 		}
 		else
 		{
 			this._sandboxControlContainer.setStyle("Visible", false);
 			this._viewportSandboxStyleCode.setStyle("Visible", true);
-			
-			this._sandboxCopyCodeContainer.setStyle("Visible", true);
-			this._sandboxCopyCodeContainer.setStyle("IncludeInLayout", true);
 		}
 	};
 
@@ -1029,53 +960,4 @@ StyleExplorerApplication.prototype._onEnterFrameStyleCodeUpdate =
 		this._textSandboxStyleCode.setStyle("Text", text);
 	};
 	
-	
-///////Handle code copy... (Multi-line text highlight / copy is not yet implemented)
-StyleExplorerApplication.prototype._onToggleButtonCopyCodeChanged = 
-	function (event)
-	{
-		this._toggleButtonCopyCode.setStyle("Text", localeStrings[this.getManager().getLocale()]["Press Ctrl C"]);
-	};
-	
-StyleExplorerApplication.prototype._onToggleButtonCopyCodeKeydown = 
-	function (elementKeyboardEvent)
-	{
-		var keyString = elementKeyboardEvent.getKey();
-		
-		if (keyString == "c" && elementKeyboardEvent.getCtrl() == true)
-		{
-			//IE
-			if (window.clipboardData)
-			{
-				this._onCopyCutCode(window.clipboardData);
-				elementKeyboardEvent.preventDefault();
-			} 
-			else //FF, Chrome, Webkit (Allow keyboard event to invoke the copy / paste listener)
-			{
-				window.addEventListener("copy", this._onCopyCutCodeInstance);
-				
-				//This is just to make sure we clean up the window "copy" listener.
-				//If the keyboard event gets canceled up stream the "copy" event wont fire and we 
-				//still need to remove the listener.
-				this.addEventListener("enterframe", this._onCopyCutCodeEnterFrameCleanupInstance);
-			}
-		}
-	};	
-	
-StyleExplorerApplication.prototype._onToggleButtonCopyCodeFocusout = 
-	function (event)
-	{
-		var locale = this.getManager().getLocale();
-	
-		this._toggleButtonCopyCode.setSelected(false);
-		this._toggleButtonCopyCode.setStyle("Text", localeStrings[locale]["Copy"] + " " + localeStrings[locale]["Style Code"]);
-	};	
-	
-StyleExplorerApplication.prototype._onCopyCutCode = 
-	function (clipboardData)
-	{
-		clipboardData.setData("Text", this._textSandboxStyleCode.getStyle("Text"));
-		
-		this._onToggleButtonCopyCodeFocusout(null);
-	};	
 	
