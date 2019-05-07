@@ -49,7 +49,7 @@ function TextAreaElement() //extends TextInputElement
 	this._textField.addEventListener("layoutcomplete", this._onTextAreaTextFieldLayoutCompleteInstance);
 }
 
-//Inherit from SkinnableElement
+//Inherit from TextInputElement
 TextAreaElement.prototype = Object.create(TextInputElement.prototype);
 TextAreaElement.prototype.constructor = TextAreaElement;
 TextAreaElement.base = TextInputElement;
