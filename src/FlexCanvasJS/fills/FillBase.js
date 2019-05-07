@@ -11,6 +11,7 @@
  * @inherits StyleableBase
  * 
  * Abstract base class for filling element's background shape.
+ * When sub-classing, add any necessary styles and implement the drawFill() function.
  * 
  * @constructor FillBase 
  * Creates new FillBase instance.
@@ -29,7 +30,9 @@ FillBase.base = StyleableBase;
 
 /**
  * @function drawFill
- * Used to create and set the Canvas2DContext.fillStyle
+ * Abstract stub used to fill an elements background.
+ * Override this, setup the Canvas2DContext's fill style via ctx.fillStyle and call ctx.fill().
+ * The background shape path will have already been drawn by the elements ShapeBase class.
  * 
  * @param ctx Canvas2DContext
  * The Canvas2DContext to draw the fill on.
