@@ -522,7 +522,7 @@ CanvasManager._StyleTypes.ShowRedrawRegion = 								StyleableBase.EStyleType.NO
  * 
  * CanvasElement constructor to be used for the alert overlay. Defaults to CanvasElement.
  * This may be set to null if you do not wish to block interactivity with the underlying UI when
- * and alert is triggered. 
+ * an alert is triggered. 
  */
 CanvasManager._StyleTypes.AlertModalClass = 								StyleableBase.EStyleType.NORMAL;		
 
@@ -603,14 +603,6 @@ CanvasManager.prototype.setCanvas =
 			this._canvas.style.outline = "none";
 			this._canvas.style.cursor = "default";
 			
-			//Disable text selection cursor.
-//			canvas.onselectstart = function () { return false; }; 
-//			canvas.style.userSelect = "none";
-//			canvas.style.webkitUserSelect = "none";
-//			canvas.style.MozUserSelect = "none";
-//			canvas.style.mozUserSelect = "none";
-//			canvas.setAttribute("unselectable", "on"); // For IE and Opera
-
 			if (navigator.userAgent.indexOf("Firefox") > 0)
 				CanvasElement._browserType = "Firefox";
 			

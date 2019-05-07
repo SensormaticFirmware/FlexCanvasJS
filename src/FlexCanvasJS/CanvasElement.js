@@ -306,11 +306,11 @@ CanvasElement.EStylePriorities =
  * 
  * @event enterframe DispatcherEvent
  * @broadcast
- * Dispatched at the beginning of the render frame before any life cycle processing begins.
+ * Dispatched at the beginning of the frame before any life cycle processing begins.
  * 
  * @event exitframe DispatcherEvent
  * @broadcast
- * Dispatched at the end of the render frame before after life cycle processing ends.
+ * Dispatched at the end of the frame after life cycle processing ends.
  * 
  * @event mousemoveex ElementMouseEvent
  * @broadcast

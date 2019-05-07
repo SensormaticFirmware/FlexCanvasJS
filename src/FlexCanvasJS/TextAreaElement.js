@@ -329,34 +329,20 @@ TextAreaElement.prototype._doStylesUpdated =
 TextAreaElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var vBarWidth = 0;
-		var vBarHeight = 0;
-		
-		var hBarWidth = 0;
-		var hBarHeight = 0;
-		
 		var w = 0;
 		var h = 0;
 		
 		if (this.getStyle("MeasureContentWidth") == true)
-			w = this._textField._getStyledOrMeasuredWidth();
+			w += this._textField._getStyledOrMeasuredWidth();
 		
 		if (this.getStyle("MeasureContentHeight") == true)
-			h = this._textField._getStyledOrMeasuredHeight();
+			h += this._textField._getStyledOrMeasuredHeight();
 		
 		if (this._verticalScrollBar != null)
-		{
-			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
-			vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
-		}
+			w += this._verticalScrollBar._getStyledOrMeasuredWidth();
+
 		if (this._horizontalScrollBar != null)
-		{
-			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
-			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
-		}
-		
-		w += vBarWidth;
-		h += hBarHeight;
+			h += this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		
 		//Padding included by textField
 		this._setMeasuredSize(w, h);
@@ -366,7 +352,7 @@ TextAreaElement.prototype._doMeasure =
 TextAreaElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
-		//base.base - Skip the TextInput _doLayout()
+		//base.base, skipping TextInput _doLayout()
 		TextAreaElement.base.base.prototype._doLayout.call(this, paddingMetrics);
 		
 		var hDisplay = this.getStyle("HorizontalScrollBarDisplay");
@@ -403,10 +389,9 @@ TextAreaElement.prototype._doLayout =
 			{
 				this._horizontalScrollBar = new ScrollBarElement();
 				this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
-	
 				this._horizontalScrollBar.setStyle("LayoutDirection", "horizontal");
-				
 				this._horizontalScrollBar.addEventListener("changed", this._onTextAreaScrollBarChangeInstance);
+				
 				this._addChild(this._horizontalScrollBar);
 			}
 		}
@@ -426,10 +411,9 @@ TextAreaElement.prototype._doLayout =
 			{
 				this._verticalScrollBar = new ScrollBarElement();
 				this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
-				
 				this._verticalScrollBar.setStyle("LayoutDirection", "vertical");
-				
 				this._verticalScrollBar.addEventListener("changed", this._onTextAreaScrollBarChangeInstance);
+
 				this._addChild(this._verticalScrollBar);
 			}
 		}
@@ -505,11 +489,11 @@ TextAreaElement.prototype._doLayout =
 		this._textField._setActualSize(this._width - verticalBarWidth, this._height - horizontalBarHeight);
 		
 		var tfX = 0;
-		if (this._verticalScrollBar != null && verticalBarPlacement == "left")
+		if (verticalBarPlacement == "left")
 			tfX = verticalBarWidth;
 		
 		var tfY = 0;
-		if (this._horizontalScrollBar != null && horizontalBarPlacement == "top")
+		if (horizontalBarPlacement == "top")
 			tfY = horizontalBarHeight;
 		
 		this._textField._setActualPosition(tfX, tfY);
