@@ -10,7 +10,10 @@
  * @class ShapeBase
  * @inherits StyleableBase
  * 
- * Abstract base class for drawing vector shape paths.
+ * Abstract base class for drawing vector shape paths. 
+ * This is used by CanvasElements when drawing their background shape
+ * and can be assigned to CanvasElement's "BackgroundShape" style.
+ * When sub-classing, add any necessary styles and implement the drawShape() function.
  * 
  * @constructor ShapeBase 
  * Creates new ShapeBase instance.

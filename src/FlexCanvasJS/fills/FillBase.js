@@ -11,6 +11,7 @@
  * @inherits StyleableBase
  * 
  * Abstract base class for filling element's background shape.
+ * This can be assigned to CanvasElement's "BackgroundFill" style.
  * When sub-classing, add any necessary styles and implement the drawFill() function.
  * 
  * @constructor FillBase 
