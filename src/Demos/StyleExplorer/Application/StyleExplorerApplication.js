@@ -851,6 +851,8 @@ StyleExplorerApplication.prototype._onButtonFontSmallerClick =
 StyleExplorerApplication.prototype._onSandboxHeaderRadioButtonGroupChanged =
 	function (event)
 	{
+		//We're only toggling visibility, we want the containers to maintain their real-estate. 
+		//We don't want the application resizing or scroll bars changing when switching these views.
 		if (this._sandboxHeaderRadioButtonGroup.getSelectedButton() == this._radioButtonSandbox)
 		{
 			this._sandboxControlContainer.setStyle("Visible", true);
