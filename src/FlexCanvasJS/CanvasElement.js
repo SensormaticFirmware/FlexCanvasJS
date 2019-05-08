@@ -738,7 +738,6 @@ CanvasElement._StyleTypes.VerticalCenter =			StyleableBase.EStyleType.NORMAL;		/
  * The number of degrees the element should be rotated (clockwise). When no RotateCenterX or
  * RotateCenterY is set, the element is rotated via its center point and rotated objects are
  * still positioned relative to their parent's coordinate plane after the transform has occurred.
- * This only works if the element is a child of an AnchorContainer. 
  */
 CanvasElement._StyleTypes.RotateDegrees = 			StyleableBase.EStyleType.NORMAL;		// number
 
