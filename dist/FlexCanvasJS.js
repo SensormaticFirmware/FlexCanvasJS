@@ -6874,7 +6874,7 @@ CanvasElement.prototype._removeStyleDefinitionAt =
 			//Record relevant styles
 			for (var i = index; i >= 0; i--)
 			{
-				for (styleName in styleDefArray._styleMap)
+				for (styleName in styleDefArray[i]._styleMap)
 					styleNamesMap[styleName] = true;
 			}
 			
