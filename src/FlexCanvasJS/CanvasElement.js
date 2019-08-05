@@ -1041,6 +1041,24 @@ CanvasElement.prototype.addStyleDefinitionAt =
 		return this._addStyleDefinitionAt(styleDefinition, index, false);
 	};
 	
+	
+/**
+ * @function getStyleDefinitionIndex
+ * Returns the index of the supplied style definition or -1 if the style definition
+ * has not been added.
+ * 
+ * @param styleDefinition StyleDefinition
+ * StyleDefinition to return associated index.
+ * 
+ * @returns int
+ * Index of the StyleDefinition supplied via the styleDefinition parameter, or -1 if does not exist.
+ */
+CanvasElement.prototype.getStyleDefinitionIndex = 
+	function (styleDefinition)
+	{
+		return this._styleDefinitions.indexOf(styleDefinition);
+	};
+	
 /**
  * @function removeStyleDefinition
  * Removes the supplied style definition from the element's style chain.
