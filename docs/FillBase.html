@@ -134,6 +134,8 @@ FillBase<br>
 <span style="font-size: 24px; font-weight: bold;">FillBase</span><br>
 <br>
 Abstract base class for filling element's background shape.<br>
+This can be assigned to CanvasElement's "BackgroundFill" style.<br>
+When sub-classing, add any necessary styles and implement the drawFill() function.<br>
 <br>
 <table>
 <tr>
@@ -202,7 +204,9 @@ Creates new FillBase instance.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Used to create and set the Canvas2DContext.fillStyle<br>
+Abstract stub used to fill an elements background.<br>
+Override this, setup the Canvas2DContext's fill style via ctx.fillStyle and call ctx.fill().<br>
+The background shape path will have already been drawn by the elements ShapeBase class.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -332,7 +336,9 @@ The DispatcherEvent class or subclass to be dispatched.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Used to create and set the Canvas2DContext.fillStyle<br>
+Abstract stub used to fill an elements background.<br>
+Override this, setup the Canvas2DContext's fill style via ctx.fillStyle and call ctx.fill().<br>
+The background shape path will have already been drawn by the elements ShapeBase class.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>

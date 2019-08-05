@@ -960,7 +960,6 @@ This only works if the element is a child of an AnchorContainer.<br>
 The number of degrees the element should be rotated (clockwise). When no RotateCenterX or<br>
 RotateCenterY is set, the element is rotated via its center point and rotated objects are<br>
 still positioned relative to their parent's coordinate plane after the transform has occurred.<br>
-This only works if the element is a child of an AnchorContainer.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1477,7 +1476,7 @@ Dispatched when this element is moved due to it being dragged.<br>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched at the beginning of the render frame before any life cycle processing begins.<br>
+Dispatched at the beginning of the frame before any life cycle processing begins.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1491,7 +1490,7 @@ Dispatched at the beginning of the render frame before any life cycle processing
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched at the end of the render frame before after life cycle processing ends.<br>
+Dispatched at the end of the frame after life cycle processing ends.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -2231,6 +2230,37 @@ Index of the style definition to return;<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
 The style defenition at the supplied index, or null if index is out of range.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getStyleDefinitionIndex(styleDefinition)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns the index of the supplied style definition or -1 if the style definition<br>
+has not been added.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">styleDefinition</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
+StyleDefinition to return associated index.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Index of the StyleDefinition supplied via the styleDefinition parameter, or -1 if does not exist.<br>
 </td>
 </tr>
 </table>

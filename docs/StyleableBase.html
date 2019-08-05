@@ -137,10 +137,23 @@ Internal abstract base class for classes that define styles.<br>
 StylableBase defines no styles itself, but allows subclasses to define them by adding<br>
 and populating static Object _StyleTypes and StyleDefinition StyleDefault on the class.<br>
 See example.<br>
-inheritable: Only applicable for CanvasElements.<br>
+There are three different types of styles, NORMAL, INHERITABLE, and SUBSTYLE.<br>
+StyleableBase.EStyleType.NORMAL: No special behavior.<br>
+StyleableBase.EStyleType.INHERITABLE: Only applicable for CanvasElements.<br>
 If no explicit style is set (instance, style definition, or proxy) look up the<br>
 parent chain for the first element supporting the style with inheritable.<br>
 If no style is found up the parent chain, use the element's default style.<br>
+StyleableBase.EStyleType.SUBSTYLE: Only applicable for CanvasElements.<br>
+Sub styles are a StyleDefinition or array of [StyleDefinition]s to be applied<br>
+as the style definition(s) of an element's sub component. For example, elements<br>
+that supports skins, will have several sub styles, one for each skin element.<br>
+You can apply styles to the skin elements, by setting StyleDefinitions to the elements<br>
+"___SkinStyle" sub styles. This is not limited to skins, many elements have sub styles<br>
+for many sub components, such as built in scroll bars, buttons, or other sub components.<br>
+The system handles sub styles differently than other styles, as sub styles are [StyleDefinition]s<br>
+that can contain many individual styles. When implementing a sub style for a custom component, you<br>
+should use CanvasElement's _applySubStylesToElement() function to apply the sub style [StyleDefinition]s<br>
+to your sub component, such as within the _doStylesUpdated() function when the sub style has changed.<br>
 Subclasses can add new styles and override the style types or defaults of their base<br>
 classes by creating their own _StyleTypes and StyleDefault objects.<br>
 Example:<br>
