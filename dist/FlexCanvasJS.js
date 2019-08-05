@@ -1945,10 +1945,27 @@ function ()
  * and populating static Object _StyleTypes and StyleDefinition StyleDefault on the class.
  * See example.
  * 
- * inheritable: Only applicable for CanvasElements.
+ * There are three different types of styles, NORMAL, INHERITABLE, and SUBSTYLE.
+ * 
+ * StyleableBase.EStyleType.NORMAL: No special behavior.
+ * 
+ * StyleableBase.EStyleType.INHERITABLE: Only applicable for CanvasElements.
  * If no explicit style is set (instance, style definition, or proxy) look up the
  * parent chain for the first element supporting the style with inheritable.
  * If no style is found up the parent chain, use the element's default style.
+ * 
+ * StyleableBase.EStyleType.SUBSTYLE: Only applicable for CanvasElements.
+ * Sub styles are a StyleDefinition or array of [StyleDefinition]s to be applied
+ * as the style definition(s) of an element's sub component. For example, elements
+ * that supports skins, will have several sub styles, one for each skin element. 
+ * You can apply styles to the skin elements, by setting StyleDefinitions to the elements
+ * "___SkinStyle" sub styles. This is not limited to skins, many elements have sub styles
+ * for many sub components, such as built in scroll bars, buttons, or other sub components.
+ * 
+ * The system handles sub styles differently than other styles, as sub styles are [StyleDefinition]s
+ * that can contain many individual styles. When implementing a sub style for a custom component, you 
+ * should use CanvasElement's _applySubStylesToElement() function to apply the sub style [StyleDefinition]s 
+ * to your sub component, such as within the _doStylesUpdated() function when the sub style has changed.
  * 
  * Subclasses can add new styles and override the style types or defaults of their base
  * classes by creating their own _StyleTypes and StyleDefault objects.
@@ -2317,7 +2334,10 @@ StyleableBase.prototype._flattenClassStyles =
  * @class ShapeBase
  * @inherits StyleableBase
  * 
- * Abstract base class for drawing vector shape paths.
+ * Abstract base class for drawing vector shape paths. 
+ * This is used by CanvasElements when drawing their background shape
+ * and can be assigned to CanvasElement's "BackgroundShape" style.
+ * When sub-classing, add any necessary styles and implement the drawShape() function.
  * 
  * @constructor ShapeBase 
  * Creates new ShapeBase instance.
@@ -3316,6 +3336,8 @@ ListCollection.prototype.indexUpdated =
  * @inherits StyleableBase
  * 
  * Abstract base class for filling element's background shape.
+ * This can be assigned to CanvasElement's "BackgroundFill" style.
+ * When sub-classing, add any necessary styles and implement the drawFill() function.
  * 
  * @constructor FillBase 
  * Creates new FillBase instance.
@@ -3334,7 +3356,9 @@ FillBase.base = StyleableBase;
 
 /**
  * @function drawFill
- * Used to create and set the Canvas2DContext.fillStyle
+ * Abstract stub used to fill an elements background.
+ * Override this, setup the Canvas2DContext's fill style via ctx.fillStyle and call ctx.fill().
+ * The background shape path will have already been drawn by the elements ShapeBase class.
  * 
  * @param ctx Canvas2DContext
  * The Canvas2DContext to draw the fill on.
@@ -4473,11 +4497,11 @@ CanvasElement.EStylePriorities =
  * 
  * @event enterframe DispatcherEvent
  * @broadcast
- * Dispatched at the beginning of the render frame before any life cycle processing begins.
+ * Dispatched at the beginning of the frame before any life cycle processing begins.
  * 
  * @event exitframe DispatcherEvent
  * @broadcast
- * Dispatched at the end of the render frame before after life cycle processing ends.
+ * Dispatched at the end of the frame after life cycle processing ends.
  * 
  * @event mousemoveex ElementMouseEvent
  * @broadcast
@@ -4905,7 +4929,6 @@ CanvasElement._StyleTypes.VerticalCenter =			StyleableBase.EStyleType.NORMAL;		/
  * The number of degrees the element should be rotated (clockwise). When no RotateCenterX or
  * RotateCenterY is set, the element is rotated via its center point and rotated objects are
  * still positioned relative to their parent's coordinate plane after the transform has occurred.
- * This only works if the element is a child of an AnchorContainer. 
  */
 CanvasElement._StyleTypes.RotateDegrees = 			StyleableBase.EStyleType.NORMAL;		// number
 
@@ -5207,6 +5230,24 @@ CanvasElement.prototype.addStyleDefinitionAt =
 	function (styleDefinition, index)
 	{
 		return this._addStyleDefinitionAt(styleDefinition, index, false);
+	};
+	
+	
+/**
+ * @function getStyleDefinitionIndex
+ * Returns the index of the supplied style definition or -1 if the style definition
+ * has not been added.
+ * 
+ * @param styleDefinition StyleDefinition
+ * StyleDefinition to return associated index.
+ * 
+ * @returns int
+ * Index of the StyleDefinition supplied via the styleDefinition parameter, or -1 if does not exist.
+ */
+CanvasElement.prototype.getStyleDefinitionIndex = 
+	function (styleDefinition)
+	{
+		return this._styleDefinitions.indexOf(styleDefinition);
 	};
 	
 /**
@@ -13701,7 +13742,7 @@ function TextAreaElement() //extends TextInputElement
 	this._textField.addEventListener("layoutcomplete", this._onTextAreaTextFieldLayoutCompleteInstance);
 }
 
-//Inherit from SkinnableElement
+//Inherit from TextInputElement
 TextAreaElement.prototype = Object.create(TextInputElement.prototype);
 TextAreaElement.prototype.constructor = TextAreaElement;
 TextAreaElement.base = TextInputElement;
@@ -13816,8 +13857,8 @@ TextAreaElement.StyleDefault.setStyle("MeasureContentHeight", 						false);
 
 /**
  * @function _onTextAreaTextFieldLayoutComplete
- * Event handler for the scroll bar "layoutcomplete" event. 
- * Updates the scroll bar position.
+ * Event handler for the TextField "layoutcomplete" event. 
+ * Invalidates measure and layout to adjust scroll bars.
  * 
  * @param event DispatcherEvent
  * The DispatcherEvent to process.
@@ -13981,34 +14022,20 @@ TextAreaElement.prototype._doStylesUpdated =
 TextAreaElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		var vBarWidth = 0;
-		var vBarHeight = 0;
-		
-		var hBarWidth = 0;
-		var hBarHeight = 0;
-		
 		var w = 0;
 		var h = 0;
 		
 		if (this.getStyle("MeasureContentWidth") == true)
-			w = this._textField._getStyledOrMeasuredWidth();
+			w += this._textField._getStyledOrMeasuredWidth();
 		
 		if (this.getStyle("MeasureContentHeight") == true)
-			h = this._textField._getStyledOrMeasuredHeight();
+			h += this._textField._getStyledOrMeasuredHeight();
 		
 		if (this._verticalScrollBar != null)
-		{
-			vBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
-			vBarHeight = this._verticalScrollBar._getStyledOrMeasuredHeight();
-		}
+			w += this._verticalScrollBar._getStyledOrMeasuredWidth();
+
 		if (this._horizontalScrollBar != null)
-		{
-			hBarWidth = this._horizontalScrollBar._getStyledOrMeasuredWidth();
-			hBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
-		}
-		
-		w += vBarWidth;
-		h += hBarHeight;
+			h += this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		
 		//Padding included by textField
 		this._setMeasuredSize(w, h);
@@ -14018,7 +14045,7 @@ TextAreaElement.prototype._doMeasure =
 TextAreaElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
-		//base.base - Skip the TextInput _doLayout()
+		//base.base, skipping TextInput _doLayout()
 		TextAreaElement.base.base.prototype._doLayout.call(this, paddingMetrics);
 		
 		var hDisplay = this.getStyle("HorizontalScrollBarDisplay");
@@ -14055,10 +14082,9 @@ TextAreaElement.prototype._doLayout =
 			{
 				this._horizontalScrollBar = new ScrollBarElement();
 				this._applySubStylesToElement("HorizontalScrollBarStyle", this._horizontalScrollBar);
-	
 				this._horizontalScrollBar.setStyle("LayoutDirection", "horizontal");
-				
 				this._horizontalScrollBar.addEventListener("changed", this._onTextAreaScrollBarChangeInstance);
+				
 				this._addChild(this._horizontalScrollBar);
 			}
 		}
@@ -14078,10 +14104,9 @@ TextAreaElement.prototype._doLayout =
 			{
 				this._verticalScrollBar = new ScrollBarElement();
 				this._applySubStylesToElement("VerticalScrollBarStyle", this._verticalScrollBar);
-				
 				this._verticalScrollBar.setStyle("LayoutDirection", "vertical");
-				
 				this._verticalScrollBar.addEventListener("changed", this._onTextAreaScrollBarChangeInstance);
+
 				this._addChild(this._verticalScrollBar);
 			}
 		}
@@ -14089,7 +14114,7 @@ TextAreaElement.prototype._doLayout =
 		var verticalBarWidth = 0;
 		var horizontalBarHeight = 0;
 		
-		//Distribute horizontal padding and setup vertical scroll bar
+		//Setup vertical scroll bar
 		if (this._verticalScrollBar != null)
 		{
 			this._verticalScrollBar.setScrollPageSize(vScrollParams.page);
@@ -14100,7 +14125,7 @@ TextAreaElement.prototype._doLayout =
 			verticalBarWidth = this._verticalScrollBar._getStyledOrMeasuredWidth();
 		}
 		
-		//Distribute vertical padding and setup horizontal scroll bar
+		//Setup horizontal scroll bar
 		if (this._horizontalScrollBar != null)
 		{
 			this._horizontalScrollBar.setScrollPageSize(hScrollParams.page);
@@ -14111,7 +14136,6 @@ TextAreaElement.prototype._doLayout =
 			horizontalBarHeight = this._horizontalScrollBar._getStyledOrMeasuredHeight();
 		}			
 
-		
 		//Size and position vertical scroll bar
 		if (this._verticalScrollBar != null)
 		{
@@ -14158,11 +14182,11 @@ TextAreaElement.prototype._doLayout =
 		this._textField._setActualSize(this._width - verticalBarWidth, this._height - horizontalBarHeight);
 		
 		var tfX = 0;
-		if (this._verticalScrollBar != null && verticalBarPlacement == "left")
+		if (verticalBarPlacement == "left")
 			tfX = verticalBarWidth;
 		
 		var tfY = 0;
-		if (this._horizontalScrollBar != null && horizontalBarPlacement == "top")
+		if (horizontalBarPlacement == "top")
 			tfY = horizontalBarHeight;
 		
 		this._textField._setActualPosition(tfX, tfY);
@@ -22793,7 +22817,7 @@ CanvasManager._StyleTypes.ShowRedrawRegion = 								StyleableBase.EStyleType.NO
  * 
  * CanvasElement constructor to be used for the alert overlay. Defaults to CanvasElement.
  * This may be set to null if you do not wish to block interactivity with the underlying UI when
- * and alert is triggered. 
+ * an alert is triggered. 
  */
 CanvasManager._StyleTypes.AlertModalClass = 								StyleableBase.EStyleType.NORMAL;		
 
@@ -22874,14 +22898,6 @@ CanvasManager.prototype.setCanvas =
 			this._canvas.style.outline = "none";
 			this._canvas.style.cursor = "default";
 			
-			//Disable text selection cursor.
-//			canvas.onselectstart = function () { return false; }; 
-//			canvas.style.userSelect = "none";
-//			canvas.style.webkitUserSelect = "none";
-//			canvas.style.MozUserSelect = "none";
-//			canvas.style.mozUserSelect = "none";
-//			canvas.setAttribute("unselectable", "on"); // For IE and Opera
-
 			if (navigator.userAgent.indexOf("Firefox") > 0)
 				CanvasElement._browserType = "Firefox";
 			
