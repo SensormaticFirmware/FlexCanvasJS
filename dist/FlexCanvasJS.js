@@ -5038,7 +5038,7 @@ CanvasElement._StyleTypes.TextHorizontalAlign =						StyleableBase.EStyleType.IN
 CanvasElement._StyleTypes.TextVerticalAlign =					StyleableBase.EStyleType.INHERITABLE;  	// "top" || "middle" || "bottom"
 
 /**
- * @style LinePaddingTop Number
+ * @style TextLinePaddingTop Number
  * @inheritable
  * 
  * Padding to apply to the top of each line of text. This also impacts the size of the highlight background.
@@ -5047,7 +5047,7 @@ CanvasElement._StyleTypes.TextVerticalAlign =					StyleableBase.EStyleType.INHER
 CanvasElement._StyleTypes.TextLinePaddingTop = 				StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
- * @style LinePaddingBottom Number
+ * @style TextLinePaddingBottom Number
  * @inheritable
  * 
  * Padding to apply to the bottom of each line of text. This also impacts the size of the highlight background.
@@ -5175,8 +5175,8 @@ CanvasElement.StyleDefault.setStyle("TextFont", 						"Arial");
 CanvasElement.StyleDefault.setStyle("TextSize", 						12);
 CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
 CanvasElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
-CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				1);
-CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
+CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				2);
+CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			0);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
 CanvasElement.StyleDefault.setStyle("TextColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
@@ -14749,6 +14749,7 @@ function IpInputElement()
 			this._labelFieldDot1.setStyle("Text", ".");
 			this._labelFieldDot1.setStyle("PaddingLeft", 0);
 			this._labelFieldDot1.setStyle("PaddingRight", 0);
+			this._labelFieldDot1.setStyle("TextStyle", "bold");
 			
 			this._textFieldIp2 = new TextFieldElement();
 			this._textFieldIp2.setStyle("PercentHeight", 100);
@@ -14762,6 +14763,7 @@ function IpInputElement()
 			this._labelFieldDot2.setStyle("Text", ".");
 			this._labelFieldDot2.setStyle("PaddingLeft", 0);
 			this._labelFieldDot2.setStyle("PaddingRight", 0);
+			this._labelFieldDot2.setStyle("TextStyle", "bold");
 			
 			this._textFieldIp3 = new TextFieldElement();
 			this._textFieldIp3.setStyle("PercentHeight", 100);
@@ -14775,6 +14777,7 @@ function IpInputElement()
 			this._labelFieldDot3.setStyle("Text", ".");
 			this._labelFieldDot3.setStyle("PaddingLeft", 0);
 			this._labelFieldDot3.setStyle("PaddingRight", 0);
+			this._labelFieldDot3.setStyle("TextStyle", "bold");
 			
 			this._textFieldIp4 = new TextFieldElement();
 			this._textFieldIp4.setStyle("PercentHeight", 100);
