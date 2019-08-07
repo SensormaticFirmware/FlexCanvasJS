@@ -35,6 +35,7 @@ function IpInputElement()
 			this._labelFieldDot1.setStyle("Text", ".");
 			this._labelFieldDot1.setStyle("PaddingLeft", 0);
 			this._labelFieldDot1.setStyle("PaddingRight", 0);
+			this._labelFieldDot1.setStyle("TextStyle", "bold");
 			
 			this._textFieldIp2 = new TextFieldElement();
 			this._textFieldIp2.setStyle("PercentHeight", 100);
@@ -48,6 +49,7 @@ function IpInputElement()
 			this._labelFieldDot2.setStyle("Text", ".");
 			this._labelFieldDot2.setStyle("PaddingLeft", 0);
 			this._labelFieldDot2.setStyle("PaddingRight", 0);
+			this._labelFieldDot2.setStyle("TextStyle", "bold");
 			
 			this._textFieldIp3 = new TextFieldElement();
 			this._textFieldIp3.setStyle("PercentHeight", 100);
@@ -61,6 +63,7 @@ function IpInputElement()
 			this._labelFieldDot3.setStyle("Text", ".");
 			this._labelFieldDot3.setStyle("PaddingLeft", 0);
 			this._labelFieldDot3.setStyle("PaddingRight", 0);
+			this._labelFieldDot3.setStyle("TextStyle", "bold");
 			
 			this._textFieldIp4 = new TextFieldElement();
 			this._textFieldIp4.setStyle("PercentHeight", 100);
