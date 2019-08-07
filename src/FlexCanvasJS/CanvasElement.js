@@ -468,7 +468,7 @@ CanvasElement._StyleTypes.Alpha = 					StyleableBase.EStyleType.NORMAL;		// numb
  * @style ClipContent boolean
  * 
  * Determines if out of bounds rendering is allowed. If true the element will clip all rendering
- * and children's rendering to the elements bounding box. 
+ * and children's rendering to the elements bounding box. This style is inheritable for container elements.
  */
 CanvasElement._StyleTypes.ClipContent = 			StyleableBase.EStyleType.NORMAL;		// number (true || false)
 

@@ -60,6 +60,15 @@ GridContainerElement.base = ContainerBaseElement;
 GridContainerElement._StyleTypes = Object.create(null);
 
 /**
+ * @style ClipContent boolean
+ * @inheritable
+ * 
+ * Determines if out of bounds rendering is allowed. If true the element will clip all rendering
+ * and children's rendering to the elements bounding box. This style is inheritable for container elements.
+ */
+GridContainerElement._StyleTypes.ClipContent = 				StyleableBase.EStyleType.INHERITABLE;		// number (true || false)
+
+/**
  * @style LayoutVerticalGap int
  * 
  * Space in pixels to leave between rows.

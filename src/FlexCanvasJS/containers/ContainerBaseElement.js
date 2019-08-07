@@ -44,6 +44,20 @@ ContainerBaseElement.prototype.constructor = ContainerBaseElement;
 ContainerBaseElement.base = CanvasElement;
 	
 
+/////////////Style Types///////////////////////////////
+
+ContainerBaseElement._StyleTypes = Object.create(null);
+
+/**
+ * @style ClipContent boolean
+ * @inheritable
+ * 
+ * Determines if out of bounds rendering is allowed. If true the element will clip all rendering
+ * and children's rendering to the elements bounding box. This style is inheritable for container elements.
+ */
+ContainerBaseElement._StyleTypes.ClipContent = 			StyleableBase.EStyleType.INHERITABLE;		// number (true || false)
+
+
 /////////////Default Styles///////////////////////////////
 
 ContainerBaseElement.StyleDefault = new StyleDefinition();
