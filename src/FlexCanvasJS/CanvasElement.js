@@ -847,7 +847,7 @@ CanvasElement._StyleTypes.TextHorizontalAlign =						StyleableBase.EStyleType.IN
 CanvasElement._StyleTypes.TextVerticalAlign =					StyleableBase.EStyleType.INHERITABLE;  	// "top" || "middle" || "bottom"
 
 /**
- * @style LinePaddingTop Number
+ * @style TextLinePaddingTop Number
  * @inheritable
  * 
  * Padding to apply to the top of each line of text. This also impacts the size of the highlight background.
@@ -856,7 +856,7 @@ CanvasElement._StyleTypes.TextVerticalAlign =					StyleableBase.EStyleType.INHER
 CanvasElement._StyleTypes.TextLinePaddingTop = 				StyleableBase.EStyleType.INHERITABLE;		// number
 
 /**
- * @style LinePaddingBottom Number
+ * @style TextLinePaddingBottom Number
  * @inheritable
  * 
  * Padding to apply to the bottom of each line of text. This also impacts the size of the highlight background.
@@ -984,8 +984,8 @@ CanvasElement.StyleDefault.setStyle("TextFont", 						"Arial");
 CanvasElement.StyleDefault.setStyle("TextSize", 						12);
 CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
 CanvasElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
-CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				1);
-CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
+CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				2);
+CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			0);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
 CanvasElement.StyleDefault.setStyle("TextColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
