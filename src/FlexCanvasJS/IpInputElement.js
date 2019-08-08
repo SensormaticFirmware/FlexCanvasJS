@@ -297,14 +297,14 @@ IpInputElement.StyleDefault.setStyle("DisabledSkinStyle", 							IpInputElement.
 IpInputElement.prototype.setIp = 
 	function (ip)
 	{
-		if (ip == null)
-			ip = "";
-	
 		this._textFieldIp1.setText("");
 		this._textFieldIp2.setText("");
 		this._textFieldIp3.setText("");
 		this._textFieldIp4.setText("");
 	
+		if (ip == null || ip.length == 0)
+			return;
+		
 		var i;
 		var i2;
 		var n;
@@ -314,6 +314,9 @@ IpInputElement.prototype.setIp =
 		{
 			if (i == 4)
 				return;
+			
+			if (ipArray[i].length == 0)
+				continue;
 			
 			n = Number(ipArray[i]);
 			if (isNaN(n) == true)
