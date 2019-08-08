@@ -15016,6 +15016,9 @@ IpInputElement.prototype.setIp =
 		this._textFieldIp3.setText("");
 		this._textFieldIp4.setText("");
 	
+		if (ip == null || ip.length == 0)
+			return;
+		
 		var i;
 		var i2;
 		var n;
@@ -15025,6 +15028,9 @@ IpInputElement.prototype.setIp =
 		{
 			if (i == 4)
 				return;
+			
+			if (ipArray[i].length == 0)
+				continue;
 			
 			n = Number(ipArray[i]);
 			if (isNaN(n) == true)
@@ -15119,23 +15125,52 @@ IpInputElement.prototype._onIpInputKeyDown =
 		
 		if (key == "Tab" || key == ".") //Move focus
 		{
-			if (this._textFieldFocused == this._textFieldIp4)
-				return;
-			else	
+			var shiftPressed = false;
+			
+			if (key == "Tab")
+				shiftPressed = keyboardEvent.getShift();
+			
+			if (shiftPressed == false)
 			{
-				//Prevent normal tab stop handling
-				keyboardEvent.preventDefault();
-				
-				this._textFieldFocused.dispatchEvent(new ElementEvent("focusout", false));
-				
+				if (this._textFieldFocused == this._textFieldIp4)
+					return;
+				else	
+				{
+					//Prevent normal tab stop handling
+					keyboardEvent.preventDefault();
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusout", false));
+					
+					if (this._textFieldFocused == this._textFieldIp1)
+						this._textFieldFocused = this._textFieldIp2;
+					else if (this._textFieldFocused == this._textFieldIp2)
+						this._textFieldFocused = this._textFieldIp3;
+					else //if (this._textFieldFocused == this._textFieldIp3)
+						this._textFieldFocused = this._textFieldIp4;
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusin", false));
+				}
+			}
+			else //if (shiftPressed == true)
+			{
 				if (this._textFieldFocused == this._textFieldIp1)
-					this._textFieldFocused = this._textFieldIp2;
-				else if (this._textFieldFocused == this._textFieldIp2)
-					this._textFieldFocused = this._textFieldIp3;
-				else //if (this._textFieldFocused == this._textFieldIp3)
-					this._textFieldFocused = this._textFieldIp4;
-				
-				this._textFieldFocused.dispatchEvent(new ElementEvent("focusin", false));
+					return;
+				else
+				{
+					//Prevent normal tab stop handling
+					keyboardEvent.preventDefault();
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusout", false));
+					
+					if (this._textFieldFocused == this._textFieldIp4)
+						this._textFieldFocused = this._textFieldIp3;
+					else if (this._textFieldFocused == this._textFieldIp3)
+						this._textFieldFocused = this._textFieldIp2;
+					else //if (this._textFieldFocused == this._textFieldIp2)
+						this._textFieldFocused = this._textFieldIp1;
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusin", false));
+				}
 			}
 		}
 		else
