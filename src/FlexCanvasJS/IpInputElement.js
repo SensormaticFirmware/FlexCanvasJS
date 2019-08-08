@@ -297,6 +297,9 @@ IpInputElement.StyleDefault.setStyle("DisabledSkinStyle", 							IpInputElement.
 IpInputElement.prototype.setIp = 
 	function (ip)
 	{
+		if (ip == null)
+			ip = "";
+	
 		this._textFieldIp1.setText("");
 		this._textFieldIp2.setText("");
 		this._textFieldIp3.setText("");
