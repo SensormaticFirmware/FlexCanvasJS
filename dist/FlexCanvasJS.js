@@ -15053,8 +15053,9 @@ IpInputElement.prototype.setIp =
 
 /**
  * @function getIp
- * Gets the IP currently displayed. If any fields are empty,
- * an empty string "" will be returned.
+ * Gets the IP currently displayed. 
+ * When all fields are empty an empty string "" will be returned.
+ * When some but not all fields are empty null will be returned (invalid IP).
  * 
  * @returns String
  * IP currently displayed.
@@ -15062,12 +15063,20 @@ IpInputElement.prototype.setIp =
 IpInputElement.prototype.getIp = 
 	function ()
 	{
+		if (this._textFieldIp1.getText().length == 0 &&
+			this._textFieldIp2.getText().length == 0 &&
+			this._textFieldIp3.getText().length == 0 &&
+			this._textFieldIp4.getText().length == 0)
+		{
+			return "";
+		}
+		
 		if (this._textFieldIp1.getText().length == 0 ||
 			this._textFieldIp2.getText().length == 0 ||
 			this._textFieldIp3.getText().length == 0 ||
 			this._textFieldIp4.getText().length == 0)
 		{
-			return "";
+			return null;
 		}
 	
 		return this._textFieldIp1.getText() + "." +
