@@ -12,7 +12,7 @@
  * 
  * The AnchorContainer can be used to lay out children via absolute or constraint positioning.
  * This container uses children's styles X, Y, Width, Height, PercentWidth, PercentHeight,
- * Top, Bottom, Left, Right, Horizontal Center, and Vertical Center. Nesting containers
+ * Top, Bottom, Left, Right, HorizontalCenter, and VerticalCenter. Nesting containers
  * is the best way to quickly and simply build complex layouts.
  * 
  * X, Y, Width, and Height are treated as highest priority and will override other styles.

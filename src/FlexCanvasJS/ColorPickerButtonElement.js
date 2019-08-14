@@ -788,7 +788,6 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 		var managerMetrics = this.getMetrics(this._manager);
 		
 		var colorPickerDistance = this.getStyle("PopupColorPickerDistance");
-		var colorPickerDirection = "br";
 		
 		var colorPickerWidth = this._colorPicker.getStyle("Width");
 		if (colorPickerWidth == null)
