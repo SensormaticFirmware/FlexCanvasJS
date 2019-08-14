@@ -11,10 +11,10 @@
  * @class DatePickerElement
  * @inherits CanvasElement
  * 
- * DatePickerElement is a calendar class used to select dates.  
+ * DatePickerElement is a class that displays a calendar used to select dates.  
  * 
- * @constructor ColorPickerElement 
- * Creates new ColorPickerElement instance.
+ * @constructor DatePickerElement 
+ * Creates new DatePickerElement instance.
  */
 
 function DatePickerElement() //extends CanvasElement
@@ -128,8 +128,6 @@ function DatePickerElement() //extends CanvasElement
 		this._gridDaysContainer = new GridContainerElement();
 		this._gridDaysContainer.setStyle("PercentWidth", 100);
 		this._gridDaysContainer.setStyle("PercentHeight", 100);
-		this._gridDaysContainer.setStyle("LayoutVerticalGap", 1);
-		this._gridDaysContainer.setStyle("LayoutHorizontalGap", 1);
 		
 			//All rows and columns set to 100% except days label row
 			this._gridDaysContainer.setRowDefinition(DatePickerElement._GridDaysRowColumnStyle, 1);
@@ -321,6 +319,18 @@ DatePickerElement._StyleTypes.LabelDayStyle = 				StyleableBase.EStyleType.SUBST
 DatePickerElement._StyleTypes.ToggleButtonDaysStyle = 		StyleableBase.EStyleType.SUBSTYLE;			//StyleDefinition
 
 /**
+ * @style GridDaysVerticalLayoutGap Number
+ * Space in pixels between the day grid rows.
+ */
+DatePickerElement._StyleTypes.GridDaysVerticalLayoutGap = 	StyleableBase.EStyleType.NORMAL;		// Number
+
+/**
+ * @style GridDaysVerticalLayoutGap Number
+ * Space in pixels between the day grid columns.
+ */
+DatePickerElement._StyleTypes.GridDaysHorizontalLayoutGap = StyleableBase.EStyleType.NORMAL;		// Number
+
+/**
  * @style Month1String String
  * String to use for month 1's name.
  */
@@ -497,6 +507,8 @@ DatePickerElement.StyleDefault.setStyle("ButtonMonthDecrementStyle", 			DatePick
 DatePickerElement.StyleDefault.setStyle("ButtonMonthIncrementStyle", 			DatePickerElement.ButtonYearMonthIncStyleDefault);
 DatePickerElement.StyleDefault.setStyle("LabelDayStyle", 						DatePickerElement.LabelDayStyleDefault);
 DatePickerElement.StyleDefault.setStyle("ToggleButtonDaysStyle", 				DatePickerElement.ToggleButtonDaysStyleDefault);
+DatePickerElement.StyleDefault.setStyle("GridDaysVerticalLayoutGap",			1);
+DatePickerElement.StyleDefault.setStyle("GridDaysHorizontalLayoutGap",			1);
 DatePickerElement.StyleDefault.setStyle("PaddingTop", 							5);
 DatePickerElement.StyleDefault.setStyle("PaddingBottom", 						5);
 DatePickerElement.StyleDefault.setStyle("PaddingLeft", 							5);
@@ -528,12 +540,26 @@ DatePickerElement.StyleDefault.setStyle("Day7String", 							"S");
 
 ////////////Public////////////////
 	
+/**
+ * @function getSelectedDate
+ * Gets the selected date of the DatePickerElement.
+ * 
+ * @returns Date
+ * Currently selected date or null if none selected.
+ */
 DatePickerElement.prototype.getSelectedDate = 
 	function ()
 	{
 		return this._selectedDate;
 	};
 
+/**
+ * @function setSelectedDate
+ * Sets the selected date of the DatePickerElement.
+ * 
+ * @param date Date
+ * Date to set as the selected date or null for no selection.
+ */	
 DatePickerElement.prototype.setSelectedDate = 
 	function (date)
 	{
@@ -554,22 +580,43 @@ DatePickerElement.prototype.setSelectedDate =
 	
 ////////////Internal//////////////
 	
+/**
+ * @function _buttonYearDecrementClick
+ * Event handler for the decrement year Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */		
 DatePickerElement.prototype._buttonYearDecrementClick = 
-	function (mouseEvent)
+	function (elementMouseEvent)
 	{
 		this._displayedYear--;
 		this._updateCalendar();
 	};
 
+/**
+ * @function _buttonYearIncrementClick
+ * Event handler for the increment year Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */		
 DatePickerElement.prototype._buttonYearIncrementClick = 
-	function (mouseEvent)
+	function (elementMouseEvent)
 	{
 		this._displayedYear++;
 		this._updateCalendar();
 	};	
 	
+/**
+ * @function _buttonMonthDecrementClick
+ * Event handler for the decrement month Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */			
 DatePickerElement.prototype._buttonMonthDecrementClick = 
-	function (mouseEvent)
+	function (elementMouseEvent)
 	{
 		this._displayedMonth--;
 		if (this._displayedMonth == -1)
@@ -581,8 +628,15 @@ DatePickerElement.prototype._buttonMonthDecrementClick =
 		this._updateCalendar();
 	};
 
+/**
+ * @function _buttonMonthIncrementClick
+ * Event handler for the increment month Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */		
 DatePickerElement.prototype._buttonMonthIncrementClick = 
-	function (mouseEvent)
+	function (elementMouseEvent)
 	{
 		this._displayedMonth++;
 		if (this._displayedMonth == 12)
@@ -594,8 +648,16 @@ DatePickerElement.prototype._buttonMonthIncrementClick =
 		this._updateCalendar();
 	};		
 	
+/**
+ * @function _listContainerYearMonthSelectionLayoutComplete
+ * Event handler for the year / month selection list containers layoutcomplete event.
+ * Used to adjust the measured sizes of the year / month increment & decrement buttons.
+ * 
+ * @param elementEvent ElementEvent
+ * The ElementEvent to process.
+ */			
 DatePickerElement.prototype._listContainerYearMonthSelectionLayoutComplete = 
-	function (event)
+	function (elementEvent)
 	{
 		this._buttonYearDecrement._setMeasuredSize(Math.round(this._buttonYearDecrement._height * .8), this._buttonYearDecrement._height);
 		this._buttonYearIncrement._setMeasuredSize(Math.round(this._buttonYearIncrement._height * .8), this._buttonYearIncrement._height);
@@ -604,8 +666,15 @@ DatePickerElement.prototype._listContainerYearMonthSelectionLayoutComplete =
 		this._buttonMonthIncrement._setMeasuredSize(Math.round(this._buttonMonthIncrement._height * .8), this._buttonMonthIncrement._height);
 	};
 	
+/**
+ * @function _buttonDayChanged
+ * Event handler for the day ToggleButton's changed event
+ * 
+ * @param elementEvent ElementEvent
+ * The ElementEvent to process.
+ */			
 DatePickerElement.prototype._buttonDayChanged = 
-	function (event)
+	function (elementEvent)
 	{
 		var day = Number(event.getTarget().getStyle("Text"));
 		
@@ -620,6 +689,10 @@ DatePickerElement.prototype._buttonDayChanged =
 			this.dispatchEvent(new ElementEvent("changed", false));
 	};
 	
+/**
+ * @function _updateCalendar
+ * Updates the calendar when the displayed month, year or selected date changes.
+ */			
 DatePickerElement.prototype._updateCalendar = 
 	function ()
 	{
@@ -715,6 +788,12 @@ DatePickerElement.prototype._doStylesUpdated =
 			}
 		}
 		
+		if ("GridDaysVerticalLayoutGap" in stylesMap)
+			this._gridDaysContainer.setStyle("LayoutVerticalGap", this.getStyle("GridDaysVerticalLayoutGap"));
+		
+		if ("GridDaysHorizontalLayoutGap" in stylesMap)
+			this._gridDaysContainer.setStyle("LayoutHorizontalGap", this.getStyle("GridDaysHorizontalLayoutGap"));
+		
 		//Update day strings
 		if ("Day1String" in stylesMap)
 			this._labelDay1.setStyle("Text", this.getStyle("Day1String"));
@@ -762,7 +841,9 @@ DatePickerElement.prototype._doStylesUpdated =
 DatePickerElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		this._setMeasuredSize(padWidth + this._rootListContainer._measuredWidth, padHeight + this._rootListContainer._measuredHeight);
+		//Root list container measures for us, so just add padding
+		this._setMeasuredSize(padWidth + this._rootListContainer._measuredWidth, 
+							padHeight + this._rootListContainer._measuredHeight);
 	};
 	
 //@override	
@@ -776,6 +857,7 @@ DatePickerElement.prototype._doLayout =
 		var w = paddingMetrics.getWidth();
 		var h = paddingMetrics.getHeight();
 		
+		//Place root list container and consider padding.
 		this._rootListContainer._setActualSize(w, h);
 		this._rootListContainer._setActualPosition(x, y);
 	};	
