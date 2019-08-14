@@ -684,7 +684,7 @@ DatePickerElement.prototype._buttonDayChanged =
 	{
 		var day = Number(elementEvent.getTarget().getStyle("Text"));
 		
-		this._selectedDate = new Date(null);
+		this._selectedDate = new Date();
 		this._selectedDate.setFullYear(this._displayedYear);
 		this._selectedDate.setMonth(this._displayedMonth);
 		this._selectedDate.setDate(day);
@@ -697,16 +697,12 @@ DatePickerElement.prototype._buttonDayChanged =
 	
 /**
  * @function _updateCalendar
- * Updates the calendar when the displayed month, year or selected date changes.
+ * Updates the calendar when the displayed month, year, or selected date changes.
  */			
 DatePickerElement.prototype._updateCalendar = 
 	function ()
 	{
-		var date = new Date();
-		date.setFullYear(this._displayedYear);
-		date.setMonth(this._displayedMonth);
-		
-		this._labelYear.setStyle("Text", date.getFullYear().toString());
+		this._labelYear.setStyle("Text", this._displayedYear.toString());
 		
 		for (var i = 0; i < 12; i++)
 		{
@@ -716,6 +712,9 @@ DatePickerElement.prototype._updateCalendar =
 				this["_labelMonth" + (i + 1).toString()].setStyle("Visible", false);
 		}
 		
+		var date = new Date();
+		date.setFullYear(this._displayedYear);
+		date.setMonth(this._displayedMonth);
 		date.setDate(0);
 		date.setDate(date.getDate() - date.getDay());
 		
