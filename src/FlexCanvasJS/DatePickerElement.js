@@ -32,7 +32,6 @@ function DatePickerElement() //extends CanvasElement
 	
 	//Use list container to control layout
 	this._rootListContainer = new ListContainerElement();
-	this._rootListContainer.setStyle("LayoutGap", 5);
 	this._rootListContainer.setStyle("LayoutDirection", "vertical");
 	this._rootListContainer.setStyle("LayoutHorizontalAlign", "center");
 	
@@ -331,6 +330,12 @@ DatePickerElement._StyleTypes.GridDaysVerticalLayoutGap = 	StyleableBase.EStyleT
 DatePickerElement._StyleTypes.GridDaysHorizontalLayoutGap = StyleableBase.EStyleType.NORMAL;		// Number
 
 /**
+ * @style LayoutGap Number
+ * Space in pixels between the month / year selection and the day selection grid.
+ */
+DatePickerElement._StyleTypes.LayoutGap = 					StyleableBase.EStyleType.NORMAL;		// Number
+
+/**
  * @style Month1String String
  * String to use for month 1's name.
  */
@@ -507,6 +512,7 @@ DatePickerElement.StyleDefault.setStyle("ButtonMonthDecrementStyle", 			DatePick
 DatePickerElement.StyleDefault.setStyle("ButtonMonthIncrementStyle", 			DatePickerElement.ButtonYearMonthIncStyleDefault);
 DatePickerElement.StyleDefault.setStyle("LabelDayStyle", 						DatePickerElement.LabelDayStyleDefault);
 DatePickerElement.StyleDefault.setStyle("ToggleButtonDaysStyle", 				DatePickerElement.ToggleButtonDaysStyleDefault);
+DatePickerElement.StyleDefault.setStyle("LayoutGap",							8);
 DatePickerElement.StyleDefault.setStyle("GridDaysVerticalLayoutGap",			1);
 DatePickerElement.StyleDefault.setStyle("GridDaysHorizontalLayoutGap",			1);
 DatePickerElement.StyleDefault.setStyle("PaddingTop", 							5);
@@ -676,7 +682,7 @@ DatePickerElement.prototype._listContainerYearMonthSelectionLayoutComplete =
 DatePickerElement.prototype._buttonDayChanged = 
 	function (elementEvent)
 	{
-		var day = Number(event.getTarget().getStyle("Text"));
+		var day = Number(elementEvent.getTarget().getStyle("Text"));
 		
 		this._selectedDate = new Date(null);
 		this._selectedDate.setFullYear(this._displayedYear);
@@ -787,6 +793,9 @@ DatePickerElement.prototype._doStylesUpdated =
 					this._applySubStylesToElement("ToggleButtonDaysStyle", this._gridDaysContainer.getCellElement(week, day));
 			}
 		}
+		
+		if ("LayoutGap" in stylesMap)
+			this._rootListContainer.setStyle("LayoutGap", this.getStyle("LayoutGap"));
 		
 		if ("GridDaysVerticalLayoutGap" in stylesMap)
 			this._gridDaysContainer.setStyle("LayoutVerticalGap", this.getStyle("GridDaysVerticalLayoutGap"));
