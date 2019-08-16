@@ -44,6 +44,12 @@ function TextFieldElement()
 	this._charMetrics = null; 	// array of {x, w}
 	this._spaceSpans = null; 	// array of {start, end, type} _charMetric positions of spaces for wrapping text.
 	
+	//Used to detect double / triple click for word / all highlight
+	this._lastMouseDownTime1 = 0;
+	this._lastMouseDownTime2 = 0;
+	this._mouseDownCount = 0; //Change behavior of drag highlight for double / triple
+	this._blockHighlightStartRange = null; //For double / triple click + drag we need to know the initial word / line highlight range
+	
 	//Container clipping
 	this._textClipContainer = new CanvasElement();
 	this._textClipContainer.setStyle("ClipContent", true);
@@ -392,6 +398,27 @@ TextFieldElement.prototype._onTextFieldEnterFrame =
 			
 			//Get caret index from mouse
 			var caretIndex = this._getCaretIndexFromMouse(mousePos.x, mousePos.y);
+			var newStartIndex = this._textHighlightStartIndex;
+			
+			if (this._mouseDownCount > 1) //Handle double (word) and triple (line) click + drag
+			{
+				var blockRange;
+				if (this._mouseDownCount == 2)
+					blockRange = this._getWordRangeFromCharIndex(caretIndex);
+				else // if (this._mouseDownCount == 3)
+					blockRange = this._getLineRangeFromCharIndex(caretIndex);
+				
+				if (blockRange.start < this._blockHighlightStartRange.start)
+				{
+					newStartIndex = this._blockHighlightStartRange.end;
+					caretIndex = blockRange.start;
+				}
+				else
+				{
+					newStartIndex = this._blockHighlightStartRange.start;
+					caretIndex = blockRange.end;
+				}
+			}
 			
 			//Find the line
 			var textFieldLine = this._textLinesContainer._getChildAt(0);
@@ -424,7 +451,7 @@ TextFieldElement.prototype._onTextFieldEnterFrame =
 			if ((caretXWithinBounds == true && caretYWithinBounds == true) || 
 				(caretYWithinBounds == true && (caretIndex == textFieldLine._charMetricsStartIndex || caretIndex == textFieldLine._charMetricsEndIndex)))
 			{
-				this.setSelection(this._textHighlightStartIndex, caretIndex);
+				this.setSelection(newStartIndex, caretIndex);
 				
 				this._layoutShouldScroll = true;
 				this._invalidateLayout();
@@ -433,7 +460,7 @@ TextFieldElement.prototype._onTextFieldEnterFrame =
 			{
 				this._dragScrollTime = currentTime + 220;
 				
-				this.setSelection(this._textHighlightStartIndex, caretIndex);
+				this.setSelection(newStartIndex, caretIndex);
 				
 				this._layoutShouldScroll = true;
 				this._invalidateLayout();
@@ -570,6 +597,78 @@ TextFieldElement.prototype._getCaretIndexFromMouse =
 	};
 
 /**
+ * @function _getWordRangeFromCaretIndex
+ * Returns the exclusive range of character indexes for the current word the character is included in.
+ * If the character is a space, a block of spaces will be returned.
+ * 
+ * @param charIndex int
+ * Character index to return word range for.
+ */	
+TextFieldElement.prototype._getWordRangeFromCharIndex = 
+	function (charIndex)
+	{
+		if (charIndex >= this._text.length)
+			return {start:charIndex, end:charIndex};
+	
+		if (this._text[charIndex] == '\n')
+			return {start:charIndex, end:charIndex};
+			
+		var wordStart = charIndex;
+		var wordEnd = charIndex;
+		
+		var isSpace = false;
+		if (this._text[wordStart] == ' ')
+			isSpace = true;
+		
+		if (isSpace == true)
+		{
+			while (wordStart > 0 && (this._text[wordStart - 1] == ' ' || this._text[wordStart - 1] == '\n'))
+				wordStart--;
+			
+			while (wordEnd < this._text.length - 1 && (this._text[wordEnd + 1] == ' ' || this._text[wordEnd + 1] == '\n'))
+				wordEnd++;
+		}
+		else
+		{
+			while (wordStart > 0 && (this._text[wordStart - 1] != ' ' && this._text[wordStart - 1] != '\n'))
+				wordStart--;
+			
+			while (wordEnd < this._text.length - 1 && (this._text[wordEnd + 1] != ' ' && this._text[wordEnd + 1] != '\n'))
+				wordEnd++;
+		}
+		
+		return {start:wordStart, end:wordEnd + 1};
+	};
+	
+/**
+ * @function _getLineRangeFromCharIndex
+ * Returns the exclusive range of character indexes for the current line the character is included in.
+ * 
+ * @param charIndex int
+ * Character index to return line range for.
+ */		
+TextFieldElement.prototype._getLineRangeFromCharIndex = 
+	function (charIndex)
+	{
+		if (charIndex == this._text.length)
+			return {start:charIndex, end:charIndex};
+	
+		if (this._text[charIndex] == '\n')
+			return {start:charIndex, end:charIndex};
+			
+		var lineStart = charIndex;
+		var lineEnd = charIndex;
+		
+		while (lineStart > 0 && this._text[lineStart - 1] != '\n')
+			lineStart--;
+		
+		while (lineEnd < this._text.length - 1 && this._text[lineEnd + 1] != '\n')
+			lineEnd++;
+		
+		return {start:lineStart, end:lineEnd + 1};
+	};
+	
+/**
  * @function _getVerticalScrollParameters
  * Returns parameters representing the vertical scroll page, view, and line sizes.
  * 
@@ -665,7 +764,36 @@ TextFieldElement.prototype._onTextFieldMouseDown =
 		if (this._shiftPressed == true)
 			this.setSelection(this._textHighlightStartIndex, caretIndex);
 		else
-			this.setSelection(caretIndex, caretIndex);
+		{
+			var currentTime = Date.now();
+			var isDoubleClick = false;
+			var isTripleClick = false;
+			
+			if (currentTime - this._lastMouseDownTime1 < 700)
+				this._mouseDownCount = 3;
+			else if (currentTime - this._lastMouseDownTime2 < 350)
+				this._mouseDownCount = 2;
+			else
+				this._mouseDownCount = 1;
+			
+			if (this._mouseDownCount == 3)
+			{
+				var lineRange = this._getLineRangeFromCharIndex(caretIndex);
+				this._blockHighlightStartRange = lineRange;
+				this.setSelection(lineRange.start, lineRange.end);
+			}
+			else if (this._mouseDownCount == 2)
+			{
+				var wordRange = this._getWordRangeFromCharIndex(caretIndex);
+				this._blockHighlightStartRange = wordRange;
+				this.setSelection(wordRange.start, wordRange.end);
+			}
+			else
+				this.setSelection(caretIndex, caretIndex);
+			
+			this._lastMouseDownTime1 = this._lastMouseDownTime2;
+			this._lastMouseDownTime2 = currentTime;
+		}
 		
 		this._layoutShouldScroll = true;
 		this._invalidateLayout();
@@ -679,6 +807,8 @@ TextFieldElement.prototype._onTextFieldMouseDown =
 TextFieldElement.prototype._onTextFieldMouseUp = 
 	function (mouseEvent)
 	{
+		this._mouseDownCount = 0;
+		this._blockHighlighStartRange = null;
 		this._updateEnterFrameListener();
 	};	
 	
@@ -845,6 +975,10 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 		else if (keyString == "Shift")
 		{
 			this._shiftPressed = true;
+		}
+		else if (keyString == "a" && keyboardEvent.getCtrl() == true)
+		{
+			this.setSelection(0, this._text.length);
 		}
 		else if (keyString == "ArrowLeft")
 		{
