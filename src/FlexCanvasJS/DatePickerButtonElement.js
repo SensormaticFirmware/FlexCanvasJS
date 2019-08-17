@@ -206,6 +206,7 @@ DatePickerButtonElement.StyleDefault.setStyle("PaddingTop",								3);
 DatePickerButtonElement.StyleDefault.setStyle("PaddingBottom",							3);
 DatePickerButtonElement.StyleDefault.setStyle("PaddingRight",							4);
 DatePickerButtonElement.StyleDefault.setStyle("PaddingLeft",							4);
+DatePickerButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 	
 DatePickerButtonElement.StyleDefault.setStyle("DateFormatLabelFunction",				DatePickerButtonElement.DefaultDateFormatLabelFunction)		
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerStyle", 					null);
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerDistance", 				-1);			
@@ -236,6 +237,7 @@ DatePickerButtonElement.prototype.setSelectedDate =
 	function (date)
 	{
 		this._datePicker.setSelectedDate(date);
+		this._updateText();
 	};
 	
 /**
@@ -498,7 +500,8 @@ DatePickerButtonElement.prototype._onDatePickerChanged =
 		if (this.hasEventListener("changed", null) == true)
 			this.dispatchEvent(new ElementEvent("changed", false));
 	
-		//TODO: Set label
+		//Update label
+		this._updateText();
 		
 		//Dispatch closed event.
 		if (this.hasEventListener("closed", null) == true)
@@ -577,6 +580,23 @@ DatePickerButtonElement.prototype._onButtonClick =
 			}
 		}
 	};	
+
+/**
+ * @function _updateText
+ * Updates the date label text via the styled DateFormatLabelFunction
+ */
+DatePickerButtonElement.prototype._updateText = 
+	function ()
+	{
+		var labelFunction = this.getStyle("DateFormatLabelFunction");
+		
+		if (this._datePicker.getSelectedDate() != null && labelFunction != null)
+			text = labelFunction(this._datePicker.getSelectedDate());
+		else
+			text = this.getStyle("Text");
+		
+		this._setLabelText(text);
+	};
 	
 /**
  * @function _createArrowButton
@@ -648,22 +668,27 @@ DatePickerButtonElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		
 		if ("DateFormatLabelFunction" in stylesMap)
-		{
-			//TODO: Update label
-		}
+			this._updateText();
 	};
 	
 //@override
 DatePickerButtonElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		//We still use the text height for measuring so the sizing is the same as DropDown
-		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
-		
-		var textWidth = 20;
+		var fontString = this._getFontString();
+			
+		var dateTextWidth = 20;
 		var labelFunction = this.getStyle("DateFormatLabelFunction");
 		if (labelFunction != null)
-			textWidth += CanvasElement._measureText(labelFunction(new Date()), this._getFontString());
+			dateTextWidth += CanvasElement._measureText(labelFunction(new Date()), fontString);
+		
+		var textLabelWidth = 20;
+		var textLabel = this.getStyle("Text");
+		if (textLabel != null)
+			textLabelWidth += CanvasElement._measureText(textLabel, fontString);
+		
+		var textWidth = Math.max(dateTextWidth, textLabelWidth);		
+		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
 		
 		var arrowWidth = null;
 		var arrowHeight = null;
@@ -679,8 +704,8 @@ DatePickerButtonElement.prototype._doMeasure =
 		if (arrowWidth == null)
 			arrowWidth = Math.round(arrowHeight * .85); 
 		
-		var h = Math.max(arrowHeight, textHeight + padHeight);
-		var w = padWidth + textWidth + arrowWidth;
+		var h = Math.ceil(Math.max(arrowHeight, textHeight + padHeight));
+		var w = Math.ceil(padWidth + textWidth + arrowWidth);
 		
 		this._setMeasuredSize(w, h);
 	};	
