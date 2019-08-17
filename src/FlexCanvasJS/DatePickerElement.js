@@ -520,6 +520,7 @@ DatePickerElement.StyleDefault.setStyle("PaddingBottom", 						5);
 DatePickerElement.StyleDefault.setStyle("PaddingLeft", 							5);
 DatePickerElement.StyleDefault.setStyle("PaddingRight", 						5);
 DatePickerElement.StyleDefault.setStyle("BorderType", 							"solid");
+DatePickerElement.StyleDefault.setStyle("BackgroundFill", 						"#FFFFFF");
 
 DatePickerElement.StyleDefault.setStyle("Month1String", 						"Jan");
 DatePickerElement.StyleDefault.setStyle("Month2String", 						"Feb");
