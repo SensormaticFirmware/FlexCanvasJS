@@ -689,7 +689,7 @@ TimeInputElement.prototype._updateTextColors =
 TimeInputElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
-		//TimeInputElement.base.base - skip TextInput._doStylesUpdate()
+		//TimeInputElement.base.base - skip TextInput._doStylesUpdated()
 		TimeInputElement.base.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
 		//Force the textField to use our defaults rather than inherited.
