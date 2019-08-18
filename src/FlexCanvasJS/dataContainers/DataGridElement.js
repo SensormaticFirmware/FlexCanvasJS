@@ -235,12 +235,15 @@ DataGridElement.prototype.addColumnDefinition =
  * 
  * @param index int
  * The index to insert the column definition.
+ * 
+ * @returns DataGridColumnDefinition
+ * The added DataGridColumnDefinition or null if could not be added.
  */	
 DataGridElement.prototype.addColumnDefinitionAt = 
 	function (columnDefinition, index)
 	{
 		if (!(columnDefinition instanceof DataGridColumnDefinition))
-			throw "Invalid DataGridColumnDefinition";
+			return null;
 		
 		this._gridColumns.splice(index, 0, columnDefinition);
 		this._columnPercents.splice(index, 0, columnDefinition.getStyle("PercentSize"));

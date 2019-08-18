@@ -107,7 +107,7 @@ ListCollection.prototype.setCollectionSort =
 			return; 
 			
 		if (!(collectionSort instanceof CollectionSort))
-			throw "Invalid CollectionSort";
+			return;
 			
 		this._collectionSort = collectionSort;
 	};

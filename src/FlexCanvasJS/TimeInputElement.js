@@ -11,8 +11,7 @@
  * @inherits TextInputElement
  * 
  * TimeInputElement is an editable time field.
- * Note that TimeInput supports both 12 and 24 hour time, but does not
- * supply an AM/PM toggle.
+ * Note that TimeInput supports both 12 and 24 hour time, but does not supply AM/PM.
  * 
  * @constructor TimeInputElement 
  * Creates new TimeInputElement instance.
@@ -388,12 +387,13 @@ TimeInputElement.prototype._setMinutesInternal =
 		
 		var m = Number(minute);
 		if (isNaN(m) == true)
-			throw ("invalid minute type");
+			m = 0;
 		
 		m = Math.round(m);
 		
 		var currentHour = this._hour;
 		
+		//Wrap minutes
 		while (m > 59)
 		{
 			m = m - 60;
@@ -441,12 +441,13 @@ TimeInputElement.prototype._setSecondsInternal =
 		
 		var s = Number(second);
 		if (isNaN(s) == true)
-			throw ("invalid second type");
+			m = 0;
 		
 		s = Math.round(s);
 		
 		var currentMinute = this._minute;
 		
+		//Wrap seconds
 		while (s > 59)
 		{
 			s = s - 60;

@@ -571,7 +571,7 @@ DatePickerElement.prototype.setSelectedDate =
 	function (date)
 	{
 		if (date != null && date instanceof Date == false)
-			throw ("invalid date");
+			date = new Date();
 	
 		this._selectedDate = date;
 		
