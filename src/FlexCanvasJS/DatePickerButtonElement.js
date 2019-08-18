@@ -14,7 +14,7 @@
  * @inherits ButtonElement
  * 
  * DatePickerButtonElement is a compound button that creates a pop-up DatePicker
- * which the user can select a date which is then displayed on the button. 
+ * where the user can select a date which is then displayed on the button. 
  * 
  * The DatePickerButtonElement button itself contains a child button which is used to render
  * the divider line and arrow. DatePickerButtonElement proxies its SkinState style to the arrow

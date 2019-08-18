@@ -125,6 +125,8 @@ function TextFieldElement()
 				//Swallow
 			}
 		};
+		
+	this._createCharMetrics();
 }
 
 //Inherit from CanvasElement
@@ -240,7 +242,7 @@ TextFieldElement.prototype.setText =
 		{
 			this._text = text;
 			
-			this._charMetrics = null;
+			this._createCharMetrics();
 			
 			this.setSelection(0, 0);
 			
@@ -1500,7 +1502,7 @@ TextFieldElement.prototype._doStylesUpdated =
 			"TextSize" in stylesMap ||
 			"MaskCharacter" in stylesMap)
 		{
-			this._charMetrics = null;
+			this._createCharMetrics();
 			
 			this._invalidateMeasure();
 			this._invalidateLayout();
@@ -1537,9 +1539,6 @@ TextFieldElement.prototype._doStylesUpdated =
 TextFieldElement.prototype._createCharMetrics = 
 	function ()
 	{
-		if (this._charMetrics != null)
-			return;
-	
 		var currentX = 0;
 		var currentWidth = 0;
 		
@@ -1603,8 +1602,6 @@ TextFieldElement.prototype._createCharMetrics =
 TextFieldElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		this._createCharMetrics();
-	
 		var linePadTop = this.getStyle("TextLinePaddingTop");
 		var linePadBottom = this.getStyle("TextLinePaddingBottom");
 		var textSize = this.getStyle("TextSize");

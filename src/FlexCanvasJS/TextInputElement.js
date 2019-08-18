@@ -510,6 +510,31 @@ TextInputElement.prototype._getTextHighlightedBackgroundColor =
 		return stateTextColor.value;
 	};
 	
+/**
+ * @function _updateSkinStyles
+ * Updates skin related styles. Called by _doStylesUpdated()
+ * 
+ * @param stylesMap Object
+ * Map of styles that have been changed
+ */	
+TextInputElement.prototype._updateSkinStyles = 
+	function (stylesMap)
+	{
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
+		
+		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
+			this._updateSkinClass("disabled");
+		if ("DisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("disabled");
+	
+		this._updateState();
+		this._updateTextColors();
+	};
+	
 //@Override
 TextInputElement.prototype._doStylesUpdated =
 	function (stylesMap)
@@ -586,20 +611,7 @@ TextInputElement.prototype._doStylesUpdated =
 			this._textField.setStyle("MaskCharacter", maskCharacter);
 		}
 		
-		////Update skin classes and sub styles.
-		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
-			this._updateSkinClass("up");
-		if ("UpSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("up");
-		
-		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
-			this._updateSkinClass("disabled");
-		if ("DisabledSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("disabled");
-
-		
-		this._updateState();
-		this._updateTextColors();
+		this._updateSkinStyles(stylesMap);
 	};
 	
 //@Override

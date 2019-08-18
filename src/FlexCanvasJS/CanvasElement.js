@@ -791,8 +791,9 @@ CanvasElement._StyleTypes.IncludeInMeasure = 		StyleableBase.EStyleType.NORMAL;	
  * background a composite layer.  This effectively buffers the layer. Only the delta changes
  * will be drawn to the composite. Otherwise the entire display chain would have to be re-drawn 
  * when the background moves. This is memory intensive as it effectively duplicates the rendering
- * area. Composite elements/children changing will update the composite layer, then that region of the 
- * composite layer needs to be copied up to the parent, resulting in an additional buffer copy.
+ * area. Composite elements/children changing will update their region of their composite parent, 
+ * then that region of the composite parent needs to be copied up to the grandparent, 
+ * resulting in an additional buffer copy.
  */
 CanvasElement._StyleTypes.CompositeLayer = 					StyleableBase.EStyleType.NORMAL;		//true || false
 
