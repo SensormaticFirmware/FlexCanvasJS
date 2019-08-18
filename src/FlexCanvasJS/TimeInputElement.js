@@ -11,6 +11,8 @@
  * @inherits TextInputElement
  * 
  * TimeInputElement is an editable time field.
+ * Note that TimeInput supports both 12 and 24 hour time, but does not
+ * supply an AM/PM toggle.
  * 
  * @constructor TimeInputElement 
  * Creates new TimeInputElement instance.
@@ -137,9 +139,8 @@ TimeInputElement._StyleTypes = Object.create(null);
 /**
  * @style Is24HourTime boolean
  * 
- * When true, valid hours are 0-23.
+ * Defaults to true, valid hours are 0-23.
  * When false, valid hours are 1-12. (AM / PM not supplied by this control)
- * Defaults to true.
  */
 TimeInputElement._StyleTypes.Is24HourTime =								StyleableBase.EStyleType.NORMAL;		//Element constructor()
 
@@ -159,8 +160,76 @@ TimeInputElement.StyleDefault.setStyle("PaddingRight",								5);
 ////////Public///////////////////////
 
 /**
+ * @function setText
+ * @override
+ * Sets time to be displayed. 
+ * 
+ * @param text String
+ * Time to be displayed. Expected format is "hour:minute:second".
+ */
+TimeInputElement.prototype.setText = 
+	function (text)
+	{
+		var hour = 0; 
+		var minute = 0;
+		var second = 0;
+		var n;
+		
+		var timeArray = ip.split(":");
+		for (var i = 0; i < timeArray.length; i++)
+		{
+			if (i == 3)
+				return;
+			
+			n = Number(timeArray[i])
+			if (isNaN(n) == true)
+				n = 0;
+			
+			if (i == 0)
+				hour = n;
+			else if (i == 1)
+				minute = n;
+			else 
+				second = n;
+		}
+		
+		this.setHours(hour);
+		this.setMinutes(minute);
+		this.setSeconds(second);		
+	};
+
+/**
+ * @function getText
+ * @override
+ * Gets the time string currently displayed.
+ * 
+ * @returns String
+ * Time currently displayed, formatted as "HH:MM:SS"
+ */	
+TimeInputElement.prototype.getText = 
+	function ()
+	{
+		var hour = this._hour.toString();
+		var minute = this._minute.toString();
+		var second = this._second.toString();
+		
+		while (hour.length < 2)
+			hour = "0" + hour;
+		
+		while (minute.length < 2)
+			minute = "0" + minute;
+		
+		while (second.length < 2)
+			second = "0" + second;
+		
+		return hour + ":" + minute + ":" + second;
+	};	
+	
+/**
  * @function setHours
- * Sets the hours to be displayed
+ * Sets the hours to be displayed.
+ * Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12
+ * Will wrap hours when out of range, hence allowing easy addition and subtraction.
  * 
  * @param hour int
  * Hour to be displayed.
@@ -186,7 +255,8 @@ TimeInputElement.prototype.getHours =
 
 /**
  * @function setMinutes
- * Sets the minutes to be displayed
+ * Sets the minutes to be displayed. Range is 0-59.
+ * Will wrap minutes and update hours when out of range, hence allowing easy addition and subtraction.
  * 
  * @param minute int
  * Minute to be displayed.
@@ -212,7 +282,8 @@ TimeInputElement.prototype.getMinutes =
 	
 /**
  * @function setSeconds
- * Sets the seconds to be displayed
+ * Sets the seconds to be displayed. Range is 0-59.
+ * Will wrap seconds and update minutes when out of range, hence allowing easy addition and subtraction.
  * 
  * @param second int
  * Seconds to be displayed.
@@ -261,7 +332,7 @@ TimeInputElement.prototype._setHoursInternal =
 		
 		var h = Number(hour);
 		if (isNaN(h) == true)
-			throw ("invalid hour type");
+			h = 0;
 		
 		h = Math.round(h);
 		
@@ -401,6 +472,13 @@ TimeInputElement.prototype._setSecondsInternal =
 			this._clockBase = Date.now();
 	};
 	
+/**
+ * @function _onTimeInputEnterFrame
+ * Event handler for "enterframe" event.  Updates the time displayed via clock.
+ * 
+ * @param event DispatcherEvent
+ * DispatcherEvent to be processed.
+ */	
 TimeInputElement.prototype._onTimeInputEnterFrame = 
 	function (event)
 	{
