@@ -21,7 +21,8 @@
  * The Dropdown button itself contains a child button which is used to render
  * the divider line and arrow. Dropdown proxies its SkinState style to the arrow
  * button so the arrow button will change states along with the Dropdown itself.
- * See the default skin for the arrow button DropdownArrowButtonSkinElement for additional styles.
+ * See the default item renderer, DataRendererLabelElement and the default 
+ * skin for the arrow button, DropdownArrowButtonSkinElement for additional styles.
  * 
  * @seealso DropdownArrowButtonSkinElement
  * 
