@@ -482,6 +482,9 @@ TimeInputElement.prototype._setSecondsInternal =
 TimeInputElement.prototype._onTimeInputEnterFrame = 
 	function (event)
 	{
+		if (this._renderVisible == false)
+			return;
+	
 		var time = Date.now();
 		var delta = time - this._clockBase;
 		var deltaSeconds = Math.floor(delta / 1000);

@@ -180,6 +180,13 @@ function CanvasElement()
 	
 	this._forceRegionUpdate = false;			//Flag set by validateRedrawRegion() when update required due to composite effect on composite parent.
 	this._renderChanged = true;					//Dirty flag for redraw region set to true when _graphicsCanvas has been modified.
+	
+	/**
+	 * @member _renderVisible boolean
+	 * Read only - False if any element in the parent chain is not visible.
+	 * This is not updated immediately, only after redraw regions have been updated.
+	 * Useful for things like "enterframe" listeners to prevent processing when not necessary.
+	 */
 	this._renderVisible = false; 				//False if any element in the composite parent chain is not visible.	
 	
 	/////////Composite Rendering////////////////
