@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>ColorPickerButtonElement</title>
+<title>TimeInputElement</title>
 <script type="text/javascript">
 function showHideInherited(type) {
 var tableNew = null;
@@ -69,7 +69,7 @@ lable.innerHTML = "Show Inherited";
 <a href="CheckboxSkinElement.html">CheckboxSkinElement</a><br>
 <a href="CollectionChangedEvent.html">CollectionChangedEvent</a><br>
 <a href="CollectionSort.html">CollectionSort</a><br>
-ColorPickerButtonElement<br>
+<a href="ColorPickerButtonElement.html">ColorPickerButtonElement</a><br>
 <a href="ColorPickerElement.html">ColorPickerElement</a><br>
 <a href="ContainerBaseElement.html">ContainerBaseElement</a><br>
 <a href="CursorDefinition.html">CursorDefinition</a><br>
@@ -127,7 +127,7 @@ ColorPickerButtonElement<br>
 <a href="TextElement.html">TextElement</a><br>
 <a href="TextFieldElement.html">TextFieldElement</a><br>
 <a href="TextInputElement.html">TextInputElement</a><br>
-<a href="TimeInputElement.html">TimeInputElement</a><br>
+TimeInputElement<br>
 <a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
 <a href="ToggleButtonGroup.html">ToggleButtonGroup</a><br>
 <a href="Tween.html">Tween</a><br>
@@ -135,14 +135,10 @@ ColorPickerButtonElement<br>
 <br><br>
 </td>
 <td style="vertical-align: top; padding: 10px; width: 100%;">
-<span style="font-size: 24px; font-weight: bold;">ColorPickerButtonElement</span><br>
+<span style="font-size: 24px; font-weight: bold;">TimeInputElement</span><br>
 <br>
-ColorPickerButtonElement is a compound button that creates a pop-up ColorPicker<br>
-which the user can select a color which is then displayed on the button.<br>
-The ColorPickerButtonElement button itself contains a child button which is used to render<br>
-the divider line and arrow. ColorPickerButtonElement proxies its SkinState style to the arrow<br>
-button so the arrow button will change states along with the ColorPickerButtonElement itself.<br>
-See the default skin for the arrow button DropdownArrowButtonSkinElement for additional styles.<br>
+TimeInputElement is an editable time field.<br>
+Note that TimeInput supports both 12 and 24 hour time, but does not supply AM/PM.<br>
 <br>
 <table>
 <tr>
@@ -150,7 +146,7 @@ See the default skin for the arrow button DropdownArrowButtonSkinElement for add
 <span style="font-weight: bold;">Inheritance: &nbsp;&nbsp;&nbsp;</span>
 </td>
 <td rowspan="2" style="vertical-align: top; width: 100%;">
-ColorPickerButtonElement &#10142; <a href="ButtonElement.html">ButtonElement</a> &#10142; <a href="SkinnableElement.html">SkinnableElement</a> &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
+TimeInputElement &#10142; <a href="TextInputElement.html">TextInputElement</a> &#10142; <a href="SkinnableElement.html">SkinnableElement</a> &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
 <tr>
 <td></td>
 </tr>
@@ -165,118 +161,16 @@ ColorPickerButtonElement &#10142; <a href="ButtonElement.html">ButtonElement</a>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ArrowButtonClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
+<span style="font-weight: bold;">Is24HourTime</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button.<br>
-Note that ColorPickerButton proxies its SkinState style to the arrow button so the arrow<br>
-will change states with the ColorPickerButton.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ArrowButtonStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ColorSwatchClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement or subclass constructor to be used for the color swatch icon. Defaults to CanvasElement.<br>
-Note that ColorPickerButton sets the swatch class's BackgroundFill style to the selected color<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ColorSwatchStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the color swatch. Note that the<br>
-ColorPickerButton sets the color swatch's BackgroundFill style to the selected color.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OpenCloseTweenDuration</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Duration in milliseconds the open and close animation should run.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OpenCloseTweenEasingFunction</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">PopupColorPickerDistance</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Vertical distance in pixels to place the ColorPicker pop up from the button.<br>
-Defaults to -1 to collapse default 1 pixel borders.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">PopupColorPickerStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the pop up ColorPicker element.<br>
+Defaults to true, valid hours are 0-23.<br>
+When false, valid hours are 1-12. (AM / PM not supplied by this control)<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -299,36 +193,6 @@ The StyleDefinition or [StyleDefinition] array to apply to the pop up ColorPicke
 Alpha value to use when rendering this component. Allowable values are between 0 and 1 with<br>
 0 being transparent and 1 being opaque. This causes the element to perform composite rendering<br>
 when a value between 1 and 0 is used.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ArrowButtonClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button.<br>
-Note that ColorPickerButton proxies its SkinState style to the arrow button so the arrow<br>
-will change states with the ColorPickerButton.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ArrowButtonStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -437,36 +301,6 @@ and children's rendering to the elements bounding box. This style is inheritable
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ColorSwatchClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement or subclass constructor to be used for the color swatch icon. Defaults to CanvasElement.<br>
-Note that ColorPickerButton sets the swatch class's BackgroundFill style to the selected color<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ColorSwatchStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the color swatch. Note that the<br>
-ColorPickerButton sets the color swatch's BackgroundFill style to the selected color.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">CompositeLayer</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -511,13 +345,13 @@ may be used or a browser type String ("text", "none", etc) may be used.<br>
 <span style="font-weight: bold;">DisabledSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the button skin when the button is in the "disabled" state.<br>
-This will override SkinClass when equal or higher priority than SkinClass.<br>
+The CanvasElement constructor to be used for the TextInput is in the "disabled" state.<br>
+When this is null, the base SkinClass style will be used.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -526,12 +360,13 @@ This will override SkinClass when equal or higher priority than SkinClass.<br>
 <span style="font-weight: bold;">DisabledSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.<br>
+When this is null, the base SkinTyle will be used.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -540,57 +375,57 @@ The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state 
 <span style="font-weight: bold;">DisabledTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for the button label when the button is in the "disabled" state. Format like "#FF0000" (red).<br>
-This will override TextColor when equal or higher priority than TextColor.<br>
+Hex color value to be used for the button TextInput is in the "disabled" state. Format like "#FF0000" (red).<br>
+This will override the TextColor style.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DownSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
+<span style="font-weight: bold;">DisabledTextHighlightedBackgroundColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the button skin when the button is in the "down" state.<br>
-This will override SkinClass when equal or higher priority than SkinClass.<br>
+Hex color value to be used for highlighted text background when the TextInput is in the "disabled" state. Format like "#FF0000" (red).<br>
+When this is null, the base TextHighlightedBackgroundColor style will be used.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DownSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+<span style="font-weight: bold;">DisabledTextHighlightedColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "down" state skin element.<br>
+Hex color value to be used for highlighted text when the TextInput is in the "disabled" state. Format like "#FF0000" (red).<br>
+When this is null, the base TextHighlightedColor style will be used.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DownTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+<span style="font-weight: bold;">DisplayAsPassword</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for the button label when the button is in the "down" state. Format like "#FF0000" (red).<br>
-This will override TextColor when equal or higher priority than TextColor.<br>
+When true, text will be masked using the PasswordMaskCharacter style.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -720,6 +555,21 @@ However, this will not prevent the "measurecomplete" event after this element fi
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Is24HourTime</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Defaults to true, valid hours are 0-23.<br>
+When false, valid hours are 1-12. (AM / PM not supplied by this control)<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">Left</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -730,6 +580,20 @@ However, this will not prevent the "measurecomplete" event after this element fi
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The distance the element should be positioned from the left most bounds of the parent container.<br>
 This only works if the element is a child of an AnchorContainer.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">MaxChars</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Maximum number of characters allowed.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -804,78 +668,6 @@ works if the element is a child of a Container element.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 When false disables mouse events for the element.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OpenCloseTweenDuration</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Duration in milliseconds the open and close animation should run.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OpenCloseTweenEasingFunction</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OverSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the button skin when the button is in the "over" state.<br>
-This will override SkinClass when equal or higher priority than SkinClass.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OverSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "over" state skin element.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OverTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for the button label when the button is in the "over" state. Format like "#FF0000" (red).<br>
-This will override TextColor when equal or higher priority than TextColor.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1011,35 +803,6 @@ to 100 and allow them to split the real-estate by 3.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">PopupColorPickerDistance</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Vertical distance in pixels to place the ColorPicker pop up from the button.<br>
-Defaults to -1 to collapse default 1 pixel borders.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">PopupColorPickerStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the pop up ColorPicker element.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">Right</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1162,13 +925,13 @@ outside the elements bounding area. This will cause the element to be composite 
 <span style="font-weight: bold;">SkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The CanvasElement constructor type to apply to all skin states.<br>
-Specific states such as UpSkinClass will override SkinClass when they are equal priority.<br>
+Specific states such as UpSkinClass will override SkinClass.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1200,20 +963,6 @@ as normal, mouse-over, mouse-down, etc. Its also commonly used by skin classes t
 Determines if an element can be focused using tab stops. -1 indicates the element cannot<br>
 take focus, 0 is default and the element will be focused in the order it appears in the display chain.<br>
 Numbers higher than 0 indicate a specific order to be used (not yet implemented).<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">Text</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Text string to be displayed as the button label.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1307,7 +1056,7 @@ Hex color value to be used when drawing highlighted text. Format like "#FF0000" 
 <span style="font-weight: bold;">TextHorizontalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;">[Inheritable] <a href="CanvasElement.html">CanvasElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
@@ -1393,7 +1142,7 @@ Determines the style to render text. Available values are "normal", "bold", "ita
 <span style="font-weight: bold;">TextVerticalAlign</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;">[Inheritable] <a href="CanvasElement.html">CanvasElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
@@ -1422,13 +1171,13 @@ This only works if the element is a child of an AnchorContainer.<br>
 <span style="font-weight: bold;">UpSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the button skin when the button is in the "up" state.<br>
-This will override SkinClass when equal or higher priority than SkinClass.<br>
+The CanvasElement constructor to be used for the skin when in the "up" state.<br>
+This will override SkinClass.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1437,7 +1186,7 @@ This will override SkinClass when equal or higher priority than SkinClass.<br>
 <span style="font-weight: bold;">UpSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
@@ -1451,13 +1200,43 @@ The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin e
 <span style="font-weight: bold;">UpTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for the button label when the button is in the "up" state. Format like "#FF0000" (red).<br>
-This will override TextColor when equal or higher priority than TextColor.<br>
+Hex color value to be used for the button TextInput is in the "up" state. Format like "#FF0000" (red).<br>
+This will override the TextColor style.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">UpTextHighlightedBackgroundColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).<br>
+This will override the TextHighlightedBackgroundColor style.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">UpTextHighlightedColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Hex color value to be used for highlighted text when the TextInput is in the "up" state. Format like "#FF0000" (red).<br>
+This will override the TextHighlightedColor style.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1548,43 +1327,16 @@ works if the element is a child of an AnchorContainer.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">changed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
+<span style="font-weight: bold;">hourswrapped</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the color selection changes as a result of user input.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">closed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the ColorPicker pop up is closed as a result of user input.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">opened</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the ColorPicker pop up is opened as a result of user input.<br>
+Dispatched when hours are wrapped due to clock change.<br>
+This is useful to detect date or AM/PM changes due to the clock updating.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1613,12 +1365,12 @@ Dispatched when this element is added to the display hierarchy and becomes a des
 <span style="font-weight: bold;">changed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the color selection changes as a result of user input.<br>
+Dispatched when the text is modified as a result of user input.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1633,20 +1385,6 @@ Dispatched when the color selection changes as a result of user input.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Dispatched when the mouse is pressed and released over the same element.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">closed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the ColorPicker pop up is closed as a result of user input.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1717,6 +1455,21 @@ Dispatched when this element gains focus.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Dispatched when this element loses focus.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">hourswrapped</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatched when hours are wrapped due to clock change.<br>
+This is useful to detect date or AM/PM changes due to the clock updating.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1861,20 +1614,6 @@ Dispatched when the mouse is released. Note that the mouse may not still be over
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">opened</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the ColorPicker pop up is opened as a result of user input.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">removed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="AddedRemovedEvent.html">AddedRemovedEvent</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1969,35 +1708,35 @@ Dispatched when the mouse wheel is rolled while over this element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ColorPickerButtonElement()</span>
+<span style="font-weight: bold;">TimeInputElement()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">[Constructor] TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new ColorPickerButtonElement instance.<br>
+Creates new TimeInputElement instance.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">close(animate)</span>
+<span style="font-weight: bold;">getHour()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Closes the pop up ColorPicker.<br>
+Gets the hours currently displayed.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the disappearance of the pop-up ColorPicker.<br>
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Hour currently displayed.<br>
 </td>
 </tr>
 </table>
@@ -2006,21 +1745,67 @@ When true animates the disappearance of the pop-up ColorPicker.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">getHexColor()</span>
+<span style="font-weight: bold;">getMinutes()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the selected color of the ColorPickerElement.<br>
+Gets the minutes currently displayed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Minute currently displayed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getSeconds()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the seconds currently displayed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Seconds currently displayed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getText()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Override] TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the time string currently displayed.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-RGB hex color value formatted as "#FF0000".<br>
+Time currently displayed, formatted as "HH:MM:SS"<br>
 </td>
 </tr>
 </table>
@@ -2029,21 +1814,23 @@ RGB hex color value formatted as "#FF0000".<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">open(animate)</span>
+<span style="font-weight: bold;">setHours(hour)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Opens the pop up ColorPicker.<br>
+Sets the hours to be displayed.<br>
+Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12<br>
+Will wrap hours when out of range.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the appearance of the pop-up ColorPicker.<br>
+<span style="font-weight: bold;">hour</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Hour to be displayed.<br>
 </td>
 </tr>
 </table>
@@ -2052,21 +1839,69 @@ When true animates the appearance of the pop-up ColorPicker.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">setHexColor(value)</span>
+<span style="font-weight: bold;">setMinutes(minute)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sets the selected color of the ColorPickerElement.<br>
+Sets the minutes to be displayed. Range is 0-59.<br>
+Will wrap minutes and update hours when out of range.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-RGB hex color value formatted as "#FF0000".<br>
+<span style="font-weight: bold;">minute</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Minute to be displayed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setSeconds(second)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the seconds to be displayed. Range is 0-59.<br>
+Will wrap seconds and update minutes when out of range.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">second</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Seconds to be displayed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setText(text)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Override] TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets time to be displayed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">text</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Time to be displayed. Expected format is "hour:minute:second".<br>
 </td>
 </tr>
 </table>
@@ -2081,15 +1916,15 @@ RGB hex color value formatted as "#FF0000".<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ColorPickerButtonElement()</span>
+<span style="font-weight: bold;">TimeInputElement()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">[Constructor] TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new ColorPickerButtonElement instance.<br>
+Creates new TimeInputElement instance.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -2269,29 +2104,6 @@ removing definitions one at a time.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">close(animate)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Closes the pop up ColorPicker.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the disappearance of the pop-up ColorPicker.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">dispatchEvent(event)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -2318,21 +2130,21 @@ The DispatcherEvent class or subclass to be dispatched.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">getHexColor()</span>
+<span style="font-weight: bold;">getHour()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the selected color of the ColorPickerElement.<br>
+Gets the hours currently displayed.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-RGB hex color value formatted as "#FF0000".<br>
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Hour currently displayed.<br>
 </td>
 </tr>
 </table>
@@ -2389,6 +2201,29 @@ The element to translate this elements bounding box too. If relativeToElement eq
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DrawMetrics.html">DrawMetrics</a><br>
 DrawMetrics of this element relative to the supplied element.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getMinutes()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the minutes currently displayed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Minute currently displayed.<br>
 </td>
 </tr>
 </table>
@@ -2481,6 +2316,29 @@ Gets this element's parent element.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 This element's parent element.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getSeconds()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the seconds currently displayed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Seconds currently displayed.<br>
 </td>
 </tr>
 </table>
@@ -2619,6 +2477,29 @@ Index of the StyleDefinition supplied via the styleDefinition parameter, or -1 i
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getText()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Override] TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the time string currently displayed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Time currently displayed, formatted as "HH:MM:SS"<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">hasCaptureListener(type, callback)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -2685,29 +2566,6 @@ Function callback to be called when the event occurs. This may be null to check<
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
 Returns true if the EventDispatcher has the provided callback registered for the<br>provided type, or any callback for the provided type if the callback parameter is null.<br>Otherwise, returns false.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">open(animate)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Opens the pop up ColorPicker.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the appearance of the pop-up ColorPicker.<br>
 </td>
 </tr>
 </table>
@@ -2882,21 +2740,47 @@ When true, rotates a point on the parent's plane, to the childs plane.<br>When f
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">setHexColor(value)</span>
+<span style="font-weight: bold;">setHours(hour)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sets the selected color of the ColorPickerElement.<br>
+Sets the hours to be displayed.<br>
+Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12<br>
+Will wrap hours when out of range.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-RGB hex color value formatted as "#FF0000".<br>
+<span style="font-weight: bold;">hour</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Hour to be displayed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setMinutes(minute)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the minutes to be displayed. Range is 0-59.<br>
+Will wrap minutes and update hours when out of range.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">minute</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Minute to be displayed.<br>
 </td>
 </tr>
 </table>
@@ -2921,6 +2805,30 @@ it is for use by implementors if a way to differentiate elements is needed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">name</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
 A String to use as the element's name.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setSeconds(second)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the seconds to be displayed. Range is 0-59.<br>
+Will wrap seconds and update minutes when out of range.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">second</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Seconds to be displayed.<br>
 </td>
 </tr>
 </table>
@@ -2975,6 +2883,29 @@ adding style definitions one at a time.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleDefinitions</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
 May be a StyleDefinition, or an Array of StyleDefinition<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setText(text)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">[Override] TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets time to be displayed.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">text</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Time to be displayed. Expected format is "hour:minute:second".<br>
 </td>
 </tr>
 </table>
@@ -3406,130 +3337,21 @@ after our parent has finished its layout phase will this be valid.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_addColorPickerPopup()</span>
+<span style="font-weight: bold;">_onTimeInputEnterFrame(event)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Adds the ColorPicker pop up to CanvasManager and registers event listeners.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
-Returns true if the pop up was added, false if the pop up already exists.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_createArrowButton()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Generates and sets up the arrow element instance per styling.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
-New arrow element instance.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_createColorSwatch()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Generates and sets up the color swatch element instance per styling.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
-New color swatch element instance.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_layoutColorPickerPopup()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sizes and positions the ColorPicker pop up.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorButtonManagerCaptureEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "wheel" and "mousedown". Used to close<br>
-the ColorPicker when events happen outside the Button or pop up ColorPicker.<br>
-Only active when pop up is open.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorButtonManagerResizeEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "resize". Used to close the ColorPicker.<br>
-Only active when ColorPicker is open.<br>
+Event handler for "enterframe" event.  Updates the time displayed via clock.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-DispatcherEvent to process.<br>
+DispatcherEvent to be processed.<br>
 </td>
 </tr>
 </table>
@@ -3538,16 +3360,15 @@ DispatcherEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorPickerChangedInstance(elementEvent)</span>
+<span style="font-weight: bold;">_onTimeInputTextFieldFocusOut(elementEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for pop up ColorPicker "changed" event.<br>
-Updates selected color and re-dispatches "changed" event.<br>
+Event handler for the internal TextField's "focusout" event.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -3562,22 +3383,21 @@ ElementEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorPickerKeydown(elementKeyboardEvent)</span>
+<span style="font-weight: bold;">_onTimeInputTextFieldMouseDown(mouseEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for pop up ColorPicker "keydown" event.<br>
-Closes the pop up when enter or tab is pressed.<br>
+Event handler for the internal TextField's "mousedown" event. Only active when TimeInput is enabled.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementKeyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
-ElementKeyboardEvent to process.<br>
+<span style="font-weight: bold;">mouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+ElementMouseEvent to process.<br>
 </td>
 </tr>
 </table>
@@ -3586,23 +3406,35 @@ ElementKeyboardEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorPickerLayoutComplete(event)</span>
+<span style="font-weight: bold;">_setHoursInternal(hour, isClock)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for pop up ColorPicker "layoutcomplete".<br>
-Updates the pop up size content size is known and determines<br>
-position the pop up opens depending on available space.<br>
+Sets the hours to be displayed, ignored if set by clock when user has hour field focused.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-DispatcherEvent to process.<br>
+<span style="font-weight: bold;">hour</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Hours to be displayed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when this is called via clock change.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
@@ -3611,21 +3443,72 @@ DispatcherEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_removeColorPickerPopup()</span>
+<span style="font-weight: bold;">_setMinutesInternal(minute, isClock)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Removes the pop up ColorPicker and cleans up event listeners.<br>
+Sets the minutes to be displayed, ignored if set by clock when user has minutes field focused.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
-Returns true if the pop up was removed, false if the pop up does not exist.<br>
+<span style="font-weight: bold;">minute</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Minutes to be displayed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when this is called via clock change.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True if value was out of range and wrapped.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setSecondsInternal(second, isClock)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the seconds to be displayed, ignored if set by clock when user has seconds field focused.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">second</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Seconds to be displayed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when this is called via clock change.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
@@ -3699,29 +3582,6 @@ The index position to insert the child in the elements child list.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 Returns the element just added when successfull, null if the element could not<br>be added due to the index being out of range.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_addColorPickerPopup()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Adds the ColorPicker pop up to CanvasManager and registers event listeners.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
-Returns true if the pop up was added, false if the pop up already exists.<br>
 </td>
 </tr>
 </table>
@@ -3835,75 +3695,6 @@ The skin state that this element is changing too.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
 Returns true if the element state has actually changed, false if it is the same state.<br>Subclasses can check what this base function returns before making additional changes for better performance.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_createArrowButton()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Generates and sets up the arrow element instance per styling.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
-New arrow element instance.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_createColorSwatch()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Generates and sets up the color swatch element instance per styling.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
-New color swatch element instance.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_createLabel()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates the Button's label instance when Text style is not null or empty.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="LabelElement.html">LabelElement</a><br>
-New LabelElement instance<br>
 </td>
 </tr>
 </table>
@@ -4748,26 +4539,85 @@ Sub style name to apply to the skin of the associated state.<br>
 <span style="font-weight: bold;">_getTextColor(state)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the text color to be used for the supplied state.<br>
-Override this to add styles for additional states.<br>
+Gets the text color for the supplied state based on text styles.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-String representing the state to return the text color style.<br>
+The skin state to return the text color.<br>
 </td>
 </tr>
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;string<br>
-Text color for the supplied state.<br>
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Hex color value.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getTextHighlightedBackgroundColor(state)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the highlighted text background color for the supplied state based on text styles.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+The skin state to return the highlighted text background color.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Hex color value.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getTextHighlightedColor(state)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the highlighted text color for the supplied state based on text styles.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+The skin state to return the highlighted text color.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
+Hex color value.<br>
 </td>
 </tr>
 </table>
@@ -4867,140 +4717,6 @@ String representing the style to be invalidated.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_layoutColorPickerPopup()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sizes and positions the ColorPicker pop up.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onButtonClick(elementMouseEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "click" event. Cancels the event if the Button is disabled.<br>
-Overriding this is more efficient than adding an additional "click" event listener.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
-The ElementMouseEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onButtonMouseDown(elementMouseEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "mousedown" event. Updates the Button skin state.<br>
-Overriding this is more efficient than adding an additional "mousedown" event listener.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
-The ElementMouseEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onButtonMouseUp(elementMouseEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "mouseup" event. Updates the Button skin state.<br>
-Overriding this is more efficient than adding an additional "mouseup" event listener.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
-The ElementMouseEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onButtonRollout(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "rollout" event. Updates the Button skin state.<br>
-Overriding this is more efficient than adding an additional "rollout" event listener.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-The ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onButtonRollover(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "rollover" event. Updates the Button skin state.<br>
-Overriding this is more efficient than adding an additional "rollover" event listener.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-The ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_onCanvasElementAdded(addedRemovedEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -5051,65 +4767,16 @@ The AddedRemovedEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorButtonManagerCaptureEvent(event)</span>
+<span style="font-weight: bold;">_onTextInputFocusIn(elementEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "wheel" and "mousedown". Used to close<br>
-the ColorPicker when events happen outside the Button or pop up ColorPicker.<br>
-Only active when pop up is open.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorButtonManagerResizeEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "resize". Used to close the ColorPicker.<br>
-Only active when ColorPicker is open.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-DispatcherEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorPickerChangedInstance(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for pop up ColorPicker "changed" event.<br>
-Updates selected color and re-dispatches "changed" event.<br>
+Event handler for "focusin" event.<br>
+Proxies focus event to internal TextField.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -5124,21 +4791,45 @@ ElementEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorPickerKeydown(elementKeyboardEvent)</span>
+<span style="font-weight: bold;">_onTextInputFocusOut(elementEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for pop up ColorPicker "keydown" event.<br>
-Closes the pop up when enter or tab is pressed.<br>
+Event handler for "focusout" event.<br>
+Proxies focus event to internal TextField.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementKeyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
+<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+ElementEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onTextInputKeyDown(keyboardEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for "keydown" event. Only active when TextInput is enabled.<br>
+Proxies keyboard event to internal TextField.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">keyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
 ElementKeyboardEvent to process.<br>
 </td>
 </tr>
@@ -5148,23 +4839,115 @@ ElementKeyboardEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onColorPickerLayoutComplete(event)</span>
+<span style="font-weight: bold;">_onTextInputKeyUp(keyboardEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for pop up ColorPicker "layoutcomplete".<br>
-Updates the pop up size content size is known and determines<br>
-position the pop up opens depending on available space.<br>
+Event handler for "keyup" event. Only active when TextInput is enabled.<br>
+Proxies keyboard event to internal TextField.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">keyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
+ElementKeyboardEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onTextInputTextFieldChanged(elementEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the internal TextField "changed" event. Only active when TextInput is Enabled.<br>
+Dispatches a "changed" event from this TextInput element.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+ElementEvent to be processed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onTimeInputEnterFrame(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for "enterframe" event.  Updates the time displayed via clock.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-DispatcherEvent to process.<br>
+DispatcherEvent to be processed.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onTimeInputTextFieldFocusOut(elementEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the internal TextField's "focusout" event.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+ElementEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onTimeInputTextFieldMouseDown(mouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the internal TextField's "mousedown" event. Only active when TimeInput is enabled.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">mouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+ElementMouseEvent to process.<br>
 </td>
 </tr>
 </table>
@@ -5225,29 +5008,6 @@ Index to be removed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 Returns the element just removed if successfull, null if the element could<br>not be removed due it it not being a child of this element, or index out of range.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_removeColorPickerPopup()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">ColorPickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Removes the pop up ColorPicker and cleans up event listeners.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
-Returns true if the pop up was removed, false if the pop up does not exist.<br>
 </td>
 </tr>
 </table>
@@ -5433,21 +5193,35 @@ Returns true if the child's index is successfully changed, false if the element<
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_setLabelText(text)</span>
+<span style="font-weight: bold;">_setHoursInternal(hour, isClock)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;">TimeInputElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sets supplied text to the buttons label element, adds or destroys the label as necessary.<br>
+Sets the hours to be displayed, ignored if set by clock when user has hour field focused.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">text</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-String to be used for the label text.<br>
+<span style="font-weight: bold;">hour</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Hours to be displayed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when this is called via clock change.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
@@ -5515,6 +5289,43 @@ Selected data, differs per container.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setMinutesInternal(minute, isClock)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the minutes to be displayed, ignored if set by clock when user has minutes field focused.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">minute</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Minutes to be displayed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when this is called via clock change.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True if value was out of range and wrapped.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_setRelativePosition(x, y, relativeToElement)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -5548,6 +5359,43 @@ The relative Y position to move this element's position.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">relativeToElement</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
 The CanvasElement to move this element relative too.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_setSecondsInternal(second, isClock)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">TimeInputElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the seconds to be displayed, ignored if set by clock when user has seconds field focused.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">second</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
+Seconds to be displayed.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True when this is called via clock change.<br>
+</td>
+</tr>
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
@@ -5667,47 +5515,52 @@ The state for which to update the StyleDefinition.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_updateSkinStyles(stylesMap)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Updates skin related styles. Called by _doStylesUpdated()<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">stylesMap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
+Map of styles that have been changed<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_updateState()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Called in response to mouse events, and when the Button is added to the display hierarchy (if mouse is enabled).<br>
-Updates the Button skin state.<br>
+Updates the current SkinState in response to style changes.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateText()</span>
+<span style="font-weight: bold;">_updateTextColors()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
+<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the buttons text per styling.<br>
-This function calls _updateLabelText(text)<br>
-Override this if you need to change the source of the label text and<br>
-call _updateLabelText accordingly.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateTextColor()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="ButtonElement.html">ButtonElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the text color in response to state changes.<br>
+Updates the text colors based on the current state. Called when state changes and when added to display hierarchy.<br>
 </td>
 <td>&nbsp;</td>
 </tr>

@@ -86,6 +86,8 @@ AnchorContainerElement<br>
 <a href="DataListElement.html">DataListElement</a><br>
 <a href="DataRendererBaseElement.html">DataRendererBaseElement</a><br>
 <a href="DataRendererLabelElement.html">DataRendererLabelElement</a><br>
+<a href="DatePickerButtonElement.html">DatePickerButtonElement</a><br>
+<a href="DatePickerElement.html">DatePickerElement</a><br>
 <a href="DispatcherEvent.html">DispatcherEvent</a><br>
 <a href="DrawMetrics.html">DrawMetrics</a><br>
 <a href="DropdownArrowButtonSkinElement.html">DropdownArrowButtonSkinElement</a><br>
@@ -125,6 +127,7 @@ AnchorContainerElement<br>
 <a href="TextElement.html">TextElement</a><br>
 <a href="TextFieldElement.html">TextFieldElement</a><br>
 <a href="TextInputElement.html">TextInputElement</a><br>
+<a href="TimeInputElement.html">TimeInputElement</a><br>
 <a href="ToggleButtonElement.html">ToggleButtonElement</a><br>
 <a href="ToggleButtonGroup.html">ToggleButtonGroup</a><br>
 <a href="Tween.html">Tween</a><br>
@@ -136,7 +139,7 @@ AnchorContainerElement<br>
 <br>
 The AnchorContainer can be used to lay out children via absolute or constraint positioning.<br>
 This container uses children's styles X, Y, Width, Height, PercentWidth, PercentHeight,<br>
-Top, Bottom, Left, Right, Horizontal Center, and Vertical Center. Nesting containers<br>
+Top, Bottom, Left, Right, HorizontalCenter, and VerticalCenter. Nesting containers<br>
 is the best way to quickly and simply build complex layouts.<br>
 X, Y, Width, and Height are treated as highest priority and will override other styles.<br>
 Elements Z index is determined by the order they are added (child index).<br>
@@ -305,8 +308,9 @@ thereby always causing a full screen redraw, its beneficial to make the layer on
 background a composite layer.  This effectively buffers the layer. Only the delta changes<br>
 will be drawn to the composite. Otherwise the entire display chain would have to be re-drawn<br>
 when the background moves. This is memory intensive as it effectively duplicates the rendering<br>
-area. Composite elements/children changing will update the composite layer, then that region of the<br>
-composite layer needs to be copied up to the parent, resulting in an additional buffer copy.<br>
+area. Composite elements/children changing will update their region of their composite parent,<br>
+then that region of the composite parent needs to be copied up to the grandparent,<br>
+resulting in an additional buffer copy.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -2801,6 +2805,22 @@ Read only - true if the mouse is over this element, otherwise false.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Read only - This elements parent element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_renderVisible</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Read only - False if any element in the parent chain is not visible.<br>
+This is not updated immediately, only after redraw regions have been updated.<br>
+Useful for things like "enterframe" listeners to prevent processing when not necessary.<br>
 </td>
 <td>&nbsp;</td>
 </tr>

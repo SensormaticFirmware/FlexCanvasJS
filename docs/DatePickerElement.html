@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>IpInputElement</title>
+<title>DatePickerElement</title>
 <script type="text/javascript">
 function showHideInherited(type) {
 var tableNew = null;
@@ -87,7 +87,7 @@ lable.innerHTML = "Show Inherited";
 <a href="DataRendererBaseElement.html">DataRendererBaseElement</a><br>
 <a href="DataRendererLabelElement.html">DataRendererLabelElement</a><br>
 <a href="DatePickerButtonElement.html">DatePickerButtonElement</a><br>
-<a href="DatePickerElement.html">DatePickerElement</a><br>
+DatePickerElement<br>
 <a href="DispatcherEvent.html">DispatcherEvent</a><br>
 <a href="DrawMetrics.html">DrawMetrics</a><br>
 <a href="DropdownArrowButtonSkinElement.html">DropdownArrowButtonSkinElement</a><br>
@@ -104,7 +104,7 @@ lable.innerHTML = "Show Inherited";
 <a href="GridContainerElement.html">GridContainerElement</a><br>
 <a href="GridContainerRowColumnDefinition.html">GridContainerRowColumnDefinition</a><br>
 <a href="ImageElement.html">ImageElement</a><br>
-IpInputElement<br>
+<a href="IpInputElement.html">IpInputElement</a><br>
 <a href="LabelElement.html">LabelElement</a><br>
 <a href="LinearGradientFill.html">LinearGradientFill</a><br>
 <a href="ListCollection.html">ListCollection</a><br>
@@ -135,9 +135,9 @@ IpInputElement<br>
 <br><br>
 </td>
 <td style="vertical-align: top; padding: 10px; width: 100%;">
-<span style="font-size: 24px; font-weight: bold;">IpInputElement</span><br>
+<span style="font-size: 24px; font-weight: bold;">DatePickerElement</span><br>
 <br>
-IpInputElement is an edit-able IPv4 address field.<br>
+DatePickerElement is a class that displays a calendar used to select dates.<br>
 <br>
 <table>
 <tr>
@@ -145,7 +145,7 @@ IpInputElement is an edit-able IPv4 address field.<br>
 <span style="font-weight: bold;">Inheritance: &nbsp;&nbsp;&nbsp;</span>
 </td>
 <td rowspan="2" style="vertical-align: top; width: 100%;">
-IpInputElement &#10142; <a href="TextInputElement.html">TextInputElement</a> &#10142; <a href="SkinnableElement.html">SkinnableElement</a> &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
+DatePickerElement &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
 <tr>
 <td></td>
 </tr>
@@ -153,6 +153,432 @@ IpInputElement &#10142; <a href="TextInputElement.html">TextInputElement</a> &#1
 <br>
 <span style="font-weight: bold; font-size: 18px;">Styles</span><br>
 <a id="labelShowHideInheritedStyles" href="" onclick="{showHideInherited('styles'); return false;}">Show Inherited</a><br>
+<table id="tableStyles" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Style</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonDaysStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the day ToggleButton elements.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonMonthDecrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the month decrement Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonMonthIncrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the month increment Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonYearDecrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the year decrement Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonYearIncrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the year increment Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day1String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 1's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day2String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 2's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day3String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 3's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day4String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 4's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day5String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 5's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day6String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 6's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day7String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 7's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">GridDaysVerticalLayoutGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels between the day grid rows.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">GridDaysVerticalLayoutGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels between the day grid columns.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LabelDayStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the day label elements.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LabelMonthStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the month label element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LabelYearStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the year label element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels between the month / year selection and the day selection grid.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month10String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 10's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month11String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 11's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month12String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 12's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month1String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 1's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month2String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 2's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month3String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 3's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month4String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 4's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month5String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 5's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month6String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 6's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month7String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 7's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month8String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 8's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month9String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 9's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
 <table id="tableStylesInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Style</td>
@@ -264,6 +690,76 @@ This only works if the element is a child of an AnchorContainer.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonDaysStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the day ToggleButton elements.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonMonthDecrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the month decrement Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonMonthIncrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the month increment Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonYearDecrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the year decrement Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">ButtonYearIncrementStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+StyleDefinition or [StyleDefinition] array to be applied to the year increment Button.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">ClipContent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -320,90 +816,99 @@ may be used or a browser type String ("text", "none", etc) may be used.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DisabledSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
+<span style="font-weight: bold;">Day1String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the TextInput is in the "disabled" state.<br>
-When this is null, the base SkinClass style will be used.<br>
+String to use for day 1's name.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DisabledSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+<span style="font-weight: bold;">Day2String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.<br>
-When this is null, the base SkinTyle will be used.<br>
+String to use for day 2's name.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DisabledTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+<span style="font-weight: bold;">Day3String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for the button TextInput is in the "disabled" state. Format like "#FF0000" (red).<br>
-This will override the TextColor style.<br>
+String to use for day 3's name.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DisabledTextHighlightedBackgroundColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+<span style="font-weight: bold;">Day4String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for highlighted text background when the TextInput is in the "disabled" state. Format like "#FF0000" (red).<br>
-When this is null, the base TextHighlightedBackgroundColor style will be used.<br>
+String to use for day 4's name.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DisabledTextHighlightedColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+<span style="font-weight: bold;">Day5String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for highlighted text when the TextInput is in the "disabled" state. Format like "#FF0000" (red).<br>
-When this is null, the base TextHighlightedColor style will be used.<br>
+String to use for day 5's name.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">DisplayAsPassword</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean
+<span style="font-weight: bold;">Day6String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-When true, text will be masked using the PasswordMaskCharacter style.<br>
+String to use for day 6's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Day7String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for day 7's name.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -463,6 +968,34 @@ The focus indicator is only rendered when the element gains focus due to a tab s
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Size in pixels that the focus ring should be rendered. Note that the focus ring is rendered<br>
 outside the elements bounding area.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">GridDaysVerticalLayoutGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels between the day grid rows.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">GridDaysVerticalLayoutGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels between the day grid columns.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -533,6 +1066,62 @@ However, this will not prevent the "measurecomplete" event after this element fi
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LabelDayStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the day label elements.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LabelMonthStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the month label element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LabelYearStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+The StyleDefinition or [StyleDefinition] array to apply to the year label element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">LayoutGap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Space in pixels between the month / year selection and the day selection grid.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">Left</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -543,20 +1132,6 @@ However, this will not prevent the "measurecomplete" event after this element fi
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The distance the element should be positioned from the left most bounds of the parent container.<br>
 This only works if the element is a child of an AnchorContainer.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">MaxChars</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Maximum number of characters allowed.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -617,6 +1192,174 @@ works if the element is a child of a Container element.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The minimum width in pixels the element should consume. This only<br>
 works if the element is a child of a Container element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month10String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 10's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month11String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 11's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month12String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 12's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month1String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 1's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month2String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 2's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month3String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 3's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month4String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 4's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month5String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 5's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month6String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 6's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month7String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 7's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month8String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 8's name.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">Month9String</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+String to use for month 9's name.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -885,21 +1628,6 @@ outside the elements bounding area. This will cause the element to be composite 
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">SkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor type to apply to all skin states.<br>
-Specific states such as UpSkinClass will override SkinClass.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">SkinState</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1131,80 +1859,6 @@ This only works if the element is a child of an AnchorContainer.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">UpSkinClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement constructor to be used for the skin when in the "up" state.<br>
-This will override SkinClass.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">UpSkinStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">UpTextColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for the button TextInput is in the "up" state. Format like "#FF0000" (red).<br>
-This will override the TextColor style.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">UpTextHighlightedBackgroundColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).<br>
-This will override the TextHighlightedBackgroundColor style.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">UpTextHighlightedColor</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Hex color value to be used for highlighted text when the TextInput is in the "up" state. Format like "#FF0000" (red).<br>
-This will override the TextHighlightedColor style.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">VerticalCenter</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1283,6 +1937,26 @@ works if the element is a child of an AnchorContainer.<br>
 <br>
 <span style="font-weight: bold; font-size: 18px;">Events</span><br>
 <a id="labelShowHideInheritedEvents" href="" onclick="{showHideInherited('events'); return false;}">Show Inherited</a><br>
+<table id="tableEvents" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: table; margin-top: 10px;">
+<tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
+<td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Event</td>
+<td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">changed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Dispatched when the DatePicker selection state changes as a result of user interaction.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
 <table id="tableEventsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Event</td>
@@ -1307,12 +1981,12 @@ Dispatched when this element is added to the display hierarchy and becomes a des
 <span style="font-weight: bold;">changed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the text is modified as a result of user input.<br>
+Dispatched when the DatePicker selection state changes as a result of user interaction.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1635,35 +2309,35 @@ Dispatched when the mouse wheel is rolled while over this element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">IpInputElement()</span>
+<span style="font-weight: bold;">DatePickerElement()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] IpInputElement</span>
+<span style="white-space: nowrap;">[Constructor] DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new IpInputElement instance.<br>
+Creates new DatePickerElement instance.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">getText()</span>
+<span style="font-weight: bold;">getSelectedDate()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Override] IpInputElement</span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the IP currently displayed.<br>
+Gets the selected date of the DatePickerElement.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-IP currently displayed formatted as IPv4 address: "192.168.1.1".<br>When all fields are empty an empty string "" will be returned.<br>When some but not all fields are empty null will be returned (invalid IP).<br>
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Date<br>
+Currently selected date or null if none selected.<br>
 </td>
 </tr>
 </table>
@@ -1672,21 +2346,21 @@ IP currently displayed formatted as IPv4 address: "192.168.1.1".<br>When all fie
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">setText(text)</span>
+<span style="font-weight: bold;">setSelectedDate(date)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Override] IpInputElement</span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sets the IP to be displayed.<br>
+Sets the selected date of the DatePickerElement.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">text</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-IP to be displayed. Formatted as IPv4 address: "192.168.1.1"<br>
+<span style="font-weight: bold;">date</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Date<br>
+Date to set as the selected date or null for no selection.<br>
 </td>
 </tr>
 </table>
@@ -1701,15 +2375,15 @@ IP to be displayed. Formatted as IPv4 address: "192.168.1.1"<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">IpInputElement()</span>
+<span style="font-weight: bold;">DatePickerElement()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Constructor] IpInputElement</span>
+<span style="white-space: nowrap;">[Constructor] DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Creates new IpInputElement instance.<br>
+Creates new DatePickerElement instance.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -2063,6 +2737,29 @@ This element's parent element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">getSelectedDate()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Gets the selected date of the DatePickerElement.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Date<br>
+Currently selected date or null if none selected.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">getStyle(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -2185,29 +2882,6 @@ StyleDefinition to return associated index.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
 Index of the StyleDefinition supplied via the styleDefinition parameter, or -1 if does not exist.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">getText()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Override] IpInputElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the IP currently displayed.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-IP currently displayed formatted as IPv4 address: "192.168.1.1".<br>When all fields are empty an empty string "" will be returned.<br>When some but not all fields are empty null will be returned (invalid IP).<br>
 </td>
 </tr>
 </table>
@@ -2480,6 +3154,29 @@ A String to use as the element's name.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">setSelectedDate(date)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Sets the selected date of the DatePickerElement.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">date</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Date<br>
+Date to set as the selected date or null for no selection.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">setStyle(styleName, value)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -2526,29 +3223,6 @@ adding style definitions one at a time.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">styleDefinitions</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a><br>
 May be a StyleDefinition, or an Array of StyleDefinition<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">setText(text)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">[Override] IpInputElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Sets the IP to be displayed.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">text</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-IP to be displayed. Formatted as IPv4 address: "192.168.1.1"<br>
 </td>
 </tr>
 </table>
@@ -2704,20 +3378,6 @@ The element to translate this element's point too.<br>
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Member</td>
 <td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_currentSkinState</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Read only - String representing the current state.<br>
-</td>
-<td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
@@ -2980,21 +3640,21 @@ after our parent has finished its layout phase will this be valid.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onIpInputTextFieldMouseDown(mouseEvent)</span>
+<span style="font-weight: bold;">_buttonDayChanged(elementEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">IpInputElement</span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for the internal TextField's "mousedown" event. Only active when IpInput is enabled.<br>
+Event handler for the day ToggleButton's changed event<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">mouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
-ElementMouseEvent to process.<br>
+<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+The ElementEvent to process.<br>
 </td>
 </tr>
 </table>
@@ -3003,24 +3663,131 @@ ElementMouseEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onIpInputTextFieldMouseDown(elementEvent)</span>
+<span style="font-weight: bold;">_buttonMonthDecrementClick(elementMouseEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">IpInputElement</span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for the internal TextField's "focusout" event.<br>
+Event handler for the decrement month Button click event<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_buttonMonthIncrementClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the increment month Button click event<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_buttonYearDecrementClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the decrement year Button click event<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_buttonYearIncrementClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the increment year Button click event<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_listContainerYearMonthSelectionLayoutComplete(elementEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the year / month selection list containers layoutcomplete event.<br>
+Used to adjust the measured sizes of the year / month increment & decrement buttons.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
+The ElementEvent to process.<br>
 </td>
 </tr>
 </table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_updateCalendar()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Updates the calendar when the displayed month, year, or selected date changes.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -3180,30 +3947,113 @@ The sub component element to apply sub styles.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_changeState(state)</span>
+<span style="font-weight: bold;">_buttonDayChanged(elementEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Called when the element changes skin state. Do not call this function directly.<br>
-You may override this if you need to make additional changes to your component<br>
-when the skin state changes (such as updating a label color).<br>
+Event handler for the day ToggleButton's changed event<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The skin state that this element is changing too.<br>
+<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+The ElementEvent to process.<br>
 </td>
 </tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_buttonMonthDecrementClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the decrement month Button click event<br>
+<table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-Returns true if the element state has actually changed, false if it is the same state.<br>Subclasses can check what this base function returns before making additional changes for better performance.<br>
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_buttonMonthIncrementClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the increment month Button click event<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_buttonYearDecrementClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the decrement year Button click event<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_buttonYearIncrementClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the increment year Button click event<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
 </td>
 </tr>
 </table>
@@ -3840,61 +4690,6 @@ Returns an object containing<br>{width:paddingWidth, height:paddingHeight,<br>pa
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getSkinClass(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the skin class to use per the provided state.<br>
-Override this to return different skin classes for different states.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to return a skin class.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function<br>
-Return the constructor of the appropriate skin class.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getSkinStyleProxyMap()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the Style proxy map to pass to skins. Override this if you need to pass additional styles<br>
-to custom skins. You should include all the styles provided in the default SkinnableElement style map.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
-Return a style proxy map to be applied to this element to all skins. Formatted as:<br>MyProxyMap = Object.create(null);<br>MyProxyMap.StyleName1 = true;<br>MyProxyMap.StyleName2 = true;<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_getStyleDefinitionAt(index, isDefault)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -4013,128 +4808,6 @@ Returns an array of all styles in this elements definition list and instance sty
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getSubStyleNameForSkinState(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the style name of the sub style to be applied to the skin<br>
-for the associated state. Override this to return the associated<br>
-sub style name for the supplied state.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to return a sub style name.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;string<br>
-Sub style name to apply to the skin of the associated state.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getTextColor(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the text color for the supplied state based on text styles.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The skin state to return the text color.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-Hex color value.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getTextHighlightedBackgroundColor(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the highlighted text background color for the supplied state based on text styles.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The skin state to return the highlighted text background color.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-Hex color value.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_getTextHighlightedColor(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Gets the highlighted text color for the supplied state based on text styles.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The skin state to return the highlighted text color.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-Hex color value.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_invalidateLayout()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -4226,6 +4899,30 @@ String representing the style to be invalidated.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_listContainerYearMonthSelectionLayoutComplete(elementEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DatePickerElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for the year / month selection list containers layoutcomplete event.<br>
+Used to adjust the measured sizes of the year / month increment & decrement buttons.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+The ElementEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_onCanvasElementAdded(addedRemovedEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -4268,172 +4965,6 @@ You should *always* call the base class function.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">addedRemovedEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="AddedRemovedEvent.html">AddedRemovedEvent</a><br>
 The AddedRemovedEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onIpInputTextFieldMouseDown(mouseEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">IpInputElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for the internal TextField's "mousedown" event. Only active when IpInput is enabled.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">mouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
-ElementMouseEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onIpInputTextFieldMouseDown(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">IpInputElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for the internal TextField's "focusout" event.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onTextInputFocusIn(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "focusin" event.<br>
-Proxies focus event to internal TextField.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onTextInputFocusOut(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "focusout" event.<br>
-Proxies focus event to internal TextField.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onTextInputKeyDown(keyboardEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "keydown" event. Only active when TextInput is enabled.<br>
-Proxies keyboard event to internal TextField.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">keyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
-ElementKeyboardEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onTextInputKeyUp(keyboardEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for "keyup" event. Only active when TextInput is enabled.<br>
-Proxies keyboard event to internal TextField.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">keyboardEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementKeyboardEvent.html">ElementKeyboardEvent</a><br>
-ElementKeyboardEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onTextInputTextFieldChanged(elementEvent)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Event handler for the internal TextField "changed" event. Only active when TextInput is Enabled.<br>
-Dispatches a "changed" event from this TextInput element.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">elementEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to be processed.<br>
 </td>
 </tr>
 </table>
@@ -4842,100 +5373,15 @@ The StyleProxy element wrapper to use to proxy styles from the proxy element to 
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateSkinClass(state)</span>
+<span style="font-weight: bold;">_updateCalendar()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
+<span style="white-space: nowrap;">DatePickerElement</span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the skin class for the skin of the provided state. Subclasses should call<br>
-this within their _doStylesUpdated() when skin style class changes.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to update the skin class.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateSkinStyleDefinitions(state)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="SkinnableElement.html">SkinnableElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the StyleDefinition for the skin of the provided state. Subclasses should call<br>
-this within their _doStylesUpdated() when skin style definitions change.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">state</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;String<br>
-The state for which to update the StyleDefinition.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateSkinStyles(stylesMap)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates skin related styles. Called by _doStylesUpdated()<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">stylesMap</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Object<br>
-Map of styles that have been changed<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateState()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the current SkinState in response to style changes.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_updateTextColors()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;"><a href="TextInputElement.html">TextInputElement</a></span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Updates the text colors based on the current state. Called when state changes and when added to display hierarchy.<br>
+Updates the calendar when the displayed month, year, or selected date changes.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
