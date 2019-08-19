@@ -348,7 +348,7 @@ IpInputElement.prototype._onTextInputFocusIn =
 	};
 
 //@override	
-IpInputElement.prototype._onIpInputFocusOut = 
+IpInputElement.prototype._onTextInputFocusOut = 
 	function (elementEvent)
 	{
 		//This only works because TextField doesnt look at _isFocused (manages caret state with different flag)
