@@ -105,14 +105,9 @@ function TimeInputElement()
 	
 	//Currently focused text field
 	this._textFieldFocused = null;
-	
-	this._hour = -1;
-	this._minute = -1;
-	this._second = -1;
-	
-	var time = new Date();
 	this._clockBase = Date.now();
 	
+	var time = new Date();
 	this.setHours(time.getHours());
 	this.setMinutes(time.getMinutes());
 	this.setSeconds(time.getSeconds());
@@ -126,10 +121,10 @@ TimeInputElement.base = TextInputElement;
 /////////////Events////////////////////////////////////
 
 /**
- * @event changed ElementEvent
- * Dispatched when the text is modified as a result of user input.
+ * @event hourswrapped DispatcherEvent
+ * Dispatched when hours are wrapped due to clock change.
+ * This is useful to detect date or AM/PM changes due to the clock updating.
  */
-
 
 /////////////Style Types///////////////////////////////
 
@@ -174,7 +169,7 @@ TimeInputElement.prototype.setText =
 		var second = 0;
 		var n;
 		
-		var timeArray = ip.split(":");
+		var timeArray = text.split(":");
 		for (var i = 0; i < timeArray.length; i++)
 		{
 			if (i == 3)
@@ -208,9 +203,9 @@ TimeInputElement.prototype.setText =
 TimeInputElement.prototype.getText = 
 	function ()
 	{
-		var hour = this._hour.toString();
-		var minute = this._minute.toString();
-		var second = this._second.toString();
+		var hour = this._textFieldHour.getText();
+		var minute = this._textFieldMinute.getText();
+		var second = this._textFieldSecond.getText();
 		
 		while (hour.length < 2)
 			hour = "0" + hour;
@@ -228,7 +223,7 @@ TimeInputElement.prototype.getText =
  * @function setHours
  * Sets the hours to be displayed.
  * Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12
- * Will wrap hours when out of range, hence allowing easy addition and subtraction.
+ * Will wrap hours when out of range.
  * 
  * @param hour int
  * Hour to be displayed.
@@ -249,13 +244,13 @@ TimeInputElement.prototype.setHours =
 TimeInputElement.prototype.getHours = 
 	function ()
 	{
-		return this._hour;
+		return Number(this._textFieldHour.getText());
 	};
 
 /**
  * @function setMinutes
  * Sets the minutes to be displayed. Range is 0-59.
- * Will wrap minutes and update hours when out of range, hence allowing easy addition and subtraction.
+ * Will wrap minutes and update hours when out of range.
  * 
  * @param minute int
  * Minute to be displayed.
@@ -276,13 +271,13 @@ TimeInputElement.prototype.setMinutes =
 TimeInputElement.prototype.getMinutes = 
 	function ()
 	{
-		return this._minute;
+		return Number(this._textFieldMinute.getText());
 	};	
 	
 /**
  * @function setSeconds
  * Sets the seconds to be displayed. Range is 0-59.
- * Will wrap seconds and update minutes when out of range, hence allowing easy addition and subtraction.
+ * Will wrap seconds and update minutes when out of range.
  * 
  * @param second int
  * Seconds to be displayed.
@@ -303,7 +298,7 @@ TimeInputElement.prototype.setSeconds =
 TimeInputElement.prototype.getSeconds = 
 	function ()
 	{
-		return this._second;
+		return Number(this._textFieldSecond.getText());
 	};		
 	
 
@@ -318,16 +313,21 @@ TimeInputElement.prototype.getSeconds =
  * 
  * @param isClock boolean
  * True when this is called via clock change.
+ * 
+ * @returns boolean
+ * True if value was out of range and wrapped.
  */	
 TimeInputElement.prototype._setHoursInternal = 
 	function (hour, isClock)
 	{
-		if (hour == null || hour.length == 0)
-			return;
-		
 		//Dont update if its the clock and field is focused by user
 		if (isClock == true && this._textFieldFocused == this._textFieldHour)
-			return;
+			return false;
+	
+		var wrapCount = 0;
+		
+		if (hour == null)
+			hour = 0;
 		
 		var h = Number(hour);
 		if (isNaN(h) == true)
@@ -341,19 +341,29 @@ TimeInputElement.prototype._setHoursInternal =
 		if (is24Hour == true)
 		{
 			while (h < 0)
+			{
 				h += 24;
+				wrapCount++;
+			}
 			while (h > 23)
+			{
 				h -= 24;
+				wrapCount++;
+			}
 		}
 		else
 		{
 			while (h < 1)
+			{
 				h += 12;
+				wrapCount++;
+			}
 			while (h > 12)
+			{
 				h -= 12;
+				wrapCount++;
+			}
 		}
-		
-		this._hour = h;
 		
 		var textHour = h.toString();
 		while (textHour.length < 2)
@@ -363,6 +373,24 @@ TimeInputElement.prototype._setHoursInternal =
 		
 		if (isClock == false)
 			this._clockBase = Date.now();
+		
+		if (wrapCount > 0)
+		{
+			//Dont need to worry about wrap direction, clock always wraps forward
+			if (isClock == true && this.hasEventListener("hourswrapped", null) == true)
+			{
+				var wrapEvent = new DispatcherEvent("hourswrapped");
+			
+				//This is unlikely to ever be > 1 since its a clock update, unless the control
+				//has been removed and re-added after a *very* long time.
+				for (var i = 0; i < wrapCount; i++)
+					this.dispatchEvent(wrapEvent);
+			}
+			
+			return true;
+		}
+		
+		return false;
 	};
 	
 /**
@@ -374,16 +402,21 @@ TimeInputElement.prototype._setHoursInternal =
  * 
  * @param isClock boolean
  * True when this is called via clock change.
+ * 
+ * @returns boolean
+ * True if value was out of range and wrapped.
  */	
 TimeInputElement.prototype._setMinutesInternal = 
 	function (minute, isClock)
 	{
-		if (minute == null || minute.length == 0)
-			return;
-		
 		//Dont update if its the clock and field is focused by user
 		if (isClock == true && this._textFieldFocused == this._textFieldMinute)
-			return;
+			return false;
+	
+		var wrapped = false;
+		
+		if (minute == null)
+			minute = 0;
 		
 		var m = Number(minute);
 		if (isNaN(m) == true)
@@ -391,22 +424,23 @@ TimeInputElement.prototype._setMinutesInternal =
 		
 		m = Math.round(m);
 		
-		var currentHour = this._hour;
+		var currentHour = this.getHours();
 		
 		//Wrap minutes
 		while (m > 59)
 		{
 			m = m - 60;
 			currentHour++;
+			wrapped = true;
 		}
 		
 		while (m < 0)
 		{
 			m = m + 60
 			currentHour--;
+			wrapped = true;
 		}
 		
-		this._minute = m;
 		this._setHoursInternal(currentHour, isClock);
 		
 		var textMinute = m.toString();
@@ -417,6 +451,8 @@ TimeInputElement.prototype._setMinutesInternal =
 		
 		if (isClock == false)
 			this._clockBase = Date.now();
+		
+		return wrapped;
 	};
 	
 /**
@@ -428,16 +464,21 @@ TimeInputElement.prototype._setMinutesInternal =
  * 
  * @param isClock boolean
  * True when this is called via clock change.
+ * 
+ * @returns boolean
+ * True if value was out of range and wrapped.
  */		
 TimeInputElement.prototype._setSecondsInternal = 
 	function (second, isClock)
 	{
-		if (second == null || second.length == 0)
-			return;
-		
 		//Dont update if its the clock and field is focused by user	
 		if (isClock == true && this._textFieldFocused == this._textFieldSecond)
-			return;
+			return false;
+	
+		var wrapped = false;
+		
+		if (second == null)
+			second = 0;
 		
 		var s = Number(second);
 		if (isNaN(s) == true)
@@ -445,22 +486,23 @@ TimeInputElement.prototype._setSecondsInternal =
 		
 		s = Math.round(s);
 		
-		var currentMinute = this._minute;
+		var currentMinute = this.getMinutes();
 		
 		//Wrap seconds
 		while (s > 59)
 		{
 			s = s - 60;
 			currentMinute++;
+			wrapped = true;
 		}
 		
 		while (s < 0)
 		{
 			s = s + 60
 			currentMinute--;
+			wrapped = true;
 		}
 		
-		this._second = s;
 		this._setMinutesInternal(currentMinute, isClock);
 		
 		var textSecond = s.toString();
@@ -471,6 +513,8 @@ TimeInputElement.prototype._setSecondsInternal =
 		
 		if (isClock == false)
 			this._clockBase = Date.now();
+		
+		return wrapped;
 	};
 	
 /**
@@ -492,7 +536,7 @@ TimeInputElement.prototype._onTimeInputEnterFrame =
 		
 		if (deltaSeconds > 0)
 		{
-			this._setSecondsInternal(this._second + deltaSeconds, true);
+			this._setSecondsInternal(this.getSeconds() + deltaSeconds, true);
 			this._clockBase += deltaSeconds * 1000;
 		}
 	};
@@ -656,17 +700,20 @@ TimeInputElement.prototype._onTimeInputTextFieldFocusOut =
 	function (event)
 	{
 		var textField = event.getTarget();
-		var text = textField.getText();
+		var value = Number(textField.getText());
 		
-		if (text.length == 0)
-			return;
+		var changed = false;
 		
 		if (textField == this._textFieldHour)
-			this.setHours(text);
+			changed = this.setHours(value);
 		else if (textField == this._textFieldMinute)
-			this.setMinutes(text)
+			changed = this.setMinutes(value)
 		else //if (textField == this._textFieldSecond
-			this.setSeconds(text);
+			changed = this.setSeconds(value);
+		
+		//Dispatch a changed event if the focus out caused values to change (wrapped)
+		if (changed == true && this.hasEventListener("changed", null) == true)
+			this.dispatchEvent(new ElementEvent("changed", false));
 	};
 	
 //@override
@@ -809,7 +856,7 @@ TimeInputElement.prototype._doStylesUpdated =
 		
 		//Will adjust 24 -> 12 hour
 		if ("Is24HourTime" in stylesMap)
-			this.setHours(this._hour);
+			this.setHours(this.getHours());
 		
 		this._updateSkinStyles(stylesMap);
 	};

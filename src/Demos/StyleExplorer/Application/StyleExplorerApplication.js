@@ -367,6 +367,7 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:canvasElementControlStyleType,
 											list:null});
 	
+	//ColorPicker
 	var colorPickerDef = new StyleDefinition();
 	
 	var colorPickerControl = new ColorPickerElement();
@@ -382,6 +383,7 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:colorPickerControlStyleType,
 											list:null});
 	
+	//ColorPickerButton
 	var colorPickerButtonDef = new StyleDefinition();
 	
 	var colorPickerButtonControl = new ColorPickerButtonElement();

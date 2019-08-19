@@ -21,7 +21,6 @@ localeStrings["en-us"]["Styles"] = 					"Styles";
 localeStrings["en-us"]["Style Code"] = 				"Style Code";
 localeStrings["en-us"]["Copy"] = 					"Copy";
 localeStrings["en-us"]["Text Size"] = 				"Text Size";
-localeStrings["en-us"]["Press Ctrl C"] = 			"Press CTRL + C";
 
 
 //es-es////////
@@ -36,7 +35,6 @@ localeStrings["es-es"]["Styles"] = 					"Estilos";
 localeStrings["es-es"]["Style Code"] = 				"Código De Estilo";
 localeStrings["es-es"]["Copy"] = 					"Copiar";
 localeStrings["es-es"]["Text Size"] = 				"Tamano Del Texto";
-localeStrings["es-es"]["Press Ctrl C"] = 			"Presione CTRL + C";
 
 
 //////IMAGES///////////////////////

@@ -1,6 +1,6 @@
 
 /**
- * @depends SkinnableElement.js
+ * @depends TextInputElement.js
  */
 
 /////////////////////////////////////////////////////////
@@ -8,7 +8,7 @@
 	
 /**
  * @class IpInputElement
- * @inherits SkinnableElement
+ * @inherits TextInputElement
  * 
  * IpInputElement is an edit-able IPv4 address field.
  * 
@@ -19,11 +19,14 @@ function IpInputElement()
 {
 	IpInputElement.base.prototype.constructor.call(this);
 	
+	//Steal the text field from base TextInput - re-use as ip1 field
+	this._textFieldIp1 = this._textField;
+	this._removeChild(this._textField);
+	
 		//Use list container to layout text fields
 		this._listContainer = new ListContainerElement();
 		this._listContainer.setStyle("LayoutDirection", "horizontal");
 		
-			this._textFieldIp1 = new TextFieldElement();
 			this._textFieldIp1.setStyle("PercentHeight", 100);
 			this._textFieldIp1.setStyle("PercentWidth", 100);
 			this._textFieldIp1.setStyle("MaxChars", 3);
@@ -80,33 +83,10 @@ function IpInputElement()
 		this._listContainer.addElement(this._textFieldIp4);
 		
 	this._addChild(this._listContainer);
+
+	//////////////////////////
 	
 	var _self = this;
-	
-	//Private event handlers, need different instance for each TextInput. Proxy to prototype.
-	this._onIpInputFocusEventInstance = 
-		function (event)
-		{
-			if (event.getType() == "focusin")
-				_self._onIpInputFocusIn(event);
-			else
-				_self._onIpInputFocusOut(event);
-		};
-	
-	this._onIpInputKeyUpDownInstance = 
-		function (keyboardEvent)
-		{
-			if (keyboardEvent.getType() == "keydown")
-				_self._onIpInputKeyDown(keyboardEvent);
-			else // if (keyboardEvent.getType() == "keyup")
-				_self._onIpInputKeyUp(keyboardEvent);
-		};
-		
-	this._onIpInputTextFieldChangedInstance = 
-		function (event)
-		{
-			_self._onIpInputTextFieldChanged(event);
-		};
 		
 	this._onIpInputTextFieldMouseDownInstance = 
 		function (mouseEvent)
@@ -120,123 +100,26 @@ function IpInputElement()
 			_self._onIpInputTextFieldFocusOut(event);
 		};
 		
-	this.addEventListener("focusin", this._onIpInputFocusEventInstance);
-	this.addEventListener("focusout", this._onIpInputFocusEventInstance);	
-	
 	this._textFieldIp1.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	this._textFieldIp2.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	this._textFieldIp3.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	this._textFieldIp4.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	
-	/////
+	////////////////////
 	
 	//Currently focused IP field
 	this._textFieldFocused = null;
 }
 
 //Inherit from SkinnableElement
-IpInputElement.prototype = Object.create(SkinnableElement.prototype);
+IpInputElement.prototype = Object.create(TextInputElement.prototype);
 IpInputElement.prototype.constructor = IpInputElement;
-IpInputElement.base = SkinnableElement;
+IpInputElement.base = TextInputElement;
 
 /////////////Events////////////////////////////////////
 
-/**
- * @event changed ElementEvent
- * Dispatched when the text is modified as a result of user input.
- */
-
 
 /////////////Style Types///////////////////////////////
-
-IpInputElement._StyleTypes = Object.create(null);
-
-/**
- * @style SkinClass CanvasElement
- * 
- * The CanvasElement constructor type to apply to all skin states. 
- * Specific states such as UpSkinClass will override SkinClass.
- */
-IpInputElement._StyleTypes.SkinClass =									StyleableBase.EStyleType.NORMAL;		//Element constructor()
-
-/**
- * @style UpSkinClass CanvasElement
- * 
- * The CanvasElement constructor to be used for the skin when in the "up" state. 
- * This will override SkinClass.
- */
-IpInputElement._StyleTypes.UpSkinClass = 								StyleableBase.EStyleType.NORMAL;		//Element constructor()
-
-/**
- * @style UpSkinStyle StyleDefinition
- * 
- * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
- */
-IpInputElement._StyleTypes.UpSkinStyle = 								StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
-
-/**
- * @style UpTextColor String
- * 
- * Hex color value to be used for the button TextInput is in the "up" state. Format like "#FF0000" (red).
- * This will override the TextColor style.
- */
-IpInputElement._StyleTypes.UpTextColor = 								StyleableBase.EStyleType.NORMAL;		// color "#000000"
-
-/**
- * @style UpTextHighlightedColor String
- * 
- * Hex color value to be used for highlighted text when the TextInput is in the "up" state. Format like "#FF0000" (red).
- * This will override the TextHighlightedColor style.
- */
-IpInputElement._StyleTypes.UpTextHighlightedColor = 					StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
-
-/**
- * @style UpTextHighlightedBackgroundColor String
- * 
- * Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).
- * This will override the TextHighlightedBackgroundColor style.
- */
-IpInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 			StyleableBase.EStyleType.NORMAL;			// color "#000000"
-
-/**
- * @style DisabledSkinClass CanvasElement
- * 
- * The CanvasElement constructor to be used for the TextInput is in the "disabled" state.
- * When this is null, the base SkinClass style will be used.
- */
-IpInputElement._StyleTypes.DisabledSkinClass = 							StyleableBase.EStyleType.NORMAL;		// Element constructor()
-
-/**
- * @style DisabledSkinStyle StyleDefinition
- * The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.
- * When this is null, the base SkinTyle will be used.
- */
-IpInputElement._StyleTypes.DisabledSkinStyle = 							StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
-
-/**
- * @style DisabledTextColor String
- * 
- * Hex color value to be used for the button TextInput is in the "disabled" state. Format like "#FF0000" (red).
- * This will override the TextColor style.
- */
-IpInputElement._StyleTypes.DisabledTextColor = 							StyleableBase.EStyleType.NORMAL;		// color "#000000"
-
-/**
- * @style DisabledTextHighlightedColor String
- * 
- * Hex color value to be used for highlighted text when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
- * When this is null, the base TextHighlightedColor style will be used.
- */
-IpInputElement._StyleTypes.DisabledTextHighlightedColor = 				StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
-
-/**
- * @style DisabledTextHighlightedBackgroundColor String
- * 
- * Hex color value to be used for highlighted text background when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
- * When this is null, the base TextHighlightedBackgroundColor style will be used.
- */
-IpInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;		// color "#000000"
-
 
 
 /////////////Default Styles///////////////////////////
@@ -246,81 +129,39 @@ IpInputElement.StyleDefault = new StyleDefinition();
 IpInputElement.StyleDefault.setStyle("TextHorizontalAlign", 						"center");
 IpInputElement.StyleDefault.setStyle("TextVerticalAlign", 							"middle");
 
-IpInputElement.StyleDefault.setStyle("Enabled", 									true);
-
-IpInputElement.StyleDefault.setStyle("UpTextColor", 								"#000000");
-IpInputElement.StyleDefault.setStyle("DisabledTextColor", 							"#888888");
-
-IpInputElement.StyleDefault.setStyle("PaddingTop",									3);
-IpInputElement.StyleDefault.setStyle("PaddingBottom",								3);
 IpInputElement.StyleDefault.setStyle("PaddingLeft",									5);
 IpInputElement.StyleDefault.setStyle("PaddingRight",								5);
-
-IpInputElement.StyleDefault.setStyle("TabStop", 									0);
-
-IpInputElement.StyleDefault.setStyle("SkinClass", 									CanvasElement);
-IpInputElement.StyleDefault.setStyle("UpSkinClass", 								CanvasElement);
-IpInputElement.StyleDefault.setStyle("DisabledSkinClass", 							CanvasElement);
-
-/////Skin styles//
-IpInputElement.DisabledSkinStyleDefault = new StyleDefinition();
-
-IpInputElement.DisabledSkinStyleDefault.setStyle("BorderType", 						"inset");
-IpInputElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 				1);
-IpInputElement.DisabledSkinStyleDefault.setStyle("BorderColor", 					"#999999");
-IpInputElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 					"#ECECEC");
-
-IpInputElement.UpSkinStyleDefault = new StyleDefinition();
-
-IpInputElement.UpSkinStyleDefault.setStyle("BorderType", 							"inset");
-IpInputElement.UpSkinStyleDefault.setStyle("BorderThickness", 						1);
-IpInputElement.UpSkinStyleDefault.setStyle("BorderColor", 							"#606060");
-
-IpInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 						"#F5F5F5");
-
-//Apply skin defaults
-IpInputElement.StyleDefault.setStyle("UpSkinStyle", 								IpInputElement.UpSkinStyleDefault);
-IpInputElement.StyleDefault.setStyle("DisabledSkinStyle", 							IpInputElement.DisabledSkinStyleDefault);
-
 
 
 ////////Public///////////////////////
 
 /**
- * @function setIp
+ * @function setText
+ * @override
  * Sets the IP to be displayed.
- * Formatted as IPv4 address: "192.168.1.1"
  * 
- * @param ip String
- * IP to be displayed.
+ * @param text String
+ * IP to be displayed. Formatted as IPv4 address: "192.168.1.1"
  */
-IpInputElement.prototype.setIp = 
-	function (ip)
+IpInputElement.prototype.setText = 
+	function (text)
 	{
-		this._textFieldIp1.setText("");
-		this._textFieldIp2.setText("");
-		this._textFieldIp3.setText("");
-		this._textFieldIp4.setText("");
-	
-		if (ip == null || ip.length == 0)
-			return;
+		if (text == null)
+			text = "";
 		
 		var i;
 		var i2;
 		var n;
-		var ipArray = ip.split(".");
+		var ipArray = text.split(".");
 		
 		for (i = 0; i < ipArray.length; i++)
 		{
 			if (i == 4)
 				return;
 			
-			if (ipArray[i].length == 0)
-				continue;
-			
 			n = Number(ipArray[i]);
 			if (isNaN(n) == true)
-				continue;
+				n = 0;
 			
 			if (n > 255)
 				n = 255;
@@ -338,15 +179,16 @@ IpInputElement.prototype.setIp =
 	};
 
 /**
- * @function getIp
+ * @function getText
+ * @override 
  * Gets the IP currently displayed. 
- * When all fields are empty an empty string "" will be returned.
- * When some but not all fields are empty null will be returned (invalid IP).
  * 
  * @returns String
- * IP currently displayed.
+ * IP currently displayed formatted as IPv4 address: "192.168.1.1".
+ * When all fields are empty an empty string "" will be returned.
+ * When some but not all fields are empty null will be returned (invalid IP).
  */	
-IpInputElement.prototype.getIp = 
+IpInputElement.prototype.getText = 
 	function ()
 	{
 		if (this._textFieldIp1.getText().length == 0 &&
@@ -374,32 +216,8 @@ IpInputElement.prototype.getIp =
 
 ////////Internal/////////////////////
 
-/**
- * @function _onIpInputTextFieldChanged
- * Event handler for the internal TextField "changed" event. Only active when TextInput is Enabled.
- * Dispatches a "changed" event from this TextInput element.
- * 
- * @param elementEvent ElementEvent
- * ElementEvent to be processed.
- */	
-IpInputElement.prototype._onIpInputTextFieldChanged = 
-	function (elementEvent)
-	{
-		//Pass on the changed event
-	
-		if (this.hasEventListener("changed", null) == true)
-			this.dispatchEvent(new ElementEvent("changed", false));
-	};
-	
-/**
- * @function _onIpInputKeyDown
- * Event handler for "keydown" event. Only active when IpInput is enabled. 
- * Proxies keyboard event to internal TextFields.
- * 
- * @param keyboardEvent ElementKeyboardEvent
- * ElementKeyboardEvent to process.
- */	
-IpInputElement.prototype._onIpInputKeyDown = 
+//@override
+IpInputElement.prototype._onTextInputKeyDown = 
 	function (keyboardEvent)
 	{
 		if (keyboardEvent.getDefaultPrevented() == true)
@@ -484,14 +302,7 @@ IpInputElement.prototype._onIpInputKeyDown =
 		}
 	};
 
-/**
- * @function _onIpInputKeyUp
- * Event handler for "keyup" event. Only active when IpInput is enabled. 
- * Proxies keyboard event to internal TextField.
- * 
- * @param keyboardEvent ElementKeyboardEvent
- * ElementKeyboardEvent to process.
- */	
+//@override
 IpInputElement.prototype._onIpInputKeyUp = 
 	function (keyboardEvent)
 	{
@@ -523,15 +334,8 @@ IpInputElement.prototype._onIpInputKeyUp =
 			keyboardEvent.preventDefault();
 	};	
 	
-/**
- * @function _onIpInputFocusIn
- * Event handler for "focusin" event. 
- * Proxies focus event to internal TextFields.
- * 
- * @param elementEvent ElementEvent
- * ElementEvent to process.
- */		
-IpInputElement.prototype._onIpInputFocusIn = 
+//@override	
+IpInputElement.prototype._onTextInputFocusIn = 
 	function (elementEvent)
 	{
 		//Mouse down already focused
@@ -543,14 +347,7 @@ IpInputElement.prototype._onIpInputFocusIn =
 		this._textFieldFocused = this._textFieldIp1;
 	};
 
-/**
- * @function _onIpInputFocusOut
- * Event handler for "focusout" event. 
- * Proxies focus event to internal TextFields.
- * 
- * @param elementEvent ElementEvent
- * ElementEvent to process.
- */		
+//@override	
 IpInputElement.prototype._onIpInputFocusOut = 
 	function (elementEvent)
 	{
@@ -602,65 +399,6 @@ IpInputElement.prototype._onIpInputTextFieldFocusOut =
 	};
 	
 //@override
-IpInputElement.prototype._getSkinClass = 
-	function (state)
-	{
-		var stateSkinClass = null;
-		
-		if (state == "up")
-			stateSkinClass = this.getStyleData("UpSkinClass");
-		else if (state == "disabled")
-			stateSkinClass = this.getStyleData("DisabledSkinClass");
-		
-		var skinClass = this.getStyleData("SkinClass");
-		
-		//Shouldnt have null stateSkinClass
-		if (stateSkinClass == null || skinClass.comparePriority(stateSkinClass) > 0) //Use skinClass if higher priority
-			return skinClass.value;
-		
-		return stateSkinClass.value;
-	};
-	
-//@override	
-IpInputElement.prototype._getSubStyleNameForSkinState = 
-	function (state)
-	{
-		if (state == "up")
-			return "UpSkinStyle";
-		if (state == "disabled")
-			return "DisabledSkinStyle";
-		
-		return IpInputElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
-	};			
-	
-/**
- * @function _updateState
- * Updates the current SkinState in response to style changes.
- */	
-IpInputElement.prototype._updateState = 
-	function ()
-	{
-		var newState = "up";
-
-		if (this.getStyle("Enabled") == false)
-			newState = "disabled";
-		
-		this.setStyle("SkinState", newState);
-	};	
-	
-//@override
-IpInputElement.prototype._changeState = 
-	function (state)
-	{
-		IpInputElement.base.prototype._changeState.call(this, state);
-	
-		this._updateTextColors();
-	};
-	
-/**
- * @function _updateTextColors
- * Updates the text colors based on the current state. Called when state changes and when added to display hierarchy.
- */	
 IpInputElement.prototype._updateTextColors = 
 	function ()
 	{
@@ -681,98 +419,12 @@ IpInputElement.prototype._updateTextColors =
 		this._textFieldIp4.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 	};
 	
-/**
- * @function _getTextColor
- * Gets the text color for the supplied state based on text styles.
- * 
- * @param state String
- * The skin state to return the text color.
- * 
- * @returns String
- * Hex color value.
- */	
-IpInputElement.prototype._getTextColor = 
-	function (state)
-	{
-		var stateTextColor = null;
-		
-		if (state == "up")
-			stateTextColor = this.getStyleData("UpTextColor");
-		else if (state == "disabled")
-			stateTextColor = this.getStyleData("DisabledTextColor");
-	
-		var textColor = this.getStyleData("TextColor");
-		
-		//Shouldnt have null stateTextColor
-		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
-			return textColor.value;
-		
-		return stateTextColor.value;
-	};
-	
-/**
- * @function _getTextHighlightedColor
- * Gets the highlighted text color for the supplied state based on text styles.
- * 
- * @param state String
- * The skin state to return the highlighted text color.
- * 
- * @returns String
- * Hex color value.
- */		
-IpInputElement.prototype._getTextHighlightedColor = 
-	function (state)
-	{
-		var stateTextColor = null;
-		
-		if (state == "up")
-			stateTextColor = this.getStyleData("UpTextHighlightedColor");
-		else if (state == "disabled")
-			stateTextColor = this.getStyleData("DisabledTextHighlightedColor");
-	
-		var textColor = this.getStyleData("TextHighlightedColor");
-		
-		//Shouldnt have null stateTextColor
-		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
-			return textColor.value;
-		
-		return stateTextColor.value;
-	};
-	
-/**
- * @function _getTextHighlightedBackgroundColor
- * Gets the highlighted text background color for the supplied state based on text styles.
- * 
- * @param state String
- * The skin state to return the highlighted text background color.
- * 
- * @returns String
- * Hex color value.
- */		
-IpInputElement.prototype._getTextHighlightedBackgroundColor = 
-	function (state)
-	{
-		var stateTextColor = null;
-		
-		if (state == "up")
-			stateTextColor = this.getStyleData("UpTextHighlightedBackgroundColor");
-		else if (state == "disabled")
-			stateTextColor = this.getStyleData("DisabledTextHighlightedBackgroundColor");
-	
-		var textColor = this.getStyleData("TextHighlightedBackgroundColor");
-		
-		//Shouldnt have null stateTextColor
-		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
-			return textColor.value;
-		
-		return stateTextColor.value;
-	};
-	
 //@override
 IpInputElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
-		IpInputElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		//IpInputElement.base.base - skip TextInput._doStylesUpdated()
+		IpInputElement.base.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
 		//Force the textField to use our defaults rather than inherited.
 		if ("TextHorizontalAlign" in stylesMap)
@@ -806,23 +458,23 @@ IpInputElement.prototype._doStylesUpdated =
 			
 			if (enabled == true)
 			{
-				if (this.hasEventListener("keydown", this._onIpInputKeyUpDownInstance) == false)
-					this.addEventListener("keydown", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keydown", this._onTextInputKeyUpDownInstance);
 				
-				if (this.hasEventListener("keyup", this._onIpInputKeyUpDownInstance) == false)
-					this.addEventListener("keyup", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
-				if (this._textFieldIp1.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp1.addEventListener("changed", this._onIpInputTextFieldChangedInstance);		
+				if (this._textFieldIp1.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp1.addEventListener("changed", this._onTextInputTextFieldChangedInstance);		
 				
-				if (this._textFieldIp2.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp2.addEventListener("changed", this._onIpInputTextFieldChangedInstance);	
+				if (this._textFieldIp2.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp2.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
 				
-				if (this._textFieldIp3.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp3.addEventListener("changed", this._onIpInputTextFieldChangedInstance);	
+				if (this._textFieldIp3.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp3.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
 				
-				if (this._textFieldIp4.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp4.addEventListener("changed", this._onIpInputTextFieldChangedInstance);	
+				if (this._textFieldIp4.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp4.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
 				
 				if (this._textFieldIp1.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == false)
 					this._textFieldIp1.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
@@ -838,23 +490,23 @@ IpInputElement.prototype._doStylesUpdated =
 			}
 			else
 			{
-				if (this.hasEventListener("keydown", this._onIpInputKeyUpDownInstance) == true)
-					this.removeEventListener("keydown", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keydown", this._onTextInputKeyUpDownInstance);
 				
-				if (this.hasEventListener("keyup", this._onIpInputKeyUpDownInstance) == true)
-					this.removeEventListener("keyup", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
-				if (this._textFieldIp1.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp1.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp1.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp1.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
-				if (this._textFieldIp2.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp2.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp2.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp2.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
-				if (this._textFieldIp3.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp3.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp3.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp3.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
-				if (this._textFieldIp4.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp4.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp4.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp4.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
 				if (this._textFieldIp1.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == true)
 					this._textFieldIp1.removeEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
@@ -910,19 +562,7 @@ IpInputElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 		}
 		
-		////Update skin classes and sub styles.
-		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
-			this._updateSkinClass("up");
-		if ("UpSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("up");
-		
-		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
-			this._updateSkinClass("disabled");
-		if ("DisabledSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("disabled");
-
-		this._updateState();
-		this._updateTextColors();
+		this._updateSkinStyles(stylesMap);
 	};
 	
 //@override
@@ -946,7 +586,8 @@ IpInputElement.prototype._doMeasure =
 IpInputElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
-		IpInputElement.base.prototype._doLayout.call(this, paddingMetrics);
+		//IpInputElement.base.base - skip TextInputElement._doLayout()
+		IpInputElement.base.base.prototype._doLayout.call(this, paddingMetrics);
 		
 		//Ignore padding, proxied to TextFields for proper mouse handling.		
 		this._listContainer._setActualPosition(0, 0);
