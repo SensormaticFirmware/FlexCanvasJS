@@ -3115,7 +3115,7 @@ ListCollection.prototype.setCollectionSort =
 			return; 
 			
 		if (!(collectionSort instanceof CollectionSort))
-			throw "Invalid CollectionSort";
+			return;
 			
 		this._collectionSort = collectionSort;
 	};
@@ -4371,6 +4371,13 @@ function CanvasElement()
 	
 	this._forceRegionUpdate = false;			//Flag set by validateRedrawRegion() when update required due to composite effect on composite parent.
 	this._renderChanged = true;					//Dirty flag for redraw region set to true when _graphicsCanvas has been modified.
+	
+	/**
+	 * @member _renderVisible boolean
+	 * Read only - False if any element in the parent chain is not visible.
+	 * This is not updated immediately, only after redraw regions have been updated.
+	 * Useful for things like "enterframe" listeners to prevent processing when not necessary.
+	 */
 	this._renderVisible = false; 				//False if any element in the composite parent chain is not visible.	
 	
 	/////////Composite Rendering////////////////
@@ -4982,8 +4989,9 @@ CanvasElement._StyleTypes.IncludeInMeasure = 		StyleableBase.EStyleType.NORMAL;	
  * background a composite layer.  This effectively buffers the layer. Only the delta changes
  * will be drawn to the composite. Otherwise the entire display chain would have to be re-drawn 
  * when the background moves. This is memory intensive as it effectively duplicates the rendering
- * area. Composite elements/children changing will update the composite layer, then that region of the 
- * composite layer needs to be copied up to the parent, resulting in an additional buffer copy.
+ * area. Composite elements/children changing will update their region of their composite parent, 
+ * then that region of the composite parent needs to be copied up to the grandparent, 
+ * resulting in an additional buffer copy.
  */
 CanvasElement._StyleTypes.CompositeLayer = 					StyleableBase.EStyleType.NORMAL;		//true || false
 
@@ -10036,6 +10044,12 @@ function TextFieldElement()
 	this._charMetrics = null; 	// array of {x, w}
 	this._spaceSpans = null; 	// array of {start, end, type} _charMetric positions of spaces for wrapping text.
 	
+	//Used to detect double / triple click for word / all highlight
+	this._lastMouseDownTime1 = 0;
+	this._lastMouseDownTime2 = 0;
+	this._mouseDownCount = 0; //Change behavior of drag highlight for double / triple
+	this._blockHighlightStartRange = null; //For double / triple click + drag we need to know the initial word / line highlight range
+	
 	//Container clipping
 	this._textClipContainer = new CanvasElement();
 	this._textClipContainer.setStyle("ClipContent", true);
@@ -10111,6 +10125,8 @@ function TextFieldElement()
 				//Swallow
 			}
 		};
+		
+	this._createCharMetrics();
 }
 
 //Inherit from CanvasElement
@@ -10226,7 +10242,7 @@ TextFieldElement.prototype.setText =
 		{
 			this._text = text;
 			
-			this._charMetrics = null;
+			this._createCharMetrics();
 			
 			this.setSelection(0, 0);
 			
@@ -10384,6 +10400,27 @@ TextFieldElement.prototype._onTextFieldEnterFrame =
 			
 			//Get caret index from mouse
 			var caretIndex = this._getCaretIndexFromMouse(mousePos.x, mousePos.y);
+			var newStartIndex = this._textHighlightStartIndex;
+			
+			if (this._mouseDownCount > 1) //Handle double (word) and triple (line) click + drag
+			{
+				var blockRange;
+				if (this._mouseDownCount == 2)
+					blockRange = this._getWordRangeFromCharIndex(caretIndex);
+				else // if (this._mouseDownCount == 3)
+					blockRange = this._getLineRangeFromCharIndex(caretIndex);
+				
+				if (blockRange.start < this._blockHighlightStartRange.start)
+				{
+					newStartIndex = this._blockHighlightStartRange.end;
+					caretIndex = blockRange.start;
+				}
+				else
+				{
+					newStartIndex = this._blockHighlightStartRange.start;
+					caretIndex = blockRange.end;
+				}
+			}
 			
 			//Find the line
 			var textFieldLine = this._textLinesContainer._getChildAt(0);
@@ -10416,7 +10453,7 @@ TextFieldElement.prototype._onTextFieldEnterFrame =
 			if ((caretXWithinBounds == true && caretYWithinBounds == true) || 
 				(caretYWithinBounds == true && (caretIndex == textFieldLine._charMetricsStartIndex || caretIndex == textFieldLine._charMetricsEndIndex)))
 			{
-				this.setSelection(this._textHighlightStartIndex, caretIndex);
+				this.setSelection(newStartIndex, caretIndex);
 				
 				this._layoutShouldScroll = true;
 				this._invalidateLayout();
@@ -10425,7 +10462,7 @@ TextFieldElement.prototype._onTextFieldEnterFrame =
 			{
 				this._dragScrollTime = currentTime + 220;
 				
-				this.setSelection(this._textHighlightStartIndex, caretIndex);
+				this.setSelection(newStartIndex, caretIndex);
 				
 				this._layoutShouldScroll = true;
 				this._invalidateLayout();
@@ -10562,6 +10599,78 @@ TextFieldElement.prototype._getCaretIndexFromMouse =
 	};
 
 /**
+ * @function _getWordRangeFromCaretIndex
+ * Returns the exclusive range of character indexes for the current word the character is included in.
+ * If the character is a space, a block of spaces will be returned.
+ * 
+ * @param charIndex int
+ * Character index to return word range for.
+ */	
+TextFieldElement.prototype._getWordRangeFromCharIndex = 
+	function (charIndex)
+	{
+		if (charIndex >= this._text.length)
+			return {start:charIndex, end:charIndex};
+	
+		if (this._text[charIndex] == '\n')
+			return {start:charIndex, end:charIndex};
+			
+		var wordStart = charIndex;
+		var wordEnd = charIndex;
+		
+		var isSpace = false;
+		if (this._text[wordStart] == ' ')
+			isSpace = true;
+		
+		if (isSpace == true)
+		{
+			while (wordStart > 0 && (this._text[wordStart - 1] == ' ' || this._text[wordStart - 1] == '\n'))
+				wordStart--;
+			
+			while (wordEnd < this._text.length - 1 && (this._text[wordEnd + 1] == ' ' || this._text[wordEnd + 1] == '\n'))
+				wordEnd++;
+		}
+		else
+		{
+			while (wordStart > 0 && (this._text[wordStart - 1] != ' ' && this._text[wordStart - 1] != '\n'))
+				wordStart--;
+			
+			while (wordEnd < this._text.length - 1 && (this._text[wordEnd + 1] != ' ' && this._text[wordEnd + 1] != '\n'))
+				wordEnd++;
+		}
+		
+		return {start:wordStart, end:wordEnd + 1};
+	};
+	
+/**
+ * @function _getLineRangeFromCharIndex
+ * Returns the exclusive range of character indexes for the current line the character is included in.
+ * 
+ * @param charIndex int
+ * Character index to return line range for.
+ */		
+TextFieldElement.prototype._getLineRangeFromCharIndex = 
+	function (charIndex)
+	{
+		if (charIndex == this._text.length)
+			return {start:charIndex, end:charIndex};
+	
+		if (this._text[charIndex] == '\n')
+			return {start:charIndex, end:charIndex};
+			
+		var lineStart = charIndex;
+		var lineEnd = charIndex;
+		
+		while (lineStart > 0 && this._text[lineStart - 1] != '\n')
+			lineStart--;
+		
+		while (lineEnd < this._text.length - 1 && this._text[lineEnd + 1] != '\n')
+			lineEnd++;
+		
+		return {start:lineStart, end:lineEnd + 1};
+	};
+	
+/**
  * @function _getVerticalScrollParameters
  * Returns parameters representing the vertical scroll page, view, and line sizes.
  * 
@@ -10657,7 +10766,36 @@ TextFieldElement.prototype._onTextFieldMouseDown =
 		if (this._shiftPressed == true)
 			this.setSelection(this._textHighlightStartIndex, caretIndex);
 		else
-			this.setSelection(caretIndex, caretIndex);
+		{
+			var currentTime = Date.now();
+			var isDoubleClick = false;
+			var isTripleClick = false;
+			
+			if (currentTime - this._lastMouseDownTime1 < 700)
+				this._mouseDownCount = 3;
+			else if (currentTime - this._lastMouseDownTime2 < 350)
+				this._mouseDownCount = 2;
+			else
+				this._mouseDownCount = 1;
+			
+			if (this._mouseDownCount == 3)
+			{
+				var lineRange = this._getLineRangeFromCharIndex(caretIndex);
+				this._blockHighlightStartRange = lineRange;
+				this.setSelection(lineRange.start, lineRange.end);
+			}
+			else if (this._mouseDownCount == 2)
+			{
+				var wordRange = this._getWordRangeFromCharIndex(caretIndex);
+				this._blockHighlightStartRange = wordRange;
+				this.setSelection(wordRange.start, wordRange.end);
+			}
+			else
+				this.setSelection(caretIndex, caretIndex);
+			
+			this._lastMouseDownTime1 = this._lastMouseDownTime2;
+			this._lastMouseDownTime2 = currentTime;
+		}
 		
 		this._layoutShouldScroll = true;
 		this._invalidateLayout();
@@ -10671,6 +10809,8 @@ TextFieldElement.prototype._onTextFieldMouseDown =
 TextFieldElement.prototype._onTextFieldMouseUp = 
 	function (mouseEvent)
 	{
+		this._mouseDownCount = 0;
+		this._blockHighlighStartRange = null;
 		this._updateEnterFrameListener();
 	};	
 	
@@ -10837,6 +10977,10 @@ TextFieldElement.prototype._onTextFieldKeyDown =
 		else if (keyString == "Shift")
 		{
 			this._shiftPressed = true;
+		}
+		else if (keyString == "a" && keyboardEvent.getCtrl() == true)
+		{
+			this.setSelection(0, this._text.length);
 		}
 		else if (keyString == "ArrowLeft")
 		{
@@ -11358,7 +11502,7 @@ TextFieldElement.prototype._doStylesUpdated =
 			"TextSize" in stylesMap ||
 			"MaskCharacter" in stylesMap)
 		{
-			this._charMetrics = null;
+			this._createCharMetrics();
 			
 			this._invalidateMeasure();
 			this._invalidateLayout();
@@ -11395,9 +11539,6 @@ TextFieldElement.prototype._doStylesUpdated =
 TextFieldElement.prototype._createCharMetrics = 
 	function ()
 	{
-		if (this._charMetrics != null)
-			return;
-	
 		var currentX = 0;
 		var currentWidth = 0;
 		
@@ -11461,8 +11602,6 @@ TextFieldElement.prototype._createCharMetrics =
 TextFieldElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
-		this._createCharMetrics();
-	
 		var linePadTop = this.getStyle("TextLinePaddingTop");
 		var linePadBottom = this.getStyle("TextLinePaddingBottom");
 		var textSize = this.getStyle("TextSize");
@@ -13573,6 +13712,31 @@ TextInputElement.prototype._getTextHighlightedBackgroundColor =
 		return stateTextColor.value;
 	};
 	
+/**
+ * @function _updateSkinStyles
+ * Updates skin related styles. Called by _doStylesUpdated()
+ * 
+ * @param stylesMap Object
+ * Map of styles that have been changed
+ */	
+TextInputElement.prototype._updateSkinStyles = 
+	function (stylesMap)
+	{
+		////Update skin classes and sub styles.
+		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
+			this._updateSkinClass("up");
+		if ("UpSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("up");
+		
+		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
+			this._updateSkinClass("disabled");
+		if ("DisabledSkinStyle" in stylesMap)
+			this._updateSkinStyleDefinitions("disabled");
+	
+		this._updateState();
+		this._updateTextColors();
+	};
+	
 //@Override
 TextInputElement.prototype._doStylesUpdated =
 	function (stylesMap)
@@ -13649,20 +13813,7 @@ TextInputElement.prototype._doStylesUpdated =
 			this._textField.setStyle("MaskCharacter", maskCharacter);
 		}
 		
-		////Update skin classes and sub styles.
-		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
-			this._updateSkinClass("up");
-		if ("UpSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("up");
-		
-		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
-			this._updateSkinClass("disabled");
-		if ("DisabledSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("disabled");
-
-		
-		this._updateState();
-		this._updateTextColors();
+		this._updateSkinStyles(stylesMap);
 	};
 	
 //@Override
@@ -13687,6 +13838,900 @@ TextInputElement.prototype._doLayout =
 		//Ignore padding, proxied to TextField for proper mouse handling.		
 		this._textField._setActualPosition(0, 0);
 		this._textField._setActualSize(this._width, this._height);
+	};
+	
+	
+
+
+/**
+ * @depends TextInputElement.js
+ */
+
+/////////////////////////////////////////////////////////
+/////////////TimeInputElement////////////////////////////
+	
+/**
+ * @class TimeInputElement
+ * @inherits TextInputElement
+ * 
+ * TimeInputElement is an editable time field.
+ * Note that TimeInput supports both 12 and 24 hour time, but does not supply AM/PM.
+ * 
+ * @constructor TimeInputElement 
+ * Creates new TimeInputElement instance.
+ */
+function TimeInputElement()
+{
+	TimeInputElement.base.prototype.constructor.call(this);
+	
+	//Steal the text field from base TextInput - re-use as hour field
+	this._textFieldHour = this._textField;
+	this._removeChild(this._textField);
+	
+		//Use list container to layout text fields
+		this._listContainer = new ListContainerElement();
+		this._listContainer.setStyle("LayoutDirection", "horizontal");
+		
+			this._textFieldHour.setStyle("Selectable", true);
+			this._textFieldHour.setStyle("PercentHeight", 100);
+			this._textFieldHour.setStyle("PercentWidth", 100);
+			this._textFieldHour.setStyle("MaxChars", 2);
+			this._textFieldHour.setStyle("TabStop", -1);
+			
+			this._labelColon1 = new LabelElement();
+			this._labelColon1.setStyle("PercentHeight", 100);
+			this._labelColon1.setStyle("TextHorizontalAlign", "center");
+			this._labelColon1.setStyle("Text", ":");
+			this._labelColon1.setStyle("PaddingLeft", 0);
+			this._labelColon1.setStyle("PaddingRight", 0);
+			this._labelColon1.setStyle("TextStyle", "bold");
+			
+			this._textFieldMinute = new TextFieldElement();
+			this._textFieldMinute.setStyle("Selectable", true);
+			this._textFieldMinute.setStyle("PercentHeight", 100);
+			this._textFieldMinute.setStyle("PercentWidth", 100);
+			this._textFieldMinute.setStyle("MaxChars", 2);
+			this._textFieldMinute.setStyle("TabStop", -1);
+			
+			this._labelColon2 = new LabelElement();
+			this._labelColon2.setStyle("PercentHeight", 100);
+			this._labelColon2.setStyle("TextHorizontalAlign", "center");
+			this._labelColon2.setStyle("Text", ":");
+			this._labelColon2.setStyle("PaddingLeft", 0);
+			this._labelColon2.setStyle("PaddingRight", 0);
+			this._labelColon2.setStyle("TextStyle", "bold");
+			
+			this._textFieldSecond = new TextFieldElement();
+			this._textFieldSecond.setStyle("Selectable", true);
+			this._textFieldSecond.setStyle("PercentHeight", 100);
+			this._textFieldSecond.setStyle("PercentWidth", 100);
+			this._textFieldSecond.setStyle("MaxChars", 2);
+			this._textFieldSecond.setStyle("TabStop", -1);
+			
+		this._listContainer.addElement(this._textFieldHour);
+		this._listContainer.addElement(this._labelColon1);
+		this._listContainer.addElement(this._textFieldMinute);
+		this._listContainer.addElement(this._labelColon2);
+		this._listContainer.addElement(this._textFieldSecond);
+		
+	this._addChild(this._listContainer);
+	
+	////////////////////////
+	
+	var _self = this;
+	
+	//Private event handlers, need different instance for each TimeInput. Proxy to prototype.
+	this._onTimeInputTextFieldMouseDownInstance = 
+		function (mouseEvent)
+		{
+			_self._onTimeInputTextFieldMouseDown(mouseEvent);
+		};	
+		
+	this._onTimeInputTextFieldFocusOutInstance = 
+		function (event)
+		{
+			_self._onTimeInputTextFieldFocusOut(event);
+		};
+		
+	this._onTimeInputEnterFrameInstance = 
+		function (event)
+		{
+			_self._onTimeInputEnterFrame(event);
+		};
+		
+	this._textFieldHour.addEventListener("focusout", this._onTimeInputTextFieldFocusOutInstance);
+	this._textFieldMinute.addEventListener("focusout", this._onTimeInputTextFieldFocusOutInstance);
+	this._textFieldSecond.addEventListener("focusout", this._onTimeInputTextFieldFocusOutInstance);
+	
+	this.addEventListener("enterframe", this._onTimeInputEnterFrameInstance);
+	
+	/////
+	
+	//Currently focused text field
+	this._textFieldFocused = null;
+	this._clockBase = Date.now();
+	
+	var time = new Date();
+	this.setHours(time.getHours());
+	this.setMinutes(time.getMinutes());
+	this.setSeconds(time.getSeconds());
+}
+
+//Inherit from SkinnableElement
+TimeInputElement.prototype = Object.create(TextInputElement.prototype);
+TimeInputElement.prototype.constructor = TimeInputElement;
+TimeInputElement.base = TextInputElement;
+
+/////////////Events////////////////////////////////////
+
+/**
+ * @event hourswrapped DispatcherEvent
+ * Dispatched when hours are wrapped due to clock change.
+ * This is useful to detect date or AM/PM changes due to the clock updating.
+ */
+
+/////////////Style Types///////////////////////////////
+
+TimeInputElement._StyleTypes = Object.create(null);
+
+/**
+ * @style Is24HourTime boolean
+ * 
+ * Defaults to true, valid hours are 0-23.
+ * When false, valid hours are 1-12. (AM / PM not supplied by this control)
+ */
+TimeInputElement._StyleTypes.Is24HourTime =								StyleableBase.EStyleType.NORMAL;		//Element constructor()
+
+
+/////////////Default Styles///////////////////////////
+
+TimeInputElement.StyleDefault = new StyleDefinition();
+
+TimeInputElement.StyleDefault.setStyle("Is24HourTime", 								true);
+TimeInputElement.StyleDefault.setStyle("TextHorizontalAlign", 						"center");
+TimeInputElement.StyleDefault.setStyle("TextVerticalAlign", 						"middle");
+
+TimeInputElement.StyleDefault.setStyle("PaddingLeft",								5);
+TimeInputElement.StyleDefault.setStyle("PaddingRight",								5);
+
+
+////////Public///////////////////////
+
+/**
+ * @function setText
+ * @override
+ * Sets time to be displayed. 
+ * 
+ * @param text String
+ * Time to be displayed. Expected format is "hour:minute:second".
+ */
+TimeInputElement.prototype.setText = 
+	function (text)
+	{
+		var hour = 0; 
+		var minute = 0;
+		var second = 0;
+		var n;
+		
+		var timeArray = text.split(":");
+		for (var i = 0; i < timeArray.length; i++)
+		{
+			if (i == 3)
+				return;
+			
+			n = Number(timeArray[i])
+			if (isNaN(n) == true)
+				n = 0;
+			
+			if (i == 0)
+				hour = n;
+			else if (i == 1)
+				minute = n;
+			else 
+				second = n;
+		}
+		
+		this.setHours(hour);
+		this.setMinutes(minute);
+		this.setSeconds(second);		
+	};
+
+/**
+ * @function getText
+ * @override
+ * Gets the time string currently displayed.
+ * 
+ * @returns String
+ * Time currently displayed, formatted as "HH:MM:SS"
+ */	
+TimeInputElement.prototype.getText = 
+	function ()
+	{
+		var hour = this._textFieldHour.getText();
+		var minute = this._textFieldMinute.getText();
+		var second = this._textFieldSecond.getText();
+		
+		while (hour.length < 2)
+			hour = "0" + hour;
+		
+		while (minute.length < 2)
+			minute = "0" + minute;
+		
+		while (second.length < 2)
+			second = "0" + second;
+		
+		return hour + ":" + minute + ":" + second;
+	};	
+	
+/**
+ * @function setHours
+ * Sets the hours to be displayed.
+ * Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12
+ * Will wrap hours when out of range.
+ * 
+ * @param hour int
+ * Hour to be displayed.
+ */
+TimeInputElement.prototype.setHours = 
+	function (hour)
+	{
+		this._setHoursInternal(hour, false);
+	};
+
+/**
+ * @function getHour
+ * Gets the hours currently displayed. 
+ * 
+ * @returns int
+ * Hour currently displayed.
+ */	
+TimeInputElement.prototype.getHours = 
+	function ()
+	{
+		return Number(this._textFieldHour.getText());
+	};
+
+/**
+ * @function setMinutes
+ * Sets the minutes to be displayed. Range is 0-59.
+ * Will wrap minutes and update hours when out of range.
+ * 
+ * @param minute int
+ * Minute to be displayed.
+ */
+TimeInputElement.prototype.setMinutes = 
+	function (minute)
+	{
+		this._setMinutesInternal(minute, false)
+	};
+
+/**
+ * @function getMinutes
+ * Gets the minutes currently displayed. 
+ * 
+ * @returns int
+ * Minute currently displayed.
+ */	
+TimeInputElement.prototype.getMinutes = 
+	function ()
+	{
+		return Number(this._textFieldMinute.getText());
+	};	
+	
+/**
+ * @function setSeconds
+ * Sets the seconds to be displayed. Range is 0-59.
+ * Will wrap seconds and update minutes when out of range.
+ * 
+ * @param second int
+ * Seconds to be displayed.
+ */
+TimeInputElement.prototype.setSeconds = 
+	function (second)
+	{
+		this._setSecondsInternal(second, false);
+	};
+
+/**
+ * @function getSeconds
+ * Gets the seconds currently displayed. 
+ * 
+ * @returns int
+ * Seconds currently displayed.
+ */	
+TimeInputElement.prototype.getSeconds = 
+	function ()
+	{
+		return Number(this._textFieldSecond.getText());
+	};		
+	
+
+////////Internal/////////////////////
+
+/**
+ * @function _setHoursInternal
+ * Sets the hours to be displayed, ignored if set by clock when user has hour field focused.
+ * 
+ * @param hour int
+ * Hours to be displayed.
+ * 
+ * @param isClock boolean
+ * True when this is called via clock change.
+ * 
+ * @returns boolean
+ * True if value was out of range and wrapped.
+ */	
+TimeInputElement.prototype._setHoursInternal = 
+	function (hour, isClock)
+	{
+		//Dont update if its the clock and field is focused by user
+		if (isClock == true && this._textFieldFocused == this._textFieldHour)
+			return false;
+	
+		var wrapCount = 0;
+		
+		if (hour == null)
+			hour = 0;
+		
+		var h = Number(hour);
+		if (isNaN(h) == true)
+			h = 0;
+		
+		h = Math.round(h);
+		
+		var is24Hour = this.getStyle("Is24HourTime");
+		
+		//Wrap the hour
+		if (is24Hour == true)
+		{
+			while (h < 0)
+			{
+				h += 24;
+				wrapCount++;
+			}
+			while (h > 23)
+			{
+				h -= 24;
+				wrapCount++;
+			}
+		}
+		else
+		{
+			while (h < 1)
+			{
+				h += 12;
+				wrapCount++;
+			}
+			while (h > 12)
+			{
+				h -= 12;
+				wrapCount++;
+			}
+		}
+		
+		var textHour = h.toString();
+		while (textHour.length < 2)
+			textHour = "0" + textHour;
+		
+		this._textFieldHour.setText(textHour);
+		
+		if (isClock == false)
+			this._clockBase = Date.now();
+		
+		if (wrapCount > 0)
+		{
+			//Dont need to worry about wrap direction, clock always wraps forward
+			if (isClock == true && this.hasEventListener("hourswrapped", null) == true)
+			{
+				var wrapEvent = new DispatcherEvent("hourswrapped");
+			
+				//This is unlikely to ever be > 1 since its a clock update, unless the control
+				//has been removed and re-added after a *very* long time.
+				for (var i = 0; i < wrapCount; i++)
+					this.dispatchEvent(wrapEvent);
+			}
+			
+			return true;
+		}
+		
+		return false;
+	};
+	
+/**
+ * @function _setMinutesInternal
+ * Sets the minutes to be displayed, ignored if set by clock when user has minutes field focused.
+ * 
+ * @param minute int
+ * Minutes to be displayed.
+ * 
+ * @param isClock boolean
+ * True when this is called via clock change.
+ * 
+ * @returns boolean
+ * True if value was out of range and wrapped.
+ */	
+TimeInputElement.prototype._setMinutesInternal = 
+	function (minute, isClock)
+	{
+		//Dont update if its the clock and field is focused by user
+		if (isClock == true && this._textFieldFocused == this._textFieldMinute)
+			return false;
+	
+		var wrapped = false;
+		
+		if (minute == null)
+			minute = 0;
+		
+		var m = Number(minute);
+		if (isNaN(m) == true)
+			m = 0;
+		
+		m = Math.round(m);
+		
+		var currentHour = this.getHours();
+		
+		//Wrap minutes
+		while (m > 59)
+		{
+			m = m - 60;
+			currentHour++;
+			wrapped = true;
+		}
+		
+		while (m < 0)
+		{
+			m = m + 60
+			currentHour--;
+			wrapped = true;
+		}
+		
+		this._setHoursInternal(currentHour, isClock);
+		
+		var textMinute = m.toString();
+		while (textMinute.length < 2)
+			textMinute = "0" + textMinute;
+		
+		this._textFieldMinute.setText(textMinute);
+		
+		if (isClock == false)
+			this._clockBase = Date.now();
+		
+		return wrapped;
+	};
+	
+/**
+ * @function _setSecondsInternal
+ * Sets the seconds to be displayed, ignored if set by clock when user has seconds field focused.
+ * 
+ * @param second int
+ * Seconds to be displayed.
+ * 
+ * @param isClock boolean
+ * True when this is called via clock change.
+ * 
+ * @returns boolean
+ * True if value was out of range and wrapped.
+ */		
+TimeInputElement.prototype._setSecondsInternal = 
+	function (second, isClock)
+	{
+		//Dont update if its the clock and field is focused by user	
+		if (isClock == true && this._textFieldFocused == this._textFieldSecond)
+			return false;
+	
+		var wrapped = false;
+		
+		if (second == null)
+			second = 0;
+		
+		var s = Number(second);
+		if (isNaN(s) == true)
+			m = 0;
+		
+		s = Math.round(s);
+		
+		var currentMinute = this.getMinutes();
+		
+		//Wrap seconds
+		while (s > 59)
+		{
+			s = s - 60;
+			currentMinute++;
+			wrapped = true;
+		}
+		
+		while (s < 0)
+		{
+			s = s + 60
+			currentMinute--;
+			wrapped = true;
+		}
+		
+		this._setMinutesInternal(currentMinute, isClock);
+		
+		var textSecond = s.toString();
+		while (textSecond.length < 2)
+			textSecond = "0" + textSecond;
+		
+		this._textFieldSecond.setText(textSecond);
+		
+		if (isClock == false)
+			this._clockBase = Date.now();
+		
+		return wrapped;
+	};
+	
+/**
+ * @function _onTimeInputEnterFrame
+ * Event handler for "enterframe" event.  Updates the time displayed via clock.
+ * 
+ * @param event DispatcherEvent
+ * DispatcherEvent to be processed.
+ */	
+TimeInputElement.prototype._onTimeInputEnterFrame = 
+	function (event)
+	{
+		if (this._renderVisible == false)
+			return;
+	
+		var time = Date.now();
+		var delta = time - this._clockBase;
+		var deltaSeconds = Math.floor(delta / 1000);
+		
+		if (deltaSeconds > 0)
+		{
+			this._setSecondsInternal(this.getSeconds() + deltaSeconds, true);
+			this._clockBase += deltaSeconds * 1000;
+		}
+	};
+	
+//@override
+TimeInputElement.prototype._onTextInputKeyDown = 
+	function (keyboardEvent)
+	{
+		if (keyboardEvent.getDefaultPrevented() == true)
+			return;
+		
+		var key = keyboardEvent.getKey();
+		
+		if (key.length == 1 && 
+			key != "0" && key != "1" &&
+			key != "2" && key != "3" &&
+			key != "4" && key != "5" &&
+			key != "6" && key != "7" &&
+			key != "8" && key != "9" &&
+			key != ":")
+		{
+			return;
+		}
+		
+		if (key == "Tab" || key == ":") //Move focus
+		{
+			var shiftPressed = false;
+			
+			if (key == "Tab")
+				shiftPressed = keyboardEvent.getShift();
+			
+			if (shiftPressed == false)
+			{
+				if (this._textFieldFocused == this._textFieldSecond)
+					return;
+				else	
+				{
+					//Prevent normal tab stop handling
+					keyboardEvent.preventDefault();
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusout", false));
+					
+					if (this._textFieldFocused == this._textFieldHour)
+						this._textFieldFocused = this._textFieldMinute;
+					else //if (this._textFieldFocused == this._textFieldMinute)
+						this._textFieldFocused = this._textFieldSecond;
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusin", false));
+				}
+			}
+			else //if (shiftPressed == true)
+			{
+				if (this._textFieldFocused == this._textFieldHour)
+					return;
+				else
+				{
+					//Prevent normal tab stop handling
+					keyboardEvent.preventDefault();
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusout", false));
+					
+					if (this._textFieldFocused == this._textFieldSecond)
+						this._textFieldFocused = this._textFieldMinute;
+					else //if (this._textFieldFocused == this._textFieldMinute)
+						this._textFieldFocused = this._textFieldHour;
+					
+					this._textFieldFocused.dispatchEvent(new ElementEvent("focusin", false));
+				}
+			}
+		}
+		else
+		{
+			var clonedEvent = keyboardEvent.clone();
+			clonedEvent._bubbles = false; //Dont bubble.
+			
+			//Dispatch non-bubbling keyboard event to our text field.
+			this._textFieldFocused.dispatchEvent(clonedEvent);
+			
+			if (clonedEvent.getIsCanceled() == true)
+				keyboardEvent.cancelEvent();
+				
+			if (clonedEvent.getDefaultPrevented() == true)
+				keyboardEvent.preventDefault();
+		}
+	};
+
+//@override
+TimeInputElement.prototype._onTextInputKeyUp = 
+	function (keyboardEvent)
+	{
+		if (keyboardEvent.getDefaultPrevented() == true)
+			return;
+		
+		var key = keyboardEvent.getKey();
+		
+		if (key.length == 1 && 
+			key != "0" && key != "1" &&
+			key != "2" && key != "3" &&
+			key != "4" && key != "5" &&
+			key != "6" && key != "7" &&
+			key != "8" && key != "9")
+		{
+			return;
+		}
+		
+		var clonedEvent = keyboardEvent.clone();
+		clonedEvent._bubbles = false; //Dont bubble.
+		
+		//Dispatch non-bubbling keyboard event to our text field.
+		this._textFieldFocused.dispatchEvent(clonedEvent);
+		
+		if (clonedEvent.getIsCanceled() == true)
+			keyboardEvent.cancelEvent();
+			
+		if (clonedEvent.getDefaultPrevented() == true)
+			keyboardEvent.preventDefault();
+	};	
+	
+//@override	
+TimeInputElement.prototype._onTextInputFocusIn = 
+	function (elementEvent)
+	{
+		//This only works because TextField doesnt look at _isFocused (manages caret state with different flag)
+		this._textFieldHour.dispatchEvent(elementEvent.clone()); 
+		this._textFieldFocused = this._textFieldHour;
+	};
+
+//@override	
+TimeInputElement.prototype._onTextInputFocusOut = 
+	function (elementEvent)
+	{
+		//This only works because TextField doesnt look at _isFocused (manages caret state with different flag)
+		this._textFieldFocused.dispatchEvent(elementEvent.clone());
+		this._textFieldFocused = null; 
+	};
+
+/**
+ * @function _onTimeInputTextFieldMouseDown
+ * Event handler for the internal TextField's "mousedown" event. Only active when TimeInput is enabled. 
+ * 
+ * @param mouseEvent ElementMouseEvent
+ * ElementMouseEvent to process.
+ */	
+TimeInputElement.prototype._onTimeInputTextFieldMouseDown = 
+	function (mouseEvent)
+	{
+		if (mouseEvent.getTarget() != this._textFieldFocused && this._textFieldFocused != null)
+			this._textFieldFocused.dispatchEvent(new ElementEvent("focusout", false));
+		
+		this._textFieldFocused = mouseEvent.getTarget();
+	};	
+	
+/**
+ * @function _onTimeInputTextFieldFocusOut
+ * Event handler for the internal TextField's "focusout" event.
+ * 
+ * @param elementEvent ElementEvent
+ * ElementEvent to process.
+ */		
+TimeInputElement.prototype._onTimeInputTextFieldFocusOut = 
+	function (event)
+	{
+		var textField = event.getTarget();
+		var value = Number(textField.getText());
+		
+		var changed = false;
+		
+		if (textField == this._textFieldHour)
+			changed = this.setHours(value);
+		else if (textField == this._textFieldMinute)
+			changed = this.setMinutes(value)
+		else //if (textField == this._textFieldSecond
+			changed = this.setSeconds(value);
+		
+		//Dispatch a changed event if the focus out caused values to change (wrapped)
+		if (changed == true && this.hasEventListener("changed", null) == true)
+			this.dispatchEvent(new ElementEvent("changed", false));
+	};
+	
+//@override
+TimeInputElement.prototype._updateTextColors = 
+	function ()
+	{
+		this._textFieldHour.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._textFieldHour.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._textFieldHour.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
+		this._textFieldMinute.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._textFieldMinute.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._textFieldMinute.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
+		this._textFieldSecond.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._textFieldSecond.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._textFieldSecond.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+	};
+	
+//@override
+TimeInputElement.prototype._doStylesUpdated =
+	function (stylesMap)
+	{
+		//TimeInputElement.base.base - skip TextInput._doStylesUpdated()
+		TimeInputElement.base.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		//Force the textField to use our defaults rather than inherited.
+		if ("TextHorizontalAlign" in stylesMap)
+		{
+			this._textFieldHour.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+			this._textFieldMinute.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+			this._textFieldSecond.setStyle("TextHorizontalAlign", this.getStyle("TextHorizontalAlign"));
+		}
+		
+		if ("TextVerticalAlign" in stylesMap)
+		{
+			this._textFieldHour.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
+			this._textFieldMinute.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
+			this._textFieldSecond.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
+			
+			this._labelColon1.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
+			this._labelColon2.setStyle("TextVerticalAlign", this.getStyle("TextVerticalAlign"));
+		}
+		
+		if ("Enabled" in stylesMap)
+		{
+			var enabled = this.getStyle("Enabled");
+			
+			this._textFieldHour.setStyle("Enabled", enabled);
+			this._textFieldMinute.setStyle("Enabled", enabled);
+			this._textFieldSecond.setStyle("Enabled", enabled);
+			
+			if (enabled == true)
+			{
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keydown", this._onTextInputKeyUpDownInstance);
+				
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keyup", this._onTextInputKeyUpDownInstance);
+				
+				if (this._textFieldHour.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldHour.addEventListener("changed", this._onTextInputTextFieldChangedInstance);		
+				
+				if (this._textFieldMinute.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldMinute.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
+				
+				if (this._textFieldSecond.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldSecond.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
+				
+				if (this._textFieldHour.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == false)
+					this._textFieldHour.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+				
+				if (this._textFieldMinute.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == false)
+					this._textFieldMinute.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+				
+				if (this._textFieldSecond.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == false)
+					this._textFieldSecond.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+			}
+			else
+			{
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keydown", this._onTextInputKeyUpDownInstance);
+				
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keyup", this._onTextInputKeyUpDownInstance);
+				
+				if (this._textFieldHour.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldHour.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
+				
+				if (this._textFieldMinute.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldMinute.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
+				
+				if (this._textFieldSecond.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldSecond.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
+				
+				if (this._textFieldHour.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == true)
+					this._textFieldHour.removeEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+				
+				if (this._textFieldMinute.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == true)
+					this._textFieldMinute.removeEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+				
+				if (this._textFieldSecond.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == true)
+					this._textFieldSecond.removeEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+			}
+		}
+		
+		if ("TextLinePaddingTop" in stylesMap || 
+			"TextLinePaddingBottom" in stylesMap)
+		{
+			this._invalidateMeasure();
+		}
+		
+		if ("Padding" in stylesMap ||
+			"PaddingTop" in stylesMap ||
+			"PaddingBottom" in stylesMap ||
+			"PaddingLeft" in stylesMap ||
+			"PaddingRight" in stylesMap)
+		{
+			var paddingSize = this._getPaddingSize();
+			
+			this._textFieldHour.setStyle("PaddingLeft", paddingSize.paddingLeft);
+			this._textFieldHour.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._textFieldHour.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
+			this._textFieldMinute.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._textFieldMinute.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
+			this._textFieldSecond.setStyle("PaddingRight", paddingSize.paddingRight);
+			this._textFieldSecond.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._textFieldSecond.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
+			this._labelColon1.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._labelColon1.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
+			this._labelColon2.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._labelColon2.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
+			this._invalidateMeasure();
+		}
+		
+		//Will adjust 24 -> 12 hour
+		if ("Is24HourTime" in stylesMap)
+			this.setHours(this.getHours());
+		
+		this._updateSkinStyles(stylesMap);
+	};
+	
+//@override
+TimeInputElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		var fontString = this._getFontString();
+	
+		var measuredHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
+		
+		var measuredWidth = (CanvasElement._measureText("00", fontString) + 6) * 3;
+		measuredWidth += this._labelColon1._getStyledOrMeasuredWidth() * 2;
+		
+		measuredWidth += padWidth;
+		measuredHeight += padHeight;
+	
+		this._setMeasuredSize(measuredWidth, measuredHeight);
+	};
+	
+//@override	
+TimeInputElement.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		//TimeInputElement.base.base - Skip TextInput._doLayout()
+		TimeInputElement.base.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		//Ignore padding, proxied to TextFields for proper mouse handling.		
+		this._listContainer._setActualPosition(0, 0);
+		this._listContainer._setActualSize(this._width, this._height);
 	};
 	
 	
@@ -14714,7 +15759,7 @@ LabelElement.prototype._doRender =
 
 
 /**
- * @depends SkinnableElement.js
+ * @depends TextInputElement.js
  */
 
 /////////////////////////////////////////////////////////
@@ -14722,7 +15767,7 @@ LabelElement.prototype._doRender =
 	
 /**
  * @class IpInputElement
- * @inherits SkinnableElement
+ * @inherits TextInputElement
  * 
  * IpInputElement is an edit-able IPv4 address field.
  * 
@@ -14733,11 +15778,14 @@ function IpInputElement()
 {
 	IpInputElement.base.prototype.constructor.call(this);
 	
+	//Steal the text field from base TextInput - re-use as ip1 field
+	this._textFieldIp1 = this._textField;
+	this._removeChild(this._textField);
+	
 		//Use list container to layout text fields
 		this._listContainer = new ListContainerElement();
 		this._listContainer.setStyle("LayoutDirection", "horizontal");
 		
-			this._textFieldIp1 = new TextFieldElement();
 			this._textFieldIp1.setStyle("PercentHeight", 100);
 			this._textFieldIp1.setStyle("PercentWidth", 100);
 			this._textFieldIp1.setStyle("MaxChars", 3);
@@ -14794,33 +15842,10 @@ function IpInputElement()
 		this._listContainer.addElement(this._textFieldIp4);
 		
 	this._addChild(this._listContainer);
+
+	//////////////////////////
 	
 	var _self = this;
-	
-	//Private event handlers, need different instance for each TextInput. Proxy to prototype.
-	this._onIpInputFocusEventInstance = 
-		function (event)
-		{
-			if (event.getType() == "focusin")
-				_self._onIpInputFocusIn(event);
-			else
-				_self._onIpInputFocusOut(event);
-		};
-	
-	this._onIpInputKeyUpDownInstance = 
-		function (keyboardEvent)
-		{
-			if (keyboardEvent.getType() == "keydown")
-				_self._onIpInputKeyDown(keyboardEvent);
-			else // if (keyboardEvent.getType() == "keyup")
-				_self._onIpInputKeyUp(keyboardEvent);
-		};
-		
-	this._onIpInputTextFieldChangedInstance = 
-		function (event)
-		{
-			_self._onIpInputTextFieldChanged(event);
-		};
 		
 	this._onIpInputTextFieldMouseDownInstance = 
 		function (mouseEvent)
@@ -14834,123 +15859,26 @@ function IpInputElement()
 			_self._onIpInputTextFieldFocusOut(event);
 		};
 		
-	this.addEventListener("focusin", this._onIpInputFocusEventInstance);
-	this.addEventListener("focusout", this._onIpInputFocusEventInstance);	
-	
 	this._textFieldIp1.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	this._textFieldIp2.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	this._textFieldIp3.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	this._textFieldIp4.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	
-	/////
+	////////////////////
 	
 	//Currently focused IP field
 	this._textFieldFocused = null;
 }
 
 //Inherit from SkinnableElement
-IpInputElement.prototype = Object.create(SkinnableElement.prototype);
+IpInputElement.prototype = Object.create(TextInputElement.prototype);
 IpInputElement.prototype.constructor = IpInputElement;
-IpInputElement.base = SkinnableElement;
+IpInputElement.base = TextInputElement;
 
 /////////////Events////////////////////////////////////
 
-/**
- * @event changed ElementEvent
- * Dispatched when the text is modified as a result of user input.
- */
-
 
 /////////////Style Types///////////////////////////////
-
-IpInputElement._StyleTypes = Object.create(null);
-
-/**
- * @style SkinClass CanvasElement
- * 
- * The CanvasElement constructor type to apply to all skin states. 
- * Specific states such as UpSkinClass will override SkinClass.
- */
-IpInputElement._StyleTypes.SkinClass =									StyleableBase.EStyleType.NORMAL;		//Element constructor()
-
-/**
- * @style UpSkinClass CanvasElement
- * 
- * The CanvasElement constructor to be used for the skin when in the "up" state. 
- * This will override SkinClass.
- */
-IpInputElement._StyleTypes.UpSkinClass = 								StyleableBase.EStyleType.NORMAL;		//Element constructor()
-
-/**
- * @style UpSkinStyle StyleDefinition
- * 
- * The StyleDefinition or [StyleDefinition] array to apply to the "up" state skin element.
- */
-IpInputElement._StyleTypes.UpSkinStyle = 								StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
-
-/**
- * @style UpTextColor String
- * 
- * Hex color value to be used for the button TextInput is in the "up" state. Format like "#FF0000" (red).
- * This will override the TextColor style.
- */
-IpInputElement._StyleTypes.UpTextColor = 								StyleableBase.EStyleType.NORMAL;		// color "#000000"
-
-/**
- * @style UpTextHighlightedColor String
- * 
- * Hex color value to be used for highlighted text when the TextInput is in the "up" state. Format like "#FF0000" (red).
- * This will override the TextHighlightedColor style.
- */
-IpInputElement._StyleTypes.UpTextHighlightedColor = 					StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
-
-/**
- * @style UpTextHighlightedBackgroundColor String
- * 
- * Hex color value to be used for highlighted text background when the TextInput is in the "up" state. Format like "#FF0000" (red).
- * This will override the TextHighlightedBackgroundColor style.
- */
-IpInputElement._StyleTypes.UpTextHighlightedBackgroundColor = 			StyleableBase.EStyleType.NORMAL;			// color "#000000"
-
-/**
- * @style DisabledSkinClass CanvasElement
- * 
- * The CanvasElement constructor to be used for the TextInput is in the "disabled" state.
- * When this is null, the base SkinClass style will be used.
- */
-IpInputElement._StyleTypes.DisabledSkinClass = 							StyleableBase.EStyleType.NORMAL;		// Element constructor()
-
-/**
- * @style DisabledSkinStyle StyleDefinition
- * The StyleDefinition or [StyleDefinition] array to apply to the "disabled" state skin element.
- * When this is null, the base SkinTyle will be used.
- */
-IpInputElement._StyleTypes.DisabledSkinStyle = 							StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
-
-/**
- * @style DisabledTextColor String
- * 
- * Hex color value to be used for the button TextInput is in the "disabled" state. Format like "#FF0000" (red).
- * This will override the TextColor style.
- */
-IpInputElement._StyleTypes.DisabledTextColor = 							StyleableBase.EStyleType.NORMAL;		// color "#000000"
-
-/**
- * @style DisabledTextHighlightedColor String
- * 
- * Hex color value to be used for highlighted text when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
- * When this is null, the base TextHighlightedColor style will be used.
- */
-IpInputElement._StyleTypes.DisabledTextHighlightedColor = 				StyleableBase.EStyleType.NORMAL;		// color "#FFFFFF"
-
-/**
- * @style DisabledTextHighlightedBackgroundColor String
- * 
- * Hex color value to be used for highlighted text background when the TextInput is in the "disabled" state. Format like "#FF0000" (red).
- * When this is null, the base TextHighlightedBackgroundColor style will be used.
- */
-IpInputElement._StyleTypes.DisabledTextHighlightedBackgroundColor = 	StyleableBase.EStyleType.NORMAL;		// color "#000000"
-
 
 
 /////////////Default Styles///////////////////////////
@@ -14960,81 +15888,39 @@ IpInputElement.StyleDefault = new StyleDefinition();
 IpInputElement.StyleDefault.setStyle("TextHorizontalAlign", 						"center");
 IpInputElement.StyleDefault.setStyle("TextVerticalAlign", 							"middle");
 
-IpInputElement.StyleDefault.setStyle("Enabled", 									true);
-
-IpInputElement.StyleDefault.setStyle("UpTextColor", 								"#000000");
-IpInputElement.StyleDefault.setStyle("DisabledTextColor", 							"#888888");
-
-IpInputElement.StyleDefault.setStyle("PaddingTop",									3);
-IpInputElement.StyleDefault.setStyle("PaddingBottom",								3);
 IpInputElement.StyleDefault.setStyle("PaddingLeft",									5);
 IpInputElement.StyleDefault.setStyle("PaddingRight",								5);
-
-IpInputElement.StyleDefault.setStyle("TabStop", 									0);
-
-IpInputElement.StyleDefault.setStyle("SkinClass", 									CanvasElement);
-IpInputElement.StyleDefault.setStyle("UpSkinClass", 								CanvasElement);
-IpInputElement.StyleDefault.setStyle("DisabledSkinClass", 							CanvasElement);
-
-/////Skin styles//
-IpInputElement.DisabledSkinStyleDefault = new StyleDefinition();
-
-IpInputElement.DisabledSkinStyleDefault.setStyle("BorderType", 						"inset");
-IpInputElement.DisabledSkinStyleDefault.setStyle("BorderThickness", 				1);
-IpInputElement.DisabledSkinStyleDefault.setStyle("BorderColor", 					"#999999");
-IpInputElement.DisabledSkinStyleDefault.setStyle("BackgroundFill", 					"#ECECEC");
-
-IpInputElement.UpSkinStyleDefault = new StyleDefinition();
-
-IpInputElement.UpSkinStyleDefault.setStyle("BorderType", 							"inset");
-IpInputElement.UpSkinStyleDefault.setStyle("BorderThickness", 						1);
-IpInputElement.UpSkinStyleDefault.setStyle("BorderColor", 							"#606060");
-
-IpInputElement.UpSkinStyleDefault.setStyle("BackgroundFill", 						"#F5F5F5");
-
-//Apply skin defaults
-IpInputElement.StyleDefault.setStyle("UpSkinStyle", 								IpInputElement.UpSkinStyleDefault);
-IpInputElement.StyleDefault.setStyle("DisabledSkinStyle", 							IpInputElement.DisabledSkinStyleDefault);
-
 
 
 ////////Public///////////////////////
 
 /**
- * @function setIp
+ * @function setText
+ * @override
  * Sets the IP to be displayed.
- * Formatted as IPv4 address: "192.168.1.1"
  * 
- * @param ip String
- * IP to be displayed.
+ * @param text String
+ * IP to be displayed. Formatted as IPv4 address: "192.168.1.1"
  */
-IpInputElement.prototype.setIp = 
-	function (ip)
+IpInputElement.prototype.setText = 
+	function (text)
 	{
-		this._textFieldIp1.setText("");
-		this._textFieldIp2.setText("");
-		this._textFieldIp3.setText("");
-		this._textFieldIp4.setText("");
-	
-		if (ip == null || ip.length == 0)
-			return;
+		if (text == null)
+			text = "";
 		
 		var i;
 		var i2;
 		var n;
-		var ipArray = ip.split(".");
+		var ipArray = text.split(".");
 		
 		for (i = 0; i < ipArray.length; i++)
 		{
 			if (i == 4)
 				return;
 			
-			if (ipArray[i].length == 0)
-				continue;
-			
 			n = Number(ipArray[i]);
 			if (isNaN(n) == true)
-				continue;
+				n = 0;
 			
 			if (n > 255)
 				n = 255;
@@ -15052,15 +15938,16 @@ IpInputElement.prototype.setIp =
 	};
 
 /**
- * @function getIp
+ * @function getText
+ * @override 
  * Gets the IP currently displayed. 
- * When all fields are empty an empty string "" will be returned.
- * When some but not all fields are empty null will be returned (invalid IP).
  * 
  * @returns String
- * IP currently displayed.
+ * IP currently displayed formatted as IPv4 address: "192.168.1.1".
+ * When all fields are empty an empty string "" will be returned.
+ * When some but not all fields are empty null will be returned (invalid IP).
  */	
-IpInputElement.prototype.getIp = 
+IpInputElement.prototype.getText = 
 	function ()
 	{
 		if (this._textFieldIp1.getText().length == 0 &&
@@ -15088,32 +15975,8 @@ IpInputElement.prototype.getIp =
 
 ////////Internal/////////////////////
 
-/**
- * @function _onIpInputTextFieldChanged
- * Event handler for the internal TextField "changed" event. Only active when TextInput is Enabled.
- * Dispatches a "changed" event from this TextInput element.
- * 
- * @param elementEvent ElementEvent
- * ElementEvent to be processed.
- */	
-IpInputElement.prototype._onIpInputTextFieldChanged = 
-	function (elementEvent)
-	{
-		//Pass on the changed event
-	
-		if (this.hasEventListener("changed", null) == true)
-			this.dispatchEvent(new ElementEvent("changed", false));
-	};
-	
-/**
- * @function _onIpInputKeyDown
- * Event handler for "keydown" event. Only active when IpInput is enabled. 
- * Proxies keyboard event to internal TextFields.
- * 
- * @param keyboardEvent ElementKeyboardEvent
- * ElementKeyboardEvent to process.
- */	
-IpInputElement.prototype._onIpInputKeyDown = 
+//@override
+IpInputElement.prototype._onTextInputKeyDown = 
 	function (keyboardEvent)
 	{
 		if (keyboardEvent.getDefaultPrevented() == true)
@@ -15198,14 +16061,7 @@ IpInputElement.prototype._onIpInputKeyDown =
 		}
 	};
 
-/**
- * @function _onIpInputKeyUp
- * Event handler for "keyup" event. Only active when IpInput is enabled. 
- * Proxies keyboard event to internal TextField.
- * 
- * @param keyboardEvent ElementKeyboardEvent
- * ElementKeyboardEvent to process.
- */	
+//@override
 IpInputElement.prototype._onIpInputKeyUp = 
 	function (keyboardEvent)
 	{
@@ -15237,15 +16093,8 @@ IpInputElement.prototype._onIpInputKeyUp =
 			keyboardEvent.preventDefault();
 	};	
 	
-/**
- * @function _onIpInputFocusIn
- * Event handler for "focusin" event. 
- * Proxies focus event to internal TextFields.
- * 
- * @param elementEvent ElementEvent
- * ElementEvent to process.
- */		
-IpInputElement.prototype._onIpInputFocusIn = 
+//@override	
+IpInputElement.prototype._onTextInputFocusIn = 
 	function (elementEvent)
 	{
 		//Mouse down already focused
@@ -15257,14 +16106,7 @@ IpInputElement.prototype._onIpInputFocusIn =
 		this._textFieldFocused = this._textFieldIp1;
 	};
 
-/**
- * @function _onIpInputFocusOut
- * Event handler for "focusout" event. 
- * Proxies focus event to internal TextFields.
- * 
- * @param elementEvent ElementEvent
- * ElementEvent to process.
- */		
+//@override	
 IpInputElement.prototype._onIpInputFocusOut = 
 	function (elementEvent)
 	{
@@ -15316,65 +16158,6 @@ IpInputElement.prototype._onIpInputTextFieldFocusOut =
 	};
 	
 //@override
-IpInputElement.prototype._getSkinClass = 
-	function (state)
-	{
-		var stateSkinClass = null;
-		
-		if (state == "up")
-			stateSkinClass = this.getStyleData("UpSkinClass");
-		else if (state == "disabled")
-			stateSkinClass = this.getStyleData("DisabledSkinClass");
-		
-		var skinClass = this.getStyleData("SkinClass");
-		
-		//Shouldnt have null stateSkinClass
-		if (stateSkinClass == null || skinClass.comparePriority(stateSkinClass) > 0) //Use skinClass if higher priority
-			return skinClass.value;
-		
-		return stateSkinClass.value;
-	};
-	
-//@override	
-IpInputElement.prototype._getSubStyleNameForSkinState = 
-	function (state)
-	{
-		if (state == "up")
-			return "UpSkinStyle";
-		if (state == "disabled")
-			return "DisabledSkinStyle";
-		
-		return IpInputElement.base.prototype._getSubStyleNameForSkinState.call(this, state);
-	};			
-	
-/**
- * @function _updateState
- * Updates the current SkinState in response to style changes.
- */	
-IpInputElement.prototype._updateState = 
-	function ()
-	{
-		var newState = "up";
-
-		if (this.getStyle("Enabled") == false)
-			newState = "disabled";
-		
-		this.setStyle("SkinState", newState);
-	};	
-	
-//@override
-IpInputElement.prototype._changeState = 
-	function (state)
-	{
-		IpInputElement.base.prototype._changeState.call(this, state);
-	
-		this._updateTextColors();
-	};
-	
-/**
- * @function _updateTextColors
- * Updates the text colors based on the current state. Called when state changes and when added to display hierarchy.
- */	
 IpInputElement.prototype._updateTextColors = 
 	function ()
 	{
@@ -15395,98 +16178,12 @@ IpInputElement.prototype._updateTextColors =
 		this._textFieldIp4.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 	};
 	
-/**
- * @function _getTextColor
- * Gets the text color for the supplied state based on text styles.
- * 
- * @param state String
- * The skin state to return the text color.
- * 
- * @returns String
- * Hex color value.
- */	
-IpInputElement.prototype._getTextColor = 
-	function (state)
-	{
-		var stateTextColor = null;
-		
-		if (state == "up")
-			stateTextColor = this.getStyleData("UpTextColor");
-		else if (state == "disabled")
-			stateTextColor = this.getStyleData("DisabledTextColor");
-	
-		var textColor = this.getStyleData("TextColor");
-		
-		//Shouldnt have null stateTextColor
-		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
-			return textColor.value;
-		
-		return stateTextColor.value;
-	};
-	
-/**
- * @function _getTextHighlightedColor
- * Gets the highlighted text color for the supplied state based on text styles.
- * 
- * @param state String
- * The skin state to return the highlighted text color.
- * 
- * @returns String
- * Hex color value.
- */		
-IpInputElement.prototype._getTextHighlightedColor = 
-	function (state)
-	{
-		var stateTextColor = null;
-		
-		if (state == "up")
-			stateTextColor = this.getStyleData("UpTextHighlightedColor");
-		else if (state == "disabled")
-			stateTextColor = this.getStyleData("DisabledTextHighlightedColor");
-	
-		var textColor = this.getStyleData("TextHighlightedColor");
-		
-		//Shouldnt have null stateTextColor
-		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
-			return textColor.value;
-		
-		return stateTextColor.value;
-	};
-	
-/**
- * @function _getTextHighlightedBackgroundColor
- * Gets the highlighted text background color for the supplied state based on text styles.
- * 
- * @param state String
- * The skin state to return the highlighted text background color.
- * 
- * @returns String
- * Hex color value.
- */		
-IpInputElement.prototype._getTextHighlightedBackgroundColor = 
-	function (state)
-	{
-		var stateTextColor = null;
-		
-		if (state == "up")
-			stateTextColor = this.getStyleData("UpTextHighlightedBackgroundColor");
-		else if (state == "disabled")
-			stateTextColor = this.getStyleData("DisabledTextHighlightedBackgroundColor");
-	
-		var textColor = this.getStyleData("TextHighlightedBackgroundColor");
-		
-		//Shouldnt have null stateTextColor
-		if (stateTextColor == null || textColor.comparePriority(stateTextColor) > 0) //Use textColor if higher priority
-			return textColor.value;
-		
-		return stateTextColor.value;
-	};
-	
 //@override
 IpInputElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
-		IpInputElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		//IpInputElement.base.base - skip TextInput._doStylesUpdated()
+		IpInputElement.base.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
 		//Force the textField to use our defaults rather than inherited.
 		if ("TextHorizontalAlign" in stylesMap)
@@ -15520,23 +16217,23 @@ IpInputElement.prototype._doStylesUpdated =
 			
 			if (enabled == true)
 			{
-				if (this.hasEventListener("keydown", this._onIpInputKeyUpDownInstance) == false)
-					this.addEventListener("keydown", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keydown", this._onTextInputKeyUpDownInstance);
 				
-				if (this.hasEventListener("keyup", this._onIpInputKeyUpDownInstance) == false)
-					this.addEventListener("keyup", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == false)
+					this.addEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
-				if (this._textFieldIp1.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp1.addEventListener("changed", this._onIpInputTextFieldChangedInstance);		
+				if (this._textFieldIp1.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp1.addEventListener("changed", this._onTextInputTextFieldChangedInstance);		
 				
-				if (this._textFieldIp2.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp2.addEventListener("changed", this._onIpInputTextFieldChangedInstance);	
+				if (this._textFieldIp2.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp2.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
 				
-				if (this._textFieldIp3.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp3.addEventListener("changed", this._onIpInputTextFieldChangedInstance);	
+				if (this._textFieldIp3.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp3.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
 				
-				if (this._textFieldIp4.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == false)
-					this._textFieldIp4.addEventListener("changed", this._onIpInputTextFieldChangedInstance);	
+				if (this._textFieldIp4.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
+					this._textFieldIp4.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
 				
 				if (this._textFieldIp1.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == false)
 					this._textFieldIp1.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
@@ -15552,23 +16249,23 @@ IpInputElement.prototype._doStylesUpdated =
 			}
 			else
 			{
-				if (this.hasEventListener("keydown", this._onIpInputKeyUpDownInstance) == true)
-					this.removeEventListener("keydown", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keydown", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keydown", this._onTextInputKeyUpDownInstance);
 				
-				if (this.hasEventListener("keyup", this._onIpInputKeyUpDownInstance) == true)
-					this.removeEventListener("keyup", this._onIpInputKeyUpDownInstance);
+				if (this.hasEventListener("keyup", this._onTextInputKeyUpDownInstance) == true)
+					this.removeEventListener("keyup", this._onTextInputKeyUpDownInstance);
 				
-				if (this._textFieldIp1.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp1.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp1.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp1.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
-				if (this._textFieldIp2.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp2.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp2.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp2.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
-				if (this._textFieldIp3.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp3.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp3.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp3.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
-				if (this._textFieldIp4.hasEventListener("changed", this._onIpInputTextFieldChangedInstance) == true)
-					this._textFieldIp4.removeEventListener("changed", this._onIpInputTextFieldChangedInstance);
+				if (this._textFieldIp4.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
+					this._textFieldIp4.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
 				
 				if (this._textFieldIp1.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == true)
 					this._textFieldIp1.removeEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
@@ -15624,19 +16321,7 @@ IpInputElement.prototype._doStylesUpdated =
 			this._invalidateMeasure();
 		}
 		
-		////Update skin classes and sub styles.
-		if ("SkinClass" in stylesMap || "UpSkinClass" in stylesMap)
-			this._updateSkinClass("up");
-		if ("UpSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("up");
-		
-		if ("SkinClass" in stylesMap || "DisabledSkinClass" in stylesMap)
-			this._updateSkinClass("disabled");
-		if ("DisabledSkinStyle" in stylesMap)
-			this._updateSkinStyleDefinitions("disabled");
-
-		this._updateState();
-		this._updateTextColors();
+		this._updateSkinStyles(stylesMap);
 	};
 	
 //@override
@@ -15660,7 +16345,8 @@ IpInputElement.prototype._doMeasure =
 IpInputElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
-		IpInputElement.base.prototype._doLayout.call(this, paddingMetrics);
+		//IpInputElement.base.base - skip TextInputElement._doLayout()
+		IpInputElement.base.base.prototype._doLayout.call(this, paddingMetrics);
 		
 		//Ignore padding, proxied to TextFields for proper mouse handling.		
 		this._listContainer._setActualPosition(0, 0);
@@ -16187,6 +16873,883 @@ ImageElement.prototype._doRender =
 	};
 	
 	
+	
+
+
+/**
+ * @depends CanvasElement.js
+ * @depends ArrowShape.js
+ */
+
+//////////////////////////////////////////////////////////////
+///////////////DatePickerElement/////////////////////////////
+
+/**
+ * @class DatePickerElement
+ * @inherits CanvasElement
+ * 
+ * DatePickerElement is a class that displays a calendar used to select dates.  
+ * 
+ * @constructor DatePickerElement 
+ * Creates new DatePickerElement instance.
+ */
+
+function DatePickerElement() //extends CanvasElement
+{
+	DatePickerElement.base.prototype.constructor.call(this);
+	
+	//Setup static style for days grid (all instances use same style for all rows/columns)
+	if (DatePickerElement._GridDaysRowColumnStyle == null)
+	{
+		DatePickerElement._GridDaysRowColumnStyle = new GridContainerRowColumnDefinition();
+		DatePickerElement._GridDaysRowColumnStyle.setStyle("PercentSize", 100);
+	}
+	
+	/////////////
+	
+	//Use list container to control layout
+	this._rootListContainer = new ListContainerElement();
+	this._rootListContainer.setStyle("LayoutDirection", "vertical");
+	this._rootListContainer.setStyle("LayoutHorizontalAlign", "center");
+	
+		this._listContainerYearMonthSelection = new ListContainerElement();
+		this._listContainerYearMonthSelection.setStyle("PercentWidth", 100);
+		this._listContainerYearMonthSelection.setStyle("LayoutDirection", "horizontal");
+		this._listContainerYearMonthSelection.setStyle("LayoutHorizontalAlign", "center");
+		this._listContainerYearMonthSelection.setStyle("LayoutVerticalAlign", "middle");
+		
+			this._buttonMonthDecrement = new ButtonElement();
+			
+			this._anchorContainerLabelMonths = new AnchorContainerElement();
+			
+				this._labelMonth1 = new LabelElement();
+				this._labelMonth1.setStyle("Visible", false);
+				this._labelMonth1.setStyle("PercentWidth", 100);
+				
+				this._labelMonth2 = new LabelElement();
+				this._labelMonth2.setStyle("Visible", false);
+				this._labelMonth2.setStyle("PercentWidth", 100);
+				
+				this._labelMonth3 = new LabelElement();
+				this._labelMonth3.setStyle("Visible", false);
+				this._labelMonth3.setStyle("PercentWidth", 100);
+				
+				this._labelMonth4 = new LabelElement();
+				this._labelMonth4.setStyle("Visible", false);
+				this._labelMonth4.setStyle("PercentWidth", 100);
+				
+				this._labelMonth5 = new LabelElement();
+				this._labelMonth5.setStyle("Visible", false);
+				this._labelMonth5.setStyle("PercentWidth", 100);
+				
+				this._labelMonth6 = new LabelElement();
+				this._labelMonth6.setStyle("Visible", false);
+				this._labelMonth6.setStyle("PercentWidth", 100);
+				
+				this._labelMonth7 = new LabelElement();
+				this._labelMonth7.setStyle("Visible", false);
+				this._labelMonth7.setStyle("PercentWidth", 100);
+				
+				this._labelMonth8 = new LabelElement();
+				this._labelMonth8.setStyle("Visible", false);
+				this._labelMonth8.setStyle("PercentWidth", 100);
+				
+				this._labelMonth9 = new LabelElement();
+				this._labelMonth9.setStyle("Visible", false);
+				this._labelMonth9.setStyle("PercentWidth", 100);
+				
+				this._labelMonth10 = new LabelElement();
+				this._labelMonth10.setStyle("Visible", false);
+				this._labelMonth10.setStyle("PercentWidth", 100);
+				
+				this._labelMonth11 = new LabelElement();
+				this._labelMonth11.setStyle("Visible", false);
+				this._labelMonth11.setStyle("PercentWidth", 100);
+				
+				this._labelMonth12 = new LabelElement();
+				this._labelMonth12.setStyle("Visible", false);
+				this._labelMonth12.setStyle("PercentWidth", 100);
+				
+			this._anchorContainerLabelMonths.addElement(this._labelMonth1);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth2);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth3);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth4);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth5);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth6);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth7);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth8);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth9);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth10);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth11);
+			this._anchorContainerLabelMonths.addElement(this._labelMonth12);
+				
+			this._buttonMonthIncrement = new ButtonElement();
+			
+			this._spacerYearMonth = new CanvasElement();
+			this._spacerYearMonth.setStyle("PercentWidth", 100);
+			this._spacerYearMonth.setStyle("MinWidth", 20);
+			
+			this._buttonYearDecrement = new ButtonElement();
+			this._labelYear = new LabelElement();
+			this._buttonYearIncrement = new ButtonElement();
+
+		this._listContainerYearMonthSelection.addElement(this._buttonMonthDecrement);
+		this._listContainerYearMonthSelection.addElement(this._anchorContainerLabelMonths);
+		this._listContainerYearMonthSelection.addElement(this._buttonMonthIncrement);	
+		this._listContainerYearMonthSelection.addElement(this._spacerYearMonth);	
+		this._listContainerYearMonthSelection.addElement(this._buttonYearDecrement);
+		this._listContainerYearMonthSelection.addElement(this._labelYear);
+		this._listContainerYearMonthSelection.addElement(this._buttonYearIncrement);
+		
+		this._gridDaysContainer = new GridContainerElement();
+		this._gridDaysContainer.setStyle("PercentWidth", 100);
+		this._gridDaysContainer.setStyle("PercentHeight", 100);
+		
+			//All rows and columns set to 100% except days label row
+			this._gridDaysContainer.setRowDefinition(DatePickerElement._GridDaysRowColumnStyle, 1);
+			this._gridDaysContainer.setRowDefinition(DatePickerElement._GridDaysRowColumnStyle, 2);
+			this._gridDaysContainer.setRowDefinition(DatePickerElement._GridDaysRowColumnStyle, 3);
+			this._gridDaysContainer.setRowDefinition(DatePickerElement._GridDaysRowColumnStyle, 4);
+			this._gridDaysContainer.setRowDefinition(DatePickerElement._GridDaysRowColumnStyle, 5);
+			this._gridDaysContainer.setRowDefinition(DatePickerElement._GridDaysRowColumnStyle, 6);
+			
+			this._gridDaysContainer.setColumnDefinition(DatePickerElement._GridDaysRowColumnStyle, 0);
+			this._gridDaysContainer.setColumnDefinition(DatePickerElement._GridDaysRowColumnStyle, 1);
+			this._gridDaysContainer.setColumnDefinition(DatePickerElement._GridDaysRowColumnStyle, 2);
+			this._gridDaysContainer.setColumnDefinition(DatePickerElement._GridDaysRowColumnStyle, 3);
+			this._gridDaysContainer.setColumnDefinition(DatePickerElement._GridDaysRowColumnStyle, 4);
+			this._gridDaysContainer.setColumnDefinition(DatePickerElement._GridDaysRowColumnStyle, 5);
+			this._gridDaysContainer.setColumnDefinition(DatePickerElement._GridDaysRowColumnStyle, 6);
+			
+			this._labelDay1 = new LabelElement();
+			this._labelDay2 = new LabelElement();
+			this._labelDay3 = new LabelElement();
+			this._labelDay4 = new LabelElement();
+			this._labelDay5 = new LabelElement();
+			this._labelDay6 = new LabelElement();
+			this._labelDay7 = new LabelElement();
+			
+			//Toggle buttons added dynamically
+			
+		this._gridDaysContainer.setCellElement(this._labelDay1, 0, 0);
+		this._gridDaysContainer.setCellElement(this._labelDay2, 0, 1);
+		this._gridDaysContainer.setCellElement(this._labelDay3, 0, 2);
+		this._gridDaysContainer.setCellElement(this._labelDay4, 0, 3);
+		this._gridDaysContainer.setCellElement(this._labelDay5, 0, 4);
+		this._gridDaysContainer.setCellElement(this._labelDay6, 0, 5);
+		this._gridDaysContainer.setCellElement(this._labelDay7, 0, 6);
+
+	this._rootListContainer.addElement(this._listContainerYearMonthSelection);
+	this._rootListContainer.addElement(this._gridDaysContainer);
+
+	this._addChild(this._rootListContainer);
+
+
+	///////Event Handlers///////////
+	
+	//Private event handlers, different instance needed for each ColorPicker, proxy to prototype
+	
+	var _self = this;
+	
+	this._onButtonYearDecrementClickInstance = 
+		function (mouseEvent)
+		{
+			_self._buttonYearDecrementClick(mouseEvent);
+		};
+		
+	this._onButtonYearIncrementClickInstance = 
+		function (mouseEvent)
+		{
+			_self._buttonYearIncrementClick(mouseEvent);
+		};
+		
+	this._onButtonMonthDecrementClickInstance = 
+		function (mouseEvent)
+		{
+			_self._buttonMonthDecrementClick(mouseEvent);
+		};		
+		
+	this._onButtonMonthIncrementClickInstance = 
+		function (mouseEvent)
+		{
+			_self._buttonMonthIncrementClick(mouseEvent);
+		};
+	
+	this._buttonDayChangedInstance = 
+		function (event)
+		{
+			_self._buttonDayChanged(event);
+		};
+		
+	this._listContainerYearMonthSelectionLayoutCompleteInstance = 
+		function (event)
+		{
+			_self._listContainerYearMonthSelectionLayoutComplete(event);
+		};
+		
+	//////////////////
+		
+	//Populate days grid buttons
+	var buttonDay = null;
+	for (var week = 1; week < 7; week++)
+	{
+		for (var day = 0; day < 7; day++)
+		{
+			buttonDay = new ToggleButtonElement();
+			buttonDay.setStyle("Enabled", false);
+			buttonDay.setStyle("AllowDeselect", false);
+			buttonDay.addEventListener("changed", this._buttonDayChangedInstance);
+			
+			this._gridDaysContainer.setCellElement(buttonDay, week, day);
+		}
+	}
+	
+	this._buttonYearDecrement.addEventListener("click", this._onButtonYearDecrementClickInstance);
+	this._buttonYearIncrement.addEventListener("click", this._onButtonYearIncrementClickInstance);
+	this._buttonMonthDecrement.addEventListener("click", this._onButtonMonthDecrementClickInstance);
+	this._buttonMonthIncrement.addEventListener("click", this._onButtonMonthIncrementClickInstance);
+	
+	this._listContainerYearMonthSelection.addEventListener("layoutcomplete", this._listContainerYearMonthSelectionLayoutCompleteInstance);
+	
+	//////////////////
+	
+	this._displayedYear = null;
+	this._displayedMonth = null;
+	
+	this._selectedDate = null;
+	this.setSelectedDate(null);
+}
+
+//Inherit from CanvasElement
+DatePickerElement.prototype = Object.create(CanvasElement.prototype);
+DatePickerElement.prototype.constructor = DatePickerElement;
+DatePickerElement.base = CanvasElement;
+
+
+////////////Static//////////////////////
+
+DatePickerElement._GridDaysRowColumnStyle = null;
+
+
+////////////Events/////////////////////////////////////
+
+/**
+ * @event changed ElementEvent
+ * Dispatched when the DatePicker selection state changes as a result of user interaction.
+ */
+
+/////////////Style Types///////////////////////////////
+
+DatePickerElement._StyleTypes = Object.create(null);
+
+/**
+ * @style LabelYearStyle StyleDefinition
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the year label element.
+ */
+DatePickerElement._StyleTypes.LabelYearStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
+
+/**
+ * @style ButtonYearIncrementStyle StyleDefinition
+ * StyleDefinition or [StyleDefinition] array to be applied to the year increment Button.
+ */
+DatePickerElement._StyleTypes.ButtonYearIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+
+/**
+ * @style ButtonYearDecrementStyle StyleDefinition
+ * StyleDefinition or [StyleDefinition] array to be applied to the year decrement Button.
+ */
+DatePickerElement._StyleTypes.ButtonYearDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+
+/**
+ * @style LabelMonthStyle StyleDefinition
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the month label element.
+ */
+DatePickerElement._StyleTypes.LabelMonthStyle = 			StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
+
+/**
+ * @style ButtonMonthIncrementStyle StyleDefinition
+ * StyleDefinition or [StyleDefinition] array to be applied to the month increment Button.
+ */
+DatePickerElement._StyleTypes.ButtonMonthIncrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+
+/**
+ * @style ButtonMonthDecrementStyle StyleDefinition
+ * StyleDefinition or [StyleDefinition] array to be applied to the month decrement Button.
+ */
+DatePickerElement._StyleTypes.ButtonMonthDecrementStyle = 	StyleableBase.EStyleType.SUBSTYLE;		// StyleDefinition
+
+/**
+ * @style LabelDayStyle StyleDefinition
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the day label elements.
+ */
+DatePickerElement._StyleTypes.LabelDayStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
+
+/**
+ * @style ButtonDaysStyle StyleDefinition
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the day ToggleButton elements.
+ */
+DatePickerElement._StyleTypes.ToggleButtonDaysStyle = 		StyleableBase.EStyleType.SUBSTYLE;			//StyleDefinition
+
+/**
+ * @style GridDaysVerticalLayoutGap Number
+ * Space in pixels between the day grid rows.
+ */
+DatePickerElement._StyleTypes.GridDaysVerticalLayoutGap = 	StyleableBase.EStyleType.NORMAL;		// Number
+
+/**
+ * @style GridDaysVerticalLayoutGap Number
+ * Space in pixels between the day grid columns.
+ */
+DatePickerElement._StyleTypes.GridDaysHorizontalLayoutGap = StyleableBase.EStyleType.NORMAL;		// Number
+
+/**
+ * @style LayoutGap Number
+ * Space in pixels between the month / year selection and the day selection grid.
+ */
+DatePickerElement._StyleTypes.LayoutGap = 					StyleableBase.EStyleType.NORMAL;		// Number
+
+/**
+ * @style Month1String String
+ * String to use for month 1's name.
+ */
+DatePickerElement._StyleTypes.Month1String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month2String String
+ * String to use for month 2's name.
+ */
+DatePickerElement._StyleTypes.Month2String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month3String String
+ * String to use for month 3's name.
+ */
+DatePickerElement._StyleTypes.Month3String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month4String String
+ * String to use for month 4's name.
+ */
+DatePickerElement._StyleTypes.Month4String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month5String String
+ * String to use for month 5's name.
+ */
+DatePickerElement._StyleTypes.Month5String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month6String String
+ * String to use for month 6's name.
+ */
+DatePickerElement._StyleTypes.Month6String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month7String String
+ * String to use for month 7's name.
+ */
+DatePickerElement._StyleTypes.Month7String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month8String String
+ * String to use for month 8's name.
+ */
+DatePickerElement._StyleTypes.Month8String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month9String String
+ * String to use for month 9's name.
+ */
+DatePickerElement._StyleTypes.Month9String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month10String String
+ * String to use for month 10's name.
+ */
+DatePickerElement._StyleTypes.Month10String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month11String String
+ * String to use for month 11's name.
+ */
+DatePickerElement._StyleTypes.Month11String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Month12String String
+ * String to use for month 12's name.
+ */
+DatePickerElement._StyleTypes.Month12String = 				StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Day1String String
+ * String to use for day 1's name.
+ */
+DatePickerElement._StyleTypes.Day1String = 					StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Day2String String
+ * String to use for day 2's name.
+ */
+DatePickerElement._StyleTypes.Day2String = 					StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Day3String String
+ * String to use for day 3's name.
+ */
+DatePickerElement._StyleTypes.Day3String = 					StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Day4String String
+ * String to use for day 4's name.
+ */
+DatePickerElement._StyleTypes.Day4String = 					StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Day5String String
+ * String to use for day 5's name.
+ */
+DatePickerElement._StyleTypes.Day5String = 					StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Day6String String
+ * String to use for day 6's name.
+ */
+DatePickerElement._StyleTypes.Day6String = 					StyleableBase.EStyleType.NORMAL;		// String
+
+/**
+ * @style Day7String String
+ * String to use for day 7's name.
+ */
+DatePickerElement._StyleTypes.Day7String = 					StyleableBase.EStyleType.NORMAL;		// String
+
+
+////////////Default Styles/////////////////////////////
+
+DatePickerElement.StyleDefault = new StyleDefinition();
+
+////Default Sub Styles/////
+
+DatePickerElement.LabelYearMonthStyleDefault = new StyleDefinition();
+DatePickerElement.LabelYearMonthStyleDefault.setStyle("TextHorizontalAlign", 	"center");
+DatePickerElement.LabelYearMonthStyleDefault.setStyle("PaddingLeft", 			8);
+DatePickerElement.LabelYearMonthStyleDefault.setStyle("PaddingRight", 			8);
+
+DatePickerElement.ArrowShapeLeft = new ArrowShape();
+DatePickerElement.ArrowShapeLeft.setStyle("Direction", "left");
+
+DatePickerElement.ArrowShapeRight = new ArrowShape();
+DatePickerElement.ArrowShapeRight.setStyle("Direction", "right");
+
+DatePickerElement.ButtonYearMonthDecSkinStyleDefault = new StyleDefinition();
+DatePickerElement.ButtonYearMonthDecSkinStyleDefault.setStyle("BackgroundShape", DatePickerElement.ArrowShapeLeft);
+
+DatePickerElement.ButtonYearMonthIncSkinStyleDefault = new StyleDefinition();
+DatePickerElement.ButtonYearMonthIncSkinStyleDefault.setStyle("BackgroundShape", DatePickerElement.ArrowShapeRight);
+
+DatePickerElement.ButtonYearMonthDecStyleDefault = new StyleDefinition();
+DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("PercentHeight", 		75);
+DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("UpSkinStyle", 		DatePickerElement.ButtonYearMonthDecSkinStyleDefault);
+DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("OverSkinStyle", 		DatePickerElement.ButtonYearMonthDecSkinStyleDefault);
+DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("DownSkinStyle", 		DatePickerElement.ButtonYearMonthDecSkinStyleDefault);
+
+DatePickerElement.ButtonYearMonthIncStyleDefault = new StyleDefinition();
+DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("PercentHeight", 		75);
+DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("UpSkinStyle", 		DatePickerElement.ButtonYearMonthIncSkinStyleDefault);
+DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("OverSkinStyle", 		DatePickerElement.ButtonYearMonthIncSkinStyleDefault);
+DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("DownSkinStyle", 		DatePickerElement.ButtonYearMonthIncSkinStyleDefault);
+
+DatePickerElement.LabelDayStyleDefault = new StyleDefinition();
+DatePickerElement.LabelDayStyleDefault.setStyle("TextHorizontalAlign",			"center");
+
+DatePickerElement.ToggleButtonDaysSkinStyleDefault = new StyleDefinition();
+DatePickerElement.ToggleButtonDaysSkinStyleDefault.setStyle("BorderType",		null);		
+
+DatePickerElement.ToggleButtonDaysStyleDefault = new StyleDefinition();
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("UpSkinStyle", 			DatePickerElement.ToggleButtonDaysSkinStyleDefault);
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("OverSkinStyle", 		DatePickerElement.ToggleButtonDaysSkinStyleDefault);
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("DownSkinStyle", 		DatePickerElement.ToggleButtonDaysSkinStyleDefault);
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("DisabledSkinStyle", 	DatePickerElement.ToggleButtonDaysSkinStyleDefault);
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("PaddingTop", 			5);
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("PaddingBottom", 		5);
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("PaddingLeft", 			5);
+DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("PaddingRight", 		5);
+
+
+////Root Styles////
+
+DatePickerElement.StyleDefault.setStyle("LabelYearStyle", 						DatePickerElement.LabelYearMonthStyleDefault);
+DatePickerElement.StyleDefault.setStyle("ButtonYearDecrementStyle", 			DatePickerElement.ButtonYearMonthDecStyleDefault);
+DatePickerElement.StyleDefault.setStyle("ButtonYearIncrementStyle", 			DatePickerElement.ButtonYearMonthIncStyleDefault);
+DatePickerElement.StyleDefault.setStyle("LabelMonthStyle", 						DatePickerElement.LabelYearMonthStyleDefault);
+DatePickerElement.StyleDefault.setStyle("ButtonMonthDecrementStyle", 			DatePickerElement.ButtonYearMonthDecStyleDefault);
+DatePickerElement.StyleDefault.setStyle("ButtonMonthIncrementStyle", 			DatePickerElement.ButtonYearMonthIncStyleDefault);
+DatePickerElement.StyleDefault.setStyle("LabelDayStyle", 						DatePickerElement.LabelDayStyleDefault);
+DatePickerElement.StyleDefault.setStyle("ToggleButtonDaysStyle", 				DatePickerElement.ToggleButtonDaysStyleDefault);
+DatePickerElement.StyleDefault.setStyle("LayoutGap",							8);
+DatePickerElement.StyleDefault.setStyle("GridDaysVerticalLayoutGap",			1);
+DatePickerElement.StyleDefault.setStyle("GridDaysHorizontalLayoutGap",			1);
+DatePickerElement.StyleDefault.setStyle("PaddingTop", 							5);
+DatePickerElement.StyleDefault.setStyle("PaddingBottom", 						5);
+DatePickerElement.StyleDefault.setStyle("PaddingLeft", 							5);
+DatePickerElement.StyleDefault.setStyle("PaddingRight", 						5);
+DatePickerElement.StyleDefault.setStyle("BorderType", 							"solid");
+DatePickerElement.StyleDefault.setStyle("BackgroundFill", 						"#FFFFFF");
+
+DatePickerElement.StyleDefault.setStyle("Month1String", 						"Jan");
+DatePickerElement.StyleDefault.setStyle("Month2String", 						"Feb");
+DatePickerElement.StyleDefault.setStyle("Month3String", 						"Mar");
+DatePickerElement.StyleDefault.setStyle("Month4String", 						"Apr");
+DatePickerElement.StyleDefault.setStyle("Month5String", 						"May");
+DatePickerElement.StyleDefault.setStyle("Month6String", 						"Jun");
+DatePickerElement.StyleDefault.setStyle("Month7String", 						"Jul");
+DatePickerElement.StyleDefault.setStyle("Month8String", 						"Aug");
+DatePickerElement.StyleDefault.setStyle("Month9String", 						"Sep");
+DatePickerElement.StyleDefault.setStyle("Month10String", 						"Oct");
+DatePickerElement.StyleDefault.setStyle("Month11String", 						"Nov");
+DatePickerElement.StyleDefault.setStyle("Month12String", 						"Dec");
+
+DatePickerElement.StyleDefault.setStyle("Day1String", 							"S");
+DatePickerElement.StyleDefault.setStyle("Day2String", 							"M");
+DatePickerElement.StyleDefault.setStyle("Day3String", 							"T");
+DatePickerElement.StyleDefault.setStyle("Day4String", 							"W");
+DatePickerElement.StyleDefault.setStyle("Day5String", 							"T");
+DatePickerElement.StyleDefault.setStyle("Day6String", 							"F");
+DatePickerElement.StyleDefault.setStyle("Day7String", 							"S");
+
+
+
+////////////Public////////////////
+	
+/**
+ * @function getSelectedDate
+ * Gets the selected date of the DatePickerElement.
+ * 
+ * @returns Date
+ * Currently selected date or null if none selected.
+ */
+DatePickerElement.prototype.getSelectedDate = 
+	function ()
+	{
+		return this._selectedDate;
+	};
+
+/**
+ * @function setSelectedDate
+ * Sets the selected date of the DatePickerElement.
+ * 
+ * @param date Date
+ * Date to set as the selected date or null for no selection.
+ */	
+DatePickerElement.prototype.setSelectedDate = 
+	function (date)
+	{
+		if (date != null && date instanceof Date == false)
+			date = new Date();
+	
+		this._selectedDate = date;
+		
+		if (date == null)
+			date = new Date();
+		
+		this._displayedYear = date.getFullYear();
+		this._displayedMonth = date.getMonth();
+		
+		this._updateCalendar();		
+	};
+	
+	
+////////////Internal//////////////
+	
+/**
+ * @function _buttonYearDecrementClick
+ * Event handler for the decrement year Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */		
+DatePickerElement.prototype._buttonYearDecrementClick = 
+	function (elementMouseEvent)
+	{
+		this._displayedYear--;
+		this._updateCalendar();
+	};
+
+/**
+ * @function _buttonYearIncrementClick
+ * Event handler for the increment year Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */		
+DatePickerElement.prototype._buttonYearIncrementClick = 
+	function (elementMouseEvent)
+	{
+		this._displayedYear++;
+		this._updateCalendar();
+	};	
+	
+/**
+ * @function _buttonMonthDecrementClick
+ * Event handler for the decrement month Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */			
+DatePickerElement.prototype._buttonMonthDecrementClick = 
+	function (elementMouseEvent)
+	{
+		this._displayedMonth--;
+		if (this._displayedMonth == -1)
+		{
+			this._displayedYear--;
+			this._displayedMonth = 11;
+		}
+		
+		this._updateCalendar();
+	};
+
+/**
+ * @function _buttonMonthIncrementClick
+ * Event handler for the increment month Button click event
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */		
+DatePickerElement.prototype._buttonMonthIncrementClick = 
+	function (elementMouseEvent)
+	{
+		this._displayedMonth++;
+		if (this._displayedMonth == 12)
+		{
+			this._displayedYear++;
+			this._displayedMonth = 0;
+		}
+		
+		this._updateCalendar();
+	};		
+	
+/**
+ * @function _listContainerYearMonthSelectionLayoutComplete
+ * Event handler for the year / month selection list containers layoutcomplete event.
+ * Used to adjust the measured sizes of the year / month increment & decrement buttons.
+ * 
+ * @param elementEvent ElementEvent
+ * The ElementEvent to process.
+ */			
+DatePickerElement.prototype._listContainerYearMonthSelectionLayoutComplete = 
+	function (elementEvent)
+	{
+		this._buttonYearDecrement._setMeasuredSize(Math.round(this._buttonYearDecrement._height * .8), this._buttonYearDecrement._height);
+		this._buttonYearIncrement._setMeasuredSize(Math.round(this._buttonYearIncrement._height * .8), this._buttonYearIncrement._height);
+
+		this._buttonMonthDecrement._setMeasuredSize(Math.round(this._buttonMonthDecrement._height * .8), this._buttonMonthDecrement._height);
+		this._buttonMonthIncrement._setMeasuredSize(Math.round(this._buttonMonthIncrement._height * .8), this._buttonMonthIncrement._height);
+	};
+	
+/**
+ * @function _buttonDayChanged
+ * Event handler for the day ToggleButton's changed event
+ * 
+ * @param elementEvent ElementEvent
+ * The ElementEvent to process.
+ */			
+DatePickerElement.prototype._buttonDayChanged = 
+	function (elementEvent)
+	{
+		var day = Number(elementEvent.getTarget().getStyle("Text"));
+		
+		this._selectedDate = new Date();
+		this._selectedDate.setFullYear(this._displayedYear);
+		this._selectedDate.setMonth(this._displayedMonth);
+		this._selectedDate.setDate(day);
+		
+		this._updateCalendar();
+		
+		if (this.hasEventListener("changed", null) == true)
+			this.dispatchEvent(new ElementEvent("changed", false));
+	};
+	
+/**
+ * @function _updateCalendar
+ * Updates the calendar when the displayed month, year, or selected date changes.
+ */			
+DatePickerElement.prototype._updateCalendar = 
+	function ()
+	{
+		this._labelYear.setStyle("Text", this._displayedYear.toString());
+		
+		for (var i = 0; i < 12; i++)
+		{
+			if (this._displayedMonth == i)
+				this["_labelMonth" + (i + 1).toString()].setStyle("Visible", true);
+			else
+				this["_labelMonth" + (i + 1).toString()].setStyle("Visible", false);
+		}
+		
+		var date = new Date();
+		date.setFullYear(this._displayedYear);
+		date.setMonth(this._displayedMonth);
+		date.setDate(0);
+		date.setDate(date.getDate() - date.getDay());
+		
+		var toggleButton = null;
+		for (var week = 1; week < 7; week++)
+		{
+			for (var day = 0; day < 7; day++)
+			{
+				toggleButton = this._gridDaysContainer.getCellElement(week, day);
+				toggleButton.setStyle("Text", date.getDate().toString());
+				
+				if (date.getMonth() == this._displayedMonth)
+				{
+					toggleButton.setStyle("Enabled", true);
+					
+					if (this._selectedDate != null &&
+						date.getFullYear() == this._selectedDate.getFullYear() && 
+						date.getMonth() == this._selectedDate.getMonth() &&
+						date.getDate() == this._selectedDate.getDate())
+					{
+						toggleButton.setSelected(true);
+					}
+					else
+						toggleButton.setSelected(false);
+				}
+				else
+				{
+					toggleButton.setStyle("Enabled", false);
+					toggleButton.setSelected(false);
+				}
+					
+				date.setDate(date.getDate() + 1);
+			}
+		}
+	};
+
+//@override
+DatePickerElement.prototype._doStylesUpdated =
+	function (stylesMap)
+	{
+		DatePickerElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		if ("LabelYearStyle" in stylesMap)
+			this._applySubStylesToElement("LabelYearStyle", this._labelYear);
+		
+		if ("ButtonYearDecrementStyle" in stylesMap)
+			this._applySubStylesToElement("ButtonYearDecrementStyle", this._buttonYearDecrement);
+		
+		if ("ButtonYearIncrementStyle" in stylesMap)
+			this._applySubStylesToElement("ButtonYearIncrementStyle", this._buttonYearIncrement);
+		
+		if ("LabelMonthStyle" in stylesMap)
+		{
+			for (var i = 0; i < 12; i++)
+				this._applySubStylesToElement("LabelMonthStyle", this["_labelMonth" + (i + 1).toString() ]);
+		}
+		
+		if ("ButtonMonthDecrementStyle" in stylesMap)
+			this._applySubStylesToElement("ButtonMonthDecrementStyle", this._buttonMonthDecrement);
+		
+		if ("ButtonMonthIncrementStyle" in stylesMap)
+			this._applySubStylesToElement("ButtonMonthIncrementStyle", this._buttonMonthIncrement);
+		
+		if ("LabelDayStyle" in stylesMap)
+		{
+			for (var day = 0; day < 7; day++)
+				this._applySubStylesToElement("LabelDayStyle", this._gridDaysContainer.getCellElement(0, day));
+		}
+		
+		if ("ToggleButtonDaysStyle" in stylesMap)
+		{
+			for (var week = 1; week < 7; week++)
+			{
+				for (var day = 0; day < 7; day++)
+					this._applySubStylesToElement("ToggleButtonDaysStyle", this._gridDaysContainer.getCellElement(week, day));
+			}
+		}
+		
+		if ("LayoutGap" in stylesMap)
+			this._rootListContainer.setStyle("LayoutGap", this.getStyle("LayoutGap"));
+		
+		if ("GridDaysVerticalLayoutGap" in stylesMap)
+			this._gridDaysContainer.setStyle("LayoutVerticalGap", this.getStyle("GridDaysVerticalLayoutGap"));
+		
+		if ("GridDaysHorizontalLayoutGap" in stylesMap)
+			this._gridDaysContainer.setStyle("LayoutHorizontalGap", this.getStyle("GridDaysHorizontalLayoutGap"));
+		
+		//Update day strings
+		if ("Day1String" in stylesMap)
+			this._labelDay1.setStyle("Text", this.getStyle("Day1String"));
+		if ("Day2String" in stylesMap)
+			this._labelDay2.setStyle("Text", this.getStyle("Day2String"));
+		if ("Day3String" in stylesMap)
+			this._labelDay3.setStyle("Text", this.getStyle("Day3String"));
+		if ("Day4String" in stylesMap)
+			this._labelDay4.setStyle("Text", this.getStyle("Day4String"));
+		if ("Day5String" in stylesMap)
+			this._labelDay5.setStyle("Text", this.getStyle("Day5String"));
+		if ("Day6String" in stylesMap)
+			this._labelDay6.setStyle("Text", this.getStyle("Day6String"));
+		if ("Day7String" in stylesMap)
+			this._labelDay7.setStyle("Text", this.getStyle("Day7String"));
+		
+		//Update month string
+		if ("Month1String" in stylesMap)
+			this._labelMonth1.setStyle("Text", this.getStyle("Month1String"));
+		if ("Month2String" in stylesMap)
+			this._labelMonth2.setStyle("Text", this.getStyle("Month2String"));
+		if ("Month3String" in stylesMap)
+			this._labelMonth3.setStyle("Text", this.getStyle("Month3String"));
+		if ("Month4String" in stylesMap)
+			this._labelMonth4.setStyle("Text", this.getStyle("Month4String"));
+		if ("Month5String" in stylesMap)
+			this._labelMonth5.setStyle("Text", this.getStyle("Month5String"));
+		if ("Month6String" in stylesMap)
+			this._labelMonth6.setStyle("Text", this.getStyle("Month6String"));
+		if ("Month7String" in stylesMap)
+			this._labelMonth7.setStyle("Text", this.getStyle("Month7String"));
+		if ("Month8String" in stylesMap)
+			this._labelMonth8.setStyle("Text", this.getStyle("Month8String"));
+		if ("Month9String" in stylesMap)
+			this._labelMonth9.setStyle("Text", this.getStyle("Month9String"));
+		if ("Month10String" in stylesMap)
+			this._labelMonth10.setStyle("Text", this.getStyle("Month10String"));
+		if ("Month11String" in stylesMap)
+			this._labelMonth11.setStyle("Text", this.getStyle("Month11String"));
+		if ("Month12String" in stylesMap)
+			this._labelMonth12.setStyle("Text", this.getStyle("Month12String"));
+	};	
+
+//@override
+DatePickerElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		//Root list container measures for us, so just add padding
+		this._setMeasuredSize(padWidth + this._rootListContainer._measuredWidth, 
+							padHeight + this._rootListContainer._measuredHeight);
+	};
+	
+//@override	
+DatePickerElement.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		DatePickerElement.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY();
+		var w = paddingMetrics.getWidth();
+		var h = paddingMetrics.getHeight();
+		
+		//Place root list container and consider padding.
+		this._rootListContainer._setActualSize(w, h);
+		this._rootListContainer._setActualPosition(x, y);
+	};	
+	
+	
+
 	
 
 
@@ -22023,7 +23586,7 @@ GridContainerElement.prototype._doLayout =
  * 
  * The AnchorContainer can be used to lay out children via absolute or constraint positioning.
  * This container uses children's styles X, Y, Width, Height, PercentWidth, PercentHeight,
- * Top, Bottom, Left, Right, Horizontal Center, and Vertical Center. Nesting containers
+ * Top, Bottom, Left, Right, HorizontalCenter, and VerticalCenter. Nesting containers
  * is the best way to quickly and simply build complex layouts.
  * 
  * X, Y, Width, and Height are treated as highest priority and will override other styles.
@@ -23689,9 +25252,10 @@ function CanvasManager()
 				if (draggingElement != null)
 					_self._setDraggingElement(draggingElement, draggingOffset.x, draggingOffset.y);
 				
-				currentElement.dispatchEvent(new ElementMouseEvent(browserEvent.type, mousePoint.x, mousePoint.y));
-				
+				//Dispatch focus change before mouse event - implementor likely does not want "mousedown" before "focusout"
 				_self._updateFocusElement(focusElement, false);
+				
+				currentElement.dispatchEvent(new ElementMouseEvent(browserEvent.type, mousePoint.x, mousePoint.y));
 				
 				//Always shut off focus ring (even if focus doesnt change)
 				if (_self._focusElement != null)
@@ -26204,7 +27768,8 @@ RadioButtonElement.prototype._doLayout =
  * The Dropdown button itself contains a child button which is used to render
  * the divider line and arrow. Dropdown proxies its SkinState style to the arrow
  * button so the arrow button will change states along with the Dropdown itself.
- * See the default skin for the arrow button DropdownArrowButtonSkinElement for additional styles.
+ * See the default item renderer, DataRendererLabelElement and the default 
+ * skin for the arrow button, DropdownArrowButtonSkinElement for additional styles.
  * 
  * @seealso DropdownArrowButtonSkinElement
  * 
@@ -27262,6 +28827,826 @@ DropdownElement.prototype._doLayout =
 
 
 /**
+ * @depends CanvasElement.js
+ * @depends ButtonElement.js
+ * @depends DropdownArrowButtonSkinElement.js
+ * @depends Tween.js
+ */
+
+//////////////////////////////////////////////////////////////
+///////////////DatePickerButtonElement///////////////////////
+
+/**
+ * @class DatePickerButtonElement
+ * @inherits ButtonElement
+ * 
+ * DatePickerButtonElement is a compound button that creates a pop-up DatePicker
+ * where the user can select a date which is then displayed on the button. 
+ * 
+ * The DatePickerButtonElement button itself contains a child button which is used to render
+ * the divider line and arrow. DatePickerButtonElement proxies its SkinState style to the arrow
+ * button so the arrow button will change states along with the DatePickerButtonElement itself.
+ * See the default skin for the arrow button DropdownArrowButtonSkinElement for additional styles.
+ * 
+ * @seealso DropdownArrowButtonSkinElement
+ * 
+ * 
+ * @constructor DatePickerButtonElement 
+ * Creates new DatePickerButtonElement instance.
+ */
+function DatePickerButtonElement()
+{
+	DatePickerButtonElement.base.prototype.constructor.call(this);
+
+	this._arrowButton = null;
+	
+	this._datePickerPopup = new CanvasElement();
+	this._datePicker = new DatePickerElement();
+	this._datePickerPopup._addChild(this._datePicker);
+	
+	this._openCloseTween = null;
+	
+	var _self = this;
+	
+	//Private event listeners, need an instance for each DatePickerButton, proxy to prototype.
+		
+	this._onDateButtonManagerCaptureEventInstance = 
+		function (event)
+		{
+			_self._onDateButtonManagerCaptureEvent(event);
+		};
+	this._onDateButtonManagerResizeEventInstance = 
+		function (event)
+		{
+			_self._onDateButtonManagerResizeEvent(event);
+		};
+	this._onDateButtonEnterFrameInstance = 
+		function (event)
+		{
+			_self._onDateButtonEnterFrame(event);
+		};
+	this._onDatePickerChangedInstance = 
+		function (event)
+		{
+			_self._onDatePickerChanged(event);
+		};
+	this._onDatePickerLayoutCompleteInstance = 
+		function (event)
+		{
+			_self._onDatePickerLayoutComplete(event);
+		};	
+		
+	this._datePicker.addEventListener("changed", this._onDatePickerChangedInstance);	
+	this._datePicker.addEventListener("layoutcomplete", this._onDatePickerLayoutCompleteInstance);
+}
+
+//Inherit from ButtonElement
+DatePickerButtonElement.prototype = Object.create(ButtonElement.prototype);
+DatePickerButtonElement.prototype.constructor = DatePickerButtonElement;
+DatePickerButtonElement.base = ButtonElement;
+
+////////////Static///////////////////////////////
+
+DatePickerButtonElement.DefaultDateFormatLabelFunction = 
+	function (date)
+	{
+		var year = date.getFullYear().toString();
+		var month = (date.getMonth() + 1).toString();
+		var day = date.getDate().toString();
+		
+		while (month.length < 2)
+			month = "0" + month;
+		
+		while (day.length < 2)
+			day = "0" + day;
+		
+		return year + "-" + month + "-" + day;
+	};
+
+////////////Events///////////////////////////////
+
+/**
+ * @event changed ElementEvent
+ * 
+ * Dispatched when the date selection changes as a result of user input.
+ * 
+ * 
+ * @event opened ElementEvent
+ * 
+ * Dispatched when the DatePicker pop up is opened as a result of user input.
+ * 
+ * 
+ * @event closed ElementEvent
+ * 
+ * Dispatched when the DatePicker pop up is closed as a result of user input.
+ */
+
+
+/////////////Style Types/////////////////////////
+
+DatePickerButtonElement._StyleTypes = Object.create(null);
+
+/**
+ * @style DateFormatLabelFunction Function
+ * 
+ * A function that accepts a date and returns a string to be displayed as the date label.
+ * Signature: function (date) { return "" }
+ * The default label function returns returns international date format "YYYY-MM-DD".
+ */
+DatePickerButtonElement._StyleTypes.DateFormatLabelFunction = 			StyleableBase.EStyleType.NORMAL; 
+
+/**
+ * @style PopupDatePickerStyle StyleDefinition
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the pop up DatePicker element.
+ */
+DatePickerButtonElement._StyleTypes.PopupDatePickerStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
+
+/**
+ * @style ArrowButtonClass CanvasElement
+ * 
+ * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
+ * Note that DatePickerButton proxies its SkinState style to the arrow button so the arrow 
+ * will change states with the DatePickerButton.
+ */
+DatePickerButtonElement._StyleTypes.ArrowButtonClass = 					StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
+
+/**
+ * @style ArrowButtonStyle StyleDefinition
+ * 
+ * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
+ */
+DatePickerButtonElement._StyleTypes.ArrowButtonStyle = 					StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
+
+/**
+ * @style OpenCloseTweenDuration Number
+ * 
+ * Duration in milliseconds the open and close animation should run.
+ */
+DatePickerButtonElement._StyleTypes.OpenCloseTweenDuration = 			StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
+
+/**
+ * @style OpenCloseTweenEasingFunction Function
+ * 
+ * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
+ */
+DatePickerButtonElement._StyleTypes.OpenCloseTweenEasingFunction = 		StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
+
+/**
+ * @style PopupDatePickerDistance Number
+ * 
+ * Vertical distance in pixels to place the DatePicker pop up from the button.
+ * Defaults to -1 to collapse default 1 pixel borders.
+ */
+DatePickerButtonElement._StyleTypes.PopupDatePickerDistance = 			StyleableBase.EStyleType.NORMAL; 		
+
+
+////////////Default Styles////////////////////
+
+/////Arrow default skin styles//////
+DatePickerButtonElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
+DatePickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
+DatePickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
+
+DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
+DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
+DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
+DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
+DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 			"#888888");
+
+
+/////Arrow default style///////
+DatePickerButtonElement.ArrowButtonStyleDefault = new StyleDefinition();
+DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("SkinClass", 						DropdownArrowButtonSkinElement);
+
+//Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Button (unless you turn mouse back on)
+DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 					false);
+
+DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
+DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
+DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
+DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 				DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault);
+
+////DatePickerButton default style/////
+DatePickerButtonElement.StyleDefault = new StyleDefinition();
+DatePickerButtonElement.StyleDefault.setStyle("PaddingTop",								3);
+DatePickerButtonElement.StyleDefault.setStyle("PaddingBottom",							3);
+DatePickerButtonElement.StyleDefault.setStyle("PaddingRight",							4);
+DatePickerButtonElement.StyleDefault.setStyle("PaddingLeft",							4);
+DatePickerButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 	
+DatePickerButtonElement.StyleDefault.setStyle("DateFormatLabelFunction",				DatePickerButtonElement.DefaultDateFormatLabelFunction)		
+DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerStyle", 					null);
+DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerDistance", 				-1);			
+DatePickerButtonElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 									// Element constructor
+DatePickerButtonElement.StyleDefault.setStyle("ArrowButtonStyle", 						DatePickerButtonElement.ArrowButtonStyleDefault); 	// StyleDefinition
+DatePickerButtonElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				150); 												// number (milliseconds)
+DatePickerButtonElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 								// function (fraction) { return fraction}
+
+
+/////////Style Proxy Maps/////////////////////////////
+
+//Proxy map for styles we want to pass to the arrow button.
+DatePickerButtonElement._ChildButtonProxyMap = Object.create(null);
+DatePickerButtonElement._ChildButtonProxyMap.SkinState = 						true;
+DatePickerButtonElement._ChildButtonProxyMap._Arbitrary = 						true;
+
+
+/////////////Public///////////////////////////////
+
+/**
+ * @function setSelectedDate
+ * Sets the selected date of the DatePickerButton.
+ * 
+ * @param date Date
+ * Date to set as the selected date or null for no selection.
+ */		
+DatePickerButtonElement.prototype.setSelectedDate = 
+	function (date)
+	{
+		this._datePicker.setSelectedDate(date);
+		this._updateText();
+	};
+	
+/**
+ * @function getSelectedDate
+ * Gets the selected date of the DatePickerButton.
+ * 
+ * @returns Date
+ * Currently selected date or null if none selected.
+ */	
+DatePickerButtonElement.prototype.getSelectedDate = 
+	function ()
+	{
+		return this._datePicker.getSelectedDate();
+	};
+
+/**
+ * @function open
+ * Opens the pop up DatePicker.
+ * 
+ * @param animate boolean
+ * When true animates the appearance of the pop-up DatePicker.
+ */	
+DatePickerButtonElement.prototype.open = 
+	function (animate)
+	{
+		if (this._manager == null)
+			return;
+	
+		//Add the pop-up DatePicker. Wait for layoutcomplete to adjust positioning and size.
+		var added = this._addDatePickerPopup(); 
+		
+		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
+		
+		if (animate == false || tweenDuration <= 0)
+		{
+			if (this._openCloseTween != null) //Tween running (kill it)
+				this._endOpenCloseTween();
+			
+			this._updateTweenPosition(1);	//Immediately show
+		}
+		else
+		{
+			if (this._openCloseTween != null) //Tween running
+			{
+				if (this._openCloseTween.startVal == 1) //Reverse if closing, ignore if opening.
+					this._reverseTween();
+			}
+			else if (added == true) //Start tween if popup is new
+			{
+				this._openCloseTween = new Tween();
+				this._openCloseTween.startVal = 0; 
+				this._openCloseTween.endVal = 1;	
+				this._openCloseTween.duration = tweenDuration;
+				this._openCloseTween.startTime = Date.now();
+				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
+				
+				this.addEventListener("enterframe", this._onDateButtonEnterFrameInstance);
+			}
+		}
+	};
+	
+/**
+ * @function close
+ * Closes the pop up DatePicker.
+ * 
+ * @param animate boolean
+ * When true animates the disappearance of the pop-up DatePicker.
+ */		
+DatePickerButtonElement.prototype.close = 
+	function (animate)
+	{
+		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
+	
+		if (animate == false || tweenDuration <= 0)
+		{
+			this._endOpenCloseTween();		
+			this._removeDatePickerPopup();
+		}
+		else 
+		{
+			if (this._openCloseTween != null) //Tween running
+			{
+				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
+					this._reverseTween();
+			}
+			else if (this._datePickerPopup._parent != null) //Start tween if popup exists.
+			{
+				this._openCloseTween = new Tween();
+				this._openCloseTween.startVal = 1;
+				this._openCloseTween.endVal = 0;
+				this._openCloseTween.duration = tweenDuration;
+				this._openCloseTween.startTime = Date.now();
+				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
+				
+				this.addEventListener("enterframe", this._onDateButtonEnterFrameInstance);
+			}
+		}
+	};
+
+	
+/////////////Internal///////////////////////////////	
+	
+/**
+ * @function _removeDatePickerPopup
+ * Removes the pop up DatePicker and cleans up event listeners.
+ * 
+ * @returns bool
+ * Returns true if the pop up was removed, false if the pop up does not exist.
+ */	
+DatePickerButtonElement.prototype._removeDatePickerPopup = 
+	function ()
+	{
+		if (this._datePickerPopup._parent == null)
+			return false;
+	
+		this._datePickerPopup._manager.removeCaptureListener("wheel", this._onDateButtonManagerCaptureEventInstance);
+		this._datePickerPopup._manager.removeCaptureListener("mousedown", this._onDateButtonManagerCaptureEventInstance);
+		this._datePickerPopup._manager.removeEventListener("resize", this._onDateButtonManagerResizeEventInstance);
+		
+		this._datePickerPopup._manager.removeElement(this._datePickerPopup);
+		
+		return true;
+	};
+
+/**
+ * @function _addDatePickerPopup
+ * Adds the DatePicker pop up to CanvasManager and registers event listeners.
+ * 
+ * @returns bool
+ * Returns true if the pop up was added, false if the pop up already exists.
+ */		
+DatePickerButtonElement.prototype._addDatePickerPopup = 
+	function ()
+	{
+		if (this._datePickerPopup._parent != null)
+			return false;
+		
+		this._manager.addElement(this._datePickerPopup);
+		
+		this._datePickerPopup._manager.addCaptureListener("wheel", this._onDateButtonManagerCaptureEventInstance);
+		this._datePickerPopup._manager.addCaptureListener("mousedown", this._onDateButtonManagerCaptureEventInstance);
+		this._datePickerPopup._manager.addEventListener("resize", this._onDateButtonManagerResizeEventInstance);
+		
+		return true;
+	};
+	
+//@private	
+DatePickerButtonElement.prototype._onDateButtonEnterFrame = 
+	function (event)
+	{
+		var value = this._openCloseTween.getValue(Date.now());
+		
+		this._updateTweenPosition(value);
+		
+		if (value == this._openCloseTween.endVal)
+		{
+			if (value == 0)
+				this.close(false);
+			else
+				this._endOpenCloseTween();
+		}
+	};
+	
+//@private
+DatePickerButtonElement.prototype._endOpenCloseTween = 
+	function ()
+	{
+		if (this._openCloseTween != null)
+		{
+			this.removeEventListener("enterframe", this._onDateButtonEnterFrameInstance);
+			this._openCloseTween = null;
+		}
+	};
+	
+//@private	
+DatePickerButtonElement.prototype._updateTweenPosition = 
+	function (value)
+	{
+		this._datePickerPopup.setStyle("Alpha", value);
+	};
+	
+/**
+ * @function _onDateButtonManagerCaptureEvent
+ * Capture event handler for CanvasManager "wheel" and "mousedown". Used to close 
+ * the DatePicker when events happen outside the Button or pop up DatePicker. 
+ * Only active when pop up is open.
+ * 
+ * @param event ElementEvent
+ * ElementEvent to process.
+ */	
+DatePickerButtonElement.prototype._onDateButtonManagerCaptureEvent = 
+	function (event)
+	{
+		//Check if the DatePicker pop up is in this target's parent chain.
+		var target = event.getTarget();
+		
+		while (target != null)
+		{
+			//Yes, leave the DatePicker open
+			if (target == this._datePickerPopup || 
+				(event.getType() == "mousedown" && target == this))
+			{
+				return;
+			}
+			
+			target = target._parent;
+		}
+		
+		this.close(false);
+		
+		//Dispatch closed event.
+		if (this.hasEventListener("closed", null) == true)
+			this.dispatchEvent(new ElementEvent("closed", false));
+	};
+	
+/**
+ * @function _onDateButtonManagerResizeEvent
+ * Capture event handler for CanvasManager "resize". Used to close the DatePicker.
+ * Only active when DatePicker is open.
+ * 
+ * @param event DispatcherEvent
+ * DispatcherEvent to process.
+ */		
+DatePickerButtonElement.prototype._onDateButtonManagerResizeEvent = 
+	function (event)
+	{
+		this.close(false);
+		
+		//Dispatch closed event.
+		if (this.hasEventListener("closed", null) == true)
+			this.dispatchEvent(new ElementEvent("closed", false));
+	};
+
+/**
+ * @function _onDatePickerLayoutComplete
+ * Event handler for pop up DatePicker "layoutcomplete". 
+ * Updates the pop up size when content size is known and determines
+ * position of the pop up depending on available space.
+ * 
+ * @param event DispatcherEvent
+ * DispatcherEvent to process.
+ */		
+DatePickerButtonElement.prototype._onDatePickerLayoutComplete =
+	function (event)
+	{
+		this._layoutDatePickerPopup();
+	};
+	
+/**
+ * @function _onDatePickerChangedInstance
+ * Event handler for pop up DatePicker "changed" event. 
+ * Updates date label and re-dispatches "changed" event.
+ * 
+ * @param elementEvent ElementEvent
+ * ElementEvent to process.
+ */	
+DatePickerButtonElement.prototype._onDatePickerChanged = 
+	function (elementEvent)
+	{
+		if (this.hasEventListener("changed", null) == true)
+			this.dispatchEvent(new ElementEvent("changed", false));
+	
+		//Update label
+		this._updateText();
+		
+		//Dispatch closed event.
+		if (this.hasEventListener("closed", null) == true)
+			this.dispatchEvent(new ElementEvent("closed", false));
+		
+		this.close(true);
+	};
+
+//@override	
+DatePickerButtonElement.prototype._onCanvasElementRemoved = 
+	function (addedRemovedEvent)
+	{
+		DatePickerButtonElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
+		
+		this.close(false);
+	};	
+
+//@private	
+DatePickerButtonElement.prototype._reverseTween = 
+	function ()
+	{
+		var start = this._openCloseTween.startVal;
+		var end = this._openCloseTween.endVal;
+		var now = Date.now();
+		var elapsed = now - this._openCloseTween.startTime;
+		
+		this._openCloseTween.startVal = end;
+		this._openCloseTween.endVal = start;
+		this._openCloseTween.startTime = now + elapsed - this._openCloseTween.duration;		
+	};
+	
+//@override	
+DatePickerButtonElement.prototype._onButtonClick = 
+	function (elementMouseEvent)
+	{
+		//Just cancels event if we're disabled.
+		DatePickerButtonElement.base.prototype._onButtonClick.call(this, elementMouseEvent);
+		
+		if (elementMouseEvent.getIsCanceled() == true)
+			return;
+		
+		if (this._openCloseTween != null)
+		{
+			if (this._openCloseTween.startVal == 0) //Now opening
+			{
+				//Dispatch opened event.
+				if (this.hasEventListener("opened", null) == true)
+					this.dispatchEvent(new ElementEvent("opened", false));
+			}
+			else //Now closing
+			{
+				//Dispatch closed event.
+				if (this.hasEventListener("closed", null) == true)
+					this.dispatchEvent(new ElementEvent("closed", false));
+			}
+			
+			this._reverseTween();
+		}
+		else 
+		{
+			if (this._datePickerPopup._parent == null)
+			{
+				//Dispatch opened event.
+				if (this.hasEventListener("opened", null) == true)
+					this.dispatchEvent(new ElementEvent("opened", false));
+				
+				this.open(true);
+			}
+			else
+			{
+				//Dispatch closed event.
+				if (this.hasEventListener("closed", null) == true)
+					this.dispatchEvent(new ElementEvent("closed", false));
+				
+				this.close(true);
+			}
+		}
+	};	
+
+/**
+ * @function _updateText
+ * Updates the date label text via the styled DateFormatLabelFunction
+ */
+DatePickerButtonElement.prototype._updateText = 
+	function ()
+	{
+		var labelFunction = this.getStyle("DateFormatLabelFunction");
+		
+		if (this._datePicker.getSelectedDate() != null && labelFunction != null)
+			text = labelFunction(this._datePicker.getSelectedDate());
+		else
+			text = this.getStyle("Text");
+		
+		this._setLabelText(text);
+	};
+	
+/**
+ * @function _createArrowButton
+ * Generates and sets up the arrow element instance per styling.
+ * 
+ * @returns CanvasElement
+ * New arrow element instance.
+ */		
+DatePickerButtonElement.prototype._createArrowButton = 
+	function (arrowClass)
+	{
+		var newIcon = new (arrowClass)();
+		newIcon._setStyleProxy(new StyleProxy(this, DatePickerButtonElement._ChildButtonProxyMap));
+		return newIcon;
+	};
+	
+//@private	
+DatePickerButtonElement.prototype._updateArrowButton = 
+	function ()
+	{
+		var arrowClass = this.getStyle("ArrowButtonClass");
+		
+		if (arrowClass == null)
+		{
+			if (this._arrowButton != null)
+			{
+				this._removeChild(this._arrowButton);
+				this._arrowButton = null;
+			}
+		}
+		else
+		{
+			if (this._arrowButton == null)
+			{
+				this._arrowButton = this._createArrowButton(arrowClass);
+				this._addChild(this._arrowButton);
+			}
+			else if (this._arrowButton.constructor != arrowClass)
+			{ //Class changed
+				this._removeChild(this._arrowButton);
+				this._arrowButton = this._createArrowButton(arrowClass);
+				this._addChild(this._arrowButton);
+			}
+			
+			this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
+		}
+	};
+
+//@override
+DatePickerButtonElement.prototype._doStylesUpdated =
+	function (stylesMap)
+	{
+		DatePickerButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
+		{
+			this._updateArrowButton();
+			this._invalidateMeasure();
+			this._invalidateLayout();
+		}
+		
+		if ("PopupDatePickerStyle" in stylesMap)
+		{
+			this._applySubStylesToElement("PopupDatePickerStyle", this._datePicker);
+			this._invalidateLayout();
+		}
+		
+		if ("PopupDatePickerDistance" in stylesMap)
+			this._invalidateLayout();
+		
+		if ("DateFormatLabelFunction" in stylesMap)
+			this._updateText();
+	};
+	
+//@override
+DatePickerButtonElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		var fontString = this._getFontString();
+			
+		var dateTextWidth = 20;
+		var labelFunction = this.getStyle("DateFormatLabelFunction");
+		if (labelFunction != null)
+			dateTextWidth += CanvasElement._measureText(labelFunction(new Date()), fontString);
+		
+		var textLabelWidth = 20;
+		var textLabel = this.getStyle("Text");
+		if (textLabel != null)
+			textLabelWidth += CanvasElement._measureText(textLabel, fontString);
+		
+		var textWidth = Math.max(dateTextWidth, textLabelWidth);		
+		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
+		
+		var arrowWidth = null;
+		var arrowHeight = null;
+		
+		if (this._arrowButton != null)
+		{
+			arrowWidth = this._arrowButton.getStyle("Width");
+			arrowHeight = this._arrowButton.getStyle("Height");
+		}
+		
+		if (arrowHeight == null)
+			arrowHeight = textHeight + padHeight;
+		if (arrowWidth == null)
+			arrowWidth = Math.round(arrowHeight * .85); 
+		
+		var h = Math.ceil(Math.max(arrowHeight, textHeight + padHeight));
+		var w = Math.ceil(padWidth + textWidth + arrowWidth);
+		
+		this._setMeasuredSize(w, h);
+	};	
+	
+/**
+ * @function _layoutDatePickerPopup
+ * Sizes and positions the DatePicker pop up.
+ */	
+DatePickerButtonElement.prototype._layoutDatePickerPopup = 
+	function ()
+	{
+		//DatePicker not displayed - bail.
+		if (this._datePickerPopup._parent == null || 
+			this._datePicker._layoutInvalid == true)
+		{
+			return;
+		}
+	
+		var managerMetrics = this.getMetrics(this._manager);
+		
+		var pickerDistance = this.getStyle("PopupDatePickerDistance");
+		
+		var pickerWidth = this._datePicker.getStyle("Width");
+		if (pickerWidth == null)
+			pickerWidth = this._datePicker._measuredWidth;
+		
+		var pickerHeight = this._datePicker.getStyle("Height");
+		if (pickerHeight == null)
+			pickerHeight = this._datePicker._measuredHeight;
+		
+		//Figure out the available space around the button that we have to place the pop up
+		var availableBottom = this._manager._height - (managerMetrics._y + managerMetrics._height) - pickerDistance;
+		var availableTop = managerMetrics._y - pickerDistance;
+		var availableRight = this._manager._width - managerMetrics._x;
+		var availableLeft = managerMetrics._x + managerMetrics._width;
+		
+		var pickerX = 0;
+		var pickerY = 0;
+		
+		//Open bottom
+		if (availableBottom > pickerHeight || pickerHeight > availableTop)
+			pickerY = managerMetrics._y + managerMetrics._height + pickerDistance;
+		else //Open top
+			pickerY = managerMetrics._y - pickerHeight - pickerDistance;
+
+		//Left aligned
+		if (availableRight > pickerWidth || pickerWidth < availableRight)
+			pickerX = managerMetrics._x;
+		else //Right aligned
+			pickerX = managerMetrics._x + managerMetrics._width - pickerWidth;
+		
+		this._datePickerPopup.setStyle("X", pickerX);
+		this._datePickerPopup.setStyle("Y", pickerY);
+		this._datePickerPopup.setStyle("Width", pickerWidth);
+		this._datePickerPopup.setStyle("Height", pickerHeight);
+		
+		this._datePicker._setActualPosition(0, 0);
+		this._datePicker._setActualSize(pickerWidth, pickerHeight);
+	};
+	
+//@override	
+DatePickerButtonElement.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		DatePickerButtonElement.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		this._layoutDatePickerPopup();
+		
+		var x = paddingMetrics.getX();
+		var y = paddingMetrics.getY();
+		var w = paddingMetrics.getWidth();
+		var h = paddingMetrics.getHeight();
+		
+		var arrowWidth = 0;
+		var arrowHeight = 0;
+		
+		if (this._arrowButton != null)
+		{
+			var x = paddingMetrics.getX();
+			var y = paddingMetrics.getY();
+			var w = paddingMetrics.getWidth();
+			var h = paddingMetrics.getHeight();
+			
+			var iconWidth = this._arrowButton.getStyle("Width");
+			var iconHeight = this._arrowButton.getStyle("Height");
+			
+			if (iconHeight == null)
+				iconHeight = this._height;
+			if (iconWidth == null)
+				iconWidth = this._height * .85;
+			
+			if (this._width < iconWidth)
+			{
+				this._arrowButton._setActualSize(0, 0);
+				this._labelElement._setActualSize(0, 0);
+			}
+			else
+			{
+				if (this._labelElement != null)
+				{
+					this._labelElement._setActualPosition(x, y);
+					this._labelElement._setActualSize(w - iconWidth, h);
+				}
+					
+				this._arrowButton._setActualPosition(this._width - iconWidth, y + (h / 2) - (iconHeight / 2));
+				this._arrowButton._setActualSize(iconWidth, iconHeight);
+			}
+		}
+	};
+	
+	
+
+
+/**
  * @depends ButtonElement.js
  */
 
@@ -28307,12 +30692,15 @@ DataGridElement.prototype.addColumnDefinition =
  * 
  * @param index int
  * The index to insert the column definition.
+ * 
+ * @returns DataGridColumnDefinition
+ * The added DataGridColumnDefinition or null if could not be added.
  */	
 DataGridElement.prototype.addColumnDefinitionAt = 
 	function (columnDefinition, index)
 	{
 		if (!(columnDefinition instanceof DataGridColumnDefinition))
-			throw "Invalid DataGridColumnDefinition";
+			return null;
 		
 		this._gridColumns.splice(index, 0, columnDefinition);
 		this._columnPercents.splice(index, 0, columnDefinition.getStyle("PercentSize"));
@@ -30017,7 +32405,6 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 		var managerMetrics = this.getMetrics(this._manager);
 		
 		var colorPickerDistance = this.getStyle("PopupColorPickerDistance");
-		var colorPickerDirection = "br";
 		
 		var colorPickerWidth = this._colorPicker.getStyle("Width");
 		if (colorPickerWidth == null)
