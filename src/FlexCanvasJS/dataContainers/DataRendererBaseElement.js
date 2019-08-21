@@ -38,8 +38,15 @@ function DataRendererBaseElement()
 				_self._onDataRendererRollout(elementEvent);
 		};
 		
+	this._onDataRendererBaseClickInstance = 
+		function (event)
+		{
+			_self._onDataRendererBaseClick(event);
+		};
+		
 	this.addEventListener("rollover", this._onDataRendererBaseEventInstance);
 	this.addEventListener("rollout", this._onDataRendererBaseEventInstance);
+	this.addEventListener("click", this._onButtonEventInstance);
 }
 	
 //Inherit from SkinnableElement
@@ -176,6 +183,21 @@ DataRendererBaseElement.StyleDefault.setStyle("DisabledSkinStyle", 		null);					
 
 
 /////////////Internal///////////////////////////
+
+/**
+ * @function _onDataRendererBaseClick
+ * Event handler for "click" event. Cancels the event if the DataRendererBase is disabled.
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */			
+DataRendererBaseElement.prototype._onDataRendererBaseClick = 
+	function (elementMouseEvent)
+	{
+		//Implementor will not expect a click event when DataRendererBase is disabled. 
+		if (this.getStyle("Enabled") == false)
+			elementMouseEvent.cancelEvent();
+	};
 
 /**
  * @function _updateState

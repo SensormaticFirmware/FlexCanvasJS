@@ -867,21 +867,19 @@ DataListElement.prototype._onDataListRendererClick =
 		
 		var dispatchChanged = false;
 		
-		//Only allow selection if selectable and enabled
-		var elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable");
-		if (elementIsSelectable == true)
-			elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Enabled");
+		var selectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable");
 		
 		//Update selected index
-		if (this.getStyle("Selectable") == true && (elementIsSelectable === undefined || elementIsSelectable == true))
+		if (this.getStyle("Selectable") == true && 
+			(selectable === undefined || selectable == true))
 		{
 			if (this.setSelectedIndex(itemIndex) == true)
 				dispatchChanged = true;
 		}
 		
-		//Dispatch events
 		this.dispatchEvent(new ElementListItemClickEvent(itemData, itemIndex));
 		
+		//Only dispatch changed if selected index changed
 		if (dispatchChanged == true)
 			this.dispatchEvent(new ElementEvent("changed", false));
 	};

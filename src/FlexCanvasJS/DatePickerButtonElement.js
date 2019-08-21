@@ -1,9 +1,6 @@
 
 /**
- * @depends CanvasElement.js
- * @depends ButtonElement.js
- * @depends DropdownArrowButtonSkinElement.js
- * @depends Tween.js
+ * @depends DropdownBaseElement.js
  */
 
 //////////////////////////////////////////////////////////////
@@ -11,7 +8,7 @@
 
 /**
  * @class DatePickerButtonElement
- * @inherits ButtonElement
+ * @inherits DropdownBaseElement
  * 
  * DatePickerButtonElement is a compound button that creates a pop-up DatePicker
  * where the user can select a date which is then displayed on the button. 
@@ -31,33 +28,16 @@ function DatePickerButtonElement()
 {
 	DatePickerButtonElement.base.prototype.constructor.call(this);
 
-	this._arrowButton = null;
+	this._datePickerPopup = null;
+	this._selectedDate = null;
+
 	
-	this._datePickerPopup = new CanvasElement();
-	this._datePicker = new DatePickerElement();
-	this._datePickerPopup._addChild(this._datePicker);
-	
-	this._openCloseTween = null;
+	////////////////
 	
 	var _self = this;
 	
 	//Private event listeners, need an instance for each DatePickerButton, proxy to prototype.
 		
-	this._onDateButtonManagerCaptureEventInstance = 
-		function (event)
-		{
-			_self._onDateButtonManagerCaptureEvent(event);
-		};
-	this._onDateButtonManagerResizeEventInstance = 
-		function (event)
-		{
-			_self._onDateButtonManagerResizeEvent(event);
-		};
-	this._onDateButtonEnterFrameInstance = 
-		function (event)
-		{
-			_self._onDateButtonEnterFrame(event);
-		};
 	this._onDatePickerChangedInstance = 
 		function (event)
 		{
@@ -68,15 +48,13 @@ function DatePickerButtonElement()
 		{
 			_self._onDatePickerLayoutComplete(event);
 		};	
-		
-	this._datePicker.addEventListener("changed", this._onDatePickerChangedInstance);	
-	this._datePicker.addEventListener("layoutcomplete", this._onDatePickerLayoutCompleteInstance);
 }
 
 //Inherit from ButtonElement
-DatePickerButtonElement.prototype = Object.create(ButtonElement.prototype);
+DatePickerButtonElement.prototype = Object.create(DropdownBaseElement.prototype);
 DatePickerButtonElement.prototype.constructor = DatePickerButtonElement;
-DatePickerButtonElement.base = ButtonElement;
+DatePickerButtonElement.base = DropdownBaseElement;
+
 
 ////////////Static///////////////////////////////
 
@@ -96,22 +74,12 @@ DatePickerButtonElement.DefaultDateFormatLabelFunction =
 		return year + "-" + month + "-" + day;
 	};
 
+	
 ////////////Events///////////////////////////////
 
 /**
  * @event changed ElementEvent
- * 
  * Dispatched when the date selection changes as a result of user input.
- * 
- * 
- * @event opened ElementEvent
- * 
- * Dispatched when the DatePicker pop up is opened as a result of user input.
- * 
- * 
- * @event closed ElementEvent
- * 
- * Dispatched when the DatePicker pop up is closed as a result of user input.
  */
 
 
@@ -136,36 +104,6 @@ DatePickerButtonElement._StyleTypes.DateFormatLabelFunction = 			StyleableBase.E
 DatePickerButtonElement._StyleTypes.PopupDatePickerStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
 /**
- * @style ArrowButtonClass CanvasElement
- * 
- * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
- * Note that DatePickerButton proxies its SkinState style to the arrow button so the arrow 
- * will change states with the DatePickerButton.
- */
-DatePickerButtonElement._StyleTypes.ArrowButtonClass = 					StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
-
-/**
- * @style ArrowButtonStyle StyleDefinition
- * 
- * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
- */
-DatePickerButtonElement._StyleTypes.ArrowButtonStyle = 					StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
-
-/**
- * @style OpenCloseTweenDuration Number
- * 
- * Duration in milliseconds the open and close animation should run.
- */
-DatePickerButtonElement._StyleTypes.OpenCloseTweenDuration = 			StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
-
-/**
- * @style OpenCloseTweenEasingFunction Function
- * 
- * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
- */
-DatePickerButtonElement._StyleTypes.OpenCloseTweenEasingFunction = 		StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
-
-/**
  * @style PopupDatePickerDistance Number
  * 
  * Vertical distance in pixels to place the DatePicker pop up from the button.
@@ -176,52 +114,11 @@ DatePickerButtonElement._StyleTypes.PopupDatePickerDistance = 			StyleableBase.E
 
 ////////////Default Styles////////////////////
 
-/////Arrow default skin styles//////
-DatePickerButtonElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
-DatePickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
-DatePickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
-
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 			"#888888");
-
-
-/////Arrow default style///////
-DatePickerButtonElement.ArrowButtonStyleDefault = new StyleDefinition();
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("SkinClass", 						DropdownArrowButtonSkinElement);
-
-//Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Button (unless you turn mouse back on)
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 					false);
-
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 				DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault);
-
 ////DatePickerButton default style/////
 DatePickerButtonElement.StyleDefault = new StyleDefinition();
-DatePickerButtonElement.StyleDefault.setStyle("PaddingTop",								3);
-DatePickerButtonElement.StyleDefault.setStyle("PaddingBottom",							3);
-DatePickerButtonElement.StyleDefault.setStyle("PaddingRight",							4);
-DatePickerButtonElement.StyleDefault.setStyle("PaddingLeft",							4);
-DatePickerButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 	
 DatePickerButtonElement.StyleDefault.setStyle("DateFormatLabelFunction",				DatePickerButtonElement.DefaultDateFormatLabelFunction)		
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerStyle", 					null);
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerDistance", 				-1);			
-DatePickerButtonElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 									// Element constructor
-DatePickerButtonElement.StyleDefault.setStyle("ArrowButtonStyle", 						DatePickerButtonElement.ArrowButtonStyleDefault); 	// StyleDefinition
-DatePickerButtonElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				150); 												// number (milliseconds)
-DatePickerButtonElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 								// function (fraction) { return fraction}
-
-
-/////////Style Proxy Maps/////////////////////////////
-
-//Proxy map for styles we want to pass to the arrow button.
-DatePickerButtonElement._ChildButtonProxyMap = Object.create(null);
-DatePickerButtonElement._ChildButtonProxyMap.SkinState = 						true;
-DatePickerButtonElement._ChildButtonProxyMap._Arbitrary = 						true;
 
 
 /////////////Public///////////////////////////////
@@ -236,7 +133,11 @@ DatePickerButtonElement._ChildButtonProxyMap._Arbitrary = 						true;
 DatePickerButtonElement.prototype.setSelectedDate = 
 	function (date)
 	{
-		this._datePicker.setSelectedDate(date);
+		this._selectedDate = date;
+	
+		if (this._datePickerPopup != null)
+			this._datePickerPopup.setSelectedDate(date);
+		
 		this._updateText();
 	};
 	
@@ -250,227 +151,34 @@ DatePickerButtonElement.prototype.setSelectedDate =
 DatePickerButtonElement.prototype.getSelectedDate = 
 	function ()
 	{
-		return this._datePicker.getSelectedDate();
-	};
-
-/**
- * @function open
- * Opens the pop up DatePicker.
- * 
- * @param animate boolean
- * When true animates the appearance of the pop-up DatePicker.
- */	
-DatePickerButtonElement.prototype.open = 
-	function (animate)
-	{
-		if (this._manager == null)
-			return;
-	
-		//Add the pop-up DatePicker. Wait for layoutcomplete to adjust positioning and size.
-		var added = this._addDatePickerPopup(); 
-		
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-		
-		if (animate == false || tweenDuration <= 0)
-		{
-			if (this._openCloseTween != null) //Tween running (kill it)
-				this._endOpenCloseTween();
-			
-			this._updateTweenPosition(1);	//Immediately show
-		}
-		else
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal == 1) //Reverse if closing, ignore if opening.
-					this._reverseTween();
-			}
-			else if (added == true) //Start tween if popup is new
-			{
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = 0; 
-				this._openCloseTween.endVal = 1;	
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onDateButtonEnterFrameInstance);
-			}
-		}
-	};
-	
-/**
- * @function close
- * Closes the pop up DatePicker.
- * 
- * @param animate boolean
- * When true animates the disappearance of the pop-up DatePicker.
- */		
-DatePickerButtonElement.prototype.close = 
-	function (animate)
-	{
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-	
-		if (animate == false || tweenDuration <= 0)
-		{
-			this._endOpenCloseTween();		
-			this._removeDatePickerPopup();
-		}
-		else 
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
-					this._reverseTween();
-			}
-			else if (this._datePickerPopup._parent != null) //Start tween if popup exists.
-			{
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = 1;
-				this._openCloseTween.endVal = 0;
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onDateButtonEnterFrameInstance);
-			}
-		}
+		return this._selectedDate;
 	};
 
 	
 /////////////Internal///////////////////////////////	
 	
-/**
- * @function _removeDatePickerPopup
- * Removes the pop up DatePicker and cleans up event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was removed, false if the pop up does not exist.
- */	
-DatePickerButtonElement.prototype._removeDatePickerPopup = 
+//@override
+DatePickerButtonElement.prototype._createPopup = 
 	function ()
 	{
-		if (this._datePickerPopup._parent == null)
-			return false;
-	
-		this._datePickerPopup._manager.removeCaptureListener("wheel", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.removeCaptureListener("mousedown", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.removeEventListener("resize", this._onDateButtonManagerResizeEventInstance);
+		this._datePickerPopup = new DatePickerElement();
 		
-		this._datePickerPopup._manager.removeElement(this._datePickerPopup);
+		this._datePickerPopup.addEventListener("changed", this._onDatePickerChangedInstance);	
+		this._datePickerPopup.addEventListener("layoutcomplete", this._onDatePickerLayoutCompleteInstance);
 		
-		return true;
-	};
+		this._applySubStylesToElement("PopupDatePickerStyle", this._datePickerPopup);
+		this._datePickerPopup.setSelectedDate(this._selectedDate);
+		
+		return this._datePickerPopup;
+	};	
 
-/**
- * @function _addDatePickerPopup
- * Adds the DatePicker pop up to CanvasManager and registers event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was added, false if the pop up already exists.
- */		
-DatePickerButtonElement.prototype._addDatePickerPopup = 
-	function ()
-	{
-		if (this._datePickerPopup._parent != null)
-			return false;
-		
-		this._manager.addElement(this._datePickerPopup);
-		
-		this._datePickerPopup._manager.addCaptureListener("wheel", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.addCaptureListener("mousedown", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.addEventListener("resize", this._onDateButtonManagerResizeEventInstance);
-		
-		return true;
-	};
-	
-//@private	
-DatePickerButtonElement.prototype._onDateButtonEnterFrame = 
-	function (event)
-	{
-		var value = this._openCloseTween.getValue(Date.now());
-		
-		this._updateTweenPosition(value);
-		
-		if (value == this._openCloseTween.endVal)
-		{
-			if (value == 0)
-				this.close(false);
-			else
-				this._endOpenCloseTween();
-		}
-	};
-	
-//@private
-DatePickerButtonElement.prototype._endOpenCloseTween = 
-	function ()
-	{
-		if (this._openCloseTween != null)
-		{
-			this.removeEventListener("enterframe", this._onDateButtonEnterFrameInstance);
-			this._openCloseTween = null;
-		}
-	};
-	
-//@private	
+//@override	
 DatePickerButtonElement.prototype._updateTweenPosition = 
 	function (value)
 	{
 		this._datePickerPopup.setStyle("Alpha", value);
-	};
+	};	
 	
-/**
- * @function _onDateButtonManagerCaptureEvent
- * Capture event handler for CanvasManager "wheel" and "mousedown". Used to close 
- * the DatePicker when events happen outside the Button or pop up DatePicker. 
- * Only active when pop up is open.
- * 
- * @param event ElementEvent
- * ElementEvent to process.
- */	
-DatePickerButtonElement.prototype._onDateButtonManagerCaptureEvent = 
-	function (event)
-	{
-		//Check if the DatePicker pop up is in this target's parent chain.
-		var target = event.getTarget();
-		
-		while (target != null)
-		{
-			//Yes, leave the DatePicker open
-			if (target == this._datePickerPopup || 
-				(event.getType() == "mousedown" && target == this))
-			{
-				return;
-			}
-			
-			target = target._parent;
-		}
-		
-		this.close(false);
-		
-		//Dispatch closed event.
-		if (this.hasEventListener("closed", null) == true)
-			this.dispatchEvent(new ElementEvent("closed", false));
-	};
-	
-/**
- * @function _onDateButtonManagerResizeEvent
- * Capture event handler for CanvasManager "resize". Used to close the DatePicker.
- * Only active when DatePicker is open.
- * 
- * @param event DispatcherEvent
- * DispatcherEvent to process.
- */		
-DatePickerButtonElement.prototype._onDateButtonManagerResizeEvent = 
-	function (event)
-	{
-		this.close(false);
-		
-		//Dispatch closed event.
-		if (this.hasEventListener("closed", null) == true)
-			this.dispatchEvent(new ElementEvent("closed", false));
-	};
-
 /**
  * @function _onDatePickerLayoutComplete
  * Event handler for pop up DatePicker "layoutcomplete". 
@@ -497,89 +205,16 @@ DatePickerButtonElement.prototype._onDatePickerLayoutComplete =
 DatePickerButtonElement.prototype._onDatePickerChanged = 
 	function (elementEvent)
 	{
+		this.setSelectedDate(this._datePickerPopup.getSelectedDate());
+		
 		if (this.hasEventListener("changed", null) == true)
 			this.dispatchEvent(new ElementEvent("changed", false));
 	
-		//Update label
-		this._updateText();
+		this.close(true);
 		
-		//Dispatch closed event.
 		if (this.hasEventListener("closed", null) == true)
 			this.dispatchEvent(new ElementEvent("closed", false));
-		
-		this.close(true);
 	};
-
-//@override	
-DatePickerButtonElement.prototype._onCanvasElementRemoved = 
-	function (addedRemovedEvent)
-	{
-		DatePickerButtonElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
-		
-		this.close(false);
-	};	
-
-//@private	
-DatePickerButtonElement.prototype._reverseTween = 
-	function ()
-	{
-		var start = this._openCloseTween.startVal;
-		var end = this._openCloseTween.endVal;
-		var now = Date.now();
-		var elapsed = now - this._openCloseTween.startTime;
-		
-		this._openCloseTween.startVal = end;
-		this._openCloseTween.endVal = start;
-		this._openCloseTween.startTime = now + elapsed - this._openCloseTween.duration;		
-	};
-	
-//@override	
-DatePickerButtonElement.prototype._onButtonClick = 
-	function (elementMouseEvent)
-	{
-		//Just cancels event if we're disabled.
-		DatePickerButtonElement.base.prototype._onButtonClick.call(this, elementMouseEvent);
-		
-		if (elementMouseEvent.getIsCanceled() == true)
-			return;
-		
-		if (this._openCloseTween != null)
-		{
-			if (this._openCloseTween.startVal == 0) //Now opening
-			{
-				//Dispatch opened event.
-				if (this.hasEventListener("opened", null) == true)
-					this.dispatchEvent(new ElementEvent("opened", false));
-			}
-			else //Now closing
-			{
-				//Dispatch closed event.
-				if (this.hasEventListener("closed", null) == true)
-					this.dispatchEvent(new ElementEvent("closed", false));
-			}
-			
-			this._reverseTween();
-		}
-		else 
-		{
-			if (this._datePickerPopup._parent == null)
-			{
-				//Dispatch opened event.
-				if (this.hasEventListener("opened", null) == true)
-					this.dispatchEvent(new ElementEvent("opened", false));
-				
-				this.open(true);
-			}
-			else
-			{
-				//Dispatch closed event.
-				if (this.hasEventListener("closed", null) == true)
-					this.dispatchEvent(new ElementEvent("closed", false));
-				
-				this.close(true);
-			}
-		}
-	};	
 
 /**
  * @function _updateText
@@ -590,59 +225,12 @@ DatePickerButtonElement.prototype._updateText =
 	{
 		var labelFunction = this.getStyle("DateFormatLabelFunction");
 		
-		if (this._datePicker.getSelectedDate() != null && labelFunction != null)
-			text = labelFunction(this._datePicker.getSelectedDate());
+		if (this._selectedDate != null && labelFunction != null)
+			text = labelFunction(this._selectedDate);
 		else
 			text = this.getStyle("Text");
 		
 		this._setLabelText(text);
-	};
-	
-/**
- * @function _createArrowButton
- * Generates and sets up the arrow element instance per styling.
- * 
- * @returns CanvasElement
- * New arrow element instance.
- */		
-DatePickerButtonElement.prototype._createArrowButton = 
-	function (arrowClass)
-	{
-		var newIcon = new (arrowClass)();
-		newIcon._setStyleProxy(new StyleProxy(this, DatePickerButtonElement._ChildButtonProxyMap));
-		return newIcon;
-	};
-	
-//@private	
-DatePickerButtonElement.prototype._updateArrowButton = 
-	function ()
-	{
-		var arrowClass = this.getStyle("ArrowButtonClass");
-		
-		if (arrowClass == null)
-		{
-			if (this._arrowButton != null)
-			{
-				this._removeChild(this._arrowButton);
-				this._arrowButton = null;
-			}
-		}
-		else
-		{
-			if (this._arrowButton == null)
-			{
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			else if (this._arrowButton.constructor != arrowClass)
-			{ //Class changed
-				this._removeChild(this._arrowButton);
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			
-			this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
-		}
 	};
 
 //@override
@@ -651,16 +239,9 @@ DatePickerButtonElement.prototype._doStylesUpdated =
 	{
 		DatePickerButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
+		if ("PopupDatePickerStyle" in stylesMap && this._datePickerPopup != null)
 		{
-			this._updateArrowButton();
-			this._invalidateMeasure();
-			this._invalidateLayout();
-		}
-		
-		if ("PopupDatePickerStyle" in stylesMap)
-		{
-			this._applySubStylesToElement("PopupDatePickerStyle", this._datePicker);
+			this._applySubStylesToElement("PopupDatePickerStyle", this._datePickerPopup);
 			this._invalidateLayout();
 		}
 		
@@ -680,12 +261,12 @@ DatePickerButtonElement.prototype._doMeasure =
 		var dateTextWidth = 20;
 		var labelFunction = this.getStyle("DateFormatLabelFunction");
 		if (labelFunction != null)
-			dateTextWidth += CanvasElement._measureText(labelFunction(new Date()), fontString);
+			dateTextWidth = CanvasElement._measureText(labelFunction(new Date()), fontString);
 		
 		var textLabelWidth = 20;
 		var textLabel = this.getStyle("Text");
 		if (textLabel != null)
-			textLabelWidth += CanvasElement._measureText(textLabel, fontString);
+			textLabelWidth = CanvasElement._measureText(textLabel, fontString);
 		
 		var textWidth = Math.max(dateTextWidth, textLabelWidth);		
 		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
@@ -718,8 +299,9 @@ DatePickerButtonElement.prototype._layoutDatePickerPopup =
 	function ()
 	{
 		//DatePicker not displayed - bail.
-		if (this._datePickerPopup._parent == null || 
-			this._datePicker._layoutInvalid == true)
+		if (this._datePickerPopup == null ||
+			this._datePickerPopup._parent == null || 
+			this._datePickerPopup._layoutInvalid == true)
 		{
 			return;
 		}
@@ -728,13 +310,13 @@ DatePickerButtonElement.prototype._layoutDatePickerPopup =
 		
 		var pickerDistance = this.getStyle("PopupDatePickerDistance");
 		
-		var pickerWidth = this._datePicker.getStyle("Width");
+		var pickerWidth = this._datePickerPopup.getStyle("Width");
 		if (pickerWidth == null)
-			pickerWidth = this._datePicker._measuredWidth;
+			pickerWidth = this._datePickerPopup._measuredWidth;
 		
-		var pickerHeight = this._datePicker.getStyle("Height");
+		var pickerHeight = this._datePickerPopup.getStyle("Height");
 		if (pickerHeight == null)
-			pickerHeight = this._datePicker._measuredHeight;
+			pickerHeight = this._datePickerPopup._measuredHeight;
 		
 		//Figure out the available space around the button that we have to place the pop up
 		var availableBottom = this._manager._height - (managerMetrics._y + managerMetrics._height) - pickerDistance;
@@ -761,9 +343,6 @@ DatePickerButtonElement.prototype._layoutDatePickerPopup =
 		this._datePickerPopup.setStyle("Y", pickerY);
 		this._datePickerPopup.setStyle("Width", pickerWidth);
 		this._datePickerPopup.setStyle("Height", pickerHeight);
-		
-		this._datePicker._setActualPosition(0, 0);
-		this._datePicker._setActualSize(pickerWidth, pickerHeight);
 	};
 	
 //@override	

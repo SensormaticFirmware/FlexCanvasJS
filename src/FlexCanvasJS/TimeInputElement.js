@@ -724,9 +724,17 @@ TimeInputElement.prototype._updateTextColors =
 		this._textFieldHour.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldHour.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
+		this._labelColon1.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelColon1.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelColon1.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
 		this._textFieldMinute.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldMinute.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldMinute.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
+		this._labelColon2.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelColon2.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelColon2.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
 		this._textFieldSecond.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldSecond.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));

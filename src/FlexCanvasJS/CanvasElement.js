@@ -144,6 +144,7 @@ function CanvasElement()
 	 */
 	this._parent = null; 	
 	
+	
 	this._children = [];
 	
 	this._stylesInvalid = true;
@@ -285,7 +286,15 @@ function CanvasElement()
 	 */
 	//this._listSelected = any;
 	
-	////////////////////////////////
+	
+	///////Owner/////////////
+	
+	/**
+	 * @member _owner CanvasElement
+	 * Read only - This elements owner element. This is set by elements that pop up other elements.
+	 * Such as DropdownBase sets this on the pop up element. 
+	 */
+	//this._owner = null; 
 }
 
 //Inherit from StyleableBase

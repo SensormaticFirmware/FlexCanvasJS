@@ -406,13 +406,25 @@ IpInputElement.prototype._updateTextColors =
 		this._textFieldIp1.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldIp1.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
+		this._labelFieldDot1.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelFieldDot1.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelFieldDot1.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
 		this._textFieldIp2.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldIp2.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldIp2.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
+		this._labelFieldDot2.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelFieldDot2.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelFieldDot2.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
 		this._textFieldIp3.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldIp3.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldIp3.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
+		this._labelFieldDot3.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelFieldDot3.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelFieldDot3.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
 		this._textFieldIp4.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldIp4.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
