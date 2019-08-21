@@ -99,6 +99,10 @@ function TimeInputElement()
 	this._textFieldMinute.addEventListener("focusout", this._onTimeInputTextFieldFocusOutInstance);
 	this._textFieldSecond.addEventListener("focusout", this._onTimeInputTextFieldFocusOutInstance);
 	
+	this._textFieldHour.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+	this._textFieldMinute.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+	this._textFieldSecond.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
+	
 	this.addEventListener("enterframe", this._onTimeInputEnterFrameInstance);
 	
 	/////
@@ -675,7 +679,7 @@ TimeInputElement.prototype._onTextInputFocusOut =
 
 /**
  * @function _onTimeInputTextFieldMouseDown
- * Event handler for the internal TextField's "mousedown" event. Only active when TimeInput is enabled. 
+ * Event handler for the internal TextField's "mousedown" event.
  * 
  * @param mouseEvent ElementMouseEvent
  * ElementMouseEvent to process.
@@ -790,15 +794,6 @@ TimeInputElement.prototype._doStylesUpdated =
 				
 				if (this._textFieldSecond.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
 					this._textFieldSecond.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
-				
-				if (this._textFieldHour.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == false)
-					this._textFieldHour.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldMinute.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == false)
-					this._textFieldMinute.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldSecond.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == false)
-					this._textFieldSecond.addEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
 			}
 			else
 			{
@@ -816,15 +811,6 @@ TimeInputElement.prototype._doStylesUpdated =
 				
 				if (this._textFieldSecond.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
 					this._textFieldSecond.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
-				
-				if (this._textFieldHour.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == true)
-					this._textFieldHour.removeEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldMinute.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == true)
-					this._textFieldMinute.removeEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldSecond.hasEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance) == true)
-					this._textFieldSecond.removeEventListener("mousedown", this._onTimeInputTextFieldMouseDownInstance);
 			}
 		}
 		

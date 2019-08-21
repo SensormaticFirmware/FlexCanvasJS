@@ -105,6 +105,11 @@ function IpInputElement()
 	this._textFieldIp3.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	this._textFieldIp4.addEventListener("focusout", this._onIpInputTextFieldFocusOutInstance);
 	
+	this._textFieldIp1.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
+	this._textFieldIp2.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
+	this._textFieldIp3.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
+	this._textFieldIp4.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
+	
 	////////////////////
 	
 	//Currently focused IP field
@@ -358,7 +363,7 @@ IpInputElement.prototype._onTextInputFocusOut =
 
 /**
  * @function _onIpInputTextFieldMouseDown
- * Event handler for the internal TextField's "mousedown" event. Only active when IpInput is enabled. 
+ * Event handler for the internal TextField's "mousedown" event.
  * 
  * @param mouseEvent ElementMouseEvent
  * ElementMouseEvent to process.
@@ -502,18 +507,6 @@ IpInputElement.prototype._doStylesUpdated =
 				
 				if (this._textFieldIp4.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == false)
 					this._textFieldIp4.addEventListener("changed", this._onTextInputTextFieldChangedInstance);	
-				
-				if (this._textFieldIp1.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == false)
-					this._textFieldIp1.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldIp2.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == false)
-					this._textFieldIp2.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldIp3.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == false)
-					this._textFieldIp3.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldIp4.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == false)
-					this._textFieldIp4.addEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
 			}
 			else
 			{
@@ -534,18 +527,6 @@ IpInputElement.prototype._doStylesUpdated =
 				
 				if (this._textFieldIp4.hasEventListener("changed", this._onTextInputTextFieldChangedInstance) == true)
 					this._textFieldIp4.removeEventListener("changed", this._onTextInputTextFieldChangedInstance);
-				
-				if (this._textFieldIp1.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == true)
-					this._textFieldIp1.removeEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldIp2.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == true)
-					this._textFieldIp2.removeEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldIp3.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == true)
-					this._textFieldIp3.removeEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
-				
-				if (this._textFieldIp4.hasEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance) == true)
-					this._textFieldIp4.removeEventListener("mousedown", this._onIpInputTextFieldMouseDownInstance);
 			}
 		}
 		
