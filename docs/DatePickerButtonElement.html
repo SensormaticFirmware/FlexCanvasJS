@@ -91,6 +91,7 @@ DatePickerButtonElement<br>
 <a href="DispatcherEvent.html">DispatcherEvent</a><br>
 <a href="DrawMetrics.html">DrawMetrics</a><br>
 <a href="DropdownArrowButtonSkinElement.html">DropdownArrowButtonSkinElement</a><br>
+<a href="DropdownBaseElement.html">DropdownBaseElement</a><br>
 <a href="DropdownElement.html">DropdownElement</a><br>
 <a href="ElementEvent.html">ElementEvent</a><br>
 <a href="ElementGridItemClickEvent.html">ElementGridItemClickEvent</a><br>
@@ -150,7 +151,7 @@ See the default skin for the arrow button DropdownArrowButtonSkinElement for add
 <span style="font-weight: bold;">Inheritance: &nbsp;&nbsp;&nbsp;</span>
 </td>
 <td rowspan="2" style="vertical-align: top; width: 100%;">
-DatePickerButtonElement &#10142; <a href="ButtonElement.html">ButtonElement</a> &#10142; <a href="SkinnableElement.html">SkinnableElement</a> &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
+DatePickerButtonElement &#10142; <a href="DropdownBaseElement.html">DropdownBaseElement</a> &#10142; <a href="ButtonElement.html">ButtonElement</a> &#10142; <a href="SkinnableElement.html">SkinnableElement</a> &#10142; <a href="CanvasElement.html">CanvasElement</a> &#10142; <a href="StyleableBase.html">StyleableBase</a> &#10142; <a href="StyleDefinition.html">StyleDefinition</a> &#10142; <a href="EventDispatcher.html">EventDispatcher</a> &#10142; Object</td>
 <tr>
 <td></td>
 </tr>
@@ -165,36 +166,6 @@ DatePickerButtonElement &#10142; <a href="ButtonElement.html">ButtonElement</a> 
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ArrowButtonClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button.<br>
-Note that DatePickerButton proxies its SkinState style to the arrow button so the arrow<br>
-will change states with the DatePickerButton.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">ArrowButtonStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">DateFormatLabelFunction</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -206,34 +177,6 @@ The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
 A function that accepts a date and returns a string to be displayed as the date label.<br>
 Signature: function (date) { return "" }<br>
 The default label function returns returns international date format "YYYY-MM-DD".<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OpenCloseTweenDuration</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Duration in milliseconds the open and close animation should run.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">OpenCloseTweenEasingFunction</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -293,14 +236,13 @@ when a value between 1 and 0 is used.<br>
 <span style="font-weight: bold;">ArrowButtonClass</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button.<br>
-Note that DatePickerButton proxies its SkinState style to the arrow button so the arrow<br>
-will change states with the DatePickerButton.<br>
+Note that Dropdown proxies its SkinState style to the arrow button so the arrow will change states with the Dropdown.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -309,7 +251,7 @@ will change states with the DatePickerButton.<br>
 <span style="font-weight: bold;">ArrowButtonStyle</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="StyleDefinition.html">StyleDefinition</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
@@ -784,7 +726,7 @@ When false disables mouse events for the element.<br>
 <span style="font-weight: bold;">OpenCloseTweenDuration</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
@@ -798,7 +740,7 @@ Duration in milliseconds the open and close animation should run.<br>
 <span style="font-weight: bold;">OpenCloseTweenEasingFunction</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Function
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
@@ -1532,34 +1474,6 @@ Dispatched when the date selection changes as a result of user input.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">closed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the DatePicker pop up is closed as a result of user input.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">opened</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the DatePicker pop up is opened as a result of user input.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
 </table>
 <table id="tableEventsInherited" style="border-style: solid; border-width: 1px; border-collapse: collapse; display: none; margin-top: 10px;">
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
@@ -1610,15 +1524,15 @@ Dispatched when the mouse is pressed and released over the same element.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">closed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
+<span style="font-weight: bold;">closed</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the DatePicker pop up is closed as a result of user input.<br>
+Dispatched when the pop up is closed as a result of user input.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1833,15 +1747,15 @@ Dispatched when the mouse is released. Note that the mouse may not still be over
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">opened</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a>
+<span style="font-weight: bold;">opened</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Dispatched when the DatePicker pop up is opened as a result of user input.<br>
+Dispatched when the pop up is opened as a result of user input.<br>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -1955,29 +1869,6 @@ Creates new DatePickerButtonElement instance.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">close(animate)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Closes the pop up DatePicker.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the disappearance of the pop-up DatePicker.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">getSelectedDate()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -1993,29 +1884,6 @@ Gets the selected date of the DatePickerButton.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Date<br>
 Currently selected date or null if none selected.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">open(animate)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Opens the pop up DatePicker.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the appearance of the pop-up DatePicker.<br>
 </td>
 </tr>
 </table>
@@ -2244,18 +2112,18 @@ removing definitions one at a time.<br>
 <span style="font-weight: bold;">close(animate)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Closes the pop up DatePicker.<br>
+Closes the pop up.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the disappearance of the pop-up DatePicker.<br>
+When true animates the disappearance of the pop-up.<br>
 </td>
 </tr>
 </table>
@@ -2668,18 +2536,18 @@ Returns true if the EventDispatcher has the provided callback registered for the
 <span style="font-weight: bold;">open(animate)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Opens the pop up DatePicker.<br>
+Opens the pop up.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">animate</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-When true animates the appearance of the pop-up DatePicker.<br>
+When true animates the appearance of the pop-up.<br>
 </td>
 </tr>
 </table>
@@ -3248,6 +3116,21 @@ Read only - true if the mouse is over this element, otherwise false.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_owner</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Read only - This elements owner element. This is set by elements that pop up other elements.<br>
+Such as DropdownBase sets this on the pop up element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_parent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3378,52 +3261,6 @@ after our parent has finished its layout phase will this be valid.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_addDatePickerPopup()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Adds the DatePicker pop up to CanvasManager and registers event listeners.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
-Returns true if the pop up was added, false if the pop up already exists.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_createArrowButton()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Generates and sets up the arrow element instance per styling.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
-New arrow element instance.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_layoutDatePickerPopup()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3433,55 +3270,6 @@ New arrow element instance.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Sizes and positions the DatePicker pop up.<br>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onDateButtonManagerCaptureEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "wheel" and "mousedown". Used to close<br>
-the DatePicker when events happen outside the Button or pop up DatePicker.<br>
-Only active when pop up is open.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onDateButtonManagerResizeEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "resize". Used to close the DatePicker.<br>
-Only active when DatePicker is open.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-DispatcherEvent to process.<br>
-</td>
-</tr>
-</table>
 </td>
 <td>&nbsp;</td>
 </tr>
@@ -3528,29 +3316,6 @@ position of the pop up depending on available space.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
 DispatcherEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_removeDatePickerPopup()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Removes the pop up DatePicker and cleans up event listeners.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;bool<br>
-Returns true if the pop up was removed, false if the pop up does not exist.<br>
 </td>
 </tr>
 </table>
@@ -3646,15 +3411,15 @@ Returns the element just added when successfull, null if the element could not<b
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_addDatePickerPopup()</span>
+<span style="font-weight: bold;">_addPopup()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Adds the DatePicker pop up to CanvasManager and registers event listeners.<br>
+Adds the pop up container to manager and registers event listeners.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -3782,29 +3547,6 @@ Returns true if the element state has actually changed, false if it is the same 
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_createArrowButton()</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Generates and sets up the arrow element instance per styling.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
-New arrow element instance.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_createLabel()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3820,6 +3562,30 @@ Creates the Button's label instance when Text style is not null or empty.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="LabelElement.html">LabelElement</a><br>
 New LabelElement instance<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_createPopup()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Stub for creating the pop up element to be added to the pop up container.<br>
+Override this and return a new CanvasElement instance to be used as the pop up.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a><br>
+New pop up instance.<br>
 </td>
 </tr>
 </table>
@@ -4245,6 +4011,30 @@ Returns an array of all default styles on this class, and base classes<br>for th
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getClosedTweenValue()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns value to be used for the pop up's fully closed position.<br>
+Override this to supply values for the open/close tween start & stop.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number<br>
+Value for open/closed tween's fully closed position.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_getDefaultStyleList(styleName)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -4402,6 +4192,30 @@ When true, returns the number of default definitions.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;int<br>
 The number of style definitions.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getOpenedTweenValue()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns value to be used for the pop up's fully open position.<br>
+Override this to supply values for the open/close tween start & stop.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number<br>
+Value for open/closed tween's fully opened position.<br>
 </td>
 </tr>
 </table>
@@ -4692,6 +4506,30 @@ Text color for the supplied state.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_getTweenRunning()</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Returns true if the open/close tween is running.<br>
+Needed by subclasses for positioning the pop up element.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
+True if the open/close tween is running, otherwise false.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_invalidateLayout()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -4967,55 +4805,6 @@ The AddedRemovedEvent to process.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onDateButtonManagerCaptureEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "wheel" and "mousedown". Used to close<br>
-the DatePicker when events happen outside the Button or pop up DatePicker.<br>
-Only active when pop up is open.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
-ElementEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_onDateButtonManagerResizeEvent(event)</span>
-</td>
-<td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
-</td>
-</tr>
-<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
-<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Capture event handler for CanvasManager "resize". Used to close the DatePicker.<br>
-Only active when DatePicker is open.<br>
-<table style="width: 100%;">
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
-DispatcherEvent to process.<br>
-</td>
-</tr>
-</table>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_onDatePickerChangedInstance(elementEvent)</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -5051,6 +4840,55 @@ ElementEvent to process.<br>
 Event handler for pop up DatePicker "layoutcomplete".<br>
 Updates the pop up size when content size is known and determines<br>
 position of the pop up depending on available space.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="DispatcherEvent.html">DispatcherEvent</a><br>
+DispatcherEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onDropdownBaseManagerCaptureEvent(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Capture event handler for CanvasManager "wheel" and "mousedown". Used to close<br>
+the pop up when events happen outside the DropdownBase or pop up elements.<br>
+Only active when pop up is open.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">event</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementEvent.html">ElementEvent</a><br>
+ElementEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onDropdownManagerResizeEvent(event)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Capture event handler for CanvasManager "resize". Used to close the pop up.<br>
+Only active when pop up is open.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -5125,15 +4963,15 @@ Returns the element just removed if successfull, null if the element could<br>no
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
-<span style="font-weight: bold;">_removeDatePickerPopup()</span>
+<span style="font-weight: bold;">_removePopup()</span>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
-<span style="white-space: nowrap;">DatePickerButtonElement</span>
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
 </td>
 </tr>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
-Removes the pop up DatePicker and cleans up event listeners.<br>
+Removes the pop up container from manager and cleans up event listeners.<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -5597,6 +5435,30 @@ Updates the date label text via the styled DateFormatLabelFunction<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Updates the text color in response to state changes.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_updateTweenPosition(value)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="DropdownBaseElement.html">DropdownBaseElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Stub for updating the popup when the tween value changes.<br>
+Override this to adjust the popup during the open/close tween.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">value</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;Number<br>
+Current tween value.<br>
+</td>
+</tr>
+</table>
 </td>
 <td>&nbsp;</td>
 </tr>

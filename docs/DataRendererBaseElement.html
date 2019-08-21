@@ -91,6 +91,7 @@ DataRendererBaseElement<br>
 <a href="DispatcherEvent.html">DispatcherEvent</a><br>
 <a href="DrawMetrics.html">DrawMetrics</a><br>
 <a href="DropdownArrowButtonSkinElement.html">DropdownArrowButtonSkinElement</a><br>
+<a href="DropdownBaseElement.html">DropdownBaseElement</a><br>
 <a href="DropdownElement.html">DropdownElement</a><br>
 <a href="ElementEvent.html">ElementEvent</a><br>
 <a href="ElementGridItemClickEvent.html">ElementGridItemClickEvent</a><br>
@@ -2913,6 +2914,21 @@ Read only - true if the mouse is over this element, otherwise false.<br>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_owner</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;"><a href="CanvasElement.html">CanvasElement</a></span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Read only - This elements owner element. This is set by elements that pop up other elements.<br>
+Such as DropdownBase sets this on the pop up element.<br>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
 <span style="font-weight: bold;">_parent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="CanvasElement.html">CanvasElement</a>
 </td>
 <td style="padding: 3px; padding-right: 10px; text-align: right;">
@@ -3040,6 +3056,29 @@ after our parent has finished its layout phase will this be valid.<br>
 <tr style="border: solid; border-width: 1px; border-color:black; background-color:#666666; color: white;">
 <td style="font-weight: bold; padding-left: 10px; padding-right: 20px; width: 100%;">Function</td>
 <td style="font-weight: bold; padding-right: 10px; text-align: right; white-space: nowrap;">Defined By</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onDataRendererBaseClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DataRendererBaseElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for "click" event. Cancels the event if the DataRendererBase is disabled.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
 <td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
@@ -4257,6 +4296,29 @@ You should *always* call the base class function.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">addedRemovedEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="AddedRemovedEvent.html">AddedRemovedEvent</a><br>
 The AddedRemovedEvent to process.<br>
+</td>
+</tr>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 3px; padding-left: 10px; padding-right: 20px;">
+<span style="font-weight: bold;">_onDataRendererBaseClick(elementMouseEvent)</span>
+</td>
+<td style="padding: 3px; padding-right: 10px; text-align: right;">
+<span style="white-space: nowrap;">DataRendererBaseElement</span>
+</td>
+</tr>
+<tr style="border-bottom-style: solid; border-bottom-width: 1px;">
+<td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
+Event handler for "click" event. Cancels the event if the DataRendererBase is disabled.<br>
+<table style="width: 100%;">
+<tr>
+<td style="width: 30px;">&nbsp;</td>
+<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
+<span style="font-weight: bold;">elementMouseEvent</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;<a href="ElementMouseEvent.html">ElementMouseEvent</a><br>
+The ElementMouseEvent to process.<br>
 </td>
 </tr>
 </table>
