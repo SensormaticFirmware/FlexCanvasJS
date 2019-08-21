@@ -46,7 +46,7 @@ function DataRendererBaseElement()
 		
 	this.addEventListener("rollover", this._onDataRendererBaseEventInstance);
 	this.addEventListener("rollout", this._onDataRendererBaseEventInstance);
-	this.addEventListener("click", this._onButtonEventInstance);
+	this.addEventListener("click", this._onDataRendererBaseClickInstance);
 }
 	
 //Inherit from SkinnableElement
