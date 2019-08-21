@@ -54,11 +54,7 @@ AddStyleDataRenderer.prototype._onAddStyleDataRendererClick =
 	
 		//Close the dropdown unless we clicked the checkbox itself and exclude headers.
 		if (event.getTarget() != this._checkboxSelected && this._itemData.styleName != "")
-		{
-			//This is kind of hacky (we're dispatching a changed event from the list to force the dropdown to close)
-			//We need a reference from the popup list back to the dropdown (owner rather than parent).
-			this._listData._parentList.dispatchEvent(new ElementEvent("changed", false));
-		}
+			this._listData._parentList._owner.close(true);
 	};
 
 //@override - DataList sets our associated row / collection data.
