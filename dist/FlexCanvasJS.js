@@ -4335,6 +4335,7 @@ function CanvasElement()
 	 */
 	this._parent = null; 	
 	
+	
 	this._children = [];
 	
 	this._stylesInvalid = true;
@@ -4476,7 +4477,15 @@ function CanvasElement()
 	 */
 	//this._listSelected = any;
 	
-	////////////////////////////////
+	
+	///////Owner/////////////
+	
+	/**
+	 * @member _owner CanvasElement
+	 * Read only - This elements owner element. This is set by elements that pop up other elements.
+	 * Such as DropdownBase sets this on the pop up element. 
+	 */
+	//this._owner = null; 
 }
 
 //Inherit from StyleableBase
@@ -14568,9 +14577,17 @@ TimeInputElement.prototype._updateTextColors =
 		this._textFieldHour.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldHour.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
+		this._labelColon1.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelColon1.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelColon1.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
 		this._textFieldMinute.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldMinute.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldMinute.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
+		this._labelColon2.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelColon2.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelColon2.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
 		this._textFieldSecond.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldSecond.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
@@ -16165,13 +16182,25 @@ IpInputElement.prototype._updateTextColors =
 		this._textFieldIp1.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldIp1.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
+		this._labelFieldDot1.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelFieldDot1.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelFieldDot1.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
 		this._textFieldIp2.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldIp2.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldIp2.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
+		this._labelFieldDot2.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelFieldDot2.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelFieldDot2.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
 		this._textFieldIp3.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldIp3.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
 		this._textFieldIp3.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
+		
+		this._labelFieldDot3.setStyle("TextColor", this._getTextColor(this._currentSkinState));
+		this._labelFieldDot3.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
+		this._labelFieldDot3.setStyle("TextHighlightedBackgroundColor", this._getTextHighlightedBackgroundColor(this._currentSkinState));
 		
 		this._textFieldIp4.setStyle("TextColor", this._getTextColor(this._currentSkinState));
 		this._textFieldIp4.setStyle("TextHighlightedColor", this._getTextHighlightedColor(this._currentSkinState));
@@ -17792,8 +17821,15 @@ function DataRendererBaseElement()
 				_self._onDataRendererRollout(elementEvent);
 		};
 		
+	this._onDataRendererBaseClickInstance = 
+		function (event)
+		{
+			_self._onDataRendererBaseClick(event);
+		};
+		
 	this.addEventListener("rollover", this._onDataRendererBaseEventInstance);
 	this.addEventListener("rollout", this._onDataRendererBaseEventInstance);
+	this.addEventListener("click", this._onButtonEventInstance);
 }
 	
 //Inherit from SkinnableElement
@@ -17930,6 +17966,21 @@ DataRendererBaseElement.StyleDefault.setStyle("DisabledSkinStyle", 		null);					
 
 
 /////////////Internal///////////////////////////
+
+/**
+ * @function _onDataRendererBaseClick
+ * Event handler for "click" event. Cancels the event if the DataRendererBase is disabled.
+ * 
+ * @param elementMouseEvent ElementMouseEvent
+ * The ElementMouseEvent to process.
+ */			
+DataRendererBaseElement.prototype._onDataRendererBaseClick = 
+	function (elementMouseEvent)
+	{
+		//Implementor will not expect a click event when DataRendererBase is disabled. 
+		if (this.getStyle("Enabled") == false)
+			elementMouseEvent.cancelEvent();
+	};
 
 /**
  * @function _updateState
@@ -19173,21 +19224,19 @@ DataListElement.prototype._onDataListRendererClick =
 		
 		var dispatchChanged = false;
 		
-		//Only allow selection if selectable and enabled
-		var elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable");
-		if (elementIsSelectable == true)
-			elementIsSelectable = elementMouseEvent.getCurrentTarget().getStyle("Enabled");
+		var selectable = elementMouseEvent.getCurrentTarget().getStyle("Selectable");
 		
 		//Update selected index
-		if (this.getStyle("Selectable") == true && (elementIsSelectable === undefined || elementIsSelectable == true))
+		if (this.getStyle("Selectable") == true && 
+			(selectable === undefined || selectable == true))
 		{
 			if (this.setSelectedIndex(itemIndex) == true)
 				dispatchChanged = true;
 		}
 		
-		//Dispatch events
 		this.dispatchEvent(new ElementListItemClickEvent(itemData, itemIndex));
 		
+		//Only dispatch changed if selected index changed
 		if (dispatchChanged == true)
 			this.dispatchEvent(new ElementEvent("changed", false));
 	};
@@ -27749,8 +27798,647 @@ RadioButtonElement.prototype._doLayout =
 /**
  * @depends ButtonElement.js
  * @depends DropdownArrowButtonSkinElement.js
- * @depends DataRendererLabelElement.js
  * @depends Tween.js
+ */
+
+//////////////////////////////////////////////////////////////
+////////////////DropdownBaseElement///////////////////////////
+
+/**
+ * @class DropdownBaseElement
+ * @inherits ButtonElement
+ * 
+ * DropdownBaseElement is an abstract base class for buttons that display 
+ * a pop up when clicked.
+ * 
+ * The DropdownBase itself contains a child button which is used to render
+ * the divider line and arrow. DropdownBase proxies its SkinState style to the arrow
+ * button so the arrow button will change states along with the DropdownBase itself.
+ * See the default skin for the arrow button, DropdownArrowButtonSkinElement for additional styles.
+ * 
+ * @seealso DropdownArrowButtonSkinElement
+ * 
+ * 
+ * @constructor DropdownBaseElement 
+ * Creates new DropdownBaseElement instance.
+ */
+function DropdownBaseElement()
+{
+	DropdownBaseElement.base.prototype.constructor.call(this);
+
+	this._arrowButton = null;
+	
+	this._popupElement = null;
+	this._openCloseTween = null;
+	this._tweenIsOpening = true;
+	
+	
+	//////////////////
+	
+	var _self = this;
+	
+	//Private event listeners, need an instance for each DropdownBaseElement, proxy to prototype.
+		
+	this._onDropdownBaseManagerCaptureEventInstance = 
+		function (event)
+		{
+			_self._onDropdownBaseManagerCaptureEvent(event);
+		};
+		
+	this._onDropdownBaseManagerResizeEventInstance = 
+		function (event)
+		{
+			_self._onDropdownBaseManagerResizeEvent(event);
+		};
+		
+	this._onDropdownBaseEnterFrameInstance = 
+		function (event)
+		{
+			_self._onDropdownBaseEnterFrame(event);
+		};
+}
+
+//Inherit from ButtonElement
+DropdownBaseElement.prototype = Object.create(ButtonElement.prototype);
+DropdownBaseElement.prototype.constructor = DropdownBaseElement;
+DropdownBaseElement.base = ButtonElement;
+
+////////////Events///////////////////////////////
+
+/**
+ * @event opened DispatcherEvent
+ * Dispatched when the pop up is opened as a result of user input.
+ * 
+ * @event closed DispatcherEvent
+ * Dispatched when the pop up is closed as a result of user input.
+ */
+
+/////////////Style Types/////////////////////////
+
+DropdownBaseElement._StyleTypes = Object.create(null);
+
+/**
+ * @style ArrowButtonClass CanvasElement
+ * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
+ * Note that Dropdown proxies its SkinState style to the arrow button so the arrow will change states with the Dropdown.
+ */
+DropdownBaseElement._StyleTypes.ArrowButtonClass = 				StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
+
+/**
+ * @style ArrowButtonStyle StyleDefinition
+ * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
+ */
+DropdownBaseElement._StyleTypes.ArrowButtonStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
+
+/**
+ * @style OpenCloseTweenDuration Number
+ * Duration in milliseconds the open and close animation should run.
+ */
+DropdownBaseElement._StyleTypes.OpenCloseTweenDuration = 		StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
+
+/**
+ * @style OpenCloseTweenEasingFunction Function
+ * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
+ */
+DropdownBaseElement._StyleTypes.OpenCloseTweenEasingFunction = 	StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
+
+
+////////////Default Styles////////////////////
+
+DropdownBaseElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
+DropdownBaseElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
+DropdownBaseElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
+
+DropdownBaseElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
+DropdownBaseElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
+DropdownBaseElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
+DropdownBaseElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
+DropdownBaseElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 			"#888888");
+
+/////Arrow default style///////
+DropdownBaseElement.ArrowButtonStyleDefault = new StyleDefinition();
+DropdownBaseElement.ArrowButtonStyleDefault.setStyle("SkinClass", 					DropdownArrowButtonSkinElement);
+
+//Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Dropdown (unless you turn mouse back on)
+DropdownBaseElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 				false);
+
+DropdownBaseElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				DropdownBaseElement.ArrowButtonSkinStyleDefault);
+DropdownBaseElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				DropdownBaseElement.ArrowButtonSkinStyleDefault);
+DropdownBaseElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				DropdownBaseElement.ArrowButtonSkinStyleDefault);
+DropdownBaseElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			DropdownBaseElement.ArrowButtonDisabledSkinStyleDefault);
+///////////////////////////////
+
+DropdownBaseElement.StyleDefault = new StyleDefinition();
+DropdownBaseElement.StyleDefault.setStyle("PaddingTop",								3);
+DropdownBaseElement.StyleDefault.setStyle("PaddingBottom",							3);
+DropdownBaseElement.StyleDefault.setStyle("PaddingRight",							4);
+DropdownBaseElement.StyleDefault.setStyle("PaddingLeft",							4);
+
+DropdownBaseElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 								// Element constructor
+DropdownBaseElement.StyleDefault.setStyle("ArrowButtonStyle", 						DropdownBaseElement.ArrowButtonStyleDefault); 		// StyleDefinition
+DropdownBaseElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 								
+DropdownBaseElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				300); 											// number (milliseconds)
+DropdownBaseElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 							// function (fraction) { return fraction}
+
+
+/////////Style Proxy Maps/////////////////////////////
+
+//Proxy map for styles we want to pass to the arrow button.
+DropdownBaseElement._ArrowButtonProxyMap = Object.create(null);
+DropdownBaseElement._ArrowButtonProxyMap.SkinState = 						true;
+DropdownBaseElement._ArrowButtonProxyMap._Arbitrary = 						true;
+
+
+/////////////Public///////////////////////////////
+
+/**
+ * @function open
+ * Opens the pop up.
+ * 
+ * @param animate boolean
+ * When true animates the appearance of the pop-up.
+ */	
+DropdownBaseElement.prototype.open = 
+	function (animate)
+	{
+		if (this._manager == null)
+			return;
+	
+		//Create popup element
+		if (this._popupElement == null)
+		{
+			this._popupElement = this._createPopup();
+			
+			if (this._popupElement == null)
+				return;
+			
+			this._popupElement._owner = this;
+		}
+		
+		//Add the pop-up list. Wait for layoutcomplete to adjust positioning and size (will set openHeight once done)
+		var added = this._addPopup(); 
+		
+		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
+		
+		if (animate == false || tweenDuration <= 0)
+		{
+			this._endOpenCloseTween();
+			this._updateTweenPosition(this._getOpenedTweenValue());
+		}
+		else
+		{
+			if (this._openCloseTween != null) //Tween running
+			{
+				if (this._openCloseTween.startVal != this._getClosedTweenValue()) //Reverse if closing, ignore if opening.
+					this._reverseTween();
+			}
+			else if (added == true) //Only start tween if popup did not already exist
+			{
+				this._openCloseTween = new Tween();
+				this._openCloseTween.duration = tweenDuration;
+				this._openCloseTween.startTime = Date.now();
+				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
+				
+				this._tweenIsOpening = true;
+				
+				this.addEventListener("enterframe", this._onDropdownBaseEnterFrameInstance);
+			}
+		}
+	};
+	
+/**
+ * @function close
+ * Closes the pop up.
+ * 
+ * @param animate boolean
+ * When true animates the disappearance of the pop-up.
+ */		
+DropdownBaseElement.prototype.close = 
+	function (animate)
+	{
+		if (this._popupElement == null)
+			return;
+	
+		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
+	
+		if (animate == false || tweenDuration <= 0)
+		{
+			this._endOpenCloseTween();		
+			this._removePopup();
+		}
+		else 
+		{
+			if (this._openCloseTween != null) //Tween running
+			{
+				if (this._openCloseTween.startVal == this._getClosedTweenValue()) //Reverse if opening, ignore if closing.
+					this._reverseTween();
+			}
+			else if (this._popupElement._parent != null) //Dont close if already closed
+			{
+				this._openCloseTween = new Tween();
+				this._openCloseTween.duration = tweenDuration;
+				this._openCloseTween.startTime = Date.now();
+				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
+				
+				this._tweenIsOpening = false;
+				
+				this.addEventListener("enterframe", this._onDropdownBaseEnterFrameInstance);
+			}
+		}
+	};
+
+	
+/////////////Internal///////////////////////////////	
+	
+/**
+ * @function _createPopup
+ * Stub for creating the pop up element to be added to the pop up container.
+ * Override this and return a new CanvasElement instance to be used as the pop up.
+ * 
+ * @returns CanvasElement
+ * New pop up instance.
+ */	
+DropdownBaseElement.prototype._createPopup = 
+	function ()
+	{
+		return null;
+	};	
+	
+/**
+ * @function _removePopup
+ * Removes the pop up container from manager and cleans up event listeners.
+ * 
+ * @returns bool
+ * Returns true if the pop up was removed, false if the pop up does not exist.
+ */	
+DropdownBaseElement.prototype._removePopup = 
+	function ()
+	{
+		if (this._popupElement._parent == null)
+			return false;
+	
+		this._manager.removeCaptureListener("wheel", this._onDropdownBaseManagerCaptureEventInstance);
+		this._manager.removeCaptureListener("mousedown", this._onDropdownBaseManagerCaptureEventInstance);
+		this._manager.removeEventListener("resize", this._onDropdownBaseManagerResizeEventInstance);
+		this._manager.removeElement(this._popupElement);
+		
+		return true;
+	};
+
+/**
+ * @function _addPopup
+ * Adds the pop up container to manager and registers event listeners.
+ * 
+ * @returns bool
+ * Returns true if the pop up was added, false if the pop up already exists.
+ */		
+DropdownBaseElement.prototype._addPopup = 
+	function ()
+	{
+		if (this._popupElement._parent != null)
+			return false;
+		
+		this._manager.addElement(this._popupElement);
+		this._manager.addCaptureListener("wheel", this._onDropdownBaseManagerCaptureEventInstance);
+		this._manager.addCaptureListener("mousedown", this._onDropdownBaseManagerCaptureEventInstance);
+		this._manager.addEventListener("resize", this._onDropdownBaseManagerResizeEventInstance);
+		
+		return true;
+	};
+	
+/**
+ * @function _getTweenRunning
+ * Returns true if the open/close tween is running. 
+ * Needed by subclasses for positioning the pop up element.
+ * 
+ * @returns boolean
+ * True if the open/close tween is running, otherwise false.
+ */		
+DropdownBaseElement.prototype._getTweenRunning = 
+	function ()
+	{
+		if (this._openCloseTween == null)
+			return false;
+		
+		return true;
+	};
+	
+//@private	
+DropdownBaseElement.prototype._onDropdownBaseEnterFrame = 
+	function (event)
+	{
+		//Update tween start/stops
+		if (this._tweenIsOpening == true)
+		{
+			this._openCloseTween.startVal = this._getClosedTweenValue();
+			this._openCloseTween.endVal = this._getOpenedTweenValue();
+		}
+		else
+		{
+			this._openCloseTween.startVal = this._getOpenedTweenValue();
+			this._openCloseTween.endVal = this._getClosedTweenValue();
+		}
+	
+		//Get current tween value
+		var value = this._openCloseTween.getValue(Date.now());
+		
+		//Update popup
+		this._updateTweenPosition(value);
+		
+		//Handle tween finished
+		if (value == this._openCloseTween.endVal)
+		{
+			if (value == this._getClosedTweenValue())
+				this.close(false);			//Finished closing
+			else
+				this._endOpenCloseTween();	//Finished opening
+		}
+	};
+	
+//@private
+DropdownBaseElement.prototype._endOpenCloseTween = 
+	function ()
+	{
+		if (this._openCloseTween != null)
+		{
+			this.removeEventListener("enterframe", this._onDropdownBaseEnterFrameInstance);
+			this._openCloseTween = null;
+		}
+	};
+
+/**
+ * @function _getOpenedTweenValue
+ * Returns value to be used for the pop up's fully open position.
+ * Override this to supply values for the open/close tween start & stop.
+ * 
+ * @returns Number
+ * Value for open/closed tween's fully opened position.
+ */	
+DropdownBaseElement.prototype._getOpenedTweenValue = 
+	function ()
+	{
+		return 1;
+	};	
+
+/**
+ * @function _getClosedTweenValue
+ * Returns value to be used for the pop up's fully closed position.
+ * Override this to supply values for the open/close tween start & stop.
+ * 
+ * @returns Number
+ * Value for open/closed tween's fully closed position.
+ */	
+DropdownBaseElement.prototype._getClosedTweenValue = 
+	function ()
+	{
+		return 0;
+	};
+	
+/**
+ * @function _updateTweenPosition
+ * Stub for updating the popup when the tween value changes.
+ * Override this to adjust the popup during the open/close tween.
+ * 
+ * @param value Number
+ * Current tween value.
+ */
+DropdownBaseElement.prototype._updateTweenPosition = 
+	function (value)
+	{
+		//Stub for override
+	};
+	
+/**
+ * @function _onDropdownBaseManagerCaptureEvent
+ * Capture event handler for CanvasManager "wheel" and "mousedown". Used to close 
+ * the pop up when events happen outside the DropdownBase or pop up elements. 
+ * Only active when pop up is open.
+ * 
+ * @param event ElementEvent
+ * ElementEvent to process.
+ */	
+DropdownBaseElement.prototype._onDropdownBaseManagerCaptureEvent = 
+	function (event)
+	{
+		//Check if the popup is in this target's parent chain.
+		var target = event.getTarget();
+		
+		while (target != null)
+		{
+			//Yes, leave the drop down open
+			if (target == this._popupElement || (event.getType() == "mousedown" && target == this))
+				return;
+			
+			target = target._parent;
+		}
+		
+		//Kill the drop down, event happened outside the popup list.
+		this.close(false);
+		
+		if (this.hasEventListener("closed", null) == true)
+			this.dispatchEvent(new DispatcherEvent("closed"));
+	};
+	
+/**
+ * @function _onDropdownManagerResizeEvent
+ * Capture event handler for CanvasManager "resize". Used to close the pop up.
+ * Only active when pop up is open.
+ * 
+ * @param event DispatcherEvent
+ * DispatcherEvent to process.
+ */		
+DropdownBaseElement.prototype._onDropdownBaseManagerResizeEvent = 
+	function (event)
+	{
+		this.close(false);
+		
+		if (this.hasEventListener("closed", null) == true)
+			this.dispatchEvent(new DispatcherEvent("closed"));
+	};
+
+//@override	
+DropdownBaseElement.prototype._onCanvasElementRemoved = 
+	function (addedRemovedEvent)
+	{
+		DropdownBaseElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
+		
+		this.close(false);
+	};	
+
+//@private	
+DropdownBaseElement.prototype._reverseTween = 
+	function ()
+	{
+		//Reverse direction flag
+		this._tweenIsOpening = !this._tweenIsOpening;
+	
+		//Fix tween start time
+		var now = Date.now();
+		var elapsed = now - this._openCloseTween.startTime;
+		
+		this._openCloseTween.startTime = now + elapsed - this._openCloseTween.duration;		
+	};
+	
+//@override	
+DropdownBaseElement.prototype._onButtonClick = 
+	function (elementMouseEvent)
+	{
+		//Just cancels event if we're disabled.
+		DropdownBaseElement.base.prototype._onButtonClick.call(this, elementMouseEvent);
+		
+		if (elementMouseEvent.getIsCanceled() == true)
+			return;
+		
+		if (this._openCloseTween != null)
+		{
+			this._reverseTween();
+			
+			if (this._tweenIsOpening == true)
+			{
+				if (this.hasEventListener("opened", null) == true)
+					this.dispatchEvent(new DispatcherEvent("opened"));
+			}
+			else
+			{
+				if (this.hasEventListener("closed", null) == true)
+					this.dispatchEvent(new DispatcherEvent("closed"));
+			}
+		}
+		else 
+		{
+			if (this._popupElement == null || this._popupElement._parent == null)
+			{
+				this.open(true);
+				
+				if (this.hasEventListener("opened", null) == true)
+					this.dispatchEvent(new DispatcherEvent("opened"));
+			}
+			else
+			{
+				this.close(true);
+				
+				if (this.hasEventListener("closed", null) == true)
+					this.dispatchEvent(new DispatcherEvent("closed"));
+			}
+		}
+	};	
+	
+//@private	
+DropdownBaseElement.prototype._updateArrowButton = 
+	function ()
+	{
+		var arrowClass = this.getStyle("ArrowButtonClass");
+		
+		if (arrowClass == null)
+		{
+			if (this._arrowButton != null)
+			{
+				this._removeChild(this._arrowButton);
+				this._arrowButton = null;
+			}
+		}
+		else
+		{
+			if (this._arrowButton == null || this._arrowButton.constructor != arrowClass)
+			{
+				var newArrowButton = new (arrowClass)();
+				newArrowButton._setStyleProxy(new StyleProxy(this, DropdownBaseElement._ArrowButtonProxyMap));
+				
+				if (this._arrowButton != null)
+					this._removeChild(this._arrowButton);
+				
+				this._arrowButton = newArrowButton;
+				
+				this._addChild(this._arrowButton);
+			}
+			
+			this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
+		}
+	};
+	
+//@override
+DropdownBaseElement.prototype._doStylesUpdated =
+	function (stylesMap)
+	{
+		DropdownBaseElement.base.prototype._doStylesUpdated.call(this, stylesMap);
+		
+		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
+			this._updateArrowButton();
+	};
+	
+//@override
+DropdownBaseElement.prototype._doMeasure = 
+	function(padWidth, padHeight)
+	{
+		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
+		var textWidth = 20;
+		
+		if (this._labelElement != null)
+			textWidth = this._labelElement._getStyledOrMeasuredWidth();
+		
+		var measuredWidth = textWidth + padWidth; 
+		var measuredHeight = textHeight + padHeight;
+		
+		if (this._arrowButton != null)
+		{
+			var arrowWidth = this._arrowButton.getStyle("Width");
+			var arrowHeight = this._arrowButton.getStyle("Height");
+			
+			if (arrowHeight != null && arrowHeight > measuredHeight)
+				measuredHeight = arrowHeight;
+			if (arrowWidth != null)
+				measuredWidth += arrowWidth;
+			else
+				measuredWidth += Math.round(measuredHeight * .85);
+		}
+
+		this._setMeasuredSize(measuredWidth, measuredHeight);
+	};	
+	
+//@override	
+DropdownBaseElement.prototype._doLayout = 
+	function (paddingMetrics)
+	{
+		DropdownBaseElement.base.prototype._doLayout.call(this, paddingMetrics);
+		
+		if (this._arrowButton != null)
+		{
+			var x = paddingMetrics.getX();
+			var y = paddingMetrics.getY();
+			var w = paddingMetrics.getWidth();
+			var h = paddingMetrics.getHeight();
+			
+			var arrowWidth = this._arrowButton.getStyle("Width");
+			var arrowHeight = this._arrowButton.getStyle("Height");
+			
+			if (arrowHeight == null)
+				arrowHeight = this._height;
+			if (arrowWidth == null)
+				arrowWidth = this._height * .85;
+			
+			if (this._width < arrowWidth)
+			{
+				this._arrowButton._setActualSize(0, 0);
+				this._labelElement._setActualSize(0, 0);
+			}
+			else
+			{
+				if (this._labelElement != null)
+				{
+					this._labelElement._setActualPosition(x, y);
+					this._labelElement._setActualSize(w - arrowWidth, h);
+				}
+					
+				this._arrowButton._setActualPosition(this._width - arrowWidth, y + (h / 2) - (arrowHeight / 2));
+				this._arrowButton._setActualSize(arrowWidth, arrowHeight);
+			}
+		}
+	};
+
+
+/**
+ * @depends DropdownBaseElement.js
+ * @depends DataRendererLabelElement.js
  * @depends DataListElement.js
  */
 
@@ -27759,7 +28447,7 @@ RadioButtonElement.prototype._doLayout =
 
 /**
  * @class DropdownElement
- * @inherits ButtonElement
+ * @inherits DropdownBaseElement
  * 
  * DropdownElement is a compound button that creates a pop-up drop-down list which the user
  * can select a value which is then displayed by the Dropdown. The values
@@ -27783,14 +28471,11 @@ function DropdownElement()
 
 	this._listCollection = null; //Data collection
 	
-	this._arrowButton = null;
-	
 	this._selectedIndex = -1;
 	this._selectedItem = null;
 	
-	this._dataListPopupClipContainer = new CanvasElement();
-	this._dataListPopupClipContainer.setStyle("ClipContent", true);
-	this._dataListPopup = null;
+	this._popupContainer = null; //Same as base._popupElement;
+	this._dataListPopup = null; 
 	
 	this._openDirection = null;
 	this._openHeight = null;
@@ -27798,7 +28483,8 @@ function DropdownElement()
 	
 	this._sampledTextWidth = null;
 	
-	this._openCloseTween = null;
+
+	/////////////////////
 	
 	var _self = this;
 	
@@ -27826,30 +28512,13 @@ function DropdownElement()
 		{
 			_self._onDropdownDataListPopupLayoutComplete(event);
 		};
-		
-	this._onDropdownManagerCaptureEventInstance = 
-		function (event)
-		{
-			_self._onDropdownManagerCaptureEvent(event);
-		};
-		
-	this._onDropdownManagerResizeEventInstance = 
-		function (event)
-		{
-			_self._onDropdownManagerResizeEvent(event);
-		};
-		
-	this._onDropDownEnterFrameInstance = 
-		function (event)
-		{
-			_self._onDropDownEnterFrame(event);
-		};
 }
 
 //Inherit from ButtonElement
-DropdownElement.prototype = Object.create(ButtonElement.prototype);
+DropdownElement.prototype = Object.create(DropdownBaseElement.prototype);
 DropdownElement.prototype.constructor = DropdownElement;
-DropdownElement.base = ButtonElement;
+DropdownElement.base = DropdownBaseElement;
+
 
 ////////////Events///////////////////////////////
 
@@ -27862,29 +28531,19 @@ DropdownElement.base = ButtonElement;
  */
 
 
-
 /////////////Style Types/////////////////////////
 
 DropdownElement._StyleTypes = Object.create(null);
 
 /**
  * @style ItemLabelFunction Function
- * 
  * A function that returns a text string per a supplied collection item.
  * function (itemData) { return "" }
  */
 DropdownElement._StyleTypes.ItemLabelFunction = 			StyleableBase.EStyleType.NORMAL; 		// function (itemData) { return "" }
 
 /**
- * @style PopupDataListClass DataListElement
- * 
- * The DataListElement or subclass constructor to be used for the pop up list. 
- */
-DropdownElement._StyleTypes.PopupDataListClass =			StyleableBase.EStyleType.NORMAL;		// DataListElement constructor.
-
-/**
  * @style PopupDataListStyle StyleDefinition
- * 
  * The StyleDefinition or [StyleDefinition] array to apply to the pop up list element.
  */
 DropdownElement._StyleTypes.PopupDataListStyle = 			StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
@@ -27896,35 +28555,6 @@ DropdownElement._StyleTypes.PopupDataListStyle = 			StyleableBase.EStyleType.SUB
 DropdownElement._StyleTypes.MaxPopupHeight = 				StyleableBase.EStyleType.NORMAL; 		// number
 
 /**
- * @style ArrowButtonClass CanvasElement
- * 
- * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
- * Note that Dropdown proxies its SkinState style to the arrow button so the arrow will change states with the Dropdown.
- */
-DropdownElement._StyleTypes.ArrowButtonClass = 				StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
-
-/**
- * @style ArrowButtonStyle StyleDefinition
- * 
- * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
- */
-DropdownElement._StyleTypes.ArrowButtonStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
-
-/**
- * @style OpenCloseTweenDuration Number
- * 
- * Duration in milliseconds the open and close animation should run.
- */
-DropdownElement._StyleTypes.OpenCloseTweenDuration = 		StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
-
-/**
- * @style OpenCloseTweenEasingFunction Function
- * 
- * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
- */
-DropdownElement._StyleTypes.OpenCloseTweenEasingFunction = 	StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
-
-/**
  * @style PopupDataListClipTopOrBottom Number
  * 
  * Size in pixels to clip off the pop up list. Clips top when opening down, bottom when opening up. 
@@ -27934,31 +28564,6 @@ DropdownElement._StyleTypes.PopupDataListClipTopOrBottom = 	StyleableBase.EStyle
 
 
 ////////////Default Styles////////////////////
-
-DropdownElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
-DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
-DropdownElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
-
-DropdownElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
-DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
-DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
-DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
-DropdownElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 			"#888888");
-
-/////Arrow default style///////
-DropdownElement.ArrowButtonStyleDefault = new StyleDefinition();
-DropdownElement.ArrowButtonStyleDefault.setStyle("SkinClass", 					DropdownArrowButtonSkinElement);
-
-//Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Dropdown (unless you turn mouse back on)
-DropdownElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 				false);
-
-DropdownElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
-DropdownElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				DropdownElement.ArrowButtonSkinStyleDefault);
-DropdownElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			DropdownElement.ArrowButtonDisabledSkinStyleDefault);
-///////////////////////////////
-
-/////Dropdown DataList Style//////
 
 //DataList Scrollbar style
 DropdownElement.DataListScrollBarStyleDefault = new StyleDefinition();
@@ -27989,19 +28594,9 @@ DropdownElement.DataListStyleDefault.setStyle("PaddingRight",					1);
 ///////////////////////////////////
 
 DropdownElement.StyleDefault = new StyleDefinition();
-DropdownElement.StyleDefault.setStyle("PaddingTop",								3);
-DropdownElement.StyleDefault.setStyle("PaddingBottom",							3);
-DropdownElement.StyleDefault.setStyle("PaddingRight",							4);
-DropdownElement.StyleDefault.setStyle("PaddingLeft",							4);
 
-DropdownElement.StyleDefault.setStyle("PopupDataListClass", 					DataListElement); 								// DataListElement constructor
 DropdownElement.StyleDefault.setStyle("PopupDataListStyle", 					DropdownElement.DataListStyleDefault); 			// StyleDefinition
-DropdownElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 								// Element constructor
-DropdownElement.StyleDefault.setStyle("ArrowButtonStyle", 						DropdownElement.ArrowButtonStyleDefault); 		// StyleDefinition
-DropdownElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 								
 DropdownElement.StyleDefault.setStyle("MaxPopupHeight", 						200); 											// number
-DropdownElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				300); 											// number (milliseconds)
-DropdownElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 							// function (fraction) { return fraction}
 DropdownElement.StyleDefault.setStyle("PopupDataListClipTopOrBottom", 			1); 											// number
 DropdownElement.StyleDefault.setStyle("ItemLabelFunction", 						DataListElement.DefaultItemLabelFunction); 		// function (itemData) { return "" }
 
@@ -28012,11 +28607,6 @@ DropdownElement.StyleDefault.setStyle("ItemLabelFunction", 						DataListElement
 DropdownElement._PopupDataListProxyMap = Object.create(null);
 DropdownElement._PopupDataListProxyMap.ItemLabelFunction = 				true;
 DropdownElement._PopupDataListProxyMap._Arbitrary = 					true;
-
-//Proxy map for styles we want to pass to the arrow button.
-DropdownElement._ArrowButtonProxyMap = Object.create(null);
-DropdownElement._ArrowButtonProxyMap.SkinState = 						true;
-DropdownElement._ArrowButtonProxyMap._Arbitrary = 						true;
 
 
 /////////////Public///////////////////////////////
@@ -28143,242 +28733,87 @@ DropdownElement.prototype.setListCollection =
 			this._dataListPopup.setListCollection(listCollection);
 	};	
 
-/**
- * @function open
- * Opens the Dropdown pop up list.
- * 
- * @param animate boolean
- * When true animates the appearance of the pop-up list.
- */	
-DropdownElement.prototype.open = 
-	function (animate)
-	{
-		if (this._manager == null || this._listCollection == null || this._listCollection.getLength() == 0)
-			return;
-	
-		if (this._dataListPopup == null)
-		{
-			this._dataListPopup = this._createDataListPopup();
-			this._dataListPopupClipContainer._addChild(this._dataListPopup);
-		}
-		
-		//Add the pop-up list. Wait for layoutcomplete to adjust positioning and size (will set openHeight once done)
-		var added = this._addDataListPopup(); 
-		
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-		
-		if (animate == false || tweenDuration <= 0)
-		{
-			if (this._openCloseTween != null) //Tween running 
-				this._endOpenCloseTween();
-
-			if (this._openHeight != null)
-				this._updateTweenPosition(this._openHeight);
-		}
-		else
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal != 0) //Reverse if closing, ignore if opening.
-					this._reverseTween();
-			}
-			else if (added == true) //Only start tween if popup did not already exist
-			{
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = 0; 
-				this._openCloseTween.endVal = this._openHeight;	//Might be null, fixed by layoutcomplete
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onDropDownEnterFrameInstance);
-			}
-		}
-	};
-	
-/**
- * @function close
- * Closes the Dropdown pop up list.
- * 
- * @param animate boolean
- * When true animates the disappearance of the pop-up list.
- */		
-DropdownElement.prototype.close = 
-	function (animate)
-	{
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-	
-		if (animate == false || tweenDuration <= 0)
-		{
-			this._endOpenCloseTween();		
-			this._removeDataListPopup();
-		}
-		else 
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
-					this._reverseTween();
-			}
-			else if (this._dataListPopupClipContainer._parent != null) //Dont close if already closed
-			{
-				var startVal = null;
-				if (this._openHeight != null)
-					startVal = this._openHeight - this.getStyle("PopupDataListClipTopOrBottom");
-				
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = startVal;	//Fixed by layout complete
-				this._openCloseTween.endVal = 0;
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onDropDownEnterFrameInstance);
-			}
-		}
-	};
-
 	
 /////////////Internal///////////////////////////////	
-	
-/**
- * @function _removeDataListPopup
- * Removes the pop up list and cleans up event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was removed, false if the pop up does not exist.
- */	
-DropdownElement.prototype._removeDataListPopup = 
+
+//@override
+DropdownElement.prototype._createPopup = 
 	function ()
 	{
-		if (this._dataListPopupClipContainer._parent == null)
-			return false;
+		this._popupContainer = new CanvasElement();
+		this._popupContainer.setStyle("ClipContent", true);
+		
+		this._dataListPopup = new DataListElement();
+		this._popupContainer._addChild(this._dataListPopup);
+		
+		this._dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
+		this._applySubStylesToElement("PopupDataListStyle", this._dataListPopup);
+		
+		this._dataListPopup.setListCollection(this._listCollection);
+		this._dataListPopup.setSelectedIndex(this._selectedIndex);
+		
+		this._dataListPopup.addEventListener("changed", this._onDropdownDataListPopupChangedInstance);
+		this._dataListPopup.addEventListener("listitemclick", this._onDropdownDataListPopupListItemClickedInstance);
+		this._dataListPopup.addEventListener("layoutcomplete", this._onDropdownDataListPopupLayoutCompleteInstance);
+		
+		return this._popupContainer;
+	};	
 	
-		this._dataListPopupClipContainer._manager.removeCaptureListener("wheel", this._onDropdownManagerCaptureEventInstance);
-		this._dataListPopupClipContainer._manager.removeCaptureListener("mousedown", this._onDropdownManagerCaptureEventInstance);
-		this._dataListPopupClipContainer._manager.removeEventListener("resize", this._onDropdownManagerResizeEventInstance);
+//@override
+DropdownElement.prototype._addPopup = 
+	function ()
+	{
+		if (DropdownElement.base.prototype._addPopup.call(this) == false)
+			return false;
 		
-		this._dataListPopupClipContainer._manager.removeElement(this._dataListPopupClipContainer);
+		this._openDirection = "down";
+		this._openHeight = this.getStyle("MaxPopupHeight");
+		this._dropdownManagerMetrics = this.getMetrics(this._manager);
 		
-		this._dropdownManagerMetrics = null;
+		this._popupContainer.setStyle("Height", 0);
+		this._onDropdownDataListPopupLayoutComplete(null);
+		
+		return true;
+	};
+	
+//@override
+DropdownElement.prototype._removePopup = 
+	function ()
+	{
+		if (DropdownElement.base.prototype._removePopup.call(this) == false)
+			return false;
+		
 		this._openDirection = null;
 		this._openHeight = null;
+		this._dropdownManagerMetrics = null;
 		
 		return true;
 	};
 
-/**
- * @function _addDataListPopup
- * Adds the pop up list and registers event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was added, false if the pop up already exists.
- */		
-DropdownElement.prototype._addDataListPopup = 
+//@override	
+DropdownElement.prototype._getOpenedTweenValue = 
 	function ()
 	{
-		if (this._dataListPopupClipContainer._parent != null)
-			return false;
-		
-		this._manager.addElement(this._dataListPopupClipContainer);
-		
-		this._dataListPopupClipContainer._manager.addCaptureListener("wheel", this._onDropdownManagerCaptureEventInstance);
-		this._dataListPopupClipContainer._manager.addCaptureListener("mousedown", this._onDropdownManagerCaptureEventInstance);
-		this._dataListPopupClipContainer._manager.addEventListener("resize", this._onDropdownManagerResizeEventInstance);
-		
-		return true;
+		return this._openHeight;
 	};
+
 	
-//@private	
-DropdownElement.prototype._onDropDownEnterFrame = 
-	function (event)
-	{
-		//Tween created, but layoutcomplete has not yet finished. 
-		//When we first create the popup list, we need to wait a cycle for the list layout to finish.
-		//However, enter frame fires first *before* the list cycle has finished.
-		if (this._openCloseTween.endVal == null || this._openCloseTween.startVal == null)
-			return;
-	
-		var value = this._openCloseTween.getValue(Date.now());
-		this._updateTweenPosition(value);
-		
-		if (value == this._openCloseTween.endVal)
-		{
-			if (value == 0)
-				this.close(false);			//Finished closing
-			else
-				this._endOpenCloseTween();	//Finished opening
-		}
-	};
-	
-//@private
-DropdownElement.prototype._endOpenCloseTween = 
-	function ()
-	{
-		if (this._openCloseTween != null)
-		{
-			this.removeEventListener("enterframe", this._onDropDownEnterFrameInstance);
-			this._openCloseTween = null;
-		}
-	};
-	
-//@private	
+//@override	
 DropdownElement.prototype._updateTweenPosition = 
 	function (value)
 	{
-		this._dataListPopupClipContainer.setStyle("Height", value);
+		this._popupContainer.setStyle("Height", value);
 		
 		if (this._openDirection == "up")
 		{
-			this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y - value);
+			this._popupContainer.setStyle("Y", this._dropdownManagerMetrics._y - value);
 			this._dataListPopup._setActualPosition(0, 0);
 		}
 		else //if (this._openDirection == "down")
 		{
-			this._dataListPopupClipContainer.setStyle("Y", this._dropdownManagerMetrics._y + this._dropdownManagerMetrics._height);
+			this._popupContainer.setStyle("Y", this._dropdownManagerMetrics._y + this._dropdownManagerMetrics._height);
 			this._dataListPopup._setActualPosition(0, value - this._dataListPopup._height);
 		}
-	};
-	
-/**
- * @function _onDropdownManagerCaptureEvent
- * Capture event handler for CanvasManager "wheel" and "mousedown". Used to close 
- * the drop down when events happen outside the Dropdown or pop up list. Only active when pop up list is open.
- * 
- * @param event ElementEvent
- * ElementEvent to process.
- */	
-DropdownElement.prototype._onDropdownManagerCaptureEvent = 
-	function (event)
-	{
-		//Check if the dropdown list is in this target's parent chain.
-		var target = event.getTarget();
-		while (target != null)
-		{
-			//Yes, leave the drop down open
-			if (target == this._dataListPopup || 
-				(event.getType() == "mousedown" && target == this))
-				return;
-			
-			target = target._parent;
-		}
-		
-		//Kill the drop down, event happened outside the popup list.
-		this.close(false);
-	};
-	
-/**
- * @function _onDropdownManagerResizeEvent
- * Capture event handler for CanvasManager "resize". Used to close the dropdown.
- * Only active when pop up list is open.
- * 
- * @param event DispatcherEvent
- * DispatcherEvent to process.
- */		
-DropdownElement.prototype._onDropdownManagerResizeEvent = 
-	function (event)
-	{
-		this.close(false);
 	};
 
 /**
@@ -28393,7 +28828,6 @@ DropdownElement.prototype._onDropdownManagerResizeEvent =
 DropdownElement.prototype._onDropdownDataListPopupLayoutComplete =
 	function (event)
 	{
-		this._dropdownManagerMetrics = this.getMetrics(this._manager);
 		var maxHeight = this.getStyle("MaxPopupHeight");
 		var height = null;
 		
@@ -28445,24 +28879,15 @@ DropdownElement.prototype._onDropdownDataListPopupLayoutComplete =
 			}
 		}
 		
-		this._dataListPopupClipContainer.setStyle("X", this._dropdownManagerMetrics._x);
-		this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
-		
+		this._popupContainer.setStyle("X", this._dropdownManagerMetrics._x);
+		this._popupContainer.setStyle("Width", this._dropdownManagerMetrics._width);
 		this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, this._openHeight);
+
+		this._openHeight -= this.getStyle("PopupDataListClipTopOrBottom");
 		
-		var clipTopOrBottom = this.getStyle("PopupDataListClipTopOrBottom");
-		
-		if (this._openCloseTween != null)
-		{
-			if (this._openCloseTween.startVal == 0) //Closing
-				this._openCloseTween.endVal = this._openHeight - clipTopOrBottom;
-			else //Opening
-				this._openCloseTween.startVal = this._openHeight - clipTopOrBottom;
-			
-			this._onDropDownEnterFrame(null); //Force a tween update.
-		}
-		else
-			this._updateTweenPosition(this._openHeight - clipTopOrBottom);
+		//Fix position if tween is not running
+		if (this._getTweenRunning() == false)
+			this._updateTweenPosition(this._openHeight);
 	};
 	
 /**
@@ -28476,7 +28901,6 @@ DropdownElement.prototype._onDropdownDataListPopupChanged =
 	function (elementEvent)
 	{
 		this.setSelectedIndex(this._dataListPopup.getSelectedIndex());
-		this.close(true);
 		
 		if (this.hasEventListener("changed", null) == true)
 			this.dispatchEvent(new ElementEvent("changed", false));
@@ -28485,6 +28909,7 @@ DropdownElement.prototype._onDropdownDataListPopupChanged =
 /**
  * @function _onDropdownDataListPopupListItemClicked
  * Event handler for pop up list "listitemclick" event. 
+ * Re-dispatches the list event and closes the Dropdown.
  * 
  * @param elementListItemClickEvent ElementListItemClickEvent
  * ElementListItemClickEvent to process.
@@ -28494,34 +28919,23 @@ DropdownElement.prototype._onDropdownDataListPopupListItemClicked =
 	{
 		//Just proxy the event from the popup list
 		if (this.hasEventListener("listitemclick", null) == true)
-			this.dispatchEvent(elementListItemClickEvent);
-	};
-	
-/**
- * @function _createDataListPopup
- * Generates and sets up a pop up list element instance per styling.
- * 
- * @returns DataListElement
- * New pop up list instance.
- */	
-DropdownElement.prototype._createDataListPopup = 
-	function ()
-	{
-		//TODO: Use PopupDataListClass style.
-	
-		var dataListPopup = new DataListElement();
+			this.dispatchEvent(elementListItemClickEvent.clone());
 		
-		dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
-		this._applySubStylesToElement("PopupDataListStyle", dataListPopup);
+		var shouldClose = true;
+		if (this._dataListPopup.getStyle("Selectable") == false ||
+			(elementListItemClickEvent.getItem().hasOwnProperty("selectable") == true &&
+			elementListItemClickEvent.getItem().selectable == false))
+		{
+			shouldClose = false;
+		}
 		
-		dataListPopup.setListCollection(this._listCollection);
-		dataListPopup.setSelectedIndex(this._selectedIndex);
-		
-		dataListPopup.addEventListener("changed", this._onDropdownDataListPopupChangedInstance);
-		dataListPopup.addEventListener("listitemclick", this._onDropdownDataListPopupListItemClickedInstance);
-		dataListPopup.addEventListener("layoutcomplete", this._onDropdownDataListPopupLayoutCompleteInstance);
-		
-		return dataListPopup;
+		if (shouldClose == true)
+		{
+			this.close(true);
+			
+			if (this.hasEventListener("closed", null) == true)
+				this.dispatchEvent(new DispatcherEvent("closed"));
+		}
 	};
 	
 //@override	
@@ -28563,7 +28977,6 @@ DropdownElement.prototype._onDropdownListCollectionChanged =
 		}
 		
 		this._updateText();
-		
 		this._sampledTextWidth = null;
 		this._invalidateMeasure();
 	};	
@@ -28590,91 +29003,7 @@ DropdownElement.prototype._onCanvasElementRemoved =
 		this.close(false);
 	};	
 
-//@private	
-DropdownElement.prototype._reverseTween = 
-	function ()
-	{
-		var start = this._openCloseTween.startVal;
-		var end = this._openCloseTween.endVal;
-		var now = Date.now();
-		var elapsed = now - this._openCloseTween.startTime;
-		
-		this._openCloseTween.startVal = end;
-		this._openCloseTween.endVal = start;
-		this._openCloseTween.startTime = now + elapsed - this._openCloseTween.duration;		
-	};
-	
-//@Override	
-DropdownElement.prototype._onButtonClick = 
-	function (elementMouseEvent)
-	{
-		//Just cancels event if we're disabled.
-		DropdownElement.base.prototype._onButtonClick.call(this, elementMouseEvent);
-		
-		if (elementMouseEvent.getIsCanceled() == true)
-			return;
-		
-		if (this._openCloseTween != null)
-			this._reverseTween();
-		else 
-		{
-			if (this._openHeight == null)
-				this.open(true);
-			else
-				this.close(true);
-		}
-	};	
-	
-/**
- * @function _createArrowButton
- * Generates and sets up the arrow element instance per styling.
- * 
- * @returns CanvasElement
- * New arrow element instance.
- */		
-DropdownElement.prototype._createArrowButton = 
-	function (arrowClass)
-	{
-		var newIcon = new (arrowClass)();
-		newIcon._setStyleProxy(new StyleProxy(this, DropdownElement._ArrowButtonProxyMap));
-		this._applySubStylesToElement("ArrowButtonStyle", newIcon);
-	
-		return newIcon;
-	};
-	
-//@private	
-DropdownElement.prototype._updateArrowButton = 
-	function ()
-	{
-		var arrowClass = this.getStyle("ArrowButtonClass");
-		
-		if (arrowClass == null)
-		{
-			if (this._arrowButton != null)
-			{
-				this._removeChild(this._arrowButton);
-				this._arrowButton = null;
-			}
-		}
-		else
-		{
-			if (this._arrowButton == null)
-			{
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			else if (this._arrowButton.constructor != arrowClass)
-			{ //Class changed
-				this._removeChild(this._arrowButton);
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			else
-				this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
-		}
-	};
-	
-//@Override
+//@override
 DropdownElement.prototype._doStylesUpdated =
 	function (stylesMap)
 	{
@@ -28690,14 +29019,13 @@ DropdownElement.prototype._doStylesUpdated =
 		if ("PopupDataListStyle" in stylesMap && this._dataListPopup != null)
 			this._applySubStylesToElement("PopupDataListStyle", this._dataListPopup);
 		
-		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
-			this._updateArrowButton();
-		
 		if ("TextStyle" in stylesMap ||
 			"TextFont" in stylesMap ||
 			"TextSize" in stylesMap ||
 			"TextHorizontalAlign" in stylesMap ||
 			"TextVerticalAlign" in stylesMap || 
+			"TextLinePaddingTop" in stylesMap ||
+			"TextLinePaddingBottom" in stylesMap ||
 			"Text" in stylesMap)
 		{
 			this._sampledTextWidth = null;
@@ -28743,7 +29071,7 @@ DropdownElement.prototype._sampleTextWidths =
 		return measuredTextWidth;
 	};
 	
-//@Override
+//@override
 DropdownElement.prototype._doMeasure = 
 	function(padWidth, padHeight)
 	{
@@ -28757,13 +29085,13 @@ DropdownElement.prototype._doMeasure =
 		
 		if (this._arrowButton != null)
 		{
-			var iconWidth = this._arrowButton.getStyle("Width");
-			var iconHeight = this._arrowButton.getStyle("Height");
+			var arrowWidth = this._arrowButton.getStyle("Width");
+			var arrowHeight = this._arrowButton.getStyle("Height");
 			
-			if (iconHeight != null && iconHeight > measuredHeight)
-				measuredHeight = iconHeight;
-			if (iconWidth != null)
-				measuredWidth += iconWidth;
+			if (arrowHeight != null && arrowHeight > measuredHeight)
+				measuredHeight = arrowHeight;
+			if (arrowWidth != null)
+				measuredWidth += arrowWidth;
 			else
 				measuredWidth += Math.round(measuredHeight * .85);
 		}
@@ -28771,7 +29099,7 @@ DropdownElement.prototype._doMeasure =
 		this._setMeasuredSize(measuredWidth, measuredHeight);
 	};	
 	
-//@Override	
+//@override	
 DropdownElement.prototype._doLayout = 
 	function (paddingMetrics)
 	{
@@ -28785,52 +29113,18 @@ DropdownElement.prototype._doLayout =
 			//Update the widths of the popup container and list. (Heights handled by tween / list layoutcomplete)
 			//This is here so that when the Dropdown is using measured width, and the collection changes,
 			//it may change the width of the dropdown button, so we need to make sure we keep the widths in sync.
-			this._dataListPopupClipContainer.setStyle("Width", this._dropdownManagerMetrics._width);
-			this._dataListPopupClipContainer.setStyle("X", this._dropdownManagerMetrics._x);
+			this._popupContainer.setStyle("Width", this._dropdownManagerMetrics._width);
+			this._popupContainer.setStyle("X", this._dropdownManagerMetrics._x);
 			
 			this._dataListPopup._setActualSize(this._dropdownManagerMetrics._width, this._dataListPopup._height);
 		}
-		
-		if (this._arrowButton != null)
-		{
-			var x = paddingMetrics.getX();
-			var y = paddingMetrics.getY();
-			var w = paddingMetrics.getWidth();
-			var h = paddingMetrics.getHeight();
-			
-			var iconWidth = this._arrowButton.getStyle("Width");
-			var iconHeight = this._arrowButton.getStyle("Height");
-			
-			if (iconHeight == null)
-				iconHeight = this._height;
-			if (iconWidth == null)
-				iconWidth = this._height * .85;
-			
-			if (this._width < iconWidth)
-			{
-				this._arrowButton._setActualSize(0, 0);
-				this._labelElement._setActualSize(0, 0);
-			}
-			else
-			{
-				if (this._labelElement != null)
-				{
-					this._labelElement._setActualPosition(x, y);
-					this._labelElement._setActualSize(w - iconWidth, h);
-				}
-					
-				this._arrowButton._setActualPosition(this._width - iconWidth, y + (h / 2) - (iconHeight / 2));
-				this._arrowButton._setActualSize(iconWidth, iconHeight);
-			}
-		}
 	};
+	
+	
 
 
 /**
- * @depends CanvasElement.js
- * @depends ButtonElement.js
- * @depends DropdownArrowButtonSkinElement.js
- * @depends Tween.js
+ * @depends DropdownBaseElement.js
  */
 
 //////////////////////////////////////////////////////////////
@@ -28838,7 +29132,7 @@ DropdownElement.prototype._doLayout =
 
 /**
  * @class DatePickerButtonElement
- * @inherits ButtonElement
+ * @inherits DropdownBaseElement
  * 
  * DatePickerButtonElement is a compound button that creates a pop-up DatePicker
  * where the user can select a date which is then displayed on the button. 
@@ -28858,33 +29152,16 @@ function DatePickerButtonElement()
 {
 	DatePickerButtonElement.base.prototype.constructor.call(this);
 
-	this._arrowButton = null;
+	this._datePickerPopup = null;
+	this._selectedDate = null;
+
 	
-	this._datePickerPopup = new CanvasElement();
-	this._datePicker = new DatePickerElement();
-	this._datePickerPopup._addChild(this._datePicker);
-	
-	this._openCloseTween = null;
+	////////////////
 	
 	var _self = this;
 	
 	//Private event listeners, need an instance for each DatePickerButton, proxy to prototype.
 		
-	this._onDateButtonManagerCaptureEventInstance = 
-		function (event)
-		{
-			_self._onDateButtonManagerCaptureEvent(event);
-		};
-	this._onDateButtonManagerResizeEventInstance = 
-		function (event)
-		{
-			_self._onDateButtonManagerResizeEvent(event);
-		};
-	this._onDateButtonEnterFrameInstance = 
-		function (event)
-		{
-			_self._onDateButtonEnterFrame(event);
-		};
 	this._onDatePickerChangedInstance = 
 		function (event)
 		{
@@ -28895,15 +29172,13 @@ function DatePickerButtonElement()
 		{
 			_self._onDatePickerLayoutComplete(event);
 		};	
-		
-	this._datePicker.addEventListener("changed", this._onDatePickerChangedInstance);	
-	this._datePicker.addEventListener("layoutcomplete", this._onDatePickerLayoutCompleteInstance);
 }
 
 //Inherit from ButtonElement
-DatePickerButtonElement.prototype = Object.create(ButtonElement.prototype);
+DatePickerButtonElement.prototype = Object.create(DropdownBaseElement.prototype);
 DatePickerButtonElement.prototype.constructor = DatePickerButtonElement;
-DatePickerButtonElement.base = ButtonElement;
+DatePickerButtonElement.base = DropdownBaseElement;
+
 
 ////////////Static///////////////////////////////
 
@@ -28923,22 +29198,12 @@ DatePickerButtonElement.DefaultDateFormatLabelFunction =
 		return year + "-" + month + "-" + day;
 	};
 
+	
 ////////////Events///////////////////////////////
 
 /**
  * @event changed ElementEvent
- * 
  * Dispatched when the date selection changes as a result of user input.
- * 
- * 
- * @event opened ElementEvent
- * 
- * Dispatched when the DatePicker pop up is opened as a result of user input.
- * 
- * 
- * @event closed ElementEvent
- * 
- * Dispatched when the DatePicker pop up is closed as a result of user input.
  */
 
 
@@ -28963,36 +29228,6 @@ DatePickerButtonElement._StyleTypes.DateFormatLabelFunction = 			StyleableBase.E
 DatePickerButtonElement._StyleTypes.PopupDatePickerStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
 /**
- * @style ArrowButtonClass CanvasElement
- * 
- * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
- * Note that DatePickerButton proxies its SkinState style to the arrow button so the arrow 
- * will change states with the DatePickerButton.
- */
-DatePickerButtonElement._StyleTypes.ArrowButtonClass = 					StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
-
-/**
- * @style ArrowButtonStyle StyleDefinition
- * 
- * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
- */
-DatePickerButtonElement._StyleTypes.ArrowButtonStyle = 					StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
-
-/**
- * @style OpenCloseTweenDuration Number
- * 
- * Duration in milliseconds the open and close animation should run.
- */
-DatePickerButtonElement._StyleTypes.OpenCloseTweenDuration = 			StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
-
-/**
- * @style OpenCloseTweenEasingFunction Function
- * 
- * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
- */
-DatePickerButtonElement._StyleTypes.OpenCloseTweenEasingFunction = 		StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
-
-/**
  * @style PopupDatePickerDistance Number
  * 
  * Vertical distance in pixels to place the DatePicker pop up from the button.
@@ -29003,52 +29238,11 @@ DatePickerButtonElement._StyleTypes.PopupDatePickerDistance = 			StyleableBase.E
 
 ////////////Default Styles////////////////////
 
-/////Arrow default skin styles//////
-DatePickerButtonElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
-DatePickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
-DatePickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
-
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
-DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 			"#888888");
-
-
-/////Arrow default style///////
-DatePickerButtonElement.ArrowButtonStyleDefault = new StyleDefinition();
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("SkinClass", 						DropdownArrowButtonSkinElement);
-
-//Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Button (unless you turn mouse back on)
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 					false);
-
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 					DatePickerButtonElement.ArrowButtonSkinStyleDefault);
-DatePickerButtonElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 				DatePickerButtonElement.ArrowButtonDisabledSkinStyleDefault);
-
 ////DatePickerButton default style/////
 DatePickerButtonElement.StyleDefault = new StyleDefinition();
-DatePickerButtonElement.StyleDefault.setStyle("PaddingTop",								3);
-DatePickerButtonElement.StyleDefault.setStyle("PaddingBottom",							3);
-DatePickerButtonElement.StyleDefault.setStyle("PaddingRight",							4);
-DatePickerButtonElement.StyleDefault.setStyle("PaddingLeft",							4);
-DatePickerButtonElement.StyleDefault.setStyle("TextHorizontalAlign", 					"left"); 	
 DatePickerButtonElement.StyleDefault.setStyle("DateFormatLabelFunction",				DatePickerButtonElement.DefaultDateFormatLabelFunction)		
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerStyle", 					null);
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerDistance", 				-1);			
-DatePickerButtonElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 									// Element constructor
-DatePickerButtonElement.StyleDefault.setStyle("ArrowButtonStyle", 						DatePickerButtonElement.ArrowButtonStyleDefault); 	// StyleDefinition
-DatePickerButtonElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				150); 												// number (milliseconds)
-DatePickerButtonElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 								// function (fraction) { return fraction}
-
-
-/////////Style Proxy Maps/////////////////////////////
-
-//Proxy map for styles we want to pass to the arrow button.
-DatePickerButtonElement._ChildButtonProxyMap = Object.create(null);
-DatePickerButtonElement._ChildButtonProxyMap.SkinState = 						true;
-DatePickerButtonElement._ChildButtonProxyMap._Arbitrary = 						true;
 
 
 /////////////Public///////////////////////////////
@@ -29063,7 +29257,11 @@ DatePickerButtonElement._ChildButtonProxyMap._Arbitrary = 						true;
 DatePickerButtonElement.prototype.setSelectedDate = 
 	function (date)
 	{
-		this._datePicker.setSelectedDate(date);
+		this._selectedDate = date;
+	
+		if (this._datePickerPopup != null)
+			this._datePickerPopup.setSelectedDate(date);
+		
 		this._updateText();
 	};
 	
@@ -29077,227 +29275,34 @@ DatePickerButtonElement.prototype.setSelectedDate =
 DatePickerButtonElement.prototype.getSelectedDate = 
 	function ()
 	{
-		return this._datePicker.getSelectedDate();
-	};
-
-/**
- * @function open
- * Opens the pop up DatePicker.
- * 
- * @param animate boolean
- * When true animates the appearance of the pop-up DatePicker.
- */	
-DatePickerButtonElement.prototype.open = 
-	function (animate)
-	{
-		if (this._manager == null)
-			return;
-	
-		//Add the pop-up DatePicker. Wait for layoutcomplete to adjust positioning and size.
-		var added = this._addDatePickerPopup(); 
-		
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-		
-		if (animate == false || tweenDuration <= 0)
-		{
-			if (this._openCloseTween != null) //Tween running (kill it)
-				this._endOpenCloseTween();
-			
-			this._updateTweenPosition(1);	//Immediately show
-		}
-		else
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal == 1) //Reverse if closing, ignore if opening.
-					this._reverseTween();
-			}
-			else if (added == true) //Start tween if popup is new
-			{
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = 0; 
-				this._openCloseTween.endVal = 1;	
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onDateButtonEnterFrameInstance);
-			}
-		}
-	};
-	
-/**
- * @function close
- * Closes the pop up DatePicker.
- * 
- * @param animate boolean
- * When true animates the disappearance of the pop-up DatePicker.
- */		
-DatePickerButtonElement.prototype.close = 
-	function (animate)
-	{
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-	
-		if (animate == false || tweenDuration <= 0)
-		{
-			this._endOpenCloseTween();		
-			this._removeDatePickerPopup();
-		}
-		else 
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
-					this._reverseTween();
-			}
-			else if (this._datePickerPopup._parent != null) //Start tween if popup exists.
-			{
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = 1;
-				this._openCloseTween.endVal = 0;
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onDateButtonEnterFrameInstance);
-			}
-		}
+		return this._selectedDate;
 	};
 
 	
 /////////////Internal///////////////////////////////	
 	
-/**
- * @function _removeDatePickerPopup
- * Removes the pop up DatePicker and cleans up event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was removed, false if the pop up does not exist.
- */	
-DatePickerButtonElement.prototype._removeDatePickerPopup = 
+//@override
+DatePickerButtonElement.prototype._createPopup = 
 	function ()
 	{
-		if (this._datePickerPopup._parent == null)
-			return false;
-	
-		this._datePickerPopup._manager.removeCaptureListener("wheel", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.removeCaptureListener("mousedown", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.removeEventListener("resize", this._onDateButtonManagerResizeEventInstance);
+		this._datePickerPopup = new DatePickerElement();
 		
-		this._datePickerPopup._manager.removeElement(this._datePickerPopup);
+		this._datePickerPopup.addEventListener("changed", this._onDatePickerChangedInstance);	
+		this._datePickerPopup.addEventListener("layoutcomplete", this._onDatePickerLayoutCompleteInstance);
 		
-		return true;
-	};
+		this._applySubStylesToElement("PopupDatePickerStyle", this._datePickerPopup);
+		this._datePickerPopup.setSelectedDate(this._selectedDate);
+		
+		return this._datePickerPopup;
+	};	
 
-/**
- * @function _addDatePickerPopup
- * Adds the DatePicker pop up to CanvasManager and registers event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was added, false if the pop up already exists.
- */		
-DatePickerButtonElement.prototype._addDatePickerPopup = 
-	function ()
-	{
-		if (this._datePickerPopup._parent != null)
-			return false;
-		
-		this._manager.addElement(this._datePickerPopup);
-		
-		this._datePickerPopup._manager.addCaptureListener("wheel", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.addCaptureListener("mousedown", this._onDateButtonManagerCaptureEventInstance);
-		this._datePickerPopup._manager.addEventListener("resize", this._onDateButtonManagerResizeEventInstance);
-		
-		return true;
-	};
-	
-//@private	
-DatePickerButtonElement.prototype._onDateButtonEnterFrame = 
-	function (event)
-	{
-		var value = this._openCloseTween.getValue(Date.now());
-		
-		this._updateTweenPosition(value);
-		
-		if (value == this._openCloseTween.endVal)
-		{
-			if (value == 0)
-				this.close(false);
-			else
-				this._endOpenCloseTween();
-		}
-	};
-	
-//@private
-DatePickerButtonElement.prototype._endOpenCloseTween = 
-	function ()
-	{
-		if (this._openCloseTween != null)
-		{
-			this.removeEventListener("enterframe", this._onDateButtonEnterFrameInstance);
-			this._openCloseTween = null;
-		}
-	};
-	
-//@private	
+//@override	
 DatePickerButtonElement.prototype._updateTweenPosition = 
 	function (value)
 	{
 		this._datePickerPopup.setStyle("Alpha", value);
-	};
+	};	
 	
-/**
- * @function _onDateButtonManagerCaptureEvent
- * Capture event handler for CanvasManager "wheel" and "mousedown". Used to close 
- * the DatePicker when events happen outside the Button or pop up DatePicker. 
- * Only active when pop up is open.
- * 
- * @param event ElementEvent
- * ElementEvent to process.
- */	
-DatePickerButtonElement.prototype._onDateButtonManagerCaptureEvent = 
-	function (event)
-	{
-		//Check if the DatePicker pop up is in this target's parent chain.
-		var target = event.getTarget();
-		
-		while (target != null)
-		{
-			//Yes, leave the DatePicker open
-			if (target == this._datePickerPopup || 
-				(event.getType() == "mousedown" && target == this))
-			{
-				return;
-			}
-			
-			target = target._parent;
-		}
-		
-		this.close(false);
-		
-		//Dispatch closed event.
-		if (this.hasEventListener("closed", null) == true)
-			this.dispatchEvent(new ElementEvent("closed", false));
-	};
-	
-/**
- * @function _onDateButtonManagerResizeEvent
- * Capture event handler for CanvasManager "resize". Used to close the DatePicker.
- * Only active when DatePicker is open.
- * 
- * @param event DispatcherEvent
- * DispatcherEvent to process.
- */		
-DatePickerButtonElement.prototype._onDateButtonManagerResizeEvent = 
-	function (event)
-	{
-		this.close(false);
-		
-		//Dispatch closed event.
-		if (this.hasEventListener("closed", null) == true)
-			this.dispatchEvent(new ElementEvent("closed", false));
-	};
-
 /**
  * @function _onDatePickerLayoutComplete
  * Event handler for pop up DatePicker "layoutcomplete". 
@@ -29324,89 +29329,16 @@ DatePickerButtonElement.prototype._onDatePickerLayoutComplete =
 DatePickerButtonElement.prototype._onDatePickerChanged = 
 	function (elementEvent)
 	{
+		this.setSelectedDate(this._datePickerPopup.getSelectedDate());
+		
 		if (this.hasEventListener("changed", null) == true)
 			this.dispatchEvent(new ElementEvent("changed", false));
 	
-		//Update label
-		this._updateText();
+		this.close(true);
 		
-		//Dispatch closed event.
 		if (this.hasEventListener("closed", null) == true)
 			this.dispatchEvent(new ElementEvent("closed", false));
-		
-		this.close(true);
 	};
-
-//@override	
-DatePickerButtonElement.prototype._onCanvasElementRemoved = 
-	function (addedRemovedEvent)
-	{
-		DatePickerButtonElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
-		
-		this.close(false);
-	};	
-
-//@private	
-DatePickerButtonElement.prototype._reverseTween = 
-	function ()
-	{
-		var start = this._openCloseTween.startVal;
-		var end = this._openCloseTween.endVal;
-		var now = Date.now();
-		var elapsed = now - this._openCloseTween.startTime;
-		
-		this._openCloseTween.startVal = end;
-		this._openCloseTween.endVal = start;
-		this._openCloseTween.startTime = now + elapsed - this._openCloseTween.duration;		
-	};
-	
-//@override	
-DatePickerButtonElement.prototype._onButtonClick = 
-	function (elementMouseEvent)
-	{
-		//Just cancels event if we're disabled.
-		DatePickerButtonElement.base.prototype._onButtonClick.call(this, elementMouseEvent);
-		
-		if (elementMouseEvent.getIsCanceled() == true)
-			return;
-		
-		if (this._openCloseTween != null)
-		{
-			if (this._openCloseTween.startVal == 0) //Now opening
-			{
-				//Dispatch opened event.
-				if (this.hasEventListener("opened", null) == true)
-					this.dispatchEvent(new ElementEvent("opened", false));
-			}
-			else //Now closing
-			{
-				//Dispatch closed event.
-				if (this.hasEventListener("closed", null) == true)
-					this.dispatchEvent(new ElementEvent("closed", false));
-			}
-			
-			this._reverseTween();
-		}
-		else 
-		{
-			if (this._datePickerPopup._parent == null)
-			{
-				//Dispatch opened event.
-				if (this.hasEventListener("opened", null) == true)
-					this.dispatchEvent(new ElementEvent("opened", false));
-				
-				this.open(true);
-			}
-			else
-			{
-				//Dispatch closed event.
-				if (this.hasEventListener("closed", null) == true)
-					this.dispatchEvent(new ElementEvent("closed", false));
-				
-				this.close(true);
-			}
-		}
-	};	
 
 /**
  * @function _updateText
@@ -29417,59 +29349,12 @@ DatePickerButtonElement.prototype._updateText =
 	{
 		var labelFunction = this.getStyle("DateFormatLabelFunction");
 		
-		if (this._datePicker.getSelectedDate() != null && labelFunction != null)
-			text = labelFunction(this._datePicker.getSelectedDate());
+		if (this._selectedDate != null && labelFunction != null)
+			text = labelFunction(this._selectedDate);
 		else
 			text = this.getStyle("Text");
 		
 		this._setLabelText(text);
-	};
-	
-/**
- * @function _createArrowButton
- * Generates and sets up the arrow element instance per styling.
- * 
- * @returns CanvasElement
- * New arrow element instance.
- */		
-DatePickerButtonElement.prototype._createArrowButton = 
-	function (arrowClass)
-	{
-		var newIcon = new (arrowClass)();
-		newIcon._setStyleProxy(new StyleProxy(this, DatePickerButtonElement._ChildButtonProxyMap));
-		return newIcon;
-	};
-	
-//@private	
-DatePickerButtonElement.prototype._updateArrowButton = 
-	function ()
-	{
-		var arrowClass = this.getStyle("ArrowButtonClass");
-		
-		if (arrowClass == null)
-		{
-			if (this._arrowButton != null)
-			{
-				this._removeChild(this._arrowButton);
-				this._arrowButton = null;
-			}
-		}
-		else
-		{
-			if (this._arrowButton == null)
-			{
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			else if (this._arrowButton.constructor != arrowClass)
-			{ //Class changed
-				this._removeChild(this._arrowButton);
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			
-			this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
-		}
 	};
 
 //@override
@@ -29478,16 +29363,9 @@ DatePickerButtonElement.prototype._doStylesUpdated =
 	{
 		DatePickerButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
+		if ("PopupDatePickerStyle" in stylesMap && this._datePickerPopup != null)
 		{
-			this._updateArrowButton();
-			this._invalidateMeasure();
-			this._invalidateLayout();
-		}
-		
-		if ("PopupDatePickerStyle" in stylesMap)
-		{
-			this._applySubStylesToElement("PopupDatePickerStyle", this._datePicker);
+			this._applySubStylesToElement("PopupDatePickerStyle", this._datePickerPopup);
 			this._invalidateLayout();
 		}
 		
@@ -29507,12 +29385,12 @@ DatePickerButtonElement.prototype._doMeasure =
 		var dateTextWidth = 20;
 		var labelFunction = this.getStyle("DateFormatLabelFunction");
 		if (labelFunction != null)
-			dateTextWidth += CanvasElement._measureText(labelFunction(new Date()), fontString);
+			dateTextWidth = CanvasElement._measureText(labelFunction(new Date()), fontString);
 		
 		var textLabelWidth = 20;
 		var textLabel = this.getStyle("Text");
 		if (textLabel != null)
-			textLabelWidth += CanvasElement._measureText(textLabel, fontString);
+			textLabelWidth = CanvasElement._measureText(textLabel, fontString);
 		
 		var textWidth = Math.max(dateTextWidth, textLabelWidth);		
 		var textHeight = this.getStyle("TextSize") + this.getStyle("TextLinePaddingTop") + this.getStyle("TextLinePaddingBottom");
@@ -29545,8 +29423,9 @@ DatePickerButtonElement.prototype._layoutDatePickerPopup =
 	function ()
 	{
 		//DatePicker not displayed - bail.
-		if (this._datePickerPopup._parent == null || 
-			this._datePicker._layoutInvalid == true)
+		if (this._datePickerPopup == null ||
+			this._datePickerPopup._parent == null || 
+			this._datePickerPopup._layoutInvalid == true)
 		{
 			return;
 		}
@@ -29555,13 +29434,13 @@ DatePickerButtonElement.prototype._layoutDatePickerPopup =
 		
 		var pickerDistance = this.getStyle("PopupDatePickerDistance");
 		
-		var pickerWidth = this._datePicker.getStyle("Width");
+		var pickerWidth = this._datePickerPopup.getStyle("Width");
 		if (pickerWidth == null)
-			pickerWidth = this._datePicker._measuredWidth;
+			pickerWidth = this._datePickerPopup._measuredWidth;
 		
-		var pickerHeight = this._datePicker.getStyle("Height");
+		var pickerHeight = this._datePickerPopup.getStyle("Height");
 		if (pickerHeight == null)
-			pickerHeight = this._datePicker._measuredHeight;
+			pickerHeight = this._datePickerPopup._measuredHeight;
 		
 		//Figure out the available space around the button that we have to place the pop up
 		var availableBottom = this._manager._height - (managerMetrics._y + managerMetrics._height) - pickerDistance;
@@ -29588,9 +29467,6 @@ DatePickerButtonElement.prototype._layoutDatePickerPopup =
 		this._datePickerPopup.setStyle("Y", pickerY);
 		this._datePickerPopup.setStyle("Width", pickerWidth);
 		this._datePickerPopup.setStyle("Height", pickerHeight);
-		
-		this._datePicker._setActualPosition(0, 0);
-		this._datePicker._setActualSize(pickerWidth, pickerHeight);
 	};
 	
 //@override	
@@ -31618,9 +31494,7 @@ DataGridColumnDefinition.StyleDefault.setStyle("RowItemLabelFunction", 		null);	
 
 /**
  * @depends CanvasElement.js
- * @depends ButtonElement.js
- * @depends DropdownArrowButtonSkinElement.js
- * @depends Tween.js
+ * @depends DropdownBaseElement.js
  */
 
 //////////////////////////////////////////////////////////////
@@ -31628,7 +31502,7 @@ DataGridColumnDefinition.StyleDefault.setStyle("RowItemLabelFunction", 		null);	
 
 /**
  * @class ColorPickerButtonElement
- * @inherits ButtonElement
+ * @inherits DropdownBaseElement
  * 
  * ColorPickerButtonElement is a compound button that creates a pop-up ColorPicker
  * which the user can select a color which is then displayed on the button. 
@@ -31649,33 +31523,13 @@ function ColorPickerButtonElement()
 	ColorPickerButtonElement.base.prototype.constructor.call(this);
 
 	this._colorSwatch = null;
-	this._arrowButton = null;
+	this._colorPickerPopup = null;
+	this._selectedHexColor = "#FFFFFF";
 	
-	this._colorPickerPopup = new CanvasElement();
-	this._colorPicker = new ColorPickerElement();
-	this._colorPickerPopup._addChild(this._colorPicker);
-	
-	this._openCloseTween = null;
+	////////////////
 	
 	var _self = this;
 	
-	//Private event listeners, need an instance for each ColorPickerButton, proxy to prototype.
-		
-	this._onColorButtonManagerCaptureEventInstance = 
-		function (event)
-		{
-			_self._onColorButtonManagerCaptureEvent(event);
-		};
-	this._onColorButtonManagerResizeEventInstance = 
-		function (event)
-		{
-			_self._onColorButtonManagerResizeEvent(event);
-		};
-	this._onColorButtonEnterFrameInstance = 
-		function (event)
-		{
-			_self._onColorButtonEnterFrame(event);
-		};
 	this._onColorPickerChangedInstance = 
 		function (event)
 		{
@@ -31691,33 +31545,19 @@ function ColorPickerButtonElement()
 		{
 			_self._onColorPickerLayoutComplete(event);
 		};	
-		
-	this._colorPicker.addEventListener("changed", this._onColorPickerChangedInstance);	
-	this._colorPicker.addEventListener("keydown", this._onColorPickerKeydownInstance);
-	this._colorPicker.addEventListener("layoutcomplete", this._onColorPickerLayoutCompleteInstance);
 }
 
 //Inherit from ButtonElement
-ColorPickerButtonElement.prototype = Object.create(ButtonElement.prototype);
+ColorPickerButtonElement.prototype = Object.create(DropdownBaseElement.prototype);
 ColorPickerButtonElement.prototype.constructor = ColorPickerButtonElement;
-ColorPickerButtonElement.base = ButtonElement;
+ColorPickerButtonElement.base = DropdownBaseElement;
+
 
 ////////////Events///////////////////////////////
 
 /**
  * @event changed ElementEvent
- * 
  * Dispatched when the color selection changes as a result of user input.
- * 
- * 
- * @event opened ElementEvent
- * 
- * Dispatched when the ColorPicker pop up is opened as a result of user input.
- * 
- * 
- * @event closed ElementEvent
- * 
- * Dispatched when the ColorPicker pop up is closed as a result of user input.
  */
 
 
@@ -31749,36 +31589,6 @@ ColorPickerButtonElement._StyleTypes.ColorSwatchClass = 				StyleableBase.EStyle
 ColorPickerButtonElement._StyleTypes.ColorSwatchStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
 
 /**
- * @style ArrowButtonClass CanvasElement
- * 
- * The CanvasElement or subclass constructor to be used for the arrow icon. Defaults to Button. 
- * Note that ColorPickerButton proxies its SkinState style to the arrow button so the arrow 
- * will change states with the ColorPickerButton.
- */
-ColorPickerButtonElement._StyleTypes.ArrowButtonClass = 				StyleableBase.EStyleType.NORMAL; 		// CanvasElement constructor
-
-/**
- * @style ArrowButtonStyle StyleDefinition
- * 
- * The StyleDefinition or [StyleDefinition] array to apply to the arrow icon class.
- */
-ColorPickerButtonElement._StyleTypes.ArrowButtonStyle = 				StyleableBase.EStyleType.SUBSTYLE; 		// StyleDefinition
-
-/**
- * @style OpenCloseTweenDuration Number
- * 
- * Duration in milliseconds the open and close animation should run.
- */
-ColorPickerButtonElement._StyleTypes.OpenCloseTweenDuration = 			StyleableBase.EStyleType.NORMAL; 		// number (milliseconds)
-
-/**
- * @style OpenCloseTweenEasingFunction Function
- * 
- * Easing function used on the open and close animations. Defaults to Tween.easeInOutSine().
- */
-ColorPickerButtonElement._StyleTypes.OpenCloseTweenEasingFunction = 	StyleableBase.EStyleType.NORMAL; 		// function (fraction) { return fraction} - see Tween.easing
-
-/**
  * @style PopupColorPickerDistance Number
  * 
  * Vertical distance in pixels to place the ColorPicker pop up from the button.
@@ -31789,65 +31599,22 @@ ColorPickerButtonElement._StyleTypes.PopupColorPickerDistance = 		StyleableBase.
 
 ////////////Default Styles////////////////////
 
-/////Arrow default skin styles//////
-ColorPickerButtonElement.ArrowButtonSkinStyleDefault = new StyleDefinition();
-ColorPickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BorderType", 					null);
-ColorPickerButtonElement.ArrowButtonSkinStyleDefault.setStyle("BackgroundFill", 				null);
-
-ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault = new StyleDefinition();
-ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BorderType", 			null);
-ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("BackgroundFill", 		null);
-ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("ArrowColor", 			"#888888");
-ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault.setStyle("LineColor", 				"#888888");
-
-
-/////Arrow default style///////
-ColorPickerButtonElement.ArrowButtonStyleDefault = new StyleDefinition();
-ColorPickerButtonElement.ArrowButtonStyleDefault.setStyle("SkinClass", 					DropdownArrowButtonSkinElement);
-
-//Note that SkinState is proxied to the arrow button, so the arrow will change state along with the Button (unless you turn mouse back on)
-ColorPickerButtonElement.ArrowButtonStyleDefault.setStyle("MouseEnabled", 				false);
-
-ColorPickerButtonElement.ArrowButtonStyleDefault.setStyle("UpSkinStyle", 				ColorPickerButtonElement.ArrowButtonSkinStyleDefault);
-ColorPickerButtonElement.ArrowButtonStyleDefault.setStyle("OverSkinStyle", 				ColorPickerButtonElement.ArrowButtonSkinStyleDefault);
-ColorPickerButtonElement.ArrowButtonStyleDefault.setStyle("DownSkinStyle", 				ColorPickerButtonElement.ArrowButtonSkinStyleDefault);
-ColorPickerButtonElement.ArrowButtonStyleDefault.setStyle("DisabledSkinStyle", 			ColorPickerButtonElement.ArrowButtonDisabledSkinStyleDefault);
-
-
 ////Color swatch default style////
 ColorPickerButtonElement.ColorSwatchStyleDefault = new StyleDefinition();
 ColorPickerButtonElement.ColorSwatchStyleDefault.setStyle("BorderType", "solid");
 ColorPickerButtonElement.ColorSwatchStyleDefault.setStyle("BorderColor", "#CFCFCF");
-
 
 ////ColorPicker pop up default style////
 ColorPickerButtonElement.PopupColorPickerStyleDefault = new StyleDefinition();
 ColorPickerButtonElement.PopupColorPickerStyleDefault.setStyle("BorderType", "solid");
 ColorPickerButtonElement.PopupColorPickerStyleDefault.setStyle("BackgroundFill", "#FFFFFF");
 
-
 ////ColorPickerButton default style/////
 ColorPickerButtonElement.StyleDefault = new StyleDefinition();
-ColorPickerButtonElement.StyleDefault.setStyle("PaddingTop",							3);
-ColorPickerButtonElement.StyleDefault.setStyle("PaddingBottom",							3);
-ColorPickerButtonElement.StyleDefault.setStyle("PaddingRight",							4);
-ColorPickerButtonElement.StyleDefault.setStyle("PaddingLeft",							4);
 ColorPickerButtonElement.StyleDefault.setStyle("PopupColorPickerStyle", 				ColorPickerButtonElement.PopupColorPickerStyleDefault);
 ColorPickerButtonElement.StyleDefault.setStyle("PopupColorPickerDistance", 				-1);			
 ColorPickerButtonElement.StyleDefault.setStyle("ColorSwatchClass", 						CanvasElement);
 ColorPickerButtonElement.StyleDefault.setStyle("ColorSwatchStyle", 						ColorPickerButtonElement.ColorSwatchStyleDefault); 			
-ColorPickerButtonElement.StyleDefault.setStyle("ArrowButtonClass", 						ButtonElement); 								// Element constructor
-ColorPickerButtonElement.StyleDefault.setStyle("ArrowButtonStyle", 						ColorPickerButtonElement.ArrowButtonStyleDefault); 		// StyleDefinition
-ColorPickerButtonElement.StyleDefault.setStyle("OpenCloseTweenDuration", 				150); 											// number (milliseconds)
-ColorPickerButtonElement.StyleDefault.setStyle("OpenCloseTweenEasingFunction", 			Tween.easeInOutSine); 							// function (fraction) { return fraction}
-
-
-/////////Style Proxy Maps/////////////////////////////
-
-//Proxy map for styles we want to pass to the arrow button.
-ColorPickerButtonElement._ChildButtonProxyMap = Object.create(null);
-ColorPickerButtonElement._ChildButtonProxyMap.SkinState = 						true;
-ColorPickerButtonElement._ChildButtonProxyMap._Arbitrary = 						true;
 
 
 /////////////Public///////////////////////////////
@@ -31862,7 +31629,13 @@ ColorPickerButtonElement._ChildButtonProxyMap._Arbitrary = 						true;
 ColorPickerButtonElement.prototype.setHexColor = 
 	function (value)
 	{
-		this._colorPicker.setHexColor(value);
+		this._selectedHexColor = value;
+		
+		if (this._colorSwatch != null)
+			this._colorSwatch.setStyle("BackgroundFill", this._selectedHexColor);
+		
+		if (this._colorPickerPopup != null)
+			this._colorPickerPopup.setHexColor(value);
 	};
 	
 /**
@@ -31873,227 +31646,35 @@ ColorPickerButtonElement.prototype.setHexColor =
  * RGB hex color value formatted as "#FF0000".
  */		
 ColorPickerButtonElement.prototype.getHexColor = 
-function ()
-{
-	return this._colorPicker.getHexColor();
-};
-
-/**
- * @function open
- * Opens the pop up ColorPicker.
- * 
- * @param animate boolean
- * When true animates the appearance of the pop-up ColorPicker.
- */	
-ColorPickerButtonElement.prototype.open = 
-	function (animate)
+	function ()
 	{
-		if (this._manager == null)
-			return;
-	
-		//Add the pop-up ColorPicker. Wait for layoutcomplete to adjust positioning and size.
-		var added = this._addColorPickerPopup(); 
-		
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-		
-		if (animate == false || tweenDuration <= 0)
-		{
-			if (this._openCloseTween != null) //Tween running (kill it)
-				this._endOpenCloseTween();
-			
-			this._updateTweenPosition(1);	//Immediately show
-		}
-		else
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal == 1) //Reverse if closing, ignore if opening.
-					this._reverseTween();
-			}
-			else if (added == true) //Start tween if popup is new
-			{
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = 0; 
-				this._openCloseTween.endVal = 1;	
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onColorButtonEnterFrameInstance);
-			}
-		}
-	};
-	
-/**
- * @function close
- * Closes the pop up ColorPicker.
- * 
- * @param animate boolean
- * When true animates the disappearance of the pop-up ColorPicker.
- */		
-ColorPickerButtonElement.prototype.close = 
-	function (animate)
-	{
-		var tweenDuration = this.getStyle("OpenCloseTweenDuration");
-	
-		if (animate == false || tweenDuration <= 0)
-		{
-			this._endOpenCloseTween();		
-			this._removeColorPickerPopup();
-		}
-		else 
-		{
-			if (this._openCloseTween != null) //Tween running
-			{
-				if (this._openCloseTween.startVal == 0) //Reverse if opening, ignore if closing.
-					this._reverseTween();
-			}
-			else if (this._colorPickerPopup._parent != null) //Start tween if popup exists.
-			{
-				this._openCloseTween = new Tween();
-				this._openCloseTween.startVal = 1;
-				this._openCloseTween.endVal = 0;
-				this._openCloseTween.duration = tweenDuration;
-				this._openCloseTween.startTime = Date.now();
-				this._openCloseTween.easingFunction = this.getStyle("OpenCloseTweenEasingFunction");
-				
-				this.addEventListener("enterframe", this._onColorButtonEnterFrameInstance);
-			}
-		}
+		return this._selectedHexColor;
 	};
 
-	
+
 /////////////Internal///////////////////////////////	
 	
-/**
- * @function _removeColorPickerPopup
- * Removes the pop up ColorPicker and cleans up event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was removed, false if the pop up does not exist.
- */	
-ColorPickerButtonElement.prototype._removeColorPickerPopup = 
+//@override
+ColorPickerButtonElement.prototype._createPopup = 
 	function ()
 	{
-		if (this._colorPickerPopup._parent == null)
-			return false;
-	
-		this._colorPickerPopup._manager.removeCaptureListener("wheel", this._onColorButtonManagerCaptureEventInstance);
-		this._colorPickerPopup._manager.removeCaptureListener("mousedown", this._onColorButtonManagerCaptureEventInstance);
-		this._colorPickerPopup._manager.removeEventListener("resize", this._onColorButtonManagerResizeEventInstance);
+		this._colorPickerPopup = new ColorPickerElement();
 		
-		this._colorPickerPopup._manager.removeElement(this._colorPickerPopup);
+		this._colorPickerPopup.addEventListener("changed", this._onColorPickerChangedInstance);	
+		this._colorPickerPopup.addEventListener("keydown", this._onColorPickerKeydownInstance);
+		this._colorPickerPopup.addEventListener("layoutcomplete", this._onColorPickerLayoutCompleteInstance);
 		
-		return true;
-	};
+		this._applySubStylesToElement("PopupColorPickerStyle", this._colorPickerPopup);
+		this._colorPickerPopup.setHexColor(this._selectedHexColor);
+		
+		return this._colorPickerPopup;
+	};	
 
-/**
- * @function _addColorPickerPopup
- * Adds the ColorPicker pop up to CanvasManager and registers event listeners.
- * 
- * @returns bool
- * Returns true if the pop up was added, false if the pop up already exists.
- */		
-ColorPickerButtonElement.prototype._addColorPickerPopup = 
-	function ()
-	{
-		if (this._colorPickerPopup._parent != null)
-			return false;
-		
-		this._manager.addElement(this._colorPickerPopup);
-		
-		this._colorPickerPopup._manager.addCaptureListener("wheel", this._onColorButtonManagerCaptureEventInstance);
-		this._colorPickerPopup._manager.addCaptureListener("mousedown", this._onColorButtonManagerCaptureEventInstance);
-		this._colorPickerPopup._manager.addEventListener("resize", this._onColorButtonManagerResizeEventInstance);
-		
-		return true;
-	};
-	
-//@private	
-ColorPickerButtonElement.prototype._onColorButtonEnterFrame = 
-	function (event)
-	{
-		var value = this._openCloseTween.getValue(Date.now());
-		
-		this._updateTweenPosition(value);
-		
-		if (value == this._openCloseTween.endVal)
-		{
-			if (value == 0)
-				this.close(false);
-			else
-				this._endOpenCloseTween();
-		}
-	};
-	
-//@private
-ColorPickerButtonElement.prototype._endOpenCloseTween = 
-	function ()
-	{
-		if (this._openCloseTween != null)
-		{
-			this.removeEventListener("enterframe", this._onColorButtonEnterFrameInstance);
-			this._openCloseTween = null;
-		}
-	};
-	
-//@private	
+//@override	
 ColorPickerButtonElement.prototype._updateTweenPosition = 
 	function (value)
 	{
 		this._colorPickerPopup.setStyle("Alpha", value);
-	};
-	
-/**
- * @function _onColorButtonManagerCaptureEvent
- * Capture event handler for CanvasManager "wheel" and "mousedown". Used to close 
- * the ColorPicker when events happen outside the Button or pop up ColorPicker. 
- * Only active when pop up is open.
- * 
- * @param event ElementEvent
- * ElementEvent to process.
- */	
-ColorPickerButtonElement.prototype._onColorButtonManagerCaptureEvent = 
-	function (event)
-	{
-		//Check if the ColorPicker pop up is in this target's parent chain.
-		var target = event.getTarget();
-		
-		while (target != null)
-		{
-			//Yes, leave the ColorPicker open
-			if (target == this._colorPickerPopup || 
-				(event.getType() == "mousedown" && target == this))
-			{
-				return;
-			}
-			
-			target = target._parent;
-		}
-		
-		this.close(false);
-		
-		//Dispatch closed event.
-		if (this.hasEventListener("closed", null) == true)
-			this.dispatchEvent(new ElementEvent("closed", false));
-	};
-	
-/**
- * @function _onColorButtonManagerResizeEvent
- * Capture event handler for CanvasManager "resize". Used to close the ColorPicker.
- * Only active when ColorPicker is open.
- * 
- * @param event DispatcherEvent
- * DispatcherEvent to process.
- */		
-ColorPickerButtonElement.prototype._onColorButtonManagerResizeEvent = 
-	function (event)
-	{
-		this.close(false);
-		
-		//Dispatch closed event.
-		if (this.hasEventListener("closed", null) == true)
-			this.dispatchEvent(new ElementEvent("closed", false));
 	};
 
 /**
@@ -32122,7 +31703,10 @@ ColorPickerButtonElement.prototype._onColorPickerLayoutComplete =
 ColorPickerButtonElement.prototype._onColorPickerChanged = 
 	function (elementEvent)
 	{
-		this._colorSwatch.setStyle("BackgroundFill", this._colorPicker.getHexColor());
+		this._selectedHexColor = this._colorPickerPopup.getHexColor();
+	
+		if (this._colorSwatch != null)
+			this._colorSwatch.setStyle("BackgroundFill", this._selectedHexColor);
 		
 		if (this.hasEventListener("changed", null) == true)
 			this.dispatchEvent(new ElementEvent("changed", false));
@@ -32150,139 +31734,6 @@ ColorPickerButtonElement.prototype._onColorPickerKeydown =
 		}
 	};
 	
-//@override	
-ColorPickerButtonElement.prototype._onCanvasElementRemoved = 
-	function (addedRemovedEvent)
-	{
-		ColorPickerButtonElement.base.prototype._onCanvasElementRemoved.call(this, addedRemovedEvent);
-		
-		this.close(false);
-	};	
-
-//@private	
-ColorPickerButtonElement.prototype._reverseTween = 
-	function ()
-	{
-		var start = this._openCloseTween.startVal;
-		var end = this._openCloseTween.endVal;
-		var now = Date.now();
-		var elapsed = now - this._openCloseTween.startTime;
-		
-		this._openCloseTween.startVal = end;
-		this._openCloseTween.endVal = start;
-		this._openCloseTween.startTime = now + elapsed - this._openCloseTween.duration;		
-	};
-	
-//@override	
-ColorPickerButtonElement.prototype._onButtonClick = 
-	function (elementMouseEvent)
-	{
-		//Just cancels event if we're disabled.
-		ColorPickerButtonElement.base.prototype._onButtonClick.call(this, elementMouseEvent);
-		
-		if (elementMouseEvent.getIsCanceled() == true)
-			return;
-		
-		if (this._openCloseTween != null)
-		{
-			this._reverseTween();
-			
-			if (this._openCloseTween.startVal == 0) //Now opening
-			{
-				//Dispatch opened event.
-				if (this.hasEventListener("opened", null) == true)
-					this.dispatchEvent(new ElementEvent("opened", false));
-			}
-			else //Now closing
-			{
-				//Dispatch closed event.
-				if (this.hasEventListener("closed", null) == true)
-					this.dispatchEvent(new ElementEvent("closed", false));
-			}
-		}
-		else 
-		{
-			if (this._colorPickerPopup._parent == null)
-			{
-				this.open(true);
-				
-				//Dispatch opened event.
-				if (this.hasEventListener("opened", null) == true)
-					this.dispatchEvent(new ElementEvent("opened", false));
-			}
-			else
-			{
-				this.close(true);
-				
-				//Dispatch closed event.
-				if (this.hasEventListener("closed", null) == true)
-					this.dispatchEvent(new ElementEvent("closed", false));
-			}
-		}
-	};	
-	
-/**
- * @function _createArrowButton
- * Generates and sets up the arrow element instance per styling.
- * 
- * @returns CanvasElement
- * New arrow element instance.
- */		
-ColorPickerButtonElement.prototype._createArrowButton = 
-	function (arrowClass)
-	{
-		var newIcon = new (arrowClass)();
-		newIcon._setStyleProxy(new StyleProxy(this, ColorPickerButtonElement._ChildButtonProxyMap));
-		return newIcon;
-	};
-	
-//@private	
-ColorPickerButtonElement.prototype._updateArrowButton = 
-	function ()
-	{
-		var arrowClass = this.getStyle("ArrowButtonClass");
-		
-		if (arrowClass == null)
-		{
-			if (this._arrowButton != null)
-			{
-				this._removeChild(this._arrowButton);
-				this._arrowButton = null;
-			}
-		}
-		else
-		{
-			if (this._arrowButton == null)
-			{
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			else if (this._arrowButton.constructor != arrowClass)
-			{ //Class changed
-				this._removeChild(this._arrowButton);
-				this._arrowButton = this._createArrowButton(arrowClass);
-				this._addChild(this._arrowButton);
-			}
-			
-			this._applySubStylesToElement("ArrowButtonStyle", this._arrowButton);
-		}
-	};
-	
-/**
- * @function _createColorSwatch
- * Generates and sets up the color swatch element instance per styling.
- * 
- * @returns CanvasElement
- * New color swatch element instance.
- */		
-ColorPickerButtonElement.prototype._createColorSwatch = 
-	function (swatchClass)
-	{
-		var newIcon = new (swatchClass)();
-		newIcon._setStyleProxy(new StyleProxy(this, ColorPickerButtonElement._ChildButtonProxyMap));
-		return newIcon;
-	}	
-	
 //@private	
 ColorPickerButtonElement.prototype._updateColorSwatch = 
 	function ()
@@ -32299,21 +31750,20 @@ ColorPickerButtonElement.prototype._updateColorSwatch =
 		}
 		else
 		{
-			if (this._colorSwatch == null)
+			if (this._colorSwatch == null || this._colorSwatch.constructor != colorSwatchClass)
 			{
-				this._colorSwatch = this._createColorSwatch(colorSwatchClass);
-				this._addChild(this._colorSwatch);
-			}
-			else if (this._colorSwatch.constructor != colorSwatchClass)
-			{ //Class changed
-				this._removeChild(this._colorSwatch);
-				this._arrowButton = this._createColorSwatch(colorSwatchClass);
+				var newColorSwatch = new (colorSwatchClass)();
+				
+				if (this._colorSwatch != null)
+					this._removeChild(this._colorSwatch);
+				
+				this._colorSwatch = newColorSwatch;
+
 				this._addChild(this._colorSwatch);
 			}
 			
 			this._applySubStylesToElement("ColorSwatchStyle", this._colorSwatch);
-			
-			this._colorSwatch.setStyle("BackgroundFill", this._colorPicker.getHexColor());
+			this._colorSwatch.setStyle("BackgroundFill", this._selectedHexColor);
 		}
 	};
 
@@ -32323,13 +31773,6 @@ ColorPickerButtonElement.prototype._doStylesUpdated =
 	{
 		ColorPickerButtonElement.base.prototype._doStylesUpdated.call(this, stylesMap);
 		
-		if ("ArrowButtonClass" in stylesMap || "ArrowButtonStyle" in stylesMap)
-		{
-			this._updateArrowButton();
-			this._invalidateMeasure();
-			this._invalidateLayout();
-		}
-		
 		if ("ColorSwatchClass" in stylesMap || "ColorSwatchStyle" in stylesMap)
 		{
 			this._updateColorSwatch();
@@ -32337,9 +31780,9 @@ ColorPickerButtonElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		}
 		
-		if ("PopupColorPickerStyle" in stylesMap)
+		if ("PopupColorPickerStyle" in stylesMap && this._colorPickerPopup != null)
 		{
-			this._applySubStylesToElement("PopupColorPickerStyle", this._colorPicker);
+			this._applySubStylesToElement("PopupColorPickerStyle", this._colorPickerPopup);
 			this._invalidateLayout();
 		}
 		
@@ -32396,8 +31839,9 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 	function ()
 	{
 		//Color picker not displayed - bail.
-		if (this._colorPickerPopup._parent == null || 
-			this._colorPicker._layoutInvalid == true)
+		if (this._colorPickerPopup == null ||
+			this._colorPickerPopup._parent == null || 
+			this._colorPickerPopup._layoutInvalid == true)
 		{
 			return;
 		}
@@ -32406,13 +31850,13 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 		
 		var colorPickerDistance = this.getStyle("PopupColorPickerDistance");
 		
-		var colorPickerWidth = this._colorPicker.getStyle("Width");
+		var colorPickerWidth = this._colorPickerPopup.getStyle("Width");
 		if (colorPickerWidth == null)
-			colorPickerWidth = this._colorPicker._measuredWidth;
+			colorPickerWidth = this._colorPickerPopup._measuredWidth;
 		
-		var colorPickerHeight = this._colorPicker.getStyle("Height");
+		var colorPickerHeight = this._colorPickerPopup.getStyle("Height");
 		if (colorPickerHeight == null)
-			colorPickerHeight = this._colorPicker._measuredHeight;
+			colorPickerHeight = this._colorPickerPopup._measuredHeight;
 		
 		//Figure out the available space around the button that we have to place the pop up
 		var availableBottom = this._manager._height - (managerMetrics._y + managerMetrics._height) - colorPickerDistance;
@@ -32439,9 +31883,6 @@ ColorPickerButtonElement.prototype._layoutColorPickerPopup =
 		this._colorPickerPopup.setStyle("Y", pickerY);
 		this._colorPickerPopup.setStyle("Width", colorPickerWidth);
 		this._colorPickerPopup.setStyle("Height", colorPickerHeight);
-		
-		this._colorPicker._setActualPosition(0, 0);
-		this._colorPicker._setActualSize(colorPickerWidth, colorPickerHeight);
 	};
 	
 //@override	
