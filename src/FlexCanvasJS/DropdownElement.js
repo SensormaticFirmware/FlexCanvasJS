@@ -307,6 +307,7 @@ DropdownElement.prototype._createPopup =
 		this._popupContainer.setStyle("ClipContent", true);
 		
 		this._dataListPopup = new DataListElement();
+		this._dataListPopup._owner = this; //Set owner - base sets its on the container
 		this._popupContainer._addChild(this._dataListPopup);
 		
 		this._dataListPopup._setStyleProxy(new StyleProxy(this, DropdownElement._PopupDataListProxyMap));
