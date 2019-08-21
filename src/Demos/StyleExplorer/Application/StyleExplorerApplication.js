@@ -499,6 +499,55 @@ function StyleExplorerApplication() //extends CanvasManager
 											control:textInputControl, 
 											rootControlStyleType:textInputControlStyleType,
 											list:null});
+	
+	//IpInputElement
+	var ipInputDef = new StyleDefinition();
+	
+	var ipInputControl = new IpInputElement();
+	ipInputControl.setStyleDefinitions(ipInputDef);
+	
+	var ipInputControlStyleType = new ControlStyleType("", "IpInputStyle", "root", false, false, ipInputControl, null, null, null);
+	ipInputControlStyleType.styleListCodeString = "var IpInputStyle = new StyleDefinition();\r\n";
+	
+	ipInputControlStyleType.buildControlStyleTypeLists(ipInputDef);
+	
+	this._dataListControlsCollection.addItem({label:"IpInput", 
+											control:ipInputControl, 
+											rootControlStyleType:ipInputControlStyleType,
+											list:null});
+	
+	//TimeInputElement
+	var TimeInputDef = new StyleDefinition();
+	
+	var TimeInputControl = new TimeInputElement();
+	TimeInputControl.setStyleDefinitions(TimeInputDef);
+	
+	var TimeInputControlStyleType = new ControlStyleType("", "TimeInputStyle", "root", false, false, TimeInputControl, null, null, null);
+	TimeInputControlStyleType.styleListCodeString = "var TimeInputStyle = new StyleDefinition();\r\n";
+	
+	TimeInputControlStyleType.buildControlStyleTypeLists(TimeInputDef);
+	
+	this._dataListControlsCollection.addItem({label:"TimeInput", 
+											control:TimeInputControl, 
+											rootControlStyleType:TimeInputControlStyleType,
+											list:null});
+	
+	//DatePickerElement
+	var DatePickerDef = new StyleDefinition();
+	
+	var DatePickerControl = new DatePickerElement();
+	DatePickerControl.setStyleDefinitions(DatePickerDef);
+	
+	var DatePickerControlStyleType = new ControlStyleType("", "DatePickerStyle", "root", false, false, DatePickerControl, null, null, null);
+	DatePickerControlStyleType.styleListCodeString = "var DatePickerStyle = new StyleDefinition();\r\n";
+	
+	DatePickerControlStyleType.buildControlStyleTypeLists(DatePickerDef);
+	
+	this._dataListControlsCollection.addItem({label:"DatePicker", 
+											control:DatePickerControl, 
+											rootControlStyleType:DatePickerControlStyleType,
+											list:null});
+	
 	//LabelElement
 	var labelDef = new StyleDefinition();
 	labelDef.setStyle("Text", "My Text");

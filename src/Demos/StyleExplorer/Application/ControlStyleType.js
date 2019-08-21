@@ -137,8 +137,12 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonIncrementStyle" || 
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
-			this.styleName == "ButtonTabStyle" || 
-			this.styleName == "AlertButtonStyle" ||
+			this.styleName == "ButtonTabStyle" ||
+			this.styleName == "ButtonYearDecrementStyle" ||
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" || 
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "AlertButtonStyle" || 
 			this.styleName == "AlertContentListContainerStyle" ||
 			this.styleName == "AlertButtonListContainerStyle" ||
 			this.styleName == "AlertTitleLabelStyle" ||
@@ -157,6 +161,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
 			this.styleName == "AlertButtonStyle" ||
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
 			this.styleName == "HeaderItemStyle" ||
 			this.styleName == "RowItemStyle" ||
 			this.styleName == "ListItemStyle" ||
@@ -177,6 +185,10 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
@@ -212,6 +224,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		if (this.styleType == "root" || 
 			this.styleName == "ButtonIncrementStyle" || 
 			this.styleName == "ButtonDecrementStyle" ||
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
 			this.styleName == "AlertButtonStyle" ||
@@ -245,8 +262,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Rendering", 	"ShadowColor", 								"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 		}
 		
-		if (this.styleType == "root" || 
-			this.styleName == "ButtonIncrementStyle" || 
+		if (this.styleName == "ButtonIncrementStyle" || 
 			this.styleName == "ButtonDecrementStyle" ||
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
@@ -263,6 +279,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" ||
 			this.styleName == "AlertButtonStyle" ||
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "HeaderStyle" ||
 			this.styleName == "ColumnDividerStyle" ||
 			this.styleName == "HeaderItemStyle" ||
@@ -283,11 +304,22 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "LabelStyle" || 
+			this.styleName == "LabelYearStyle" || 
+			this.styleName == "LabelMonthStyle" ||
+			this.styleName == "LabelDayStyle" ||
 			this.styleName == "AlertTitleLabelStyle" ||
 			this.styleName == "AlertContentTextStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "DatePickerStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
@@ -315,14 +347,25 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "LabelStyle" || 
+			this.styleName == "LabelYearStyle" ||
+			this.styleName == "LabelMonthStyle" ||
+			this.styleName == "LabelDayStyle" ||
 			this.styleName == "AlertStyle" ||
 			this.styleName == "AlertTitleLabelStyle" ||
 			this.styleName == "AlertContentTextStyle" ||
 			this.styleName == "AlertContentListContainerStyle" ||
 			this.styleName == "AlertButtonListContainerStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "DatePickerStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
@@ -358,17 +401,28 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		
 		if (this.styleName == "LabelStyle" || 
 			this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
-			this.styleName == "DropdownStyle")
+			this.styleName == "DropdownStyle" ||
+			this.styleName == "DatePickerButtonStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"Text", 									"string", 	true, 	false, 	styleDef, this, "My Text",					null));
 		}
 		
 		if (this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -398,7 +452,13 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" || 
 			this.styleName == "AlertButtonStyle" ||
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
@@ -415,11 +475,18 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			(this.styleName == "ListItemStyle" && (this.hasParentStyleName("DataListStyle") || this.hasParentStyleName("PopupDataListStyle"))) ||
 			this.styleName == "DropdownStyle" ||
@@ -431,6 +498,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
@@ -439,6 +511,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ButtonTrackStyle" || 
 			this.styleName == "ButtonTabStyle" || 
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "ArrowButtonStyle" ||
@@ -453,10 +527,17 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			this.styleName == "DropdownStyle" ||
 			this.styleName == "HeaderItemStyle" ||
@@ -466,6 +547,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
@@ -488,6 +574,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
@@ -501,6 +592,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
@@ -521,6 +617,11 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "ButtonStyle" || 
+			this.styleName == "ButtonYearDecrementStyle" || 
+			this.styleName == "ButtonMonthDecrementStyle" ||
+			this.styleName == "ButtonYearIncrementStyle" ||
+			this.styleName == "ButtonMonthIncrementStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "AlertButtonStyle" ||
 			this.styleName == "ToggleButtonStyle" ||
 			this.styleName == "RadioButtonStyle" ||
@@ -556,11 +657,17 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "TextInputStyle" ||
+			this.styleName == "IpInputStyle" ||
+			this.styleName == "TimeInputStyle" ||
 			this.styleName == "TextAreaStyle" ||
 			this.styleName == "TextInputColorStyle")
 		{
-			this.styleList.addItem(new ControlStyleType("Functional", 	"MaxChars", 								"number", 	false, 	false, 	styleDef, this,	0,							null));
-			this.styleList.addItem(new ControlStyleType("Functional", 	"DisplayAsPassword", 						"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+			if (this.styleName != "IpInputStyle" &&
+				this.styleName != "TimeInputStyle")
+			{
+				this.styleList.addItem(new ControlStyleType("Functional", 	"MaxChars", 								"number", 	false, 	false, 	styleDef, this,	0,							null));
+				this.styleList.addItem(new ControlStyleType("Functional", 	"DisplayAsPassword", 						"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+			}
 			
 			this.styleList.addItem(new ControlStyleType("Text", 		"TextHighlightedColor", 					"color", 	false, 	false, 	styleDef, this,	"#FFFFFF",					null));
 			this.styleList.addItem(new ControlStyleType("Text", 		"TextHighlightedBackgroundColor", 			"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
@@ -572,6 +679,9 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		}
 		
 		if (this.styleName == "LabelStyle"||
+			this.styleName == "LabelYearStyle" ||
+			this.styleName == "LabelMonthStyle" ||
+			this.styleName == "LabelDayStyle" ||
 			this.styleName == "AlertTitleLabelStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"TruncateToFit", 							"string", 	false, 	false, 	styleDef, this, "...",						null));
@@ -640,6 +750,27 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			
 			this.styleList.addItem(new ControlStyleType("Functional", 	"VerticalScrollBarDisplay", 				"string", 	false, 	false, 	styleDef, this,	"auto",						[{label:"auto", value:"auto"}, {label:"on", value:"on"}, {label:"off", value:"off"}]));
 			this.styleList.addItem(new ControlStyleType("Functional", 	"HorizontalScrollBarDisplay", 				"string", 	false, 	false, 	styleDef, this,	"auto",						[{label:"auto", value:"auto"}, {label:"on", value:"on"}, {label:"off", value:"off"}]));
+		}
+		
+		if (this.styleName == "TimeInputStyle")
+		{
+			this.styleList.addItem(new ControlStyleType("Functional", 	"Is24HourTime", 							"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+		}
+		
+		if (this.styleName == "DatePickerStyle")
+		{
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"LabelYearStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonYearDecrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonYearIncrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"LabelMonthStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonMonthDecrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ButtonMonthIncrementStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"LabelDayStyle", 							"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"ToggleButtonDaysStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			
+			this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutGap", 								"number", 	false, 	false, 	styleDef, this,	1,							null));
+			this.styleList.addItem(new ControlStyleType("Layout", 		"GridDaysVerticalLayoutGap", 				"number", 	false, 	false, 	styleDef, this,	1,							null));
+			this.styleList.addItem(new ControlStyleType("Layout", 		"GridDaysHorizontalLayoutGap", 				"number", 	false, 	false, 	styleDef, this,	1,							null));
 		}
 		
 		if (this.styleName == "ColorPickerStyle" ||
@@ -723,6 +854,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		
 		if (this.styleName == "ToggleButtonStyle" || 
 			this.styleName == "RadioButtonStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "CheckboxStyle")
 		{
 			this.styleList.addItem(new ControlStyleType("Functional", 	"AllowDeselect", 							"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
