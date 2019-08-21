@@ -388,14 +388,29 @@ IpInputElement.prototype._onIpInputTextFieldFocusOut =
 		if (text.length == 0)
 			return;
 		
-		//Trim leading zeros
-		while (text.charAt(0) == "0")
-			text = text.slice(1);
+		var changed = false;
 		
+		//Trim leading zeros
+		while (text.length > 1 && text.charAt(0) == "0")
+		{
+			text = text.slice(1);
+			changed = true;
+		}
+		
+		//Fix invalid number
 		if (Number(textField.getText()) > 255)
-			textField.setText("255");
-		else
+		{
+			text = "255";
+			changed = true;
+		}
+			
+		if (changed == true)
+		{
 			textField.setText(text);
+		
+			if (this.hasEventListener("changed", null) == true)
+				this.dispatchEvent(new ElementEvent("changed", false));
+		}
 	};
 	
 //@override
