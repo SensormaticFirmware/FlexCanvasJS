@@ -445,6 +445,7 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 		
 		if (this.styleName == "ButtonStyle" || 
 			this.styleName == "ToggleButtonStyle" ||
+			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "RadioButtonStyle" ||
 			this.styleName == "CheckboxStyle" ||
 			this.styleName == "ButtonIncrementStyle" || 
@@ -771,6 +772,8 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleList.addItem(new ControlStyleType("Layout", 		"LayoutGap", 								"number", 	false, 	false, 	styleDef, this,	1,							null));
 			this.styleList.addItem(new ControlStyleType("Layout", 		"GridDaysVerticalLayoutGap", 				"number", 	false, 	false, 	styleDef, this,	1,							null));
 			this.styleList.addItem(new ControlStyleType("Layout", 		"GridDaysHorizontalLayoutGap", 				"number", 	false, 	false, 	styleDef, this,	1,							null));
+			
+			this.styleList.addItem(new ControlStyleType("Functional", 	"AllowDeselect", 							"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 		}
 		
 		if (this.styleName == "ColorPickerStyle" ||
@@ -857,17 +860,18 @@ ControlStyleType.prototype.buildControlStyleTypeLists =
 			this.styleName == "ToggleButtonDaysStyle" ||
 			this.styleName == "CheckboxStyle")
 		{
-			this.styleList.addItem(new ControlStyleType("Functional", 	"AllowDeselect", 							"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedUpSkinStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedOverSkinStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedDownSkinStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedDisabledSkinStyle", 			"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
+		
+			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedUpTextColor", 					"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedOverTextColor", 				"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedDownTextColor", 				"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedDisabledTextColor",			"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
 			
-			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedUpSkinStyle", 						"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedOverSkinStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedDownSkinStyle", 					"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-			this.styleList.addItem(new ControlStyleType("Sub Styles", 	"SelectedDisabledSkinStyle", 				"class", 	false, 	false, 	styleDef, this,	StyleDefinition,			[{label:"StyleDefinition", value:StyleDefinition}]));
-
-			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedUpTextColor", 						"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedOverTextColor", 					"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedDownTextColor", 					"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
-			this.styleList.addItem(new ControlStyleType("Text", 		"SelectedDisabledTextColor",				"color", 	false, 	false, 	styleDef, this,	"#000000",					null));
+			if (this.styleName != "ToggleButtonDaysStyle")
+				this.styleList.addItem(new ControlStyleType("Functional", 	"AllowDeselect", 					"bool", 	false, 	false, 	styleDef, this,	true,						[{label:"true", value:true}, {label:"false", value:false}]));
 		}
 		
 		if (this.styleName == "RadioButtonStyle" || 

@@ -504,6 +504,7 @@ function StyleExplorerApplication() //extends CanvasManager
 	var ipInputDef = new StyleDefinition();
 	
 	var ipInputControl = new IpInputElement();
+	ipInputControl.setText("192.168.1.1");
 	ipInputControl.setStyleDefinitions(ipInputDef);
 	
 	var ipInputControlStyleType = new ControlStyleType("", "IpInputStyle", "root", false, false, ipInputControl, null, null, null);
