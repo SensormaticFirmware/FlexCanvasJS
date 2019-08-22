@@ -832,18 +832,18 @@ TimeInputElement.prototype._doStylesUpdated =
 			this._textFieldHour.setStyle("PaddingTop", paddingSize.paddingTop);
 			this._textFieldHour.setStyle("PaddingBottom", paddingSize.paddingBottom);
 			
+			this._labelColon1.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._labelColon1.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
 			this._textFieldMinute.setStyle("PaddingTop", paddingSize.paddingTop);
 			this._textFieldMinute.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
+			this._labelColon2.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._labelColon2.setStyle("PaddingBottom", paddingSize.paddingBottom);
 			
 			this._textFieldSecond.setStyle("PaddingRight", paddingSize.paddingRight);
 			this._textFieldSecond.setStyle("PaddingTop", paddingSize.paddingTop);
 			this._textFieldSecond.setStyle("PaddingBottom", paddingSize.paddingBottom);
-			
-			this._labelColon1.setStyle("PaddingTop", paddingSize.paddingTop);
-			this._labelColon1.setStyle("PaddingBottom", paddingSize.paddingBottom);
-			
-			this._labelColon2.setStyle("PaddingTop", paddingSize.paddingTop);
-			this._labelColon2.setStyle("PaddingBottom", paddingSize.paddingBottom);
 			
 			this._invalidateMeasure();
 		}
