@@ -13,10 +13,13 @@
  * The ListContainer can be used to lay out children in a vertical or horizontal fashion.
  * This container uses children's styles Width, Height, PercentWidth, PercentHeight, MinWidth,
  * MaxWidth, MinHeight, and MaxHeight.
+ * 
  * Nesting containers is the best way to quickly and simply build complex layouts.
  * 
- * Width, and Height are treated as highest priority and will override PercentWidth and PercentHeight styles.
- * Exact behavior of conflicting styles is not defined and subject to change. 
+ * Width, and Height will override PercentWidth and PercentHeight styles when the same priority. 
+ * Higher priority styles always override lower priority styles. For example, setting "PercentWidth" 
+ * via setStyle() will override a "Width" style set via StyleDefinition. 
+ * See CanvasElement getStyle() for priority chain info. 
  * 
  * @constructor ListContainerElement 
  * Creates new ListContainerElement instance.

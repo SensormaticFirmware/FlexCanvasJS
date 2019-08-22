@@ -12,18 +12,20 @@
  * 
  * The AnchorContainer can be used to lay out children via absolute or constraint positioning.
  * This container uses children's styles X, Y, Width, Height, PercentWidth, PercentHeight,
- * Top, Bottom, Left, Right, HorizontalCenter, and VerticalCenter. Nesting containers
- * is the best way to quickly and simply build complex layouts.
+ * Top, Bottom, Left, Right, HorizontalCenter, VerticalCenter, MinWidth, MaxWidth, MinHeight, and MaxHeight. 
+ * Nesting containers is the best way to quickly and simply build complex layouts.
  * 
- * X, Y, Width, and Height are treated as highest priority and will override other styles.
+ * X, Y, Width, and Height will override other styles with the same priority.
+ * Higher priority styles always override lower priority styles. For example, setting "PercentWidth" via setStyle()
+ * will override a "Width" style set via StyleDefinition. See CanvasElement getStyle() for priority chain info.
+ * 
  * Elements Z index is determined by the order they are added (child index).
+ * 
  * You may use styles such as Top and Bottom in conjunction to relatively size elements.
  * You may also combine styles such as Left or X and PercentWidth. Most styles are combine-able unless
  * they are in direct conflict with each other such as having a Left, Right, and Width which under
  * this scenario the Right style will be ignored. Exact behavior of conflicting styles is not defined 
  * and subject to change. 
- * 
- * See the associated style documentation for additional details.
  * 
  * @constructor AnchorContainerElement 
  * Creates new AnchorContainerElement instance.
