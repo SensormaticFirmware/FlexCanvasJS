@@ -399,6 +399,23 @@ function StyleExplorerApplication() //extends CanvasManager
 											rootControlStyleType:colorPickerButtonControlStyleType,
 											list:null});
 	
+	//DatePickerButton
+	var datePickerButtonDef = new StyleDefinition();
+	datePickerButtonDef.setStyle("Text", "Select Date");
+	
+	var datePickerButtonControl = new DatePickerButtonElement();
+	datePickerButtonControl.setStyleDefinitions(datePickerButtonDef);
+	
+	var datePickerButtonControlStyleType = new ControlStyleType("", "DatePickerButtonStyle", "root", false, false, datePickerButtonControl, null, null, null);
+	datePickerButtonControlStyleType.styleListCodeString = "var DatePickerButtonStyle = new StyleDefinition();\r\n";
+	
+	datePickerButtonControlStyleType.buildControlStyleTypeLists(datePickerButtonDef);
+	
+	this._dataListControlsCollection.addItem({label:"DatePickerButton", 
+											control:datePickerButtonControl, 
+											rootControlStyleType:datePickerButtonControlStyleType,
+											list:null});
+	
 	//ProgressElement
 	var progressDef = new StyleDefinition();
 	progressDef.setStyle("Width", 350);
@@ -518,35 +535,35 @@ function StyleExplorerApplication() //extends CanvasManager
 											list:null});
 	
 	//TimeInputElement
-	var TimeInputDef = new StyleDefinition();
+	var timeInputDef = new StyleDefinition();
 	
-	var TimeInputControl = new TimeInputElement();
-	TimeInputControl.setStyleDefinitions(TimeInputDef);
+	var timeInputControl = new TimeInputElement();
+	timeInputControl.setStyleDefinitions(timeInputDef);
 	
-	var TimeInputControlStyleType = new ControlStyleType("", "TimeInputStyle", "root", false, false, TimeInputControl, null, null, null);
-	TimeInputControlStyleType.styleListCodeString = "var TimeInputStyle = new StyleDefinition();\r\n";
+	var timeInputControlStyleType = new ControlStyleType("", "TimeInputStyle", "root", false, false, timeInputControl, null, null, null);
+	timeInputControlStyleType.styleListCodeString = "var TimeInputStyle = new StyleDefinition();\r\n";
 	
-	TimeInputControlStyleType.buildControlStyleTypeLists(TimeInputDef);
+	timeInputControlStyleType.buildControlStyleTypeLists(timeInputDef);
 	
 	this._dataListControlsCollection.addItem({label:"TimeInput", 
-											control:TimeInputControl, 
-											rootControlStyleType:TimeInputControlStyleType,
+											control:timeInputControl, 
+											rootControlStyleType:timeInputControlStyleType,
 											list:null});
 	
 	//DatePickerElement
-	var DatePickerDef = new StyleDefinition();
+	var datePickerDef = new StyleDefinition();
 	
-	var DatePickerControl = new DatePickerElement();
-	DatePickerControl.setStyleDefinitions(DatePickerDef);
+	var datePickerControl = new DatePickerElement();
+	datePickerControl.setStyleDefinitions(datePickerDef);
 	
-	var DatePickerControlStyleType = new ControlStyleType("", "DatePickerStyle", "root", false, false, DatePickerControl, null, null, null);
-	DatePickerControlStyleType.styleListCodeString = "var DatePickerStyle = new StyleDefinition();\r\n";
+	var datePickerControlStyleType = new ControlStyleType("", "DatePickerStyle", "root", false, false, datePickerControl, null, null, null);
+	datePickerControlStyleType.styleListCodeString = "var DatePickerStyle = new StyleDefinition();\r\n";
 	
-	DatePickerControlStyleType.buildControlStyleTypeLists(DatePickerDef);
+	datePickerControlStyleType.buildControlStyleTypeLists(datePickerDef);
 	
 	this._dataListControlsCollection.addItem({label:"DatePicker", 
-											control:DatePickerControl, 
-											rootControlStyleType:DatePickerControlStyleType,
+											control:datePickerControl, 
+											rootControlStyleType:datePickerControlStyleType,
 											list:null});
 	
 	//LabelElement
