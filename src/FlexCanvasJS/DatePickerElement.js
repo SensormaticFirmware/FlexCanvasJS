@@ -236,10 +236,11 @@ function DatePickerElement() //extends CanvasElement
 	
 	//////////////////
 	
-	this._displayedYear = null;
-	this._displayedMonth = null;
-	
+	var date = new Date();
+	this._displayedYear = date.getFullYear();
+	this._displayedMonth = date.getMonth();
 	this._selectedDate = null;
+	
 	this.setSelectedDate(null);
 }
 
@@ -266,8 +267,13 @@ DatePickerElement._GridDaysRowColumnStyle = null;
 DatePickerElement._StyleTypes = Object.create(null);
 
 /**
+ * @style AllowDeselect boolean
+ * When false, the day ToggleButtons cannot be de-selected by the user and the "selectedOver" and "selectedDown" states are not used.
+ */
+DatePickerElement._StyleTypes.AllowDeselect = 				StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
  * @style LabelYearStyle StyleDefinition
- * 
  * The StyleDefinition or [StyleDefinition] array to apply to the year label element.
  */
 DatePickerElement._StyleTypes.LabelYearStyle = 				StyleableBase.EStyleType.SUBSTYLE;		//StyleDefinition
@@ -478,12 +484,14 @@ DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("PercentHeight", 		75)
 DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("UpSkinStyle", 		DatePickerElement.ButtonYearMonthDecSkinStyleDefault);
 DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("OverSkinStyle", 		DatePickerElement.ButtonYearMonthDecSkinStyleDefault);
 DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("DownSkinStyle", 		DatePickerElement.ButtonYearMonthDecSkinStyleDefault);
+DatePickerElement.ButtonYearMonthDecStyleDefault.setStyle("DisabledSkinStyle", 	DatePickerElement.ButtonYearMonthDecSkinStyleDefault);
 
 DatePickerElement.ButtonYearMonthIncStyleDefault = new StyleDefinition();
 DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("PercentHeight", 		75);
 DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("UpSkinStyle", 		DatePickerElement.ButtonYearMonthIncSkinStyleDefault);
 DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("OverSkinStyle", 		DatePickerElement.ButtonYearMonthIncSkinStyleDefault);
 DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("DownSkinStyle", 		DatePickerElement.ButtonYearMonthIncSkinStyleDefault);
+DatePickerElement.ButtonYearMonthIncStyleDefault.setStyle("DisabledSkinStyle", 	DatePickerElement.ButtonYearMonthIncSkinStyleDefault);
 
 DatePickerElement.LabelDayStyleDefault = new StyleDefinition();
 DatePickerElement.LabelDayStyleDefault.setStyle("TextHorizontalAlign",			"center");
@@ -504,6 +512,7 @@ DatePickerElement.ToggleButtonDaysStyleDefault.setStyle("PaddingRight", 		5);
 
 ////Root Styles////
 
+DatePickerElement.StyleDefault.setStyle("AllowDeselect",						false);	
 DatePickerElement.StyleDefault.setStyle("LabelYearStyle", 						DatePickerElement.LabelYearMonthStyleDefault);
 DatePickerElement.StyleDefault.setStyle("ButtonYearDecrementStyle", 			DatePickerElement.ButtonYearMonthDecStyleDefault);
 DatePickerElement.StyleDefault.setStyle("ButtonYearIncrementStyle", 			DatePickerElement.ButtonYearMonthIncStyleDefault);
@@ -575,14 +584,75 @@ DatePickerElement.prototype.setSelectedDate =
 	
 		this._selectedDate = date;
 		
-		if (date == null)
-			date = new Date();
-		
-		this._displayedYear = date.getFullYear();
-		this._displayedMonth = date.getMonth();
-		
 		this._updateCalendar();		
 	};
+	
+/**
+ * @function getDisplayedYear
+ * Gets the 4 digit year currently displayed
+ * 
+ * @returns int
+ * 4 digit year currently displayed.
+ */	
+DatePickerElement.prototype.getDisplayedYear = 
+	function ()
+	{
+		return this._displayedYear;
+	};
+	
+/**
+ * @function setSelectedDate
+ * Sets the 4 digit currently displayed.
+ * 
+ * @param year int
+ * 4 digit year to display.
+ */	
+DatePickerElement.prototype.setDisplayedYear = 
+	function (year)
+	{
+		this._displayedYear = year;
+		this._updateCalendar();		
+	};
+	
+/**
+ * @function getDisplayedMonth
+ * Gets the 2 digit month currently displayed (0-11)
+ * 
+ * @returns int
+ * 2 digit month currently displayed (0-11).
+ */	
+DatePickerElement.prototype.getDisplayedYear = 
+	function ()
+	{
+		return this._displayedMonth;
+	};
+	
+/**
+ * @function setDisplayedMonth
+ * Sets the 2 digit month currently displayed.
+ * 
+ * @param month int
+ * 2 digit month currently displayed (0-11).
+ * Out of range months will be wrapped and years will be adjusted.
+ */	
+DatePickerElement.prototype.setDisplayedMonth = 
+	function (month)
+	{
+		while (month < 0)
+		{
+			month += 12;
+			this._displayedYear--;
+		}
+		
+		while (month > 11)
+		{
+			month -= 12;
+			this._displayedYear++;
+		}
+	
+		this._displayedMonth = month;
+		this._updateCalendar();		
+	};	
 	
 	
 ////////////Internal//////////////
@@ -685,10 +755,15 @@ DatePickerElement.prototype._buttonDayChanged =
 	{
 		var day = Number(elementEvent.getTarget().getStyle("Text"));
 		
-		this._selectedDate = new Date();
-		this._selectedDate.setFullYear(this._displayedYear);
-		this._selectedDate.setMonth(this._displayedMonth);
-		this._selectedDate.setDate(day);
+		if (elementEvent.getTarget().getSelected() == false)
+			this._selectedDate = null;
+		else
+		{
+			this._selectedDate = new Date();
+			this._selectedDate.setFullYear(this._displayedYear);
+			this._selectedDate.setMonth(this._displayedMonth);
+			this._selectedDate.setDate(day);
+		}
 		
 		this._updateCalendar();
 		
@@ -729,7 +804,7 @@ DatePickerElement.prototype._updateCalendar =
 				
 				if (date.getMonth() == this._displayedMonth)
 				{
-					toggleButton.setStyle("Enabled", true);
+					toggleButton.setStyle("Enabled", this.getStyle("Enabled"));
 					
 					if (this._selectedDate != null &&
 						date.getFullYear() == this._selectedDate.getFullYear() && 
@@ -792,6 +867,38 @@ DatePickerElement.prototype._doStylesUpdated =
 				for (var day = 0; day < 7; day++)
 					this._applySubStylesToElement("ToggleButtonDaysStyle", this._gridDaysContainer.getCellElement(week, day));
 			}
+		}
+		
+		//Pass "AllowDeselect" to day ToggleButtons
+		if ("AllowDeselect" in stylesMap)
+		{
+			for (var week = 1; week < 7; week++)
+			{
+				for (var day = 0; day < 7; day++)
+					this._gridDaysContainer.getCellElement(week, day).setStyle("AllowDeselect", this.getStyle("AllowDeselect"));
+			}
+		}
+		
+		if ("Enabled" in stylesMap)
+		{
+			if (this.getStyle("Enabled") == false)
+			{
+				this._buttonMonthDecrement.setStyle("Enabled", false);
+				this._buttonMonthIncrement.setStyle("Enabled", false);
+				
+				this._buttonYearDecrement.setStyle("Enabled", false);
+				this._buttonYearIncrement.setStyle("Enabled", false);
+			}
+			else
+			{
+				this._buttonMonthDecrement.clearStyle("Enabled");
+				this._buttonMonthIncrement.clearStyle("Enabled");
+				
+				this._buttonYearDecrement.clearStyle("Enabled");
+				this._buttonYearIncrement.clearStyle("Enabled");
+			}
+			
+			this._updateCalendar();
 		}
 		
 		if ("LayoutGap" in stylesMap)
