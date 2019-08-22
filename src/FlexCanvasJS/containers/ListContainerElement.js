@@ -214,6 +214,11 @@ ListContainerElement.prototype._doLayout =
 		var totalPercentUsed = 0;
 		var numRenderables = 0;
 		
+		var widthData = null;
+		var heightData = null;
+		var percentWidthData = null;
+		var percentHeightData = null;
+		
 		//Record element sizing data.
 		for (i = 0; i < this._elements.length; i++)
 		{
@@ -237,33 +242,43 @@ ListContainerElement.prototype._doLayout =
 			
 			sizeData.rotateDegrees = child.getStyle("RotateDegrees");
 			
-			sizeData.width = child.getStyle("Width");
-			if (sizeData.width == null)
+			widthData = child.getStyleData("Width");
+			percentWidthData = child.getStyleData("PercentWidth");
+			
+			//Use width if equal or higher priority than percent width
+			if (widthData.comparePriority(percentWidthData) >= 0)
+				sizeData.width = widthData.value;
+			else
 			{
 				//Percent sizing not supported on transformed elements.
 				if (sizeData.rotateDegrees == 0)
-					sizeData.pWidth = child.getStyle("PercentWidth");
-				
-				sizeData.minWidth = child.getStyle("MinWidth");
-				sizeData.maxWidth = child.getStyle("MaxWidth");
+					sizeData.pWidth = percentWidthData.value;
 				
 				if (sizeData.pWidth != null && layoutDirection == "horizontal")
 					totalPercentUsed += sizeData.pWidth;
 			}
 			
-			sizeData.height = child.getStyle("Height");
-			if (sizeData.height == null)
+			heightData = child.getStyleData("Height");
+			percentHeightData = child.getStyleData("PercentHeight");
+			
+			//Use height if equal or higher priority than percent height
+			if (heightData.comparePriority(percentHeightData) >= 0)
+				sizeData.height = heightData.value;
+			else
 			{
 				//Percent sizing not supported on transformed elements.
 				if (sizeData.rotateDegrees == 0)
-					sizeData.pHeight = child.getStyle("PercentHeight");
-				
-				sizeData.minHeight = child.getStyle("MinHeight");
-				sizeData.maxHeight = child.getStyle("MaxHeight");
+					sizeData.pHeight = percentHeightData.value;
 				
 				if (sizeData.pHeight != null && layoutDirection == "vertical")
-					totalPercentUsed += sizeData.pHeight;
+					totalPercentUsed += sizeData.pHeight;				
 			}
+			
+			sizeData.minHeight = child.getStyle("MinHeight");
+			sizeData.maxHeight = child.getStyle("MaxHeight");
+			
+			sizeData.minWidth = child.getStyle("MinWidth");
+			sizeData.maxWidth = child.getStyle("MaxWidth");
 			
 			if (sizeData.minWidth == null)
 				sizeData.minWidth = 0;

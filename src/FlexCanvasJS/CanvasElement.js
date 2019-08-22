@@ -4109,7 +4109,14 @@ CanvasElement.prototype._getBorderThickness =
 CanvasElement.prototype._getStyledOrMeasuredWidth = 
 	function ()
 	{
-		var width = this.getStyle("Width");
+		var widthData = this.getStyleData("Width");
+		var percentWidthData = this.getStyleData("PercentWidth");
+		
+		var width = null;
+		
+		//Use width if it is equal or higher priority than percent width
+		if (widthData.comparePriority(percentWidthData) >= 0)
+			width = widthData.value;
 		
 		if (width == null)
 		{
@@ -4140,8 +4147,15 @@ CanvasElement.prototype._getStyledOrMeasuredWidth =
 CanvasElement.prototype._getStyledOrMeasuredHeight = 
 	function ()
 	{
-		var height = this.getStyle("Height");
+		var heightData = this.getStyleData("Height");
+		var percentHeightData = this.getStyleData("PercentHeight");
 		
+		var height = null;
+		
+		//Use height if is equal or higher priority that percent height
+		if (heightData.comparePriority(percentHeightData) >= 0)
+			height = heightData.value;
+	
 		if (height == null)
 		{
 			var maxHeight = this.getStyle("MaxHeight");
