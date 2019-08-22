@@ -89,6 +89,7 @@ DatePickerButtonElement._StyleTypes = Object.create(null);
 
 /**
  * @style AllowDeselect boolean
+ * 
  * When false, the DatePicker day ToggleButtons cannot be de-selected by the user and the "selectedOver" and "selectedDown" states are not used.
  */
 DatePickerButtonElement._StyleTypes.AllowDeselect = 					StyleableBase.EStyleType.NORMAL;		// true || false
