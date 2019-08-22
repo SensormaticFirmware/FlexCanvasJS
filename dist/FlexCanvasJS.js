@@ -8300,7 +8300,14 @@ CanvasElement.prototype._getBorderThickness =
 CanvasElement.prototype._getStyledOrMeasuredWidth = 
 	function ()
 	{
-		var width = this.getStyle("Width");
+		var widthData = this.getStyleData("Width");
+		var percentWidthData = this.getStyleData("PercentWidth");
+		
+		var width = null;
+		
+		//Use width if it is equal or higher priority than percent width
+		if (widthData.comparePriority(percentWidthData) >= 0)
+			width = widthData.value;
 		
 		if (width == null)
 		{
@@ -8331,8 +8338,15 @@ CanvasElement.prototype._getStyledOrMeasuredWidth =
 CanvasElement.prototype._getStyledOrMeasuredHeight = 
 	function ()
 	{
-		var height = this.getStyle("Height");
+		var heightData = this.getStyleData("Height");
+		var percentHeightData = this.getStyleData("PercentHeight");
 		
+		var height = null;
+		
+		//Use height if is equal or higher priority that percent height
+		if (heightData.comparePriority(percentHeightData) >= 0)
+			height = heightData.value;
+	
 		if (height == null)
 		{
 			var maxHeight = this.getStyle("MaxHeight");
@@ -21423,6 +21437,11 @@ ListContainerElement.prototype._doLayout =
 		var totalPercentUsed = 0;
 		var numRenderables = 0;
 		
+		var widthData = null;
+		var heightData = null;
+		var percentWidthData = null;
+		var percentHeightData = null;
+		
 		//Record element sizing data.
 		for (i = 0; i < this._elements.length; i++)
 		{
@@ -21446,33 +21465,43 @@ ListContainerElement.prototype._doLayout =
 			
 			sizeData.rotateDegrees = child.getStyle("RotateDegrees");
 			
-			sizeData.width = child.getStyle("Width");
-			if (sizeData.width == null)
+			widthData = child.getStyleData("Width");
+			percentWidthData = child.getStyleData("PercentWidth");
+			
+			//Use width if equal or higher priority than percent width
+			if (widthData.comparePriority(percentWidthData) >= 0)
+				sizeData.width = widthData.value;
+			else
 			{
 				//Percent sizing not supported on transformed elements.
 				if (sizeData.rotateDegrees == 0)
-					sizeData.pWidth = child.getStyle("PercentWidth");
-				
-				sizeData.minWidth = child.getStyle("MinWidth");
-				sizeData.maxWidth = child.getStyle("MaxWidth");
+					sizeData.pWidth = percentWidthData.value;
 				
 				if (sizeData.pWidth != null && layoutDirection == "horizontal")
 					totalPercentUsed += sizeData.pWidth;
 			}
 			
-			sizeData.height = child.getStyle("Height");
-			if (sizeData.height == null)
+			heightData = child.getStyleData("Height");
+			percentHeightData = child.getStyleData("PercentHeight");
+			
+			//Use height if equal or higher priority than percent height
+			if (heightData.comparePriority(percentHeightData) >= 0)
+				sizeData.height = heightData.value;
+			else
 			{
 				//Percent sizing not supported on transformed elements.
 				if (sizeData.rotateDegrees == 0)
-					sizeData.pHeight = child.getStyle("PercentHeight");
-				
-				sizeData.minHeight = child.getStyle("MinHeight");
-				sizeData.maxHeight = child.getStyle("MaxHeight");
+					sizeData.pHeight = percentHeightData.value;
 				
 				if (sizeData.pHeight != null && layoutDirection == "vertical")
-					totalPercentUsed += sizeData.pHeight;
+					totalPercentUsed += sizeData.pHeight;				
 			}
+			
+			sizeData.minHeight = child.getStyle("MinHeight");
+			sizeData.maxHeight = child.getStyle("MaxHeight");
+			
+			sizeData.minWidth = child.getStyle("MinWidth");
+			sizeData.maxWidth = child.getStyle("MaxWidth");
 			
 			if (sizeData.minWidth == null)
 				sizeData.minWidth = 0;
@@ -23764,6 +23793,12 @@ AnchorContainerElement.prototype._doMeasure =
 		var tempRotateCenterX;
 		var tempRotateCenterY;
 		
+		var xData;
+		var leftData;
+		
+		var yData;
+		var topData;
+		
 		for (var i = 0; i < this._elements.length; i++)
 		{
 			child = this._elements[i];
@@ -23775,18 +23810,22 @@ AnchorContainerElement.prototype._doMeasure =
 			width = child._getStyledOrMeasuredWidth();
 			height = child._getStyledOrMeasuredHeight();
 			
-			x = child.getStyle("X");
-			y = child.getStyle("Y");
-			top = child.getStyle("Top");
-			left = child.getStyle("Left");
+			xData = child.getStyleData("X");
+			leftData = child.getStyleData("Left");
+			if (xData.comparePriority(leftData) >= 0)
+				x = xData.value;
+			else
+				x = leftData.value;
+			
+			yData = child.getStyleData("Y");
+			topData = child.getStyleData("Top");
+			if (yData.comparePriority(topData) >= 0)
+				y = yData.value;
+			else
+				y = topData.value
+			
 			bottom = child.getStyle("Bottom");
 			right = child.getStyle("Right");
-			
-			//prioritize x/y over left/top (but they're the same)
-			if (x == null)
-				x = left;
-			if (y == null)
-				y = top;
 			
 			hCenter = child.getStyle("HorizontalCenter");
 			vCenter = child.getStyle("VerticalCenter");
@@ -23897,24 +23936,85 @@ AnchorContainerElement.prototype._doLayout =
 		var rotateCenterY = null;
 		var rotatedMetrics = null;
 		
+		var xData = null;
+		var yData = null;
+		var leftData = null;
+		var topData = null;
+		
+		var widthData = null;
+		var heightData = null;
+		var percentWidthData = null;
+		var percentHeightData = null;
+		
 		for (var i = 0; i < this._elements.length; i++)
 		{
 			child = this._elements[i];
 			if (child.getStyle("IncludeInLayout") == false)
 				continue;
 			
-			x = child.getStyle("X");
-			y = child.getStyle("Y");
-			top = child.getStyle("Top");
-			left = child.getStyle("Left");
+			x = null;
+			y = null;
+			width = null;
+			height = null;
+			pWidth = null;
+			pHeight = null;
+			minWidth = null;
+			maxWidth = null;
+			minHeight = null;
+			maxHeight = null;		
+			top = null;
+			left = null;
+			bottom = null;
+			right = null;
+			hCenter = null;
+			vCenter = null;
+			rotateDegrees = null;
+			rotateCenterX = null;
+			rotateCenterY = null;
+			rotatedMetrics = null;
+			
+			xData = child.getStyleData("X");
+			leftData = child.getStyleData("Left");
+			
+			//Use x if equal or higher priority than left
+			if (xData.comparePriority(leftData) >= 0)
+				x = xData.value;
+			else
+				x = leftData.value;
+			
+			yData = child.getStyleData("Y");
+			topData = child.getStyleData("Top");
+			
+			//Use y if equal or higher priority than top
+			if (yData.comparePriority(topData) >= 0)
+				y = yData.value;
+			else
+				y = topData.value;
+			
+			widthData = child.getStyleData("Width");
+			percentWidthData = child.getStyleData("PercentWidth");
+			
+			//Use width if equal or higher priority than percent width
+			if (widthData.comparePriority(percentWidthData) >= 0)
+				width = widthData.value;
+			else
+				pWidth = percentWidthData.value;
+			
+			heightData = child.getStyleData("Height");
+			percentHeightData = child.getStyleData("PercentHeight");
+			
+			//Use height if equal or higher priority than percent height
+			if (heightData.comparePriority(percentHeightData) >= 0)
+				height = heightData.value;
+			else
+				pHeight = percentHeightData.value;
+				
+			minWidth = child.getStyle("MinWidth");
+			maxWidth = child.getStyle("MaxWidth");
+			minHeight = child.getStyle("MinHeight");
+			maxHeight = child.getStyle("MaxHeight");
 			bottom = child.getStyle("Bottom");
 			right = child.getStyle("Right");
-			width = child.getStyle("Width");
-			height = child.getStyle("Height");
-			minWidth = child.getStyle("MinWidth");
-			minHeight = child.getStyle("MinHeight");
-			maxWidth = child.getStyle("MaxWidth");
-			maxHeight = child.getStyle("MaxHeight");
 			hCenter = child.getStyle("HorizontalCenter");
 			vCenter = child.getStyle("VerticalCenter");
 			rotateDegrees = child.getStyle("RotateDegrees");
@@ -23997,15 +24097,6 @@ AnchorContainerElement.prototype._doLayout =
 			}
 			else //Non-Rotated Element
 			{
-				pWidth = child.getStyle("PercentWidth");
-				pHeight = child.getStyle("PercentHeight");
-			
-				//prioritize x/y over left/top (but they're the same)
-				if (x == null)
-					x = left;
-				if (y == null)
-					y = top;
-				
 				if (width == null)
 				{
 					if (x != null && right != null)
