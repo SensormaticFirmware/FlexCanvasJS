@@ -880,26 +880,7 @@ DatePickerElement.prototype._doStylesUpdated =
 		}
 		
 		if ("Enabled" in stylesMap)
-		{
-			if (this.getStyle("Enabled") == false)
-			{
-				this._buttonMonthDecrement.setStyle("Enabled", false);
-				this._buttonMonthIncrement.setStyle("Enabled", false);
-				
-				this._buttonYearDecrement.setStyle("Enabled", false);
-				this._buttonYearIncrement.setStyle("Enabled", false);
-			}
-			else
-			{
-				this._buttonMonthDecrement.clearStyle("Enabled");
-				this._buttonMonthIncrement.clearStyle("Enabled");
-				
-				this._buttonYearDecrement.clearStyle("Enabled");
-				this._buttonYearIncrement.clearStyle("Enabled");
-			}
-			
 			this._updateCalendar();
-		}
 		
 		if ("LayoutGap" in stylesMap)
 			this._rootListContainer.setStyle("LayoutGap", this.getStyle("LayoutGap"));
