@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2017-2018 SENSORMATIC ELECTRONICS LLC, NATHAN E NELSON
+//Copyright (c) 2017-2019 SENSORMATIC ELECTRONICS LLC, NATHAN E NELSON
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -29283,6 +29283,13 @@ DatePickerButtonElement.DefaultDateFormatLabelFunction =
 DatePickerButtonElement._StyleTypes = Object.create(null);
 
 /**
+ * @style AllowDeselect boolean
+ * 
+ * When false, the DatePicker day ToggleButtons cannot be de-selected by the user and the "selectedOver" and "selectedDown" states are not used.
+ */
+DatePickerButtonElement._StyleTypes.AllowDeselect = 					StyleableBase.EStyleType.NORMAL;		// true || false
+
+/**
  * @style DateFormatLabelFunction Function
  * 
  * A function that accepts a date and returns a string to be displayed as the date label.
@@ -29311,6 +29318,7 @@ DatePickerButtonElement._StyleTypes.PopupDatePickerDistance = 			StyleableBase.E
 
 ////DatePickerButton default style/////
 DatePickerButtonElement.StyleDefault = new StyleDefinition();
+DatePickerButtonElement.StyleDefault.setStyle("AllowDeselect",							false);
 DatePickerButtonElement.StyleDefault.setStyle("DateFormatLabelFunction",				DatePickerButtonElement.DefaultDateFormatLabelFunction)		
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerStyle", 					null);
 DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerDistance", 				-1);			
@@ -29363,6 +29371,7 @@ DatePickerButtonElement.prototype._createPopup =
 		
 		this._applySubStylesToElement("PopupDatePickerStyle", this._datePickerPopup);
 		this._datePickerPopup.setSelectedDate(this._selectedDate);
+		this._datePickerPopup.setStyle("AllowDeselect", this.getStyle("AllowDeselect"));
 		
 		return this._datePickerPopup;
 	};	
@@ -29440,11 +29449,17 @@ DatePickerButtonElement.prototype._doStylesUpdated =
 			this._invalidateLayout();
 		}
 		
+		if ("AllowDeselect" in stylesMap && this._datePickerPopup != null)
+			this._datePickerPopup.setStyle("AllowDeselect", this.getStyle("AllowDeselect"));
+		
 		if ("PopupDatePickerDistance" in stylesMap)
 			this._invalidateLayout();
 		
 		if ("DateFormatLabelFunction" in stylesMap)
 			this._updateText();
+		
+		
+			
 	};
 	
 //@override
