@@ -2217,24 +2217,16 @@ StyleableBase.prototype._getInstanceStyle =
 StyleableBase.prototype._applySubStylesToElement = 
 	function (styleName, elementToApply)
 	{
-		var instanceDefinitions = [];
-
 		//Set default style definitions (class styles)
 		elementToApply._setStyleDefinitions(this._getClassStyleList(styleName), true);
 		
 		//Get instance style or array of styles
 		var instanceStyle = this._getInstanceStyle(styleName);
+
+		var instanceDefinitions = [];
 		
 		if (instanceStyle !== undefined)
-		{
-			if (Array.isArray(instanceStyle) == true)
-			{
-				for (var i = 0; i < instanceStyle.length; i++)
-					instanceDefinitions.push(instanceStyle[i]);
-			}
-			else 
-				instanceDefinitions.push(instanceStyle);
-		}
+			instanceDefinitions.push(instanceStyle);
 		
 		//Set style definitions
 		elementToApply._setStyleDefinitions(instanceDefinitions, false);
@@ -2260,9 +2252,7 @@ StyleableBase.prototype._getClassStyleList =
 		this._flattenClassStyles();
 	
 		var i;
-		var i2;
 		var styleList = [];
-		var styleValue;
 		var styleFlatArray;
 		
 		if (styleName in this.constructor.__StyleDefaultsFlatMap)
@@ -2270,18 +2260,7 @@ StyleableBase.prototype._getClassStyleList =
 			styleFlatArray = this.constructor.__StyleDefaultsFlatMap[styleName];
 			
 			for (i = 0; i < styleFlatArray.length; i++)
-			{
-				styleValue = styleFlatArray[i];
-				
-				//Flatten any values that are arrays
-				if (Array.isArray(styleValue) == true)
-				{
-					for (i2 = 0; i2 < styleValue.length; i2++)
-						styleList.push(styleValue[i2]);
-				}
-				else
-					styleList.push(styleValue);
-			}
+				styleList.push(styleFlatArray[i]);
 		}
 	
 		return styleList;
@@ -6929,13 +6908,32 @@ CanvasElement.prototype._removeStyleDefinitionAt =
 CanvasElement.prototype._setStyleDefinitions = 
 	function (styleDefinitions, isDefault, styleNamesChangedMap)
 	{
+		var i;
+		
 		if (styleDefinitions == null)
 			styleDefinitions = [];
 		
 		if (Array.isArray(styleDefinitions) == false)
 			styleDefinitions = [styleDefinitions];
+
+		//Flatten nested arrays
+		var stack = styleDefinitions.slice();
+		var next = null;
+		var flattened = [];
+		while (stack.length > 0)
+		{
+			next = stack.pop();
+			if (Array.isArray(next) == true)
+			{
+				for (i = 0; i < next.length; i++)
+					stack.push(next[i]);
+			}
+			else
+				flattened.push(next);
+		}
 		
-		var i;
+		flattened.reverse();
+		styleDefinitions = flattened;
 		
 		//Remove any null definitions
 		for (i = styleDefinitions.length - 1; i >= 0; i--)
@@ -7160,6 +7158,7 @@ CanvasElement.prototype._getStyleList =
 	function (styleName)
 	{
 		var styleList = [];
+		var styleValue = null;
 		var i;
 		
 		//Add definitions
@@ -7168,31 +7167,12 @@ CanvasElement.prototype._getStyleList =
 			styleValue = this._styleDefinitions[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-			{
-				if (Array.isArray(styleValue) == true)
-				{
-					for (i = 0; i < styleValue.length; i++)
-						styleList.push(styleValue[i]);
-						
-				}
-				else
-					styleList.push(styleValue);
-			}
+				styleList.push(styleValue);
 		}
 		
 		//Add instance
-		if (styleName in this._styleMap && this._styleMap[styleName] != null)
-		{
-			styleValue = this._styleMap[styleName];
-			
-			if (Array.isArray(styleValue) == true)
-			{
-				for (i = 0; i < styleValue.length; i++)
-					styleList.push(styleValue[i]);
-			}
-			else
-				styleList.push(this._styleMap[styleName]);
-		}
+		if (styleName in this._styleMap)
+			styleList.push(this._styleMap[styleName]);
 		
 		return styleList;
 	};
@@ -7215,8 +7195,8 @@ CanvasElement.prototype._getStyleList =
 CanvasElement.prototype._getDefaultStyleList = 
 	function (styleName)
 	{
-		var styleValue = null;
 		var i;
+		var styleValue = null;
 		
 		//Get class list
 		var styleList = this._getClassStyleList(styleName);
@@ -7227,15 +7207,7 @@ CanvasElement.prototype._getDefaultStyleList =
 			styleValue = this._styleDefinitionDefaults[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-			{
-				if (Array.isArray(styleValue) == true)
-				{
-					for (i = 0; i < styleValue.length; i++)
-						styleList.push(styleValue[i]);
-				}
-				else 
-					styleList.push(styleValue);
-			}
+				styleList.push(styleValue);
 		}
 		
 		return styleList;
@@ -14699,18 +14671,18 @@ TimeInputElement.prototype._doStylesUpdated =
 			this._textFieldHour.setStyle("PaddingTop", paddingSize.paddingTop);
 			this._textFieldHour.setStyle("PaddingBottom", paddingSize.paddingBottom);
 			
+			this._labelColon1.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._labelColon1.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
 			this._textFieldMinute.setStyle("PaddingTop", paddingSize.paddingTop);
 			this._textFieldMinute.setStyle("PaddingBottom", paddingSize.paddingBottom);
+			
+			this._labelColon2.setStyle("PaddingTop", paddingSize.paddingTop);
+			this._labelColon2.setStyle("PaddingBottom", paddingSize.paddingBottom);
 			
 			this._textFieldSecond.setStyle("PaddingRight", paddingSize.paddingRight);
 			this._textFieldSecond.setStyle("PaddingTop", paddingSize.paddingTop);
 			this._textFieldSecond.setStyle("PaddingBottom", paddingSize.paddingBottom);
-			
-			this._labelColon1.setStyle("PaddingTop", paddingSize.paddingTop);
-			this._labelColon1.setStyle("PaddingBottom", paddingSize.paddingBottom);
-			
-			this._labelColon2.setStyle("PaddingTop", paddingSize.paddingTop);
-			this._labelColon2.setStyle("PaddingBottom", paddingSize.paddingBottom);
 			
 			this._invalidateMeasure();
 		}
@@ -14750,6 +14722,7 @@ TimeInputElement.prototype._doLayout =
 		this._listContainer._setActualPosition(0, 0);
 		this._listContainer._setActualSize(this._width, this._height);
 	};
+	
 	
 	
 
@@ -15927,8 +15900,15 @@ IpInputElement.StyleDefault.setStyle("PaddingRight",								5);
 IpInputElement.prototype.setText = 
 	function (text)
 	{
-		if (text == null)
-			text = "";
+		if (text == null || text == "")
+		{
+			this._textFieldIp1.setText("");
+			this._textFieldIp2.setText("");
+			this._textFieldIp3.setText("");
+			this._textFieldIp4.setText("");
+			
+			return;
+		}
 		
 		var i;
 		var i2;
