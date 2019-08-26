@@ -2738,13 +2738,32 @@ CanvasElement.prototype._removeStyleDefinitionAt =
 CanvasElement.prototype._setStyleDefinitions = 
 	function (styleDefinitions, isDefault, styleNamesChangedMap)
 	{
+		var i;
+		
 		if (styleDefinitions == null)
 			styleDefinitions = [];
 		
 		if (Array.isArray(styleDefinitions) == false)
 			styleDefinitions = [styleDefinitions];
+
+		//Flatten nested arrays
+		var stack = styleDefinitions.slice();
+		var next = null;
+		var flattened = [];
+		while (stack.length > 0)
+		{
+			next = stack.pop();
+			if (Array.isArray(next) == true)
+			{
+				for (i = 0; i < next.length; i++)
+					stack.push(next[i]);
+			}
+			else
+				flattened.push(next);
+		}
 		
-		var i;
+		flattened.reverse();
+		styleDefinitions = flattened;
 		
 		//Remove any null definitions
 		for (i = styleDefinitions.length - 1; i >= 0; i--)
@@ -2969,6 +2988,7 @@ CanvasElement.prototype._getStyleList =
 	function (styleName)
 	{
 		var styleList = [];
+		var styleValue = null;
 		var i;
 		
 		//Add definitions
@@ -2977,31 +2997,12 @@ CanvasElement.prototype._getStyleList =
 			styleValue = this._styleDefinitions[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-			{
-				if (Array.isArray(styleValue) == true)
-				{
-					for (i = 0; i < styleValue.length; i++)
-						styleList.push(styleValue[i]);
-						
-				}
-				else
-					styleList.push(styleValue);
-			}
+				styleList.push(styleValue);
 		}
 		
 		//Add instance
-		if (styleName in this._styleMap && this._styleMap[styleName] != null)
-		{
-			styleValue = this._styleMap[styleName];
-			
-			if (Array.isArray(styleValue) == true)
-			{
-				for (i = 0; i < styleValue.length; i++)
-					styleList.push(styleValue[i]);
-			}
-			else
-				styleList.push(this._styleMap[styleName]);
-		}
+		if (styleName in this._styleMap)
+			styleList.push(this._styleMap[styleName]);
 		
 		return styleList;
 	};
@@ -3024,8 +3025,8 @@ CanvasElement.prototype._getStyleList =
 CanvasElement.prototype._getDefaultStyleList = 
 	function (styleName)
 	{
-		var styleValue = null;
 		var i;
+		var styleValue = null;
 		
 		//Get class list
 		var styleList = this._getClassStyleList(styleName);
@@ -3036,15 +3037,7 @@ CanvasElement.prototype._getDefaultStyleList =
 			styleValue = this._styleDefinitionDefaults[i].getStyle(styleName);
 			
 			if (styleValue !== undefined)
-			{
-				if (Array.isArray(styleValue) == true)
-				{
-					for (i = 0; i < styleValue.length; i++)
-						styleList.push(styleValue[i]);
-				}
-				else 
-					styleList.push(styleValue);
-			}
+				styleList.push(styleValue);
 		}
 		
 		return styleList;
