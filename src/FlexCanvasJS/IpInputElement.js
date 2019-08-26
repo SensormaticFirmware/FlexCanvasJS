@@ -151,8 +151,15 @@ IpInputElement.StyleDefault.setStyle("PaddingRight",								5);
 IpInputElement.prototype.setText = 
 	function (text)
 	{
-		if (text == null)
-			text = "";
+		if (text == null || text == "")
+		{
+			this._textFieldIp1.setText("");
+			this._textFieldIp2.setText("");
+			this._textFieldIp3.setText("");
+			this._textFieldIp4.setText("");
+			
+			return;
+		}
 		
 		var i;
 		var i2;
