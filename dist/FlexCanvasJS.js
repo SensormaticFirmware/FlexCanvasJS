@@ -5301,7 +5301,8 @@ CanvasElement.prototype.clearStyleDefinitions =
  * adding style definitions one at a time.
  * 
  * @param styleDefinitions StyleDefinition
- * May be a StyleDefinition, or an Array of StyleDefinition
+ * May be a StyleDefinition, or an Array of StyleDefinition, including nested Arrays.
+ * Note that nested arrays will be flattened into a single array.
  */
 CanvasElement.prototype.setStyleDefinitions = 
 	function (styleDefinitions)
