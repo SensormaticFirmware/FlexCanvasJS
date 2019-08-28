@@ -25164,7 +25164,7 @@ function CanvasManager()
 			if (_self._focusElement == null && browserEvent.type == "focus")
 			{
 				if (_self._tabStopReverse == true)
-					_self._updateFocusElement(_self._findChildTabStopReverse(_self, null, null), true);
+					_self._updateFocusElement(_self._findChildTabStopReverse(_self, null), true);
 				else
 					_self._updateFocusElement(_self._findChildTabStopForward(_self, null), true);
 			}
@@ -25217,7 +25217,7 @@ function CanvasManager()
 					{
 						while (currentParent != null)
 						{
-							tabStopElement = _self._findChildTabStopReverse(currentParent, lastParent, null);
+							tabStopElement = _self._findChildTabStopReverse(currentParent, lastParent);
 							
 							if (tabStopElement != null)
 								break;
@@ -26194,8 +26194,6 @@ CanvasManager.prototype._findChildTabStopForward =
 		if (afterChild != null)
 			index = parent._children.indexOf(afterChild) + 1;
 		
-		var tabToElement = null;
-		
 		for (var i = index; i < parent._children.length; i++)
 		{
 			if (parent._children[i].getStyle("MouseEnabled") == false ||
@@ -26211,12 +26209,12 @@ CanvasManager.prototype._findChildTabStopForward =
 				return tabToElement;
 		}
 		
-		return tabToElement;
+		return null;
 	};
 
 //@private	
 CanvasManager.prototype._findChildTabStopReverse = 
-	function (parent, beforeChild, lastTabStopElement)
+	function (parent, beforeChild)
 	{
 		var index = parent._children.length - 1;
 		if (beforeChild != null)
@@ -26229,16 +26227,15 @@ CanvasManager.prototype._findChildTabStopReverse =
 				parent._children[i].getStyle("Enabled") == false)
 				continue;
 			
+			var childTabStop = this._findChildTabStopReverse(parent._children[i], null);
+			if (childTabStop != null)
+				return childTabStop;
+	
 			if (parent._children[i].getStyle("TabStop") >= 0)
-				lastTabStopElement = parent._children[i];
-			
-			this._findChildTabStopReverse(parent._children[i], null, lastTabStopElement);
-			
-			if (lastTabStopElement != null)
-				return lastTabStopElement;
+				return parent._children[i];
 		}
 		
-		return lastTabStopElement;
+		return null;
 	};	
 	
 //@private	
@@ -31069,7 +31066,7 @@ DataGridElement.prototype._onDataGridHeaderItemClick =
 		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
 		
 		var collectionSort = this._gridColumns[columnIndex].getStyle("CollectionSort");
-		if (collectionSort != null && collectionSort instanceof CollectionSort)
+		if (this._listCollection != null && collectionSort != null && collectionSort instanceof CollectionSort)
 		{
 			if (this._listCollection._collectionSort != collectionSort)
 			{
@@ -31532,6 +31529,9 @@ DataGridElement.prototype._doLayout =
 function DataGridColumnDefinition()
 {
 	DataGridColumnDefinition.base.prototype.constructor.call(this);
+	
+	//Set a default alphabetical sort.  Need a different sort instance for each column.
+	this.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col2 < objB.col2 ? -1 : objA.col2 > objB.col2 ? 1 : 0; }));
 }
 	
 //Inherit from StyleableBase
@@ -31582,6 +31582,8 @@ DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				StyleableBase.EStyleT
  * @style CollectionSort CollectionSort
  * 
  * CollectionSort to be used to sort the column.
+ * Default column sort uses alphabetic compare. 
+ * You may null this style to prevent the column from sorting, and / or disable the column header button.
  */
 DataGridColumnDefinition._StyleTypes.CollectionSort = 				StyleableBase.EStyleType.NORMAL;		// CollectionSort() 
 
@@ -31646,7 +31648,7 @@ DataGridColumnDefinition.StyleDefault.setStyle("Highlightable", 			true);							
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderText", 				"");							// "string"
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemClass", 			DataGridHeaderItemRenderer);	// Element constructor()
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemStyle", 			null);							// StyleDefinition
-DataGridColumnDefinition.StyleDefault.setStyle("CollectionSort", 			null);							// CollectionSort()
+DataGridColumnDefinition.StyleDefault.setStyle("CollectionSort", 			null);
 
 DataGridColumnDefinition.StyleDefault.setStyle("RowItemClass", 				DataGridLabelItemRenderer);		// Element constructor()
 DataGridColumnDefinition.StyleDefault.setStyle("RowItemStyle", 				null);							// StyleDefinition
