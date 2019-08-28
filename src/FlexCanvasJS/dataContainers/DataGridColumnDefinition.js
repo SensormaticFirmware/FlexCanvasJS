@@ -28,6 +28,9 @@
 function DataGridColumnDefinition()
 {
 	DataGridColumnDefinition.base.prototype.constructor.call(this);
+	
+	//Set a default alphabetical sort.  Need a different sort instance for each column.
+	this.setStyle("CollectionSort", new CollectionSort(function (objA, objB) { return objA.col2 < objB.col2 ? -1 : objA.col2 > objB.col2 ? 1 : 0; }));
 }
 	
 //Inherit from StyleableBase
@@ -78,6 +81,8 @@ DataGridColumnDefinition._StyleTypes.HeaderItemStyle = 				StyleableBase.EStyleT
  * @style CollectionSort CollectionSort
  * 
  * CollectionSort to be used to sort the column.
+ * Default column sort uses alphabetic compare. 
+ * You may null this style to prevent the column from sorting, and / or disable the column header button.
  */
 DataGridColumnDefinition._StyleTypes.CollectionSort = 				StyleableBase.EStyleType.NORMAL;		// CollectionSort() 
 
@@ -142,7 +147,7 @@ DataGridColumnDefinition.StyleDefault.setStyle("Highlightable", 			true);							
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderText", 				"");							// "string"
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemClass", 			DataGridHeaderItemRenderer);	// Element constructor()
 DataGridColumnDefinition.StyleDefault.setStyle("HeaderItemStyle", 			null);							// StyleDefinition
-DataGridColumnDefinition.StyleDefault.setStyle("CollectionSort", 			null);							// CollectionSort()
+DataGridColumnDefinition.StyleDefault.setStyle("CollectionSort", 			null);
 
 DataGridColumnDefinition.StyleDefault.setStyle("RowItemClass", 				DataGridLabelItemRenderer);		// Element constructor()
 DataGridColumnDefinition.StyleDefault.setStyle("RowItemStyle", 				null);							// StyleDefinition

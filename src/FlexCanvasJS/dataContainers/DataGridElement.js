@@ -573,7 +573,7 @@ DataGridElement.prototype._onDataGridHeaderItemClick =
 		var columnIndex = elementMouseEvent.getCurrentTarget()._listData._columnIndex;
 		
 		var collectionSort = this._gridColumns[columnIndex].getStyle("CollectionSort");
-		if (collectionSort != null && collectionSort instanceof CollectionSort)
+		if (this._listCollection != null && collectionSort != null && collectionSort instanceof CollectionSort)
 		{
 			if (this._listCollection._collectionSort != collectionSort)
 			{

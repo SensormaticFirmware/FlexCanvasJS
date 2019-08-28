@@ -130,7 +130,7 @@ function CanvasManager()
 			if (_self._focusElement == null && browserEvent.type == "focus")
 			{
 				if (_self._tabStopReverse == true)
-					_self._updateFocusElement(_self._findChildTabStopReverse(_self, null, null), true);
+					_self._updateFocusElement(_self._findChildTabStopReverse(_self, null), true);
 				else
 					_self._updateFocusElement(_self._findChildTabStopForward(_self, null), true);
 			}
@@ -183,7 +183,7 @@ function CanvasManager()
 					{
 						while (currentParent != null)
 						{
-							tabStopElement = _self._findChildTabStopReverse(currentParent, lastParent, null);
+							tabStopElement = _self._findChildTabStopReverse(currentParent, lastParent);
 							
 							if (tabStopElement != null)
 								break;
@@ -1160,8 +1160,6 @@ CanvasManager.prototype._findChildTabStopForward =
 		if (afterChild != null)
 			index = parent._children.indexOf(afterChild) + 1;
 		
-		var tabToElement = null;
-		
 		for (var i = index; i < parent._children.length; i++)
 		{
 			if (parent._children[i].getStyle("MouseEnabled") == false ||
@@ -1177,12 +1175,12 @@ CanvasManager.prototype._findChildTabStopForward =
 				return tabToElement;
 		}
 		
-		return tabToElement;
+		return null;
 	};
 
 //@private	
 CanvasManager.prototype._findChildTabStopReverse = 
-	function (parent, beforeChild, lastTabStopElement)
+	function (parent, beforeChild)
 	{
 		var index = parent._children.length - 1;
 		if (beforeChild != null)
@@ -1195,16 +1193,15 @@ CanvasManager.prototype._findChildTabStopReverse =
 				parent._children[i].getStyle("Enabled") == false)
 				continue;
 			
+			var childTabStop = this._findChildTabStopReverse(parent._children[i], null);
+			if (childTabStop != null)
+				return childTabStop;
+	
 			if (parent._children[i].getStyle("TabStop") >= 0)
-				lastTabStopElement = parent._children[i];
-			
-			this._findChildTabStopReverse(parent._children[i], null, lastTabStopElement);
-			
-			if (lastTabStopElement != null)
-				return lastTabStopElement;
+				return parent._children[i];
 		}
 		
-		return lastTabStopElement;
+		return null;
 	};	
 	
 //@private	
