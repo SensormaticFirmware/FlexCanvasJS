@@ -606,6 +606,8 @@ CanvasManager.prototype.setCanvas =
 			
 			if (navigator.userAgent.indexOf("Firefox") > 0)
 				CanvasElement._browserType = "Firefox";
+			else if (navigator.userAgent.indexOf("Chrome") > 0)
+				CanvasElement._browserType = "Chrome";
 			
 			//Prevent double render frames if someone changes our associated canvas.
 			if (this._canvasRenderFramePending == false)

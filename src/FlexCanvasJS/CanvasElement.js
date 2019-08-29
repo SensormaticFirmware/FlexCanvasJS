@@ -1002,7 +1002,7 @@ CanvasElement.StyleDefault.setStyle("TextSize", 						12);
 CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
 CanvasElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
 CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				2);
-CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			0);
+CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
 CanvasElement.StyleDefault.setStyle("TextColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
@@ -2272,9 +2272,8 @@ CanvasElement._measureText =
 CanvasElement._fillText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
-		//Firefox weirdly renders text higher than normal
-		if (CanvasElement._browserType == "Firefox")
-			y += 2;
+		if (CanvasElement._browserType == "Firefox" || CanvasElement._browserType == "Chrome")
+			y += 1;
 	
 		var bitmapMap = CanvasElement._characterFillBitmapMap[fontString];
 		if (bitmapMap == null)

@@ -2054,7 +2054,7 @@ TextFieldLineElement.prototype._doRender =
 		var maskCharacter = this._parentTextField.getStyle("MaskCharacter");
 		
 		var x = paddingMetrics.getX();
-		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
+		var y = paddingMetrics.getY(); // + (paddingMetrics.getHeight() / 2); 
 		var w = paddingMetrics.getWidth();
 		
 		for (var i = 0; i < this._text.length; i++)
@@ -2078,16 +2078,16 @@ TextFieldLineElement.prototype._doRender =
 				ctx.fill();
 				
 				if (textFillType == "stroke")
-					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "top");
 				else
-					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "top");
 			}
 			else
 			{
 				if (textFillType == "stroke")
-					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "middle");
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "top");
 				else
-					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "middle");
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "top");
 			}
 			
 			x += charWidth;
