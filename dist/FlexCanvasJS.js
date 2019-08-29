@@ -5172,7 +5172,7 @@ CanvasElement.StyleDefault.setStyle("TextSize", 						12);
 CanvasElement.StyleDefault.setStyle("TextHorizontalAlign",				"left");
 CanvasElement.StyleDefault.setStyle("TextVerticalAlign", 				"middle");
 CanvasElement.StyleDefault.setStyle("TextLinePaddingTop", 				2);
-CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			0);
+CanvasElement.StyleDefault.setStyle("TextLinePaddingBottom", 			1);
 CanvasElement.StyleDefault.setStyle("TextLineSpacing", 					0);
 CanvasElement.StyleDefault.setStyle("TextColor", 						"#000000");
 CanvasElement.StyleDefault.setStyle("TextFillType", 					"fill");
@@ -6442,9 +6442,8 @@ CanvasElement._measureText =
 CanvasElement._fillText = 
 	function (ctx, text, x, y, fontString, color, baseline)
 	{
-		//Firefox weirdly renders text higher than normal
-		if (CanvasElement._browserType == "Firefox")
-			y += 2;
+		if (CanvasElement._browserType == "Firefox" || CanvasElement._browserType == "Chrome")
+			y += 1;
 	
 		var bitmapMap = CanvasElement._characterFillBitmapMap[fontString];
 		if (bitmapMap == null)
@@ -12050,7 +12049,7 @@ TextFieldLineElement.prototype._doRender =
 		var maskCharacter = this._parentTextField.getStyle("MaskCharacter");
 		
 		var x = paddingMetrics.getX();
-		var y = paddingMetrics.getY() + (paddingMetrics.getHeight() / 2); 
+		var y = paddingMetrics.getY(); // + (paddingMetrics.getHeight() / 2); 
 		var w = paddingMetrics.getWidth();
 		
 		for (var i = 0; i < this._text.length; i++)
@@ -12074,16 +12073,16 @@ TextFieldLineElement.prototype._doRender =
 				ctx.fill();
 				
 				if (textFillType == "stroke")
-					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, highlightTextColor, "top");
 				else
-					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "middle");
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, highlightTextColor, "top");
 			}
 			else
 			{
 				if (textFillType == "stroke")
-					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "middle");
+					CanvasElement._strokeText(ctx, printChar, x, y, fontString, textColor, "top");
 				else
-					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "middle");
+					CanvasElement._fillText(ctx, printChar, x, y, fontString, textColor, "top");
 			}
 			
 			x += charWidth;
@@ -25640,6 +25639,8 @@ CanvasManager.prototype.setCanvas =
 			
 			if (navigator.userAgent.indexOf("Firefox") > 0)
 				CanvasElement._browserType = "Firefox";
+			else if (navigator.userAgent.indexOf("Chrome") > 0)
+				CanvasElement._browserType = "Chrome";
 			
 			//Prevent double render frames if someone changes our associated canvas.
 			if (this._canvasRenderFramePending == false)
