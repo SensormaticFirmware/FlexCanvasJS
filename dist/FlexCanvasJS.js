@@ -21170,7 +21170,7 @@ ContainerBaseElement.prototype._removeChildAt =
 		if (index < 0 || index >= this._children.length)
 			return null;
 		
-		var element = this._children.splice(index, 1)[0]; //Returns array of removed items.
+		var element = this._children[index];
 		
 		var subIndex = this._elements.indexOf(element);
 		if (subIndex >= 0)
