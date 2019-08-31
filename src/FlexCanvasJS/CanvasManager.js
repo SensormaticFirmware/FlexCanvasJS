@@ -414,10 +414,9 @@ function CanvasManager()
 				if (draggingElement != null)
 					_self._setDraggingElement(draggingElement, draggingOffset.x, draggingOffset.y);
 				
-				//Dispatch focus change before mouse event - implementor likely does not want "mousedown" before "focusout"
-				_self._updateFocusElement(focusElement, false);
-				
 				currentElement.dispatchEvent(new ElementMouseEvent(browserEvent.type, mousePoint.x, mousePoint.y));
+				
+				_self._updateFocusElement(focusElement, false);
 				
 				//Always shut off focus ring (even if focus doesnt change)
 				if (_self._focusElement != null)
