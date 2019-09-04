@@ -3431,6 +3431,7 @@ ElementMouseEvent to process.<br>
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Sets the hours to be displayed, ignored if set by clock when user has hour field focused.<br>
+Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -3444,13 +3445,6 @@ Hours to be displayed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
 True when this is called via clock change.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
@@ -3483,13 +3477,6 @@ Minutes to be displayed.<br>
 True when this is called via clock change.<br>
 </td>
 </tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-True if value was out of range and wrapped.<br>
-</td>
-</tr>
 </table>
 </td>
 <td>&nbsp;</td>
@@ -3518,13 +3505,6 @@ Seconds to be displayed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
 True when this is called via clock change.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
@@ -5218,6 +5198,7 @@ Returns true if the child's index is successfully changed, false if the element<
 <tr style="border-bottom-style: solid; border-bottom-width: 1px;">
 <td style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px;">
 Sets the hours to be displayed, ignored if set by clock when user has hour field focused.<br>
+Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12<br>
 <table style="width: 100%;">
 <tr>
 <td style="width: 30px;">&nbsp;</td>
@@ -5231,13 +5212,6 @@ Hours to be displayed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
 True when this is called via clock change.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
@@ -5329,13 +5303,6 @@ Minutes to be displayed.<br>
 True when this is called via clock change.<br>
 </td>
 </tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-True if value was out of range and wrapped.<br>
-</td>
-</tr>
 </table>
 </td>
 <td>&nbsp;</td>
@@ -5405,13 +5372,6 @@ Seconds to be displayed.<br>
 <td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 <span style="font-weight: bold;">isClock</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
 True when this is called via clock change.<br>
-</td>
-</tr>
-<tr>
-<td style="width: 30px;">&nbsp;</td>
-<td style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
-<span style="font-weight: bold;">returns</span> &nbsp;&nbsp;&nbsp; : &nbsp;&nbsp;&nbsp;boolean<br>
-True if value was out of range and wrapped.<br>
 </td>
 </tr>
 </table>
