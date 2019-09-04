@@ -141,10 +141,13 @@ DatePickerButtonElement.StyleDefault.setStyle("PopupDatePickerDistance", 				-1)
 DatePickerButtonElement.prototype.setSelectedDate = 
 	function (date)
 	{
-		this._selectedDate = date;
+		if (date instanceof Date == false)
+			return;
+	
+		this._selectedDate = new Date(date.getTime());
 	
 		if (this._datePickerPopup != null)
-			this._datePickerPopup.setSelectedDate(date);
+			this._datePickerPopup.setSelectedDate(this._selectedDate);
 		
 		this._updateText();
 	};
@@ -159,7 +162,7 @@ DatePickerButtonElement.prototype.setSelectedDate =
 DatePickerButtonElement.prototype.getSelectedDate = 
 	function ()
 	{
-		return this._selectedDate;
+		return new Date(this._selectedDate.getTime());
 	};
 
 	

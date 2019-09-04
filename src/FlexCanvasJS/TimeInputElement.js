@@ -126,6 +126,7 @@ TimeInputElement.base = TextInputElement;
 
 /**
  * @event hourswrapped DispatcherEvent
+ * 
  * Dispatched when hours are wrapped due to clock change.
  * This is useful to detect date or AM/PM changes due to the clock updating.
  */
@@ -311,22 +312,20 @@ TimeInputElement.prototype.getSeconds =
 /**
  * @function _setHoursInternal
  * Sets the hours to be displayed, ignored if set by clock when user has hour field focused.
+ * Range is 0-23 when "Is24HourTime" style is true, otherwise 1-12
  * 
  * @param hour int
  * Hours to be displayed.
  * 
  * @param isClock boolean
  * True when this is called via clock change.
- * 
- * @returns boolean
- * True if value was out of range and wrapped.
  */	
 TimeInputElement.prototype._setHoursInternal = 
 	function (hour, isClock)
 	{
 		//Dont update if its the clock and field is focused by user
 		if (isClock == true && this._textFieldFocused == this._textFieldHour)
-			return false;
+			return;
 	
 		var wrapCount = 0;
 		
@@ -347,7 +346,6 @@ TimeInputElement.prototype._setHoursInternal =
 			while (h < 0)
 			{
 				h += 24;
-				wrapCount++;
 			}
 			while (h > 23)
 			{
@@ -357,16 +355,18 @@ TimeInputElement.prototype._setHoursInternal =
 		}
 		else
 		{
-			while (h < 1)
+			while (h < 0)
 			{
 				h += 12;
-				wrapCount++;
 			}
-			while (h > 12)
+			while (h > 11) //Wrap on 12
 			{
 				h -= 12;
 				wrapCount++;
 			}
+			
+			if (h == 0)
+				h = 12;
 		}
 		
 		var textHour = h.toString();
@@ -390,11 +390,7 @@ TimeInputElement.prototype._setHoursInternal =
 				for (var i = 0; i < wrapCount; i++)
 					this.dispatchEvent(wrapEvent);
 			}
-			
-			return true;
 		}
-		
-		return false;
 	};
 	
 /**
@@ -406,16 +402,13 @@ TimeInputElement.prototype._setHoursInternal =
  * 
  * @param isClock boolean
  * True when this is called via clock change.
- * 
- * @returns boolean
- * True if value was out of range and wrapped.
  */	
 TimeInputElement.prototype._setMinutesInternal = 
 	function (minute, isClock)
 	{
 		//Dont update if its the clock and field is focused by user
 		if (isClock == true && this._textFieldFocused == this._textFieldMinute)
-			return false;
+			return;
 	
 		var wrapped = false;
 		
@@ -445,7 +438,8 @@ TimeInputElement.prototype._setMinutesInternal =
 			wrapped = true;
 		}
 		
-		this._setHoursInternal(currentHour, isClock);
+		if (wrapped == true)
+			this._setHoursInternal(currentHour, isClock);
 		
 		var textMinute = m.toString();
 		while (textMinute.length < 2)
@@ -455,8 +449,6 @@ TimeInputElement.prototype._setMinutesInternal =
 		
 		if (isClock == false)
 			this._clockBase = Date.now();
-		
-		return wrapped;
 	};
 	
 /**
@@ -468,16 +460,13 @@ TimeInputElement.prototype._setMinutesInternal =
  * 
  * @param isClock boolean
  * True when this is called via clock change.
- * 
- * @returns boolean
- * True if value was out of range and wrapped.
  */		
 TimeInputElement.prototype._setSecondsInternal = 
 	function (second, isClock)
 	{
 		//Dont update if its the clock and field is focused by user	
 		if (isClock == true && this._textFieldFocused == this._textFieldSecond)
-			return false;
+			return;
 	
 		var wrapped = false;
 		
@@ -507,7 +496,8 @@ TimeInputElement.prototype._setSecondsInternal =
 			wrapped = true;
 		}
 		
-		this._setMinutesInternal(currentMinute, isClock);
+		if (wrapped == true)
+			this._setMinutesInternal(currentMinute, isClock);
 		
 		var textSecond = s.toString();
 		while (textSecond.length < 2)
@@ -517,8 +507,6 @@ TimeInputElement.prototype._setSecondsInternal =
 		
 		if (isClock == false)
 			this._clockBase = Date.now();
-		
-		return wrapped;
 	};
 	
 /**
@@ -709,11 +697,33 @@ TimeInputElement.prototype._onTimeInputTextFieldFocusOut =
 		var changed = false;
 		
 		if (textField == this._textFieldHour)
-			changed = this.setHours(value);
-		else if (textField == this._textFieldMinute)
-			changed = this.setMinutes(value)
-		else //if (textField == this._textFieldSecond
-			changed = this.setSeconds(value);
+		{
+			var is24Hour = this.getStyle("Is24HourTime");
+			
+			if (is24Hour == true)
+			{
+				if (value < 0 || value > 23)
+					changed = true;
+			}
+			else
+			{
+				if (value < 1 || value > 12)
+					changed = true;
+			}
+			
+			if (changed == true)
+				this._setHoursInternal(value);
+		}
+		else if (textField == this._textFieldMinute && (value < 0 || value > 59))
+		{
+			changed = true;	
+			this._setMinutesInternal(value);
+		}
+		else if (textField == this._textFieldSecond && (value < 0 || value > 59))
+		{
+			changed = true;
+			this._setSecondsInternal(value);
+		}
 		
 		//Dispatch a changed event if the focus out caused values to change (wrapped)
 		if (changed == true && this.hasEventListener("changed", null) == true)
