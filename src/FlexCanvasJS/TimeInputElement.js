@@ -651,6 +651,10 @@ TimeInputElement.prototype._onTextInputKeyUp =
 TimeInputElement.prototype._onTextInputFocusIn = 
 	function (elementEvent)
 	{
+		//Mousedown already focused
+		if (this._textFieldFocused != null)
+			return;
+	
 		//This only works because TextField doesnt look at _isFocused (manages caret state with different flag)
 		this._textFieldHour.dispatchEvent(elementEvent.clone()); 
 		this._textFieldFocused = this._textFieldHour;
