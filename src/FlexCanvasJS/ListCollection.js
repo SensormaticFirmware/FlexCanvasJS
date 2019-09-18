@@ -175,7 +175,7 @@ ListCollection.prototype.getItemIndex =
 ListCollection.prototype.getItemAt = 
 	function (index)
 	{
-		if (index < 0 || index >= this._backingArray.length)
+		if (index == null || index < 0 || index >= this._backingArray.length)
 			return null;
 	
 		return this._backingArray[index];
@@ -213,7 +213,7 @@ ListCollection.prototype.addItem =
 ListCollection.prototype.addItemAt = 
 	function (item, index)
 	{
-		if (index < 0 || index > this._backingArray.length || item == null)
+		if (index == null || index < 0 || index > this._backingArray.length || item == null)
 			return null;
 		
 		this._backingArray.splice(index, 0, item);
@@ -252,7 +252,7 @@ ListCollection.prototype.removeItem =
 ListCollection.prototype.removeItemAt = 
 	function (index)
 	{
-		if (index < 0 || index >= this._backingArray.length)
+		if (index == null || index < 0 || index >= this._backingArray.length)
 			return null;
 		
 		var removed = this._backingArray.splice(index, 1)[0]; //Returns array of removed items.
