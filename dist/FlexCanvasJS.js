@@ -18694,6 +18694,9 @@ DataListElement._DataRendererProxyMap._Arbitrary = 				true;
 DataListElement.prototype.setSelectedIndex = 
 	function (index)
 	{
+		if (this._listCollection == null)
+			return false;
+	
 		if (this._selectedIndex == index)
 			return false;
 		
@@ -18777,7 +18780,7 @@ DataListElement.prototype.setScrollIndex =
 	
 		this._invalidateLayout();
 		
-		if (scrollIndex >= this._listCollection.getLength())
+		if (scrollIndex > this._listCollection.getLength() - 1)
 			scrollIndex = this._listCollection.getLength() - 1;
 		if (scrollIndex < 0)
 			scrollIndex = 0;		
@@ -30562,8 +30565,8 @@ function DataGridElement()
 	
 	this._selectedColumnIndex = -1;
 	
-	this._overIndex = -1; //row index
-	this._overColumnIndex = -1;
+	this._rowOverIndex = -1; 
+	this._columnOverIndex = -1;
 	
 	this._gridHeader = null;
 	
@@ -30862,6 +30865,12 @@ DataGridElement.prototype.getNumColumns =
 DataGridElement.prototype.setSelectedIndex = 
 	function (rowIndex, columnIndex)
 	{
+		if (this._listCollection == null)
+			return false;
+	
+		if (columnIndex == null)
+			columnIndex = -1;
+	
 		if (this._selectedIndex == rowIndex && this._selectedColumnIndex == columnIndex)
 			return false;
 		
@@ -30878,9 +30887,11 @@ DataGridElement.prototype.setSelectedIndex =
 			columnIndex = -1;
 		
 		this._selectedIndex = rowIndex;
+		this._selectedItem = this._listCollection.getItemAt(rowIndex);
+		
 		this._selectedColumnIndex = columnIndex;
 		
-		var selectionData = {rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex};
+		var selectionData = {rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._rowOverIndex, columnOverIndex:this._columnOverIndex};
 		
 		for (var i = 0; i < this._contentPane._children.length; i++)
 			this._contentPane._children[i]._setListSelected(selectionData);
@@ -31135,28 +31146,28 @@ DataGridElement.prototype._createRowItemRenderer =
 DataGridElement.prototype._onDataGridRowItemRollover = 
 	function (event)
 	{
-		this._overIndex = event.getCurrentTarget()._listData._itemIndex;
+		this._rowOverIndex = event.getCurrentTarget()._listData._itemIndex;
 		this._columnOverIndex = event.getCurrentTarget()._listData._columnIndex;
 		
 		var renderer = null;
 		for (var i = 0; i < this._contentPane._children.length; i++)
 		{
 			renderer = this._contentPane._children[i];
-			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._rowOverIndex, columnOverIndex:this._columnOverIndex});
 		}
 	};
 	
 DataGridElement.prototype._onDataGridRowItemRollout = 
 	function (event)
 	{
-		this._overIndex = -1;
+		this._rowOverIndex = -1;
 		this._columnOverIndex = -1;
 		
 		var renderer = null;
 		for (var i = 0; i < this._contentPane._children.length; i++)
 		{
 			renderer = this._contentPane._children[i];
-			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+			renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._rowOverIndex, columnOverIndex:this._columnOverIndex});
 		}
 	};	
 	
@@ -31183,7 +31194,7 @@ DataGridElement.prototype._updateRendererData =
 			listData,
 			this._listCollection.getItemAt(itemIndex));
 		
-		renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._overIndex, columnOverIndex:this._columnOverIndex});
+		renderer._setListSelected({rowIndex:this._selectedIndex, columnIndex:this._selectedColumnIndex, rowOverIndex:this._rowOverIndex, columnOverIndex:this._columnOverIndex});
 	};	
 	
 /**
