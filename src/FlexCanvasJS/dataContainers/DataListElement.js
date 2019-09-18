@@ -259,6 +259,9 @@ DataListElement._DataRendererProxyMap._Arbitrary = 				true;
 DataListElement.prototype.setSelectedIndex = 
 	function (index)
 	{
+		if (this._listCollection == null)
+			return false;
+	
 		if (this._selectedIndex == index)
 			return false;
 		
@@ -342,7 +345,7 @@ DataListElement.prototype.setScrollIndex =
 	
 		this._invalidateLayout();
 		
-		if (scrollIndex >= this._listCollection.getLength())
+		if (scrollIndex > this._listCollection.getLength() - 1)
 			scrollIndex = this._listCollection.getLength() - 1;
 		if (scrollIndex < 0)
 			scrollIndex = 0;		
