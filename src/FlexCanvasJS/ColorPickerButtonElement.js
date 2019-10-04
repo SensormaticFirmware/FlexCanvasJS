@@ -136,6 +136,8 @@ ColorPickerButtonElement.StyleDefault.setStyle("ColorSwatchStyle", 						ColorPi
 ColorPickerButtonElement.prototype.setHexColor = 
 	function (value)
 	{
+		value = ColorPickerElement.fixInvalidHexColor(value);
+	
 		this._selectedHexColor = value;
 		
 		if (this._colorSwatch != null)
