@@ -3162,7 +3162,7 @@ ListCollection.prototype.getItemIndex =
 ListCollection.prototype.getItemAt = 
 	function (index)
 	{
-		if (index < 0 || index >= this._backingArray.length)
+		if (index == null || index < 0 || index >= this._backingArray.length)
 			return null;
 	
 		return this._backingArray[index];
@@ -3200,7 +3200,7 @@ ListCollection.prototype.addItem =
 ListCollection.prototype.addItemAt = 
 	function (item, index)
 	{
-		if (index < 0 || index > this._backingArray.length || item == null)
+		if (index == null || index < 0 || index > this._backingArray.length || item == null)
 			return null;
 		
 		this._backingArray.splice(index, 0, item);
@@ -3239,7 +3239,7 @@ ListCollection.prototype.removeItem =
 ListCollection.prototype.removeItemAt = 
 	function (index)
 	{
-		if (index < 0 || index >= this._backingArray.length)
+		if (index == null || index < 0 || index >= this._backingArray.length)
 			return null;
 		
 		var removed = this._backingArray.splice(index, 1)[0]; //Returns array of removed items.
@@ -24569,44 +24569,20 @@ ColorPickerElement.hslToRgb =
 			return {r:c, g:m, b:x};
 	};
 
-
-////////////Public////////////////
-	
 /**
- * @function setHexColor
- * Sets the selected color of the ColorPickerElement.
+ * @function fixInvalidHexColor
+ * @static
+ * Fixes invalid hex color strings and forces formatting to "#000000". 
+ * This is useful for things like color input text where the color
+ * string may be incomplete or incorrect.
  * 
  * @param value String
- * RGB hex color value formatted as "#FF0000".
- */	
-ColorPickerElement.prototype.setHexColor = 
-	function (value)
-	{
-		value = this._fixInvalidHexColor(value);
-		
-		this._textInputColor.setText(value.slice(1));
-		
-		this._updateSelectedRgb();
-	};
-	
-/**
- * @function getHexColor
- * Gets the selected color of the ColorPickerElement.
+ * Color string to fix.
  * 
  * @returns String
- * RGB hex color value formatted as "#FF0000".
- */		
-ColorPickerElement.prototype.getHexColor = 
-	function ()
-	{
-		return this._fixInvalidHexColor(this._textInputColor.getText());
-	};
-	
-	
-////////////Internal//////////////
-	
-//@private	
-ColorPickerElement.prototype._fixInvalidHexColor = 
+ * A corrected color string.
+ */
+ColorPickerElement.fixInvalidHexColor = 
 	function (value)
 	{
 		value = value.toUpperCase();
@@ -24651,7 +24627,43 @@ ColorPickerElement.prototype._fixInvalidHexColor =
 		}
 		
 		return value;
-	};	
+	};		
+	
+
+////////////Public////////////////
+	
+/**
+ * @function setHexColor
+ * Sets the selected color of the ColorPickerElement.
+ * 
+ * @param value String
+ * RGB hex color value formatted as "#FF0000".
+ */	
+ColorPickerElement.prototype.setHexColor = 
+	function (value)
+	{
+		value = ColorPickerElement.fixInvalidHexColor(value);
+		
+		this._textInputColor.setText(value.slice(1));
+		
+		this._updateSelectedRgb();
+	};
+	
+/**
+ * @function getHexColor
+ * Gets the selected color of the ColorPickerElement.
+ * 
+ * @returns String
+ * RGB hex color value formatted as "#FF0000".
+ */		
+ColorPickerElement.prototype.getHexColor = 
+	function ()
+	{
+		return ColorPickerElement.fixInvalidHexColor(this._textInputColor.getText());
+	};
+	
+	
+////////////Internal//////////////
 	
 //@private - Root list's layout complete handler, adjusts caret positions.
 ColorPickerElement.prototype._onChildContainerLayoutComplete = 
@@ -24880,7 +24892,7 @@ ColorPickerElement.prototype._updateSelectedHsl =
 ColorPickerElement.prototype._updateSelectedRgb = 
 	function ()
 	{
-		var value = this._fixInvalidHexColor(this._textInputColor.getText());
+		var value = ColorPickerElement.fixInvalidHexColor(this._textInputColor.getText());
 	
 		var rgb = ColorPickerElement.hexToRgb(value);
 		
@@ -31822,6 +31834,8 @@ ColorPickerButtonElement.StyleDefault.setStyle("ColorSwatchStyle", 						ColorPi
 ColorPickerButtonElement.prototype.setHexColor = 
 	function (value)
 	{
+		value = ColorPickerElement.fixInvalidHexColor(value);
+	
 		this._selectedHexColor = value;
 		
 		if (this._colorSwatch != null)
