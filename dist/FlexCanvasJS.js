@@ -30450,7 +30450,7 @@ DataGridHeaderElement.prototype._setListData =
 		var totalElements = listData._parentList._gridColumns.length;
 		
 		if (dividerClass != null)
-			totalElements = (totalElements * 2) - 1;
+			totalElements = Math.max(((totalElements * 2) - 1), 0);
 		
 		for (var i2 = i; i2 < totalElements; i2++)
 		{
