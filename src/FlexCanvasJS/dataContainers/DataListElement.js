@@ -107,10 +107,10 @@ DataListElement.DefaultItemLabelFunction =
 		if (typeof itemData === "string" || itemData instanceof String)
 			return itemData;
 	
-		if ("label" in itemData)
+		if (itemData instanceof Object && "label" in itemData)
 			return itemData["label"];
 		
-		return itemData.toString();
+		return String(itemData);
 	};
 
 
