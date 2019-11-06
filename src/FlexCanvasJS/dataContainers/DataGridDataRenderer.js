@@ -202,10 +202,10 @@ DataGridDataRenderer.prototype._doLayout =
 			rowItemRenderer = this._itemRenderersContainer._children[i];
 			columnSize = parentGrid._columnSizes[i];
 			
-			if (i == 0)
-				columnSize -= paddingSize.paddingLeft;
-			else if (i == parentGrid._columnSizes.length - 1) //Consume the rest available.
+			if (i == parentGrid._columnSizes.length - 1) //Consume the rest available.
 				columnSize = this._itemRenderersContainer._width - currentPosition;
+			else if (i == 0)
+				columnSize -= paddingSize.paddingLeft;
 			
 			rowItemRenderer._setActualPosition(currentPosition, 0);
 			rowItemRenderer._setActualSize(columnSize, this._itemRenderersContainer._height);
