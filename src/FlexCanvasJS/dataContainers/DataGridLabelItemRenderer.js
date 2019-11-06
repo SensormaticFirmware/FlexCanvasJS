@@ -155,7 +155,10 @@ DataGridLabelItemRenderer.prototype._updateLabelText =
 			var columnDefinition = parentGrid._gridColumns[this._listData._columnIndex];
 			var labelFunction = columnDefinition.getStyle("RowItemLabelFunction");
 			
-			this._labelElement.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
+			if (labelFunction == null)
+				this._labelElement.setStyle("Text", "");
+			else
+				this._labelElement.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
 		}
 	};
 	

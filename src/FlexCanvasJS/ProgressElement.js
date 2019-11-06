@@ -8,6 +8,7 @@
 	
 /**
  * @class ProgressElement
+ * @inherits CanvasElement
  * 
  * ProgressElement is a CanvasElement that adds a second FillBase style
  * called "ProgressFill". The progress fill is drawn on top of the background fill

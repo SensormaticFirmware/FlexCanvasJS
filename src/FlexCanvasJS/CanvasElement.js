@@ -168,9 +168,6 @@ function CanvasElement()
 	this._redrawRegionValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._redrawRegionValidateNode.data = this;
 	
-	this._transformRegionValidateNode = new CmLinkedNode();
-	this._transformRegionValidateNode.data = this;
-	
 	//Off screen canvas for rendering this element.
 	this._graphicsCanvas = null;
 	this._graphicsCtx = null;
@@ -197,6 +194,9 @@ function CanvasElement()
 	//When an element requires composite rendering, it and its children are rendered to _compositeCanvas,
 	//then _compositeCanvas is rendered to the parent composite (or root canvas) and appropriate effects are applied.
 	//These values are only populated when this element requires composite rendering.
+	
+	this._transformRegionValidateNode = new CmLinkedNode();
+	this._transformRegionValidateNode.data = this;
 	
 	this._compositeRenderInvalid = false;
 	this._compositeRenderValidateNode = new CmLinkedNode();

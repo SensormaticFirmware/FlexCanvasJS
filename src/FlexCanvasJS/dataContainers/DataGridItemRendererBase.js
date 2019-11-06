@@ -46,8 +46,6 @@ DataGridItemRendererBase.StyleDefault.setStyle("AltSkinStyle", DataGridItemRende
 DataGridItemRendererBase.prototype._updateState = 
 	function ()
 	{
-		DataGridItemRendererBase.base.prototype._updateState.call(this);
-		
 		if (this._listSelected != null && this._listSelected.selected == true)
 			newState = "selected";
 		else if (this._listSelected != null && this._listSelected.highlight == true)
