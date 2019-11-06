@@ -4338,9 +4338,6 @@ function CanvasElement()
 	this._redrawRegionValidateNode = new CmLinkedNode();	//Reference to linked list iterator
 	this._redrawRegionValidateNode.data = this;
 	
-	this._transformRegionValidateNode = new CmLinkedNode();
-	this._transformRegionValidateNode.data = this;
-	
 	//Off screen canvas for rendering this element.
 	this._graphicsCanvas = null;
 	this._graphicsCtx = null;
@@ -4367,6 +4364,9 @@ function CanvasElement()
 	//When an element requires composite rendering, it and its children are rendered to _compositeCanvas,
 	//then _compositeCanvas is rendered to the parent composite (or root canvas) and appropriate effects are applied.
 	//These values are only populated when this element requires composite rendering.
+	
+	this._transformRegionValidateNode = new CmLinkedNode();
+	this._transformRegionValidateNode.data = this;
 	
 	this._compositeRenderInvalid = false;
 	this._compositeRenderValidateNode = new CmLinkedNode();
@@ -15252,6 +15252,7 @@ TextAreaElement.prototype._doLayout =
 	
 /**
  * @class ProgressElement
+ * @inherits CanvasElement
  * 
  * ProgressElement is a CanvasElement that adds a second FillBase style
  * called "ProgressFill". The progress fill is drawn on top of the background fill
@@ -18542,10 +18543,10 @@ DataListElement.DefaultItemLabelFunction =
 		if (typeof itemData === "string" || itemData instanceof String)
 			return itemData;
 	
-		if ("label" in itemData)
+		if (itemData instanceof Object && "label" in itemData)
 			return itemData["label"];
 		
-		return itemData.toString();
+		return String(itemData);
 	};
 
 
@@ -19765,8 +19766,6 @@ DataGridItemRendererBase.StyleDefault.setStyle("AltSkinStyle", DataGridItemRende
 DataGridItemRendererBase.prototype._updateState = 
 	function ()
 	{
-		DataGridItemRendererBase.base.prototype._updateState.call(this);
-		
 		if (this._listSelected != null && this._listSelected.selected == true)
 			newState = "selected";
 		else if (this._listSelected != null && this._listSelected.highlight == true)
@@ -19943,7 +19942,10 @@ DataGridLabelItemRenderer.prototype._updateLabelText =
 			var columnDefinition = parentGrid._gridColumns[this._listData._columnIndex];
 			var labelFunction = columnDefinition.getStyle("RowItemLabelFunction");
 			
-			this._labelElement.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
+			if (labelFunction == null)
+				this._labelElement.setStyle("Text", "");
+			else
+				this._labelElement.setStyle("Text", labelFunction(this._itemData, this._listData._columnIndex));
 		}
 	};
 	
@@ -20189,10 +20191,10 @@ DataGridDataRenderer.prototype._doLayout =
 			rowItemRenderer = this._itemRenderersContainer._children[i];
 			columnSize = parentGrid._columnSizes[i];
 			
-			if (i == 0)
-				columnSize -= paddingSize.paddingLeft;
-			else if (i == parentGrid._columnSizes.length - 1) //Consume the rest available.
+			if (i == parentGrid._columnSizes.length - 1) //Consume the rest available.
 				columnSize = this._itemRenderersContainer._width - currentPosition;
+			else if (i == 0)
+				columnSize -= paddingSize.paddingLeft;
 			
 			rowItemRenderer._setActualPosition(currentPosition, 0);
 			rowItemRenderer._setActualSize(columnSize, this._itemRenderersContainer._height);
